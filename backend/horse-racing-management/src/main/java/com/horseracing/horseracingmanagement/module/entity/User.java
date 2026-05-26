@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.entity;
 
+import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -53,11 +54,11 @@ public class User {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
-    @Size(max = 20)
-    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
     @ColumnDefault("'ACTIVE'")
     @Column(name = "status", nullable = false, length = 20)
-    private String status;
+    private UserStatus status = UserStatus.ACTIVE;
 
     @Column(name = "created_at")
     private Instant createdAt;

@@ -12,6 +12,9 @@ VALUES
 
 
 
+
+
+
 -- =========================
 -- USERS SAMPLE DATA
 -- =========================
@@ -30,7 +33,7 @@ INSERT INTO users (
 )
 VALUES
     (
-        1,
+        4,
         'admin@gmail.com',
         'admin',
         '123456',
@@ -42,7 +45,7 @@ VALUES
         NOW()
     ),
     (
-        2,
+        5,
         'manager@gmail.com',
         'manager01',
         '123456',
@@ -54,7 +57,7 @@ VALUES
         NOW()
     ),
     (
-        3,
+        6,
         'staff@gmail.com',
         'staff01',
         '123456',
@@ -66,7 +69,7 @@ VALUES
         NOW()
     ),
     (
-        4,
+        7,
         'user@gmail.com',
         'user01',
         '123456',
@@ -77,4 +80,4 @@ VALUES
         NOW(),
         NOW()
     );
-```
+

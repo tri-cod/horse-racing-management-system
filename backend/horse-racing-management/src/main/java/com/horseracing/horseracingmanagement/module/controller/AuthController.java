@@ -1,31 +1,39 @@
 package com.horseracing.horseracingmanagement.module.controller;
 
-import com.horseracing.horseracingmanagement.module.dto.LoginRequest;
-import com.horseracing.horseracingmanagement.module.entity.User;
-import com.horseracing.horseracingmanagement.module.responsitory.UserRepository;
-import com.horseracing.horseracingmanagement.module.service.UserService;
-import io.swagger.v3.oas.models.responses.ApiResponse;
-import jakarta.servlet.http.HttpServlet;
+import com.horseracing.horseracingmanagement.common.response.ApiResponse;
+import com.horseracing.horseracingmanagement.module.dto.AuthDto.AuthMeResponse;
+import com.horseracing.horseracingmanagement.module.dto.AuthDto.LoginRequest;
+import com.horseracing.horseracingmanagement.module.dto.AuthDto.LoginResponse;
+import com.horseracing.horseracingmanagement.module.dto.AuthDto.RegisterRequest;
+import com.horseracing.horseracingmanagement.module.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import java.util.Optional;
 
 @RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Authentication management APIs")
 public class AuthController {
-    UserService userService;
 
+    private final AuthService authService;
 
-    @GetMapping("/")
-    public String greet(HttpServletRequest request) {
-        return "Welcome to Horseracing Management" +  request.getSession().getId();
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request )  {
+        return ResponseEntity.ok(ApiResponse.success("Login succesfull", authService.login(request)));
     }
 
+    @PostMapping("/register")
+    @Operation(summary = "Register a new user account")
+    public ResponseEntity<ApiResponse<AuthMeResponse>> register(@Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Registration successful", authService.register(request)));
+    }
 
 
 }

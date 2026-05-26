@@ -32,6 +32,7 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
 
     private static final String[] PUBLIC_URLS = {
+            "/v3/api-docs.yaml",
             "/api/auth/**",
             "/api/health",
             "/api/products/**",
