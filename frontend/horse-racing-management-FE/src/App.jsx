@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import './App.css'
+import Login from './auth/login'
 
 function App() {
   return (
-    <div className="App" style={{ backgroundColor: "#f0f0f0" }}>
-      <h1>Horse Racing Management System</h1>
-    </div>
+   <Login />
   )
 }
 
