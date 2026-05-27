@@ -2,6 +2,7 @@ import { useState } from "react";
 import "../login.css";
 import logoLogin from "../assets/logoLogin.jpg";
 import { Eye, EyeOff } from "lucide-react";
+import { login } from "../api/authService";
 
 export default function Login() {
     const [username, setUsername] = useState("");
@@ -9,12 +10,26 @@ export default function Login() {
     const [remember, setRemember] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState("");
 
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
         setLoading(true);
-        setTimeout(() => setLoading(false), 1500);
+
+        try {
+            const result = await login({ username, password });
+            const { accessToken, tokenType } = result.data;
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("tokenType", tokenType);
+            localStorage.setItem("user", JSON.stringify(result.data.user));
+            
+            alert(`Đăng nhập thành công! Xin chào ${result.data.user.fullName}`);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
