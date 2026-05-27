@@ -19,19 +19,22 @@ export default function Login() {
 
         try {
             const result = await login({ username, password });
-            const { accessToken, tokenType } = result.data;
+            console.log("API response:", result);
+            const { accessToken, tokenType, user } = result;
+            if (!accessToken) {
+                throw new Error("Login Fail");
+            }
             localStorage.setItem("accessToken", accessToken);
             localStorage.setItem("tokenType", tokenType);
-            localStorage.setItem("user", JSON.stringify(result.data.user));
-            
-            alert(`Đăng nhập thành công! Xin chào ${result.data.user.fullName}`);
+            localStorage.setItem("user", JSON.stringify(user));
+            alert(`Login Successful! Welcome ${user.fullName}`);
         } catch (err) {
-            setError(err.message);
+            console.error("LOGIN ERROR:", err);
+            setError(err.message || "Login Fail");
         } finally {
             setLoading(false);
         }
     };
-
     return (
         <div className="login-page">
             <div className="login-card">
