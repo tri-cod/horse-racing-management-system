@@ -47,7 +47,12 @@ public class AuthServiceImpl  implements AuthService {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String token = jwtUtil.generateToken(userDetails);
         AuthMeResponse currentUser = buildCurrentUser(userDetails.getId());
-        return null;
+        return LoginResponse.builder()
+                .accessToken(token)
+                .tokenType("Bearer")
+                .expiresIn(jwtExpiration)
+                .user(currentUser)
+                .build();
     }
 
 
