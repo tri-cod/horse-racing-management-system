@@ -20,7 +20,7 @@ export default function Login() {
         try {
             const result = await login({ username, password });
             console.log("API response:", result);
-            const { accessToken, tokenType, user } = result;
+            const { accessToken, tokenType, user } = result.data;
             if (!accessToken) {
                 throw new Error("Login Fail");
             }
@@ -30,7 +30,7 @@ export default function Login() {
             alert(`Login Successful! Welcome ${user.fullName}`);
         } catch (err) {
             console.error("LOGIN ERROR:", err);
-            setError(err.message || "Login Fail");
+            setError(err.message || "Login Fail"); 
         } finally {
             setLoading(false);
         }
