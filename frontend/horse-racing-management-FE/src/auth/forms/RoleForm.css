@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* FORM CONTAINER */
+.role-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: roleFormFadeIn 0.25s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ROW - single column */
+.role-form__row {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* GROUP */
+.role-form__group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* LABEL */
+.role-form__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+/* INPUT */
+.role-form__input {
+    padding: 12px 14px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: #111827;
+    background: #ffffff;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.role-form__input::placeholder {
+    color: #9ca3af;
+}
+
+.role-form__input:hover {
+    border-color: #9ca3af;
+}
+
+.role-form__input:focus {
+    border-color: #1d4ed8;
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+}
+
+/* SUBMIT BUTTON */
+.role-form__submit {
+    margin-top: 8px;
+    padding: 14px;
+    background-color: #1d4ed8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.role-form__submit:hover:not(:disabled) {
+    background-color: #1e40af;
+    transform: translateY(-1px);
+}
+
+.role-form__submit:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+}
+
+/* MESSAGES */
+.role-form__message {
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin: 0;
+}
+
+.role-form__message--error {
+    color: #b91c1c;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+.role-form__message--success {
+    color: #15803d;
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+}
+
+/* ANIMATION */
+@keyframes roleFormFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+    .role-form__row {
+        grid-template-columns: 1fr;
+    }
+}
