@@ -23,5 +23,5 @@ export async function login(data) {
     if (!response.ok) {
         throw new Error(result.message || "Đăng nhập thất bại");
     }
-    return result;
+    return result.data;
 }
