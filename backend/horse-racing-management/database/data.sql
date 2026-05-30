@@ -7,6 +7,19 @@
 
 -----------------------------USERS / ROLES---------------------------
 
+CREATE TABLE IF NOT EXISTS forgot_password(
+            id BIGSERIAL PRIMARY KEY,
+    otp int not null ,
+        expiration_time TIMESTAMP,
+            user_id BIGINT NOT NULL UNIQUE,
+            CONSTRAINT fk_verification_user
+                FOREIGN KEY (user_id)
+                    REFERENCES users(user_id)
+                    ON DELETE CASCADE
+);
+
+
+
 CREATE TABLE IF NOT EXISTS roles (
     id BIGSERIAL PRIMARY KEY,
     RoleName VARCHAR(50) NOT NULL UNIQUE,

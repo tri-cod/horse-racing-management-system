@@ -66,5 +66,8 @@ public class User {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
+    @Column(nullable = false)
+    private boolean verified = false;
+
 
 }
