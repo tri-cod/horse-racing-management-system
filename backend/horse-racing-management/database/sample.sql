@@ -11,7 +11,8 @@ VALUES
     ('USER', 'Normal user');
 
 
-
+INSERT INTO roles (RoleName, description)
+VALUES  ('JOCKEY', 'Jockey');
 
 
 

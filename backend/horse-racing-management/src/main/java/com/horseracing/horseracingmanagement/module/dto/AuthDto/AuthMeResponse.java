@@ -13,6 +13,7 @@ public class AuthMeResponse {
     private String role;
     private String email;
     private String fullName;
+    private Boolean verified;
     private String phoneNumber;
     private String avatar;
     private String status;
