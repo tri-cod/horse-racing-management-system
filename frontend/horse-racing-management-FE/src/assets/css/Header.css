@@ -1,0 +1,181 @@
+/* ─── Header ──────────────────────────────────────────── */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    background: #ffffff;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.header__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 32px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+/* ─── Logo ────────────────────────────────────────────── */
+.header__logo {
+    text-decoration: none;
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+    flex-shrink: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+/* Nền trắng → Royal màu đen */
+.header__logo-royal {
+    color: #111111;
+    font-style: normal;
+}
+
+/* Nền đen → Royal màu trắng */
+.header__logo-royal--dark {
+    color: #ffffff;
+}
+
+/* Derby luôn màu vàng gold, nghiêng */
+.header__logo-derby {
+    color: #c9922a;
+    font-style: italic;
+    font-weight: 600;
+}
+
+/* ─── Nav ─────────────────────────────────────────────── */
+.header__nav {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex: 1;
+    justify-content: center;
+}
+
+.header__nav-link {
+    text-decoration: none;
+    color: #333333;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    transition: color 0.2s;
+    white-space: nowrap;
+}
+
+.header__nav-link:hover {
+    color: #111111;
+}
+
+/* ─── Actions ─────────────────────────────────────────── */
+.header__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.header__btn {
+    padding: 8px 20px;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+/* Sign up — viền đen */
+.header__btn--outline {
+    background: transparent;
+    border: 1.5px solid #111111;
+    color: #111111;
+}
+
+.header__btn--outline:hover {
+    background: #111111;
+    color: #ffffff;
+}
+
+/* Log in — nền vàng gold */
+.header__btn--filled {
+    background: #c9922a;
+    border: 1.5px solid #c9922a;
+    color: #ffffff;
+}
+
+.header__btn--filled:hover {
+    background: #b07d20;
+    border-color: #b07d20;
+}
+
+/* ─── Hamburger (mobile) ──────────────────────────────── */
+.header__hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: auto;
+}
+
+.header__hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #111111;
+    border-radius: 2px;
+    transition: all 0.25s;
+}
+
+.header__hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.header__hamburger.open span:nth-child(2) { opacity: 0; }
+.header__hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ─── Mobile menu ─────────────────────────────────────── */
+.header__mobile-menu {
+    display: none;
+    flex-direction: column;
+    padding: 16px 32px 24px;
+    background: #ffffff;
+    border-top: 1px solid #e8e8e8;
+    gap: 4px;
+}
+
+.header__mobile-link {
+    text-decoration: none;
+    color: #333333;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.header__mobile-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+/* ─── Responsive ──────────────────────────────────────── */
+@media (max-width: 768px) {
+    .header__nav,
+    .header__actions {
+        display: none;
+    }
+
+    .header__hamburger {
+        display: flex;
+    }
+
+    .header__mobile-menu {
+        display: flex;
+    }
+}
