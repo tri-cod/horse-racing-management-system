@@ -1,11 +1,14 @@
-import { useState } from 'react'
-import './App.css'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import Login from './auth/login'
+import ForgotPassword from './auth/forgotPassword'
 
 function App() {
   return (
-    <div className="App" style={{ backgroundColor: "#f0f0f0" }}>
-      <h1>Horse Racing Management System</h1>
-    </div>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="*" element={<Navigate to="/login" />} />
+    </Routes>
   )
 }
 
