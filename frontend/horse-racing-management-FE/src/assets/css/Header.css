@@ -43,7 +43,7 @@
 
 /* Derby luôn màu vàng gold, nghiêng */
 .header__logo-derby {
-    color: #c9922a;
+    color: #1d4ed8;
     font-style: italic;
     font-weight: 600;
 }
@@ -103,14 +103,14 @@
 
 /* Log in — nền vàng gold */
 .header__btn--filled {
-    background: #c9922a;
-    border: 1.5px solid #c9922a;
+    background: #1d4ed8;
+    border: 1.5px solid #1d4ed8;
     color: #ffffff;
 }
 
 .header__btn--filled:hover {
-    background: #b07d20;
-    border-color: #b07d20;
+    background: #1d4ed8;
+    border-color: #1d4ed8;
 }
 
 /* ─── Hamburger (mobile) ──────────────────────────────── */
