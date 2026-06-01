@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import "../assets/css/login.css";
 import logoLogin from "../assets/logoLogin.jpg"
 import { Eye, EyeOff } from "lucide-react";
@@ -11,6 +12,7 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -72,15 +74,22 @@ export default function Login() {
                             </span>
                         </div>
 
-                        <div className="form-remember">
-                            <input
-                                type="checkbox"
-                                id="remember"
-                                checked={remember}
-                                onChange={(e) => setRemember(e.target.checked)}
-                            />
-                            <label htmlFor="remember">Remember for 30 days</label>
+                        {/* Remember + Forgot — thêm form-remember-row để căn 2 bên */}
+                        <div className="form-remember-row">
+                            <div className="form-remember">
+                                <input
+                                    type="checkbox"
+                                    id="remember"
+                                    checked={remember}
+                                    onChange={(e) => setRemember(e.target.checked)}
+                                />
+                                <label htmlFor="remember">Remember for 30 days</label>
+                            </div>
+                            <span className="forgot-link" onClick={() => navigate('/forgot-password')}>
+                               forgot password?
+                            </span>
                         </div>
+
 
                         <button
                             className={`btn-signin ${loading ? "loading" : ""}`}

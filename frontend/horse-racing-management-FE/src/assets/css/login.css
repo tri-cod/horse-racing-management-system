@@ -277,3 +277,24 @@
     font-size: 0.85rem;
     margin-bottom: 8px;
 }
+
+/* ── Remember row: checkbox trái, forgot link phải ── */
+.form-remember-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 434px;
+}
+
+.forgot-link {
+  font-size: 0.8rem;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
