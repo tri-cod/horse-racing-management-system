@@ -11,12 +11,15 @@ import com.horseracing.horseracingmanagement.module.service.AuthService;
 import com.horseracing.horseracingmanagement.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 
 @Service
@@ -30,6 +33,8 @@ public class AuthServiceImpl  implements AuthService {
     private final MailService emailService;
     private final OtpService otpService;
     private final JwtUtil jwtUtil;
+    private final EmailValidatorService  emailValidatorService;
+    private final RedisTemplate<String, String> redisTemplate;
 
 
     @Value("${app.jwt.expiration:86400000}")
@@ -39,25 +44,63 @@ public class AuthServiceImpl  implements AuthService {
 
     // --- Email Verification ---
     public void sendEmailVerificationOtp(String email) {
+
+        if (!emailValidatorService.isValidFormat(email)) {
+            throw new RuntimeException("Email invalid");
+        }
+
+        if (!emailValidatorService.isDomainExists(email)) {
+            throw new RuntimeException("Domain email does not exist");
+        }
+
+        userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email not found"));
         String otp = otpService.generateAndStoreOtp(email, "VERIFY_EMAIL");
         emailService.sendOtpEmail(email, otp, "VERIFY_EMAIL");
     }
 
-    public boolean verifyEmail(String email, String otp) {
-        return otpService.verifyOtp(email, "VERIFY_EMAIL", otp);
-        // On true → mark user as verified in DB
-    }
 
     // --- Forgot Password ---
     public void sendForgotPasswordOtp(String email) {
+
+        if (!emailValidatorService.isValidFormat(email)) {
+            throw new RuntimeException("Email invalid");
+        }
+
+        if (!emailValidatorService.isDomainExists(email)) {
+            throw new RuntimeException("Domain email does not exist");
+        }
+
+        userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email not found"));
+
         // Optional: check if email exists in DB first
         String otp = otpService.generateAndStoreOtp(email, "FORGOT_PASSWORD");
         emailService.sendOtpEmail(email, otp, "FORGOT_PASSWORD");
     }
 
     public boolean verifyForgotPasswordOtp(String email, String otp) {
+        if (userRepository.existsByEmail(email)) {
+            throw new AppException("Email not found!", HttpStatus.CONFLICT);
+        }
         return otpService.verifyOtp(email, "FORGOT_PASSWORD", otp);
         // On true → allow user to set a new password
+    }
+
+    // Check email đã verify chưa (dùng Redis)
+    public boolean isEmailVerified(String email) {
+        String key = "verified:" + email;
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
+
+    // Khi verify OTP thành công → lưu trạng thái verified vào Redis
+    public boolean verifyEmail(String email, String otp) {
+        boolean valid = otpService.verifyOtp(email, "VERIFY_EMAIL", otp);
+        if (valid) {
+            // lưu trạng thái verified 10 phút (đủ để user điền form xong)
+            redisTemplate.opsForValue().set("verified:" + email, "true", 10, TimeUnit.MINUTES);
+        }
+        return valid;
     }
 
     @Override

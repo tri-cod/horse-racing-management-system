@@ -21,6 +21,7 @@ public interface AuthService {
 
     boolean verifyForgotPasswordOtp(String email, String otp);
 
+    boolean isEmailVerified(String email);
 
     AuthMeResponse resetPassword(ResetPasswordRequest request);
 }
