@@ -95,7 +95,7 @@ public class AuthServiceImpl  implements AuthService {
         String key = "verified:" + email;
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
-
+    
     // Khi verify OTP thành công → lưu trạng thái verified vào Redis
     public boolean verifyEmail(String email, String otp) {
         boolean valid = otpService.verifyOtp(email, "VERIFY_EMAIL", otp);
