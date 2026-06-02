@@ -83,9 +83,6 @@ public class AuthServiceImpl  implements AuthService {
     }
 
     public boolean verifyForgotPasswordOtp(String email, String otp) {
-        if (userRepository.existsByEmail(email)) {
-            throw new AppException("Email not found!", HttpStatus.CONFLICT);
-        }
         return otpService.verifyOtp(email, "FORGOT_PASSWORD", otp);
         // On true → allow user to set a new password
     }
