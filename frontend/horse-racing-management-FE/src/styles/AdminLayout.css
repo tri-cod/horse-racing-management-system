@@ -1,0 +1,32 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  min-height: 100vh;
+  width: 100%;
+}
+
+body {
+  background: #f0f4f8;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* KEY FIX: main-content phải có width tính từ sidebar */
+.main-content {
+  flex: 1;
+  margin-left: 68px;
+  padding: 28px 32px;
+  min-width: 0; /* prevent overflow */
+  width: calc(100% - 260px);
+}
+.admin-layout:has(.sidebar.expanded) .main-content {
+  margin-left: 260px;
+}

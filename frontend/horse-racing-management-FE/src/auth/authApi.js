@@ -82,31 +82,6 @@ export async function login(username, password) {
 }
 
 // =============================================
-// BƯỚC 5: Quên mật khẩu - gửi OTP về email
-// POST /api/auth/forgot-password?email=xxx
-// =============================================
-export async function forgotPassword(email) {
-  return callApi("/forgot-password", "POST", null, { email });
-}
-
-// =============================================
-// BƯỚC 6: Xác minh OTP reset password
-// POST /api/auth/verify-reset-otp?email=xxx&otp=123456
-// =============================================
-export async function verifyResetOtp(email, otp) {
-  return callApi("/verify-reset-otp", "POST", null, { email, otp });
-}
-
-// =============================================
-// BƯỚC 7: Đặt mật khẩu mới
-// POST /api/auth/reset-password?otp=123456
-// Body: { email, newPassWord }
-// =============================================
-export async function resetPassword(email, newPassWord, otp) {
-  return callApi("/reset-password", "POST", { email, newPassWord }, { otp });
-}
-
-// =============================================
 // Đăng xuất (xóa token local)
 // =============================================
 export function logout() {
