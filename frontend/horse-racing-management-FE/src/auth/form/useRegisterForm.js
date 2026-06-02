@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { register, sendVerificationOtp, verifyEmail } from '../../api/authApi';
+import { register } from '../../api/authApi';
+import { sendVerificationOtp, verifyEmail } from '../../api/emailVerifyApi';
 
 export const FIELDS = [
   { name: 'fullName',        label: 'Full Name',        type: 'text',     placeholder: 'John Doe',         full: true },
@@ -32,19 +33,23 @@ const validate = (name, value, form) => {
   return '';
 };
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export function useRegisterForm(apiRole) {
   const navigate = useNavigate();
-  const [form, setForm]           = useState(Object.fromEntries(FIELDS.map((f) => [f.name, ''])));
-  const [errors, setErrors]       = useState({});
-  const [loading, setLoading]     = useState(false);
-  const [apiError, setApiError]   = useState('');
+  const [form, setForm]         = useState(Object.fromEntries(FIELDS.map((f) => [f.name, ''])));
+  const [errors, setErrors]     = useState({});
+  const [loading, setLoading]   = useState(false);
+  const [apiError, setApiError] = useState('');
 
-  const [step, setStep]               = useState('form'); // 'form' | 'verify'
-  const [otp, setOtp]                 = useState('');
-  const [otpError, setOtpError]       = useState('');
-  const [otpLoading, setOtpLoading]   = useState(false);
-  const [resendLoading, setResendLoading] = useState(false);
-  const [resendSuccess, setResendSuccess] = useState(false);
+  const [emailVerified, setEmailVerified]     = useState(false);
+  const [showVerifyCard, setShowVerifyCard]   = useState(false);
+  const [sendOtpLoading, setSendOtpLoading]   = useState(false);
+  const [otp, setOtp]                         = useState('');
+  const [otpError, setOtpError]               = useState('');
+  const [otpLoading, setOtpLoading]           = useState(false);
+  const [resendLoading, setResendLoading]     = useState(false);
+  const [resendSuccess, setResendSuccess]     = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,6 +65,13 @@ export function useRegisterForm(apiRole) {
           : '',
       }));
     }
+    if (name === 'email') {
+      setEmailVerified(false);
+      setShowVerifyCard(false);
+      setOtp('');
+      setOtpError('');
+      setResendSuccess(false);
+    }
   };
 
   const handleBlur = (e) => {
@@ -67,25 +79,29 @@ export function useRegisterForm(apiRole) {
     setErrors((prev) => ({ ...prev, [name]: validate(name, value, form) }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const newErrors = {};
-    FIELDS.forEach((f) => {
-      const err = validate(f.name, form[f.name], form);
-      if (err) newErrors[f.name] = err;
-    });
-    if (Object.keys(newErrors).length) { setErrors(newErrors); return; }
-
-    setLoading(true);
+  const handleVerifyClick = async () => {
+    if (!form.email || !form.email.trim()) {
+      setErrors((prev) => ({ ...prev, email: 'Email is required' }));
+      return;
+    }
+    if (!EMAIL_REGEX.test(form.email)) {
+      setErrors((prev) => ({ ...prev, email: 'Please enter a valid email address' }));
+      return;
+    }
+    setSendOtpLoading(true);
     try {
-      const { confirmPassword, ...rest } = form;
-      await register({ ...rest, role: apiRole });
       await sendVerificationOtp(form.email);
-      setStep('verify');
+      setShowVerifyCard(true);
+      setOtp('');
+      setOtpError('');
+      setResendSuccess(false);
     } catch (err) {
-      setApiError(err.response?.data?.message || 'Registration failed. Please try again.');
+      setErrors((prev) => ({
+        ...prev,
+        email: err.response?.data?.message || 'Failed to send verification code',
+      }));
     } finally {
-      setLoading(false);
+      setSendOtpLoading(false);
     }
   };
 
@@ -94,14 +110,17 @@ export function useRegisterForm(apiRole) {
     setOtpError('');
   };
 
-  const handleVerify = async (e) => {
-    e.preventDefault();
-    if (!otp.trim()) { setOtpError('Please enter the verification code'); return; }
-
+  const handleConfirmVerify = async () => {
+    if (otp.replace(/\s/g, '').length < 6) {
+      setOtpError('Please enter the complete 6-digit code');
+      return;
+    }
     setOtpLoading(true);
     try {
       await verifyEmail(form.email, otp);
-      navigate('/login');
+      setEmailVerified(true);
+      setShowVerifyCard(false);
+      setErrors((prev) => ({ ...prev, email: '' }));
     } catch (err) {
       setOtpError(err.response?.data?.message || 'Invalid or expired code. Please try again.');
     } finally {
@@ -123,10 +142,34 @@ export function useRegisterForm(apiRole) {
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const newErrors = {};
+    FIELDS.forEach((f) => {
+      const err = validate(f.name, form[f.name], form);
+      if (err) newErrors[f.name] = err;
+    });
+    if (!newErrors.email && !emailVerified) {
+      newErrors.email = 'Email has not been verified';
+    }
+    if (Object.keys(newErrors).length) { setErrors(newErrors); return; }
+
+    setLoading(true);
+    try {
+      const { confirmPassword, ...rest } = form;
+      await register({ ...rest, role: apiRole });
+      navigate('/login');
+    } catch (err) {
+      setApiError(err.response?.data?.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     form, errors, loading, apiError, handleChange, handleBlur, handleSubmit,
-    step,
+    emailVerified, showVerifyCard, sendOtpLoading,
     otp, otpError, otpLoading, resendLoading, resendSuccess,
-    handleOtpChange, handleVerify, handleResendOtp,
+    handleVerifyClick, handleOtpChange, handleConfirmVerify, handleResendOtp,
   };
 }
