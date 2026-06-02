@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.controller;
 
+import com.horseracing.horseracingmanagement.common.exception.AppException;
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.module.dto.AuthDto.*;
 import com.horseracing.horseracingmanagement.module.entity.User;
@@ -26,6 +27,7 @@ public class AuthController {
     @PostMapping("/send-verification-otp")
     public ResponseEntity<String> sendVerificationOtp(@RequestParam String email) {
         authService.sendEmailVerificationOtp(email);
+
         return ResponseEntity.ok("OTP sent to " + email);
     }
 
@@ -74,8 +76,13 @@ public class AuthController {
     @PostMapping("/register")
     @Operation(summary = "Register a new user account")
     public ResponseEntity<ApiResponse<AuthMeResponse>> register(@Valid @RequestBody RegisterRequest request) {
+
+        if (!authService.isEmailVerified(request.getEmail())) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Email not verify", null));
+        }
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Check email to verify account", authService.register(request)));
+                .body(ApiResponse.success("Register success", authService.register(request)));
     }
 
 
