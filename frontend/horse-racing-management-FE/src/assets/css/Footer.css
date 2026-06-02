@@ -1,0 +1,108 @@
+.footer {
+  background-color: #000000;
+  border-top: none;
+  padding: 48px 60px 0;
+  margin-top: auto;
+}
+
+.footer__main {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 40px;
+}
+
+/* Brand column */
+.footer__brand-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  margin-bottom: 14px;
+}
+
+.footer__brand-royal {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.footer__brand-derby {
+  font-size: 20px;
+  font-weight: 600;
+  font-style: italic;
+  color: #1565c0;
+  margin-left: 6px;
+}
+
+.footer__brand-desc {
+  font-size: 14px;
+  color: #cccccc;
+  line-height: 1.6;
+  max-width: 220px;
+}
+
+/* Columns */
+.footer__col-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 18px;
+}
+
+.footer__col-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer__col-list li a {
+  text-decoration: none;
+  font-size: 14px;
+  color: #cccccc;
+  transition: color 0.2s ease;
+}
+
+.footer__col-list li a:hover {
+  color: #ffffff;
+}
+
+/* Divider */
+.footer__divider {
+  border: none;
+  border-top: 1px solid #333333;
+  margin: 0;
+}
+
+/* Bottom bar */
+.footer__bottom {
+  padding: 16px 0;
+  text-align: center;
+}
+
+.footer__bottom p {
+  font-size: 13px;
+  color: #888888;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .footer {
+    padding: 36px 24px 0;
+  }
+
+  .footer__main {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .footer__brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 540px) {
+  .footer__main {
+    grid-template-columns: 1fr;
+  }
+}

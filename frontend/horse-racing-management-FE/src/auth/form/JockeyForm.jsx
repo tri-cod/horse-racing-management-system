@@ -1,0 +1,59 @@
+import { FIELDS, useRegisterForm } from './useRegisterForm';
+
+const ArrowLeftIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15">
+    <path d="M19 12H5M12 19l-7-7 7-7" />
+  </svg>
+);
+
+export default function JockeyForm({ onBack }) {
+  const { form, errors, loading, apiError, handleChange, handleBlur, handleSubmit } = useRegisterForm('JOCKEY');
+
+  return (
+    <main className="rg-right">
+      <div className="rg-right__inner">
+        <button className="rg-back" onClick={onBack}>
+          <ArrowLeftIcon /> Back
+        </button>
+
+        <div className="rg-step-header">
+          <p className="rg-step-header__label">Step 2 of 2</p>
+          <span className="rg-badge">Jockey</span>
+          <h1 className="rg-step-header__title">Create Account</h1>
+          <p className="rg-step-header__sub">FILL IN YOUR DETAILS BELOW</p>
+        </div>
+
+        {apiError && <p className="rg-form__api-error">{apiError}</p>}
+
+        <form className="rg-form" onSubmit={handleSubmit} noValidate>
+          <div className="rg-form__grid">
+            {FIELDS.map((f) => (
+              <div key={f.name} className={`rg-form__group${f.full ? ' rg-form__group--full' : ''}`}>
+                <label className="rg-form__label" htmlFor={`jockey-${f.name}`}>{f.label}</label>
+                <input
+                  id={`jockey-${f.name}`}
+                  name={f.name}
+                  type={f.type}
+                  placeholder={f.placeholder}
+                  value={form[f.name]}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={`rg-form__input${errors[f.name] ? ' rg-form__input--error' : ''}`}
+                />
+                {errors[f.name] && <span className="rg-form__error">{errors[f.name]}</span>}
+              </div>
+            ))}
+          </div>
+
+          <button type="submit" className="rg-form__submit" disabled={loading}>
+            {loading ? 'Creating account…' : 'Create Account'}
+          </button>
+        </form>
+
+        <p className="rg-login">
+          Already have an account? <a href="/login">Sign in</a>
+        </p>
+      </div>
+    </main>
+  );
+}

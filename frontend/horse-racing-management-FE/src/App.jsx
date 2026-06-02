@@ -1,11 +1,28 @@
-import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
+import Header from './components/Header'
+import Footer from './components/Footer'
+import HomePage from './auth/HomePage'
+import Register from './auth/Register'
+
+function Layout({ children }) {
+  return (
+    <div className="App">
+      <Header />
+      {children}
+      <Footer />
+    </div>
+  )
+}
 
 function App() {
   return (
-    <div className="App" style={{ backgroundColor: "#f0f0f0" }}>
-      <h1>Horse Racing Management System</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout><HomePage /></Layout>} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
