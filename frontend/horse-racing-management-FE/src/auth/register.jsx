@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../assets/css/Register.css';
+import '../assets/css/register.css';
 import bgImg from '../assets/img/ee63a717-b5ff-41b1-ad51-860da474eb55.jpg';
 import SpectatorForm  from './form/SpectatorForm';
 import HorseOwnerForm from './form/HorseOwnerForm';

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../assets/css/Header.css';
 
 const NAV_ITEMS = [
@@ -13,8 +13,19 @@ const NAV_ITEMS = [
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
+
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('tokenType');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   return (
     <header className="header">
@@ -40,12 +51,24 @@ function Header() {
       </nav>
 
       <div className={`header__actions${menuOpen ? ' open' : ''}`}>
-        <Link to="/register">
-          <button className="header__btn-signup">Sign up</button>
-        </Link>
-        <Link to="/login">
-          <button className="header__btn-login">Log in</button>
-        </Link>
+        {user ? (
+          <div className="header__user">
+            <span className="header__welcome">WELCOME</span>
+            <span className="header__username">{user.username}</span>
+            <button className="header__avatar" onClick={handleLogout} title="Click to log out">
+              {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
+            </button>
+          </div>
+        ) : (
+          <>
+            <Link to="/register">
+              <button className="header__btn-signup">Sign up</button>
+            </Link>
+            <Link to="/login">
+              <button className="header__btn-login">Log in</button>
+            </Link>
+          </>
+        )}
       </div>
 
       <button

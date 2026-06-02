@@ -1,4 +1,4 @@
---CREATE DATABASE horse_racing_management_system
+
 
 
 

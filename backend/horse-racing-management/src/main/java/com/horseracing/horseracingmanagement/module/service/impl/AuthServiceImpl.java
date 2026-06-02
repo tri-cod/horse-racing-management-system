@@ -83,9 +83,6 @@ public class AuthServiceImpl  implements AuthService {
     }
 
     public boolean verifyForgotPasswordOtp(String email, String otp) {
-        if (userRepository.existsByEmail(email)) {
-            throw new AppException("Email not found!", HttpStatus.CONFLICT);
-        }
         return otpService.verifyOtp(email, "FORGOT_PASSWORD", otp);
         // On true → allow user to set a new password
     }
@@ -95,7 +92,7 @@ public class AuthServiceImpl  implements AuthService {
         String key = "verified:" + email;
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
-
+    
     // Khi verify OTP thành công → lưu trạng thái verified vào Redis
     public boolean verifyEmail(String email, String otp) {
         boolean valid = otpService.verifyOtp(email, "VERIFY_EMAIL", otp);
