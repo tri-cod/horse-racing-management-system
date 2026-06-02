@@ -1,0 +1,233 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0 40px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Logo */
+.header__logo {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.header__logo-royal {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+  letter-spacing: 0.5px;
+}
+
+.header__logo-derby {
+  font-size: 22px;
+  font-weight: 600;
+  font-style: italic;
+  color: #1565c0;
+  margin-left: 6px;
+}
+
+/* Navigation */
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+}
+
+.header__nav-item a {
+  text-decoration: none;
+  color: #333333;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.header__nav-item a:hover {
+  color: #1565c0;
+  background-color: #e3f0fd;
+}
+
+.header__nav-item a.active {
+  color: #1565c0;
+  font-weight: 600;
+}
+
+/* Actions */
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.header__btn-signup {
+  background-color: transparent;
+  color: #1565c0;
+  border: 2px solid #1565c0;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+
+.header__btn-signup:hover {
+  background-color: #1565c0;
+  color: #ffffff;
+}
+
+.header__btn-login {
+  background-color: #1565c0;
+  color: #ffffff;
+  border: 2px solid #1565c0;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.header__btn-login:hover {
+  background-color: #0d47a1;
+  border-color: #0d47a1;
+}
+
+/* User info (logged in state) */
+.header__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header__welcome {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+.header__username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.header__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #1565c0;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+  text-transform: uppercase;
+}
+
+.header__avatar:hover {
+  background-color: #0d47a1;
+  transform: scale(1.08);
+}
+
+/* Mobile hamburger */
+.header__hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+}
+
+.header__hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: #1a1a2e;
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .header {
+    padding: 0 20px;
+  }
+
+  .header__hamburger {
+    display: flex;
+  }
+
+  .header__nav,
+  .header__actions {
+    display: none;
+  }
+
+  .header__nav.open,
+  .header__actions.open {
+    display: flex;
+  }
+
+  .header__nav.open {
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    flex-direction: column;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    gap: 4px;
+    align-items: flex-start;
+  }
+
+  .header__actions.open {
+    position: absolute;
+    top: calc(64px + var(--nav-height, 200px));
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    flex-direction: column;
+    padding: 12px 20px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .header__btn-signup,
+  .header__btn-login {
+    width: 100%;
+    text-align: center;
+  }
+}

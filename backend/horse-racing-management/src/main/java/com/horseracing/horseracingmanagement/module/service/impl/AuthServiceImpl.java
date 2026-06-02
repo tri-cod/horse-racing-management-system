@@ -56,8 +56,8 @@ public class AuthServiceImpl  implements AuthService {
             throw new RuntimeException("Domain email does not exist");
         }
 
-        userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Email not found"));
+//        userRepository.findByEmail(email)
+//                .orElseThrow(() -> new RuntimeException("Email not found"));
         String otp = otpService.generateAndStoreOtp(email, "VERIFY_EMAIL");
         emailService.sendOtpEmail(email, otp, "VERIFY_EMAIL");
     }
@@ -73,9 +73,6 @@ public class AuthServiceImpl  implements AuthService {
         if (!emailValidatorService.isDomainExists(email)) {
             throw new RuntimeException("Domain email does not exist");
         }
-
-        userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Email not found"));
 
         // Optional: check if email exists in DB first
         String otp = otpService.generateAndStoreOtp(email, "FORGOT_PASSWORD");

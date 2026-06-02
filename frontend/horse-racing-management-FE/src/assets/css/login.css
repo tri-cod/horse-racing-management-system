@@ -43,6 +43,25 @@
   justify-content: center;
 }
 
+<<<<<<< HEAD
+=======
+.login-back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #888;
+  text-decoration: none;
+  margin-bottom: 32px;
+  transition: color 0.2s;
+}
+
+.login-back-home:hover {
+  color: #1565c0;
+}
+
+>>>>>>> UI/HomePage
 .login-title {
   font-family: 'Playfair Display', Georgia, serif;
   font-size: 2rem;
