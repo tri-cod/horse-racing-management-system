@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.security;
 
+import com.horseracing.horseracingmanagement.module.entity.User;
 import com.horseracing.horseracingmanagement.module.responsitory.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,13 +16,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
-                .map(CustomUserDetails::new)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException(
-                                "User not found with username: " + username
-                        )
+    public UserDetails loadUserByUsername(String identifier) {
+
+        User user = userRepository
+                .findByUsername(identifier)
+                .orElseGet(() ->
+                        userRepository.findByEmail(identifier)
+                                .orElseThrow(() ->
+                                        new UsernameNotFoundException(
+                                                "User not found: " + identifier
+                                        )
+                                )
                 );
+
+        return new CustomUserDetails(user);
     }
 }

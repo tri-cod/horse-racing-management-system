@@ -19,6 +19,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 
@@ -157,6 +160,7 @@ public class AuthServiceImpl  implements AuthService {
                 .fullName(request.getFullName())
                 .phonenumber(request.getPhone())
                 .verified(false)
+                .createdAt(Instant.now())
                 .role(role).build();
         User saved = userRepository.save(user);
         return buildCurrentUser(saved.getId());
