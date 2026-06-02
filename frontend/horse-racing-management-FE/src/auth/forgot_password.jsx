@@ -21,11 +21,11 @@ export default function ForgotPassword() {
 
     const handleSendOtp = async (e) => {
         e.preventDefault();
-        if (!email) return setError("Vui lòng nhập email.");
+        if (!email) return setError("Please enter your email.");
         clear(); setLoading(true);
         try {
             await forgotPassword(email);
-            setSuccess("OTP đã được gửi tới email của bạn.");
+            setSuccess("OTP has been sent to your email.");
             setStep(2);
         } catch (err) { setError(err.message); }
         finally { setLoading(false); }
@@ -33,11 +33,11 @@ export default function ForgotPassword() {
 
     const handleVerifyOtp = async (e) => {
         e.preventDefault();
-        if (!otp) return setError("Vui lòng nhập mã OTP.");
+        if (!otp) return setError("Please enter the OTP code.");
         clear(); setLoading(true);
         try {
             await verifyResetOtp(email, otp);
-            setSuccess("OTP hợp lệ. Vui lòng đặt mật khẩu mới.");
+            setSuccess("OTP verified. Please set your new password.");
             setStep(3);
         } catch (err) { setError(err.message); }
         finally { setLoading(false); }
@@ -45,19 +45,19 @@ export default function ForgotPassword() {
 
     const handleResetPassword = async (e) => {
         e.preventDefault();
-        if (!newPassword || !confirmPassword) return setError("Vui lòng điền đầy đủ thông tin.");
-        if (newPassword.length < 8) return setError("Mật khẩu phải có ít nhất 8 ký tự.");
-        if (newPassword !== confirmPassword) return setError("Mật khẩu xác nhận không khớp.");
+        if (!newPassword || !confirmPassword) return setError("Please fill in all fields.");
+        if (newPassword.length < 8) return setError("Password must be at least 8 characters.");
+        if (newPassword !== confirmPassword) return setError("Passwords do not match.");
         clear(); setLoading(true);
         try {
             await resetPassword(otp, email, newPassword);
-            setSuccess("Thành công! Đang chuyển về đăng nhập...");
+            setSuccess("Success! Redirecting to login...");
             setTimeout(() => navigate("/login"), 2000);
         } catch (err) { setError(err.message); }
         finally { setLoading(false); }
     };
 
-    const stepLabels = ["Nhập Email", "Xác nhận OTP", "Mật khẩu mới"];
+    const stepLabels = ["Enter Email", "Verify OTP", "New Password"];
 
     return (
         <div className="fp-page">
@@ -77,13 +77,13 @@ export default function ForgotPassword() {
                 {/* Title */}
                 <h1 className="fp-title">
                     {step === 1 && "Forgot password?"}
-                    {step === 2 && "Nhập mã OTP"}
+                    {step === 2 && "Enter OTP Code"}
                     {step === 3 && "New Password"}
                 </h1>
                 <p className="fp-subtitle">
-                    {step === 1 && "Nhập email đã đăng ký, chúng tôi sẽ gửi mã OTP cho bạn."}
-                    {step === 2 && `Mã OTP đã gửi tới ${email}. Vui lòng kiểm tra hộp thư.`}
-                    {step === 3 && "Đặt mật khẩu mới cho tài khoản của bạn."}
+                    {step === 1 && "Enter your registered email and we'll send you an OTP code."}
+                    {step === 2 && `An OTP code has been sent to ${email}. Please check your inbox.`}
+                    {step === 3 && "Set a new password for your account."}
                 </p>
 
                 {error   && <div className="fp-alert fp-alert-error">{error}</div>}
@@ -97,17 +97,17 @@ export default function ForgotPassword() {
                             <input
                                 type="email"
                                 className="fp-input"
-                                placeholder="Nhập email của bạn"
+                                placeholder="Enter your email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
                         <button className="fp-btn-primary" onClick={handleSendOtp} disabled={loading}>
-                            {loading ? <span className="fp-spinner" /> : "Gửi mã OTP"}
+                            {loading ? <span className="fp-spinner" /> : "Send OTP"}
                         </button>
                         <div className="fp-divider"><span>or</span></div>
                         <p className="fp-bottom-link">
-                            <span onClick={() => navigate("/login")}>← Quay lại đăng nhập</span>
+                            <span onClick={() => navigate("/login")}>← Back to Login</span>
                         </p>
                     </div>
                 )}
@@ -116,7 +116,7 @@ export default function ForgotPassword() {
                 {step === 2 && (
                     <div className="fp-form">
                         <div className="fp-form-group">
-                            <label className="fp-label">Mã OTP</label>
+                            <label className="fp-label">OTP Code</label>
                             <input
                                 type="text"
                                 className="fp-input fp-otp-input"
@@ -127,11 +127,11 @@ export default function ForgotPassword() {
                             />
                         </div>
                         <button className="fp-btn-primary" onClick={handleVerifyOtp} disabled={loading}>
-                            {loading ? <span className="fp-spinner" /> : "Xác nhận OTP"}
+                            {loading ? <span className="fp-spinner" /> : "Verify OTP"}
                         </button>
                         <button className="fp-btn-ghost" type="button"
                             onClick={() => { clear(); setStep(1); }}>
-                            ← Gửi lại OTP
+                            ← Resend OTP
                         </button>
                     </div>
                 )}
@@ -140,12 +140,12 @@ export default function ForgotPassword() {
                 {step === 3 && (
                     <div className="fp-form">
                         <div className="fp-form-group">
-                            <label className="fp-label">Mật khẩu mới</label>
+                            <label className="fp-label">New Password</label>
                             <div className="fp-input-wrapper">
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     className="fp-input"
-                                    placeholder="Ít nhất 8 ký tự"
+                                    placeholder="At least 8 characters"
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
                                 />
@@ -155,12 +155,12 @@ export default function ForgotPassword() {
                             </div>
                         </div>
                         <div className="fp-form-group">
-                            <label className="fp-label">Xác nhận mật khẩu</label>
+                            <label className="fp-label">Confirm Password</label>
                             <div className="fp-input-wrapper">
                                 <input
                                     type={showConfirm ? "text" : "password"}
                                     className="fp-input"
-                                    placeholder="Nhập lại mật khẩu"
+                                    placeholder="Re-enter your password"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                 />
@@ -170,7 +170,7 @@ export default function ForgotPassword() {
                             </div>
                         </div>
                         <button className="fp-btn-primary" onClick={handleResetPassword} disabled={loading}>
-                            {loading ? <span className="fp-spinner" /> : "Đặt lại mật khẩu"}
+                            {loading ? <span className="fp-spinner" /> : "Reset Password"}
                         </button>
                     </div>
                 )}

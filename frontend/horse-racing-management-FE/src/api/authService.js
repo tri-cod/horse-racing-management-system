@@ -13,16 +13,18 @@ export async function register(data) {
     return result;
 }
 
+// ── login page ──────────────────────────────
 export async function login(data) {
     const response = await fetch(`${BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
     });
-    const result = await response.json();
+    
     if (!response.ok) {
-        throw new Error(result.message || "Đăng nhập thất bại");
+        throw new Error("Incorrect username or password.");
     }
+    const result = await response.json();
     return result.data;
 }
 
@@ -34,7 +36,7 @@ export async function forgotPassword(email) {
         method: "POST",
     });
     const text = await response.text();
-    if (!response.ok) throw new Error(text || "Gửi OTP thất bại");
+    if (!response.ok) throw new Error(text || "Failed to send OTP.");
     return text;
 }
 
@@ -45,7 +47,7 @@ export async function verifyResetOtp(email, otp) {
         { method: "POST" }
     );
     const text = await response.text();
-    if (!response.ok) throw new Error(text || "OTP không hợp lệ hoặc đã hết hạn");
+    if (!response.ok) throw new Error(text || "Invalid or expired OTP.");
     return text;
 }
 
@@ -57,6 +59,6 @@ export async function resetPassword(otp, email, newPassWord) {
         body: JSON.stringify({ email, newPassWord }),
     });
     const result = await response.json();
-    if (!response.ok) throw new Error(result.message || "Đặt lại mật khẩu thất bại");
+    if (!response.ok) throw new Error(result.message || "Failed to reset password.");
     return result;
 }

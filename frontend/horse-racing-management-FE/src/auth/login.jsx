@@ -32,7 +32,7 @@ export default function Login() {
             alert(`Login Successful! Welcome ${user.fullName}`);
         } catch (err) {
             console.error("LOGIN ERROR:", err);
-            setError(err.message || "Login Fail");
+            setError("Incorrect username or password.");
         } finally {
             setLoading(false);
         }
@@ -57,23 +57,24 @@ export default function Login() {
                             />
                         </div>
 
-                        <div className="password-wrapper">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                className="form-input"
-                                placeholder="Enter your password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-
-                            <span
-                                className="toggle-password"
-                                onClick={() => setShowPassword(!showPassword)}
-                            >
-                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                            </span>
+                        <div className="form-group">
+                            <label className="form-label">Password</label>
+                            <div className="password-wrapper">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    className="form-input"
+                                    placeholder="Enter your password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                                <span
+                                    className="toggle-password"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </span>
+                            </div>
                         </div>
-
                         {/* Remember + Forgot — thêm form-remember-row để căn 2 bên */}
                         <div className="form-remember-row">
                             <div className="form-remember">
@@ -86,7 +87,7 @@ export default function Login() {
                                 <label htmlFor="remember">Remember for 30 days</label>
                             </div>
                             <span className="forgot-link" onClick={() => navigate('/forgot-password')}>
-                               forgot password?
+                                Forgot password?
                             </span>
                         </div>
 
@@ -107,7 +108,9 @@ export default function Login() {
 
                         <p className="signup-link">
                             Don't have an account?{" "}
-                            <a href="#signup">Sign up</a>
+                            <span onClick={() => navigate('/register')} style={{ color: '#2563eb', cursor: 'pointer', fontWeight: 500 }}>
+                                Sign up
+                            </span>
                         </p>
                     </div>
                 </div>

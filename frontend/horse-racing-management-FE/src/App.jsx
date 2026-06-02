@@ -1,12 +1,15 @@
-import { useState } from 'react'
-import './App.css'
+import { Routes, Route } from 'react-router-dom'
+import Login from './auth/login.jsx'
+import Register from './auth/register.jsx'
+import ForgotPassword from './auth/forgot_password.jsx'
 
-function App() {
-  return (
-    <div className="App" style={{ backgroundColor: "#f0f0f0" }}>
-      <h1>Horse Racing Management System</h1>
-    </div>
-  )
+export default function App() {
+    return (
+        <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="*" element={<Login />} />
+        </Routes>
+    )
 }
-
-export default App

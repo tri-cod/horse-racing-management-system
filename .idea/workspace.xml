@@ -5,14 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b9f69f3-0009-4f64-91b5-798fc8e5c592" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/database/data.sql" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/database/data.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/register.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/register.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/auth/register.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/auth/register.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/auth/forgot_password.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/auth/forgot_password.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +52,7 @@
     "Spring Boot.HorseRacingManagementApplication.executor": "Run",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "interface/register",
+    "git-widget-placeholder": "feature/forgot-password-ui",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
@@ -121,6 +119,14 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.24374.151" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.24374.151" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="5b9f69f3-0009-4f64-91b5-798fc8e5c592" name="Changes" comment="" />
@@ -131,6 +137,7 @@
       <workItem from="1779872144677" duration="1580000" />
       <workItem from="1779958673865" duration="72000" />
       <workItem from="1779959213372" duration="2163000" />
+      <workItem from="1780336495775" duration="275000" />
     </task>
     <servers />
   </component>
