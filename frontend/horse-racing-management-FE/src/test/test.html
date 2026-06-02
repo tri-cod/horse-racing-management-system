@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EmailVerifyStep — Preview</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    /* ── Page shell ── */
+    .rg-page {
+      display: flex;
+      width: 100%;
+      max-width: 1100px;
+      min-height: 100vh;
+      box-shadow: 0 8px 40px rgba(0,0,0,.18);
+    }
+
+    /* ── Left panel ── */
+    .rg-left {
+      width: 42%;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #0d1b2a 0%, #1a3a5c 100%);
+      display: flex;
+      flex-direction: column;
+      padding: 44px 52px;
+    }
+
+    .rg-back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      color: #fff;
+      text-decoration: none;
+      opacity: .85;
+    }
+
+    .rg-left__body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .rg-left__headline {
+      font-size: 44px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.13;
+      letter-spacing: -.5px;
+      margin-bottom: 20px;
+    }
+
+    .rg-left__headline span { color: #64b5f6; }
+
+    .rg-left__tagline {
+      font-size: 14px;
+      color: rgba(255,255,255,.5);
+      line-height: 1.8;
+      max-width: 300px;
+    }
+
+    .rg-left__footer {
+      font-size: 11px;
+      color: rgba(255,255,255,.25);
+    }
+
+    /* ── Right panel ── */
+    .rg-right {
+      flex: 1;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 64px 72px;
+    }
+
+    .rg-right__inner {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    /* ── Step header ── */
+    .rg-step-header { margin-bottom: 36px; }
+
+    .rg-step-header__label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #1565c0;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .rg-step-header__title {
+      font-size: 44px;
+      font-weight: 900;
+      color: #111;
+      letter-spacing: -1.5px;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .rg-step-header__sub {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #aaa;
+      text-transform: uppercase;
+    }
+
+    /* ── Verify info block ── */
+    .rg-verify {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .rg-verify__icon {
+      color: #1565c0;
+      margin-bottom: 14px;
+    }
+
+    .rg-verify__email {
+      font-size: 15px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 10px;
+      word-break: break-all;
+    }
+
+    .rg-verify__hint {
+      font-size: 13px;
+      color: #999;
+      line-height: 1.7;
+    }
+
+    /* ── Form ── */
+    .rg-form { margin-bottom: 0; }
+
+    .rg-form__group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .rg-form__label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #555;
+      text-align: center;
+    }
+
+    /* ── OTP 6-box ── */
+    .rg-otp {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .rg-otp__input {
+      width: 52px;
+      height: 60px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      color: #111;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      background: #fff;
+      caret-color: transparent;
+      font-family: inherit;
+    }
+
+    .rg-otp__input:focus {
+      border-color: #1565c0;
+      box-shadow: 0 0 0 3px rgba(21, 101, 192, .12);
+    }
+
+    .rg-otp__input.error {
+      border-color: #e53935;
+    }
+
+    .rg-otp__input.error:focus {
+      box-shadow: 0 0 0 3px rgba(229, 57, 53, .12);
+    }
+
+    .rg-form__error {
+      font-size: 11px;
+      color: #e53935;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .rg-form__submit {
+      margin-top: 22px;
+      width: 100%;
+      padding: 14px;
+      background: #1565c0;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background-color .2s;
+      font-family: inherit;
+    }
+
+    .rg-form__submit:hover { background: #0d47a1; }
+    .rg-form__submit:disabled { background: #90a4ae; cursor: not-allowed; }
+
+    /* ── Resend row ── */
+    .rg-verify__resend {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #999;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .rg-verify__resend-ok {
+      color: #2e7d32;
+      font-weight: 600;
+    }
+
+    .rg-verify__resend-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: #1565c0;
+      padding: 0;
+      text-decoration: underline;
+      font-family: inherit;
+    }
+
+    .rg-verify__resend-btn:hover { color: #0d47a1; }
+    .rg-verify__resend-btn:disabled { color: #aaa; cursor: not-allowed; text-decoration: none; }
+
+    /* ── Demo tabs ── */
+    .demo-tabs {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      gap: 8px;
+      z-index: 100;
+    }
+
+    .demo-tab {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 2px solid #1565c0;
+      border-radius: 4px;
+      background: #fff;
+      color: #1565c0;
+      cursor: pointer;
+      letter-spacing: .5px;
+      font-family: inherit;
+    }
+
+    .demo-tab.active {
+      background: #1565c0;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="demo-tabs">
+  <button class="demo-tab active" onclick="setState('default',this)">Default</button>
+  <button class="demo-tab" onclick="setState('filled',this)">Filled</button>
+  <button class="demo-tab" onclick="setState('error',this)">Error</button>
+  <button class="demo-tab" onclick="setState('loading',this)">Loading</button>
+  <button class="demo-tab" onclick="setState('resent',this)">Resent</button>
+</div>
+
+<div class="rg-page">
+
+  <!-- Left Panel -->
+  <aside class="rg-left">
+    <a href="#" class="rg-back-home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Back to Home
+    </a>
+    <div class="rg-left__body">
+      <h2 class="rg-left__headline">
+        One last<br/>step <span>left.</span>
+      </h2>
+      <p class="rg-left__tagline">
+        Verify your email address to activate your account and join the platform.
+      </p>
+    </div>
+    <p class="rg-left__footer">© 2026 Royal Derby Racing. All rights reserved.</p>
+  </aside>
+
+  <!-- Right Panel -->
+  <main class="rg-right">
+    <div class="rg-right__inner">
+
+      <div class="rg-step-header">
+        <p class="rg-step-header__label">Step 3 of 3</p>
+        <h1 class="rg-step-header__title">Verify Email</h1>
+        <p class="rg-step-header__sub">ENTER THE CODE SENT TO YOUR INBOX</p>
+      </div>
+
+      <div class="rg-verify">
+        <div class="rg-verify__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+        </div>
+        <p class="rg-verify__email">john@example.com</p>
+        <p class="rg-verify__hint">
+          We sent a 6-digit verification code to the email address above.
+          Enter it below to confirm your account.
+        </p>
+      </div>
+
+      <form class="rg-form" onsubmit="return false;">
+        <div class="rg-form__group">
+          <label class="rg-form__label">Verification Code</label>
+
+          <!-- 6-box OTP -->
+          <div class="rg-otp" id="otp-boxes">
+            <input class="rg-otp__input" type="text" inputmode="numeric" maxlength="1" />
+            <input class="rg-otp__input" type="text" inputmode="numeric" maxlength="1" />
+            <input class="rg-otp__input" type="text" inputmode="numeric" maxlength="1" />
+            <input class="rg-otp__input" type="text" inputmode="numeric" maxlength="1" />
+            <input class="rg-otp__input" type="text" inputmode="numeric" maxlength="1" />
+            <input class="rg-otp__input" type="text" inputmode="numeric" maxlength="1" />
+          </div>
+
+          <span class="rg-form__error" id="otp-error" style="display:none;">
+            Invalid or expired code. Please try again.
+          </span>
+        </div>
+
+        <button type="submit" class="rg-form__submit" id="submit-btn">
+          Verify Email
+        </button>
+      </form>
+
+      <div class="rg-verify__resend">
+        <span>Didn't receive the code?</span>
+        <span class="rg-verify__resend-ok" id="resend-ok" style="display:none;"> Sent!</span>
+        <button type="button" class="rg-verify__resend-btn" id="resend-btn">
+          Resend code
+        </button>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  const boxes = document.querySelectorAll('.rg-otp__input');
+
+  boxes.forEach((box, i) => {
+    box.addEventListener('input', (e) => {
+      const digit = e.target.value.replace(/\D/g, '').slice(-1);
+      e.target.value = digit;
+      if (digit && i < 5) boxes[i + 1].focus();
+    });
+
+    box.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !e.target.value && i > 0) {
+        boxes[i - 1].value = '';
+        boxes[i - 1].focus();
+      }
+      if (e.key === 'ArrowLeft' && i > 0) boxes[i - 1].focus();
+      if (e.key === 'ArrowRight' && i < 5) boxes[i + 1].focus();
+    });
+
+    box.addEventListener('focus', () => box.select());
+
+    box.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const digits = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+      boxes.forEach((b, j) => { b.value = digits[j] || ''; });
+      boxes[Math.min(digits.length, 5)].focus();
+    });
+  });
+
+  function setState(state, btn) {
+    document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+
+    const otpError  = document.getElementById('otp-error');
+    const submitBtn = document.getElementById('submit-btn');
+    const resendBtn = document.getElementById('resend-btn');
+    const resendOk  = document.getElementById('resend-ok');
+
+    // reset
+    boxes.forEach(b => { b.value = ''; b.classList.remove('error'); });
+    otpError.style.display  = 'none';
+    submitBtn.disabled      = false;
+    submitBtn.textContent   = 'Verify Email';
+    resendBtn.disabled      = false;
+    resendBtn.textContent   = 'Resend code';
+    resendOk.style.display  = 'none';
+
+    if (state === 'filled') {
+      ['3','8','4','1','9','2'].forEach((d, i) => boxes[i].value = d);
+    } else if (state === 'error') {
+      ['1','2','3','4','5','6'].forEach((d, i) => boxes[i].value = d);
+      boxes.forEach(b => b.classList.add('error'));
+      otpError.style.display = 'inline';
+    } else if (state === 'loading') {
+      submitBtn.disabled    = true;
+      submitBtn.textContent = 'Verifying…';
+    } else if (state === 'resent') {
+      resendBtn.disabled    = true;
+      resendBtn.textContent = 'Sending…';
+      resendOk.style.display = 'inline';
+    }
+  }
+</script>
+
+</body>
+</html>

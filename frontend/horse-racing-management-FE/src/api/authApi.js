@@ -5,3 +5,9 @@ export const register = (payload) =>
 
 export const login = (payload) =>
   axiosInstance.post('/auth/login', payload).then((res) => res.data);
+
+export const sendVerificationOtp = (email) =>
+  axiosInstance.post('/auth/send-verification-otp', null, { params: { email } }).then((res) => res.data);
+
+export const verifyEmail = (email, otp) =>
+  axiosInstance.post('/auth/verify-email', null, { params: { email, otp } }).then((res) => res.data);

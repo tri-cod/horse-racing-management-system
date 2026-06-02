@@ -404,6 +404,106 @@
 }
 
 /* ============================================================
+   EMAIL VERIFY STEP
+============================================================ */
+
+.rg-verify {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.rg-verify__icon {
+  color: #1565c0;
+  margin-bottom: 14px;
+}
+
+.rg-verify__email {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 10px;
+  word-break: break-all;
+}
+
+.rg-verify__hint {
+  font-size: 13px;
+  color: #999;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.rg-otp {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.rg-otp__input {
+  width: 52px;
+  height: 60px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  color: #111;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+  caret-color: transparent;
+}
+
+.rg-otp__input:focus {
+  border-color: #1565c0;
+  box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.12);
+}
+
+.rg-otp__input--error {
+  border-color: #e53935;
+}
+
+.rg-otp__input--error:focus {
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.12);
+}
+
+.rg-verify__resend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #999;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.rg-verify__resend-ok {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.rg-verify__resend-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1565c0;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.rg-verify__resend-btn:hover {
+  color: #0d47a1;
+}
+
+.rg-verify__resend-btn:disabled {
+  color: #aaa;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+/* ============================================================
    RESPONSIVE
 ============================================================ */
 

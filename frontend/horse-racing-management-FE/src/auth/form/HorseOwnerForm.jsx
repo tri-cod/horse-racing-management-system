@@ -1,4 +1,5 @@
 import { FIELDS, useRegisterForm } from './useRegisterForm';
+import EmailVerifyStep from './EmailVerifyStep';
 
 const ArrowLeftIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15">
@@ -7,7 +8,27 @@ const ArrowLeftIcon = () => (
 );
 
 export default function HorseOwnerForm({ onBack }) {
-  const { form, errors, loading, apiError, handleChange, handleBlur, handleSubmit } = useRegisterForm('HORSE_OWNER');
+  const {
+    form, errors, loading, apiError, handleChange, handleBlur, handleSubmit,
+    step, otp, otpError, otpLoading, resendLoading, resendSuccess,
+    handleOtpChange, handleVerify, handleResendOtp,
+  } = useRegisterForm('HORSE_OWNER');
+
+  if (step === 'verify') {
+    return (
+      <EmailVerifyStep
+        email={form.email}
+        otp={otp}
+        otpError={otpError}
+        otpLoading={otpLoading}
+        resendLoading={resendLoading}
+        resendSuccess={resendSuccess}
+        handleOtpChange={handleOtpChange}
+        handleVerify={handleVerify}
+        handleResendOtp={handleResendOtp}
+      />
+    );
+  }
 
   return (
     <main className="rg-right">
@@ -17,7 +38,7 @@ export default function HorseOwnerForm({ onBack }) {
         </button>
 
         <div className="rg-step-header">
-          <p className="rg-step-header__label">Step 2 of 2</p>
+          <p className="rg-step-header__label">Step 2 of 3</p>
           <span className="rg-badge">Horse Owner</span>
           <h1 className="rg-step-header__title">Create Account</h1>
           <p className="rg-step-header__sub">FILL IN YOUR DETAILS BELOW</p>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { register } from '../../api/authApi';
+import { register, sendVerificationOtp, verifyEmail } from '../../api/authApi';
 
 export const FIELDS = [
   { name: 'fullName',        label: 'Full Name',        type: 'text',     placeholder: 'John Doe',         full: true },
@@ -34,10 +34,17 @@ const validate = (name, value, form) => {
 
 export function useRegisterForm(apiRole) {
   const navigate = useNavigate();
-  const [form, setForm]       = useState(Object.fromEntries(FIELDS.map((f) => [f.name, ''])));
-  const [errors, setErrors]   = useState({});
-  const [loading, setLoading] = useState(false);
-  const [apiError, setApiError] = useState('');
+  const [form, setForm]           = useState(Object.fromEntries(FIELDS.map((f) => [f.name, ''])));
+  const [errors, setErrors]       = useState({});
+  const [loading, setLoading]     = useState(false);
+  const [apiError, setApiError]   = useState('');
+
+  const [step, setStep]               = useState('form'); // 'form' | 'verify'
+  const [otp, setOtp]                 = useState('');
+  const [otpError, setOtpError]       = useState('');
+  const [otpLoading, setOtpLoading]   = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,7 +80,8 @@ export function useRegisterForm(apiRole) {
     try {
       const { confirmPassword, ...rest } = form;
       await register({ ...rest, role: apiRole });
-      navigate('/login');
+      await sendVerificationOtp(form.email);
+      setStep('verify');
     } catch (err) {
       setApiError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
@@ -81,5 +89,44 @@ export function useRegisterForm(apiRole) {
     }
   };
 
-  return { form, errors, loading, apiError, handleChange, handleBlur, handleSubmit };
+  const handleOtpChange = (value) => {
+    setOtp(value);
+    setOtpError('');
+  };
+
+  const handleVerify = async (e) => {
+    e.preventDefault();
+    if (!otp.trim()) { setOtpError('Please enter the verification code'); return; }
+
+    setOtpLoading(true);
+    try {
+      await verifyEmail(form.email, otp);
+      navigate('/login');
+    } catch (err) {
+      setOtpError(err.response?.data?.message || 'Invalid or expired code. Please try again.');
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setResendLoading(true);
+    setResendSuccess(false);
+    setOtpError('');
+    try {
+      await sendVerificationOtp(form.email);
+      setResendSuccess(true);
+    } catch {
+      setOtpError('Failed to resend code. Please try again.');
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  return {
+    form, errors, loading, apiError, handleChange, handleBlur, handleSubmit,
+    step,
+    otp, otpError, otpLoading, resendLoading, resendSuccess,
+    handleOtpChange, handleVerify, handleResendOtp,
+  };
 }
