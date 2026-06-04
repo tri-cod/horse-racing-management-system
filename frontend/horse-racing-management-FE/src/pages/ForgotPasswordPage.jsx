@@ -1,10 +1,10 @@
 import { useState } from "react";
 import "../assets/css/forgotPassword.css";
 import { Eye, EyeOff } from "lucide-react";
-import { forgotPassword, verifyResetOtp, resetPassword } from "../api/authService";
+import { forgotPassword, verifyResetOtp, resetPassword } from "../api/authApi";
 import { useNavigate } from "react-router-dom";
 
-export default function ForgotPassword() {
+export default function ForgotPasswordPage() {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [email, setEmail] = useState("");
