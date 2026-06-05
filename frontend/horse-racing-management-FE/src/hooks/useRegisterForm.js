@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { register } from '../../api/authApi';
-import { sendVerificationOtp, verifyEmail } from '../../api/emailVerifyApi';
+import { register } from '../api/authApi';
+import { sendVerificationOtp, verifyEmail } from '../api/emailVerifyApi';
 
 export const FIELDS = [
   { name: 'fullName',        label: 'Full Name',        type: 'text',     placeholder: 'John Doe',         full: true },

@@ -1,11 +1,8 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../assets/css/register.css';
 import bgImg from '../assets/img/ee63a717-b5ff-41b1-ad51-860da474eb55.jpg';
-import SpectatorForm  from './form/SpectatorForm';
-import HorseOwnerForm from './form/HorseOwnerForm';
-import JockeyForm     from './form/JockeyForm';
+import RegisterForm from '../components/form/RegisterForm';
 
 /* ---- Icons ---- */
 const EyeIcon = () => (
@@ -58,10 +55,10 @@ const ROLES = [
   },
 ];
 
-const FORM_MAP = {
-  spectator:   SpectatorForm,
-  horse_owner: HorseOwnerForm,
-  jockey:      JockeyForm,
+const ROLE_CONFIG = {
+  spectator:   { apiRole: 'USER',        roleLabel: 'Spectator' },
+  horse_owner: { apiRole: 'HORSE_OWNER', roleLabel: 'Horse Owner' },
+  jockey:      { apiRole: 'JOCKEY',      roleLabel: 'Jockey' },
 };
 
 /* ---- Left Panel ---- */
@@ -118,7 +115,7 @@ function RoleStep({ onSelect }) {
         </div>
 
         <p className="rg-login">
-          Already have an account? <a href="/login">Sign in</a>
+          Already have an account? <Link to="/login">Sign in</Link>
         </p>
       </div>
     </main>
@@ -126,18 +123,17 @@ function RoleStep({ onSelect }) {
 }
 
 /* ---- Main Export ---- */
-export default function Register() {
+export default function RegisterPage() {
   const [role, setRole] = useState(null);
-  const ActiveForm = role ? FORM_MAP[role] : null;
+  const config = role ? ROLE_CONFIG[role] : null;
 
   return (
     <div className="rg-page">
       <LeftPanel />
-      {ActiveForm
-        ? <ActiveForm onBack={() => setRole(null)} />
+      {config
+        ? <RegisterForm apiRole={config.apiRole} roleLabel={config.roleLabel} onBack={() => setRole(null)} />
         : <RoleStep onSelect={setRole} />
       }
     </div>
   );
 }
-

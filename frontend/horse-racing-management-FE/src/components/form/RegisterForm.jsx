@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { FIELDS, useRegisterForm } from './useRegisterForm';
+import { FIELDS, useRegisterForm } from '../../hooks/useRegisterForm';
 import OtpBoxes from './OtpBoxes';
 
 const ArrowLeftIcon = () => (
@@ -14,13 +14,14 @@ const CheckIcon = () => (
   </svg>
 );
 
-export default function SpectatorForm({ onBack }) {
+export default function RegisterForm({ apiRole, roleLabel, onBack }) {
+  const prefix = apiRole.toLowerCase();
   const {
     form, errors, loading, apiError, handleChange, handleBlur, handleSubmit,
     emailVerified, showVerifyCard, sendOtpLoading,
     otp, otpError, otpLoading, resendLoading, resendSuccess,
     handleVerifyClick, handleOtpChange, handleConfirmVerify, handleResendOtp,
-  } = useRegisterForm('USER');
+  } = useRegisterForm(apiRole);
 
   return (
     <main className="rg-right">
@@ -31,7 +32,7 @@ export default function SpectatorForm({ onBack }) {
 
         <div className="rg-step-header">
           <p className="rg-step-header__label">Step 2 of 2</p>
-          <span className="rg-badge">Spectator</span>
+          <span className="rg-badge">{roleLabel}</span>
           <h1 className="rg-step-header__title">Create Account</h1>
           <p className="rg-step-header__sub">FILL IN YOUR DETAILS BELOW</p>
         </div>
@@ -43,12 +44,12 @@ export default function SpectatorForm({ onBack }) {
             {FIELDS.map((f) => (
               <Fragment key={f.name}>
                 <div className={`rg-form__group${f.full ? ' rg-form__group--full' : ''}`}>
-                  <label className="rg-form__label" htmlFor={`spectator-${f.name}`}>{f.label}</label>
+                  <label className="rg-form__label" htmlFor={`${prefix}-${f.name}`}>{f.label}</label>
 
                   {f.name === 'email' ? (
                     <div className="rg-form__input-wrap">
                       <input
-                        id={`spectator-${f.name}`}
+                        id={`${prefix}-${f.name}`}
                         name={f.name}
                         type={f.type}
                         placeholder={f.placeholder}
@@ -74,7 +75,7 @@ export default function SpectatorForm({ onBack }) {
                     </div>
                   ) : (
                     <input
-                      id={`spectator-${f.name}`}
+                      id={`${prefix}-${f.name}`}
                       name={f.name}
                       type={f.type}
                       placeholder={f.placeholder}

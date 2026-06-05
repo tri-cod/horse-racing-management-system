@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../assets/css/Header.css';
+import { AuthContext } from '../context/AuthContext';
 
 const NAV_ITEMS = [
   { label: 'Races', href: '/races' },
@@ -14,17 +15,13 @@ function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
-
-  const userStr = localStorage.getItem('user');
-  const user = userStr ? JSON.parse(userStr) : null;
+  const { user, logout } = useContext(AuthContext);
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('tokenType');
-    localStorage.removeItem('user');
-    navigate('/login');
+    logout();
+    navigate('/');
   };
 
   return (
