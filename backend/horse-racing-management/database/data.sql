@@ -4,8 +4,58 @@
 
 --drop database horse_racing_management_system
 
+ALTER TABLE horse
+    ADD COLUMN gender VARCHAR(10) NOT NULL DEFAULT 'MALE',
+    ADD COLUMN weight DECIMAL(5,2);
 
+-- Thêm user_id vào trainer
+ALTER TABLE trainer ADD COLUMN user_id BIGINT UNIQUE REFERENCES users(user_id);
+
+-- Thêm user_id vào jockey
+ALTER TABLE jockey ADD COLUMN user_id BIGINT UNIQUE REFERENCES users(user_id);
 -----------------------------USERS / ROLES---------------------------
+ALTER TABLE horse ADD COLUMN created_at TIMESTAMP DEFAULT NOW();
+ALTER TABLE horse ADD COLUMN updated_at TIMESTAMP DEFAULT NOW();
+
+ALTER TABLE trainer DROP COLUMN name;
+
+DROP TABLE IF EXISTS horse_owner CASCADE;
+
+
+ALTER TABLE trainer ADD COLUMN IF NOT EXISTS user_id BIGINT UNIQUE REFERENCES users(user_id);
+ALTER TABLE trainer ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE trainer ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(255);
+ALTER TABLE trainer ALTER COLUMN age DROP NOT NULL;
+ALTER TABLE trainer ALTER COLUMN experience_years DROP NOT NULL;
+
+DROP TABLE IF EXISTS trainer CASCADE;
+
+CREATE TABLE trainer (
+                         id BIGSERIAL PRIMARY KEY,
+                         user_id BIGINT UNIQUE REFERENCES users(user_id),
+
+                         name VARCHAR(150) NOT NULL,
+                         age INTEGER,
+                         experience_years INTEGER,
+
+                         description TEXT,
+                         avatar_url VARCHAR(255),
+
+                         status VARCHAR(20) DEFAULT 'Active'
+);
+
+ALTER TABLE horse
+    ADD CONSTRAINT fk_horse_trainer
+        FOREIGN KEY (trainer_id)
+            REFERENCES trainer(id);
+
+CREATE TABLE IF NOT EXISTS trainer(
+                                      id bigint primary key ,
+                                      name varchar(150) not null ,
+                                      age bigserial not null ,
+                                      experience_years bigserial,
+                                      status varchar(20) default ('Active')
+);
 
 CREATE TABLE IF NOT EXISTS forgot_password(
             id BIGSERIAL PRIMARY KEY,
@@ -19,6 +69,13 @@ CREATE TABLE IF NOT EXISTS forgot_password(
 );
 
 
+CREATE TABLE horse_owner (
+                             id          BIGSERIAL PRIMARY KEY,  -- ← BIGSERIAL tự tăng
+                             user_id     BIGINT NOT NULL UNIQUE REFERENCES users(user_id),
+                             name        VARCHAR(150) NOT NULL,
+                             description TEXT,
+                             status      VARCHAR(20)
+);
 
 CREATE TABLE IF NOT EXISTS roles (
     id BIGSERIAL PRIMARY KEY,
@@ -48,6 +105,23 @@ CREATE TABLE IF NOT EXISTS bank_account(
     bank_user_name varchar(150) not null ,
     bank_number varchar(150) not null,
     constraint fk_bank_user_user foreign key (user_id) references users(user_id)
+);
+
+DROP TABLE IF EXISTS horse CASCADE;
+
+CREATE TABLE horse (
+                       horse_id     BIGSERIAL PRIMARY KEY,  -- ← BIGSERIAL
+                       trainer_id   BIGINT REFERENCES trainer(id),
+                       owner_id     BIGINT REFERENCES horse_owner(id),
+                       horse_name   VARCHAR(150) NOT NULL,
+                       breed        VARCHAR(50) NOT NULL,
+                       age          INT NOT NULL,
+                       speed_rating INT,
+                       history_rank VARCHAR(50),
+                       avatar_url   VARCHAR(255),
+                       gender       VARCHAR(20),
+                       weight       BIGINT,
+                       status       VARCHAR(20) NOT NULL DEFAULT 'Active'
 );
 
 CREATE TABLE IF NOT EXISTS horse(
@@ -81,14 +155,13 @@ CREATE TABLE IF NOT EXISTS penalty(
 
 
 
-CREATE TABLE IF NOT EXISTS horse_owner(
-    id bigint primary key,
-    name varchar(150) not null ,
-    description text,
-    status varchar(20),
-    constraint fk_horseOwner_horse_id foreign key (id) references horse(horse_id)
+CREATE TABLE horse_owner (
+                             id          BIGSERIAL PRIMARY KEY,  -- ← BIGSERIAL tự tăng
+                             user_id     BIGINT NOT NULL UNIQUE REFERENCES users(user_id),
+                             name        VARCHAR(150) NOT NULL,
+                             description TEXT,
+                             status      VARCHAR(20)
 );
-
 
 CREATE TABLE IF NOT EXISTS trainer(
     id bigint primary key ,

@@ -3,11 +3,18 @@ package com.horseracing.horseracingmanagement.module.service.impl;
 import com.horseracing.horseracingmanagement.common.exception.AppException;
 import com.horseracing.horseracingmanagement.common.util.JwtUtil;
 import com.horseracing.horseracingmanagement.module.dto.AuthDto.*;
+import com.horseracing.horseracingmanagement.module.entity.HorseOwner;
 import com.horseracing.horseracingmanagement.module.entity.Role;
+import com.horseracing.horseracingmanagement.module.entity.Trainer;
 import com.horseracing.horseracingmanagement.module.entity.User;
+import com.horseracing.horseracingmanagement.module.responsitory.HorseOwnerRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.RoleRepository;
+import com.horseracing.horseracingmanagement.module.responsitory.TrainerRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.UserRepository;
 import com.horseracing.horseracingmanagement.module.service.AuthService;
+import com.horseracing.horseracingmanagement.module.service.impl.emailOTP.EmailValidatorService;
+import com.horseracing.horseracingmanagement.module.service.impl.emailOTP.MailService;
+import com.horseracing.horseracingmanagement.module.service.impl.emailOTP.OtpService;
 import com.horseracing.horseracingmanagement.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,8 +27,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 
@@ -32,11 +37,13 @@ public class AuthServiceImpl  implements AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final HorseOwnerRepository horseOwnerRepository;
+    private final TrainerRepository trainerRepository;
     private final AuthenticationManager authenticationManager;
     private final MailService emailService;
     private final OtpService otpService;
     private final JwtUtil jwtUtil;
-    private final EmailValidatorService  emailValidatorService;
+    private final EmailValidatorService emailValidatorService;
     private final RedisTemplate<String, String> redisTemplate;
 
 
@@ -56,8 +63,10 @@ public class AuthServiceImpl  implements AuthService {
             throw new RuntimeException("Domain email does not exist");
         }
 
-//        userRepository.findByEmail(email)
-//                .orElseThrow(() -> new RuntimeException("Email not found"));
+        if (userRepository.existsByEmail(email)) {
+            throw new RuntimeException("Email already registered");
+        }
+
         String otp = otpService.generateAndStoreOtp(email, "VERIFY_EMAIL");
         emailService.sendOtpEmail(email, otp, "VERIFY_EMAIL");
     }
@@ -74,6 +83,10 @@ public class AuthServiceImpl  implements AuthService {
             throw new RuntimeException("Domain email does not exist");
         }
 
+        if (!userRepository.existsByEmail(email)) {
+            throw new RuntimeException("Email not found in system");
+        }
+
         // Optional: check if email exists in DB first
         String otp = otpService.generateAndStoreOtp(email, "FORGOT_PASSWORD");
         emailService.sendOtpEmail(email, otp, "FORGOT_PASSWORD");
@@ -84,17 +97,15 @@ public class AuthServiceImpl  implements AuthService {
         // On true → allow user to set a new password
     }
 
-    // Check email đã verify chưa (dùng Redis)
     public boolean isEmailVerified(String email) {
         String key = "verified:" + email;
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
-    
-    // Khi verify OTP thành công → lưu trạng thái verified vào Redis
+
     public boolean verifyEmail(String email, String otp) {
         boolean valid = otpService.verifyOtp(email, "VERIFY_EMAIL", otp);
         if (valid) {
-            // lưu trạng thái verified 10 phút (đủ để user điền form xong)
+
             redisTemplate.opsForValue().set("verified:" + email, "true", 10, TimeUnit.MINUTES);
         }
         return valid;
@@ -142,6 +153,8 @@ public class AuthServiceImpl  implements AuthService {
             throw new AppException("Email already in use", HttpStatus.CONFLICT);
         }
 
+
+
         Role role = roleRepository
                 .findByRolename(request.getRole())
                 .orElseThrow(() ->
@@ -153,10 +166,29 @@ public class AuthServiceImpl  implements AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .fullName(request.getFullName())
                 .phonenumber(request.getPhone())
-                .verified(false)
+                .verified(true)
                 .createdAt(Instant.now())
                 .role(role).build();
         User saved = userRepository.save(user);
+
+        if (role.getRolename().name().equals("TRAINER")) {
+            Trainer trainer = Trainer.builder()
+                    .user(saved)
+                    .name(saved.getFullName() != null ? saved.getFullName() : saved.getUsername()) // ← lấy từ user
+                    .status("Active")
+                    .build();
+            trainerRepository.save(trainer);
+        }
+
+        if (role.getRolename().name().equals("HORSE_OWNER")) {
+            HorseOwner horseOwner = HorseOwner.builder()
+                    .user(saved)
+                    .name(request.getFullName())
+                    .status("Active")
+                    .build();
+            horseOwnerRepository.save(horseOwner);
+        }
+
         return buildCurrentUser(saved.getId());
     }
 
@@ -183,5 +215,20 @@ public class AuthServiceImpl  implements AuthService {
     @Override
     public AuthMeResponse getMe(CustomUserDetails userDetails) {
         return buildCurrentUser(userDetails.getId());
+    }
+    public void logout(String token) {
+        // Lấy thời gian còn lại của token
+        long expiration = jwtUtil.getExpirationTime(token); // milliseconds
+        long ttl = expiration - System.currentTimeMillis();
+
+        if (ttl > 0) {
+            // Blacklist token cho đến khi nó hết hạn
+            redisTemplate.opsForValue().set(
+                    "blacklist:" + token,
+                    "logout",
+                    ttl,
+                    TimeUnit.MILLISECONDS
+            );
+        }
     }
 }

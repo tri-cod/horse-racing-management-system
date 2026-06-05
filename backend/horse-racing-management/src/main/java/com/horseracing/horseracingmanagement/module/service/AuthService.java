@@ -11,6 +11,7 @@ public interface AuthService {
 
     AuthMeResponse getMe(CustomUserDetails userDetails);
 
+    void logout(String token);
 
 
     void sendEmailVerificationOtp(String email);

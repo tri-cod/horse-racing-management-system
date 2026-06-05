@@ -33,6 +33,10 @@ public class JwtUtil {
         return generateToken(new HashMap<>(), userDetails);
     }
 
+    public long getExpirationTime(String token) {
+        return extractClaim(token, Claims::getExpiration).getTime();
+    }
+
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
                 .claims(extraClaims)

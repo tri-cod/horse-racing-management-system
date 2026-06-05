@@ -1,13 +1,15 @@
 package com.horseracing.horseracingmanagement.module.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.Instant;
 
 @Builder
 @AllArgsConstructor
@@ -19,10 +21,10 @@ import org.hibernate.annotations.ColumnDefault;
 public class Horse {
     @Id
     @Column(name = "horse_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @Column(name = "trainer_id", nullable = false)
+    @Column(name = "trainer_id")
     private Long trainerId;
 
     @Column(name = "owner_id")
@@ -53,11 +55,25 @@ public class Horse {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
-    @Size(max = 20)
+    @Column(name = "gender")
+    private String gender;
+
+    @Column(name = "weight")
+    private Long weight;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Instant createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Instant updatedAt;
+
     @NotNull
     @ColumnDefault("'Active'")
-    @Column(name = "status", nullable = false, length = 20)
-    private String status;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private HorseStatus status;
 
 
 }

@@ -6,12 +6,14 @@ import com.horseracing.horseracingmanagement.module.dto.AuthDto.*;
 import com.horseracing.horseracingmanagement.module.entity.User;
 import com.horseracing.horseracingmanagement.module.responsitory.UserRepository;
 import com.horseracing.horseracingmanagement.module.service.AuthService;
+import com.horseracing.horseracingmanagement.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -83,6 +85,24 @@ public class AuthController {
         }
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Register success", authService.register(request)));
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "Get current authenticated user profile")
+    public ResponseEntity<ApiResponse<AuthMeResponse>> me(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success(authService.getMe(userDetails)));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<String>> logout(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Invalid token", null));
+        }
+        String token = authHeader.substring(7); // bỏ "Bearer " lấy token
+        authService.logout(token);
+        return ResponseEntity.ok(ApiResponse.success("Logout successful", null));
     }
 
 

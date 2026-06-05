@@ -1,4 +1,4 @@
-package com.horseracing.horseracingmanagement.module.service.impl;
+package com.horseracing.horseracingmanagement.module.service.impl.emailOTP;
 
 
 import lombok.RequiredArgsConstructor;

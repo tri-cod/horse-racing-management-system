@@ -15,24 +15,23 @@ import lombok.*;
 public class HorseOwner {
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @MapsId
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id", nullable = false)
-    private Horse horse;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
 
     @Size(max = 150)
     @NotNull
     @Column(name = "name", nullable = false, length = 150)
     private String name;
 
-    @Column(name = "description", length = Integer.MAX_VALUE)
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Size(max = 20)
     @Column(name = "status", length = 20)
     private String status;
-
 
 }

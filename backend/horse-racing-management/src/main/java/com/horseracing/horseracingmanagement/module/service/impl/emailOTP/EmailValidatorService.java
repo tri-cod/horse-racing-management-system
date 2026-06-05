@@ -1,4 +1,4 @@
-package com.horseracing.horseracingmanagement.module.service.impl;
+package com.horseracing.horseracingmanagement.module.service.impl.emailOTP;
 
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Service;

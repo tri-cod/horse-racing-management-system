@@ -1,9 +1,6 @@
 package com.horseracing.horseracingmanagement.module.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -24,6 +21,10 @@ public class Jockey {
     @Size(max = 150)
     @Column(name = "name", length = 150)
     private String name;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
 
     @NotNull
     @ColumnDefault("nextval('jockey_age_seq')")

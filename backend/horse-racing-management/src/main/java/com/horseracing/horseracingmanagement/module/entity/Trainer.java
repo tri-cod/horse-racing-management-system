@@ -1,9 +1,6 @@
 package com.horseracing.horseracingmanagement.module.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -18,28 +15,30 @@ import org.hibernate.annotations.ColumnDefault;
 @Table(name = "trainer")
 public class Trainer {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // ← thêm
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Size(max = 150)
-    @NotNull
-    @Column(name = "name", nullable = false, length = 150)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
+
+    @Column(name = "name", length = 150)
     private String name;
 
-    @NotNull
-    @ColumnDefault("nextval('trainer_age_seq')")
-    @Column(name = "age", nullable = false)
-    private Long age;
+    @Column(name = "age")
+    private Integer age;
 
-    @NotNull
-    @ColumnDefault("nextval('trainer_experience_years_seq')")
-    @Column(name = "experience_years", nullable = false)
-    private Long experienceYears;
+    @Column(name = "experience_years")
+    private Integer experienceYears;
 
-    @Size(max = 20)
-    @ColumnDefault("'Active'")
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
     @Column(name = "status", length = 20)
     private String status;
-
 
 }
