@@ -37,25 +37,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiResponseTrainerProfileResponse"
-  /api/races/{id}:
-    get:
-      tags:
-      - Race
-      operationId: getRace
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiResponseRaceResponse"
+  /api/races/update/{id}:
     put:
       tags:
       - Race
@@ -80,24 +62,6 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiResponseRaceResponse"
-    delete:
-      tags:
-      - Race
-      operationId: deleteRace
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiResponseString"
   /api/race-horse/{id}/reject:
     put:
       tags:
@@ -211,38 +175,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiResponseVoid"
-  /api/races:
-    get:
-      tags:
-      - Race
-      operationId: getRaceList
-      parameters:
-      - name: status
-        in: query
-        required: false
-        schema:
-          type: string
-      - name: page
-        in: query
-        required: false
-        schema:
-          type: integer
-          format: int32
-          default: 0
-      - name: size
-        in: query
-        required: false
-        schema:
-          type: integer
-          format: int32
-          default: 10
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ApiResponsePageRaceResponse"
+  /api/races/create:
     post:
       tags:
       - Race
@@ -480,6 +413,75 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ApiResponseTrainerProfileResponse"
+  /api/races:
+    get:
+      tags:
+      - Race
+      operationId: getRaceList
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponsePageRaceResponse"
+  /api/races/{id}:
+    get:
+      tags:
+      - Race
+      operationId: getRace
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseRaceResponse"
+    delete:
+      tags:
+      - Race
+      operationId: deleteRace
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseString"
   /api/race-horse/race/{raceId}:
     get:
       tags:
@@ -1101,10 +1103,10 @@ components:
           format: int64
         sort:
           $ref: "#/components/schemas/SortObject"
-        pageSize:
+        pageNumber:
           type: integer
           format: int32
-        pageNumber:
+        pageSize:
           type: integer
           format: int32
         paged:

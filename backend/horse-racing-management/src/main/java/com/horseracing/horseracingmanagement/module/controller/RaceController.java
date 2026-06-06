@@ -24,7 +24,7 @@ public class RaceController {
 
     private final RaceService raceService;
 
-    @PostMapping
+    @PostMapping("/create")
     @PreAuthorize("hasAuthority('ADMIN')")  // ← chỉ ADMIN
     public ResponseEntity<ApiResponse<RaceResponse>> createRace(
             @Valid @RequestBody CreateRaceRequest request) {
@@ -48,7 +48,7 @@ public class RaceController {
                 raceService.getRaceList(status, pageable)));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")  // ← chỉ ADMIN
     public ResponseEntity<ApiResponse<RaceResponse>> updateRace(
             @PathVariable Long id,
