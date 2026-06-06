@@ -54,3 +54,15 @@ export async function resetPassword(otp, email, newPassWord) {
     throw new Error(error.response?.data?.message || 'Failed to reset password.');
   }
 }
+
+export async function updateProfile(payload) {
+  try {
+    const token = localStorage.getItem('accessToken');
+    const response = await axiosInstance.put('/auth/profile', payload, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to update profile.');
+  }
+}

@@ -8,6 +8,7 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  
   // Initialize from localStorage on mount
   useEffect(() => {
     const storedToken = localStorage.getItem('accessToken');
@@ -56,6 +57,11 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const updateUser = useCallback((updatedUser) => {
+  setUser(updatedUser);
+  localStorage.setItem('user', JSON.stringify(updatedUser));
+}, []);
+
   const value = {
     user,
     token,
@@ -63,6 +69,7 @@ export function AuthProvider({ children }) {
     isAuthenticated: !!token,
     login,
     logout,
+    updateUser,
   };
 
   return (
