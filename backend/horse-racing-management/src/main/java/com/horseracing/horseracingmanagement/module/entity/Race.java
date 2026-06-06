@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
@@ -17,13 +19,12 @@ import java.time.Instant;
 @Table(name = "race")
 public class Race {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // ← thêm
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @ColumnDefault("nextval('race_referee_id_seq1')")
-    @JoinColumn(name = "referee_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)  // ← bỏ optional = false, nullable
+    @JoinColumn(name = "referee_id")
     private RaceReferee referee;
 
     @Size(max = 150)
@@ -41,26 +42,21 @@ public class Race {
     private Instant endTime;
 
     @Size(max = 150)
-    @NotNull
-    @Column(name = "track_name", nullable = false, length = 150)
+    @Column(name = "track_name", length = 150)  // ← bỏ NotNull
     private String trackName;
 
     @Size(max = 50)
-    @NotNull
-    @Column(name = "track_condition", nullable = false, length = 50)
+    @Column(name = "track_condition", length = 50)  // ← bỏ NotNull
     private String trackCondition;
 
     @Size(max = 50)
     @Column(name = "surface_type", length = 50)
     private String surfaceType;
 
-    @NotNull
-    @ColumnDefault("nextval('race_totalprizepool_seq')")
-    @Column(name = "totalprizepool", nullable = false)
+    @Column(name = "totalprizepool")  // ← bỏ NotNull và ColumnDefault sequence
     private Long totalprizepool;
 
-    @NotNull
-    @Column(name = "distance", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "distance", length = Integer.MAX_VALUE)  // ← bỏ NotNull
     private String distance;
 
     @Size(max = 150)
@@ -78,5 +74,11 @@ public class Race {
     @Column(name = "status", length = 20)
     private String status;
 
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Instant createdAt;
 
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 }

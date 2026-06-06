@@ -4,6 +4,8 @@ package com.horseracing.horseracingmanagement.module.dto.AuthDto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 public class AuthMeResponse {
@@ -17,4 +19,5 @@ public class AuthMeResponse {
     private String phoneNumber;
     private String avatar;
     private String status;
+    private BigDecimal balance;
 }

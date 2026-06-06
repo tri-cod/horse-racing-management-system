@@ -19,9 +19,9 @@ public class RaceReferee {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Size(max = 50)
-    @Column(name = "full_name", length = 50)
-    private String fullName;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
 
     @NotNull
     @ColumnDefault("nextval('race_referee_experienceyears_seq')")

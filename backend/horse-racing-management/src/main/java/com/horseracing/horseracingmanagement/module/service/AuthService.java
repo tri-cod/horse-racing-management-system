@@ -13,7 +13,6 @@ public interface AuthService {
 
     void logout(String token);
 
-
     void sendEmailVerificationOtp(String email);
 
     boolean verifyEmail(String email, String otp);

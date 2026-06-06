@@ -105,6 +105,10 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .collect(Collectors.toList());
     }
 
+
+
+
+
     private SignHorseResponse mapToResponse(Horse horse,        // ← phải là Horse
                                             String ownerName,
                                             Long trainerId,

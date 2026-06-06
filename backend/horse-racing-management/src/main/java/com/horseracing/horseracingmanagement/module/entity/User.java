@@ -52,6 +52,11 @@ public class User {
     @Column(name = "phonenumber", length = 20)
     private String phonenumber;
 
+    @OneToOne(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private Wallet wallet;
+
     @Size(max = 255)
     @Column(name = "avatar_url")
     private String avatarUrl;

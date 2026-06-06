@@ -9,6 +9,5 @@ import lombok.Data;
 
 public class ResetPasswordResponse {
     private String newPassword;
-
     private AuthMeResponse authMeResponse;
 }
