@@ -46,4 +46,7 @@ public class AdminController {
         adminUserService.updateStatus(id, request.getStatus());
         return ResponseEntity.ok(ApiResponse.success("User status updated", null));
     }
+
+
+
 }

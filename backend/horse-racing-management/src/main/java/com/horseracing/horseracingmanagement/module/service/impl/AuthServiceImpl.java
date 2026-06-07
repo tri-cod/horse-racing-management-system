@@ -3,14 +3,8 @@ package com.horseracing.horseracingmanagement.module.service.impl;
 import com.horseracing.horseracingmanagement.common.exception.AppException;
 import com.horseracing.horseracingmanagement.common.util.JwtUtil;
 import com.horseracing.horseracingmanagement.module.dto.AuthDto.*;
-import com.horseracing.horseracingmanagement.module.entity.HorseOwner;
-import com.horseracing.horseracingmanagement.module.entity.Role;
-import com.horseracing.horseracingmanagement.module.entity.Trainer;
-import com.horseracing.horseracingmanagement.module.entity.User;
-import com.horseracing.horseracingmanagement.module.responsitory.HorseOwnerRepository;
-import com.horseracing.horseracingmanagement.module.responsitory.RoleRepository;
-import com.horseracing.horseracingmanagement.module.responsitory.TrainerRepository;
-import com.horseracing.horseracingmanagement.module.responsitory.UserRepository;
+import com.horseracing.horseracingmanagement.module.entity.*;
+import com.horseracing.horseracingmanagement.module.responsitory.*;
 import com.horseracing.horseracingmanagement.module.service.AuthService;
 import com.horseracing.horseracingmanagement.module.service.impl.emailOTP.EmailValidatorService;
 import com.horseracing.horseracingmanagement.module.service.impl.emailOTP.MailService;
@@ -26,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
@@ -45,6 +40,7 @@ public class AuthServiceImpl  implements AuthService {
     private final JwtUtil jwtUtil;
     private final EmailValidatorService emailValidatorService;
     private final RedisTemplate<String, String> redisTemplate;
+    private final JockeyRepository jockeyRepository;
 
 
     @Value("${app.jwt.expiration:86400000}")
@@ -144,6 +140,7 @@ public class AuthServiceImpl  implements AuthService {
                 .role(role)
                 .verified(user.isVerified())
                 .status(user.getStatus().name())
+                .balance(user.getWallet().getBalance())
                 .build();
     }
 
@@ -154,11 +151,14 @@ public class AuthServiceImpl  implements AuthService {
         }
 
 
-
         Role role = roleRepository
                 .findByRolename(request.getRole())
                 .orElseThrow(() ->
                         new RuntimeException("Role not found"));
+
+
+        Wallet wallet = new Wallet();
+        wallet.setBalance(BigDecimal.ZERO);
 
         User user = User.builder().
                 email(request.getEmail())
@@ -169,6 +169,10 @@ public class AuthServiceImpl  implements AuthService {
                 .verified(true)
                 .createdAt(Instant.now())
                 .role(role).build();
+
+        user.setWallet(wallet);
+        wallet.setUser(user);
+
         User saved = userRepository.save(user);
 
         if (role.getRolename().name().equals("TRAINER")) {
@@ -188,6 +192,15 @@ public class AuthServiceImpl  implements AuthService {
                     .build();
             horseOwnerRepository.save(horseOwner);
         }
+
+        if (role.getRolename().name().equals("JOCKEY")) {
+            Jockey jockey = Jockey.builder()
+                    .user(saved)
+                    .status("Active")
+                    .build();
+            jockeyRepository.save(jockey);
+        }
+
 
         return buildCurrentUser(saved.getId());
     }

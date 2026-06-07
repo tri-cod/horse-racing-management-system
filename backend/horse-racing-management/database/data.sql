@@ -22,6 +22,66 @@ ALTER TABLE trainer DROP COLUMN name;
 DROP TABLE IF EXISTS horse_owner CASCADE;
 
 
+
+-- Drop và tạo lại race
+DROP TABLE IF EXISTS race CASCADE;
+
+CREATE TABLE race (
+                      id              BIGSERIAL PRIMARY KEY,
+                      referee_id      BIGINT REFERENCES race_referee(id),  -- nullable
+                      race_name       VARCHAR(150) NOT NULL,
+                      race_date       TIMESTAMP,
+                      start_time      TIMESTAMP,
+                      end_time        TIMESTAMP,
+                      track_name      VARCHAR(150),
+                      track_condition VARCHAR(50),
+                      surface_type    VARCHAR(50),
+                      totalprizepool  BIGINT,
+                      distance        TEXT,
+                      location        VARCHAR(150),
+                      capacity        BIGINT,
+                      banner_imageurl VARCHAR(255),
+                      status          VARCHAR(20) DEFAULT 'Upcoming',
+                      created_at      TIMESTAMP DEFAULT NOW(),
+                      updated_at      TIMESTAMP DEFAULT NOW()
+);
+
+-- Fix race_referee
+DROP TABLE IF EXISTS race_referee CASCADE;
+
+CREATE TABLE race_referee (
+                              id               BIGSERIAL PRIMARY KEY,
+                              user_id          BIGINT UNIQUE REFERENCES users(user_id),
+                              experienceyears  BIGINT,
+                              status           VARCHAR(20) DEFAULT 'Active'
+);
+
+DROP TABLE IF EXISTS race_horse CASCADE;
+
+CREATE TABLE race_horse (
+                            id             BIGSERIAL PRIMARY KEY,
+                            race_id        BIGINT NOT NULL REFERENCES race(id),
+                            horse_id       BIGINT NOT NULL REFERENCES horse(horse_id),
+                            jockey_id      BIGINT REFERENCES jockey(id),
+                            lane_number    BIGINT,
+                            start_position BIGINT,
+                            register_at    TIMESTAMP DEFAULT NOW(),
+                            status         VARCHAR(20) DEFAULT 'Pending'
+);
+
+
+-- Fix jockey table
+DROP TABLE IF EXISTS jockey CASCADE;
+
+CREATE TABLE jockey (
+                        id              BIGSERIAL PRIMARY KEY,
+                        user_id         BIGINT UNIQUE REFERENCES users(user_id),
+                        age             BIGINT,
+                        description     TEXT,
+                        experience_year BIGINT,
+                        status          VARCHAR(20) DEFAULT 'Active'
+);
+
 ALTER TABLE trainer ADD COLUMN IF NOT EXISTS user_id BIGINT UNIQUE REFERENCES users(user_id);
 ALTER TABLE trainer ADD COLUMN IF NOT EXISTS description TEXT;
 ALTER TABLE trainer ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(255);
@@ -266,8 +326,22 @@ CREATE TABLE IF NOT EXISTS wallet(
     user_id bigserial not null ,
     Balance decimal(10,2),
     constraint fk_wallet_user_id foreign key (id) references users(user_id)
-
 );
+
+DROP TABLE IF EXISTS wallet;
+
+CREATE TABLE IF NOT EXISTS wallet (
+                                      wallet_id BIGSERIAL PRIMARY KEY,
+                                      user_id BIGINT NOT NULL UNIQUE,
+                                      balance DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+
+                                      CONSTRAINT fk_wallet_user
+                                          FOREIGN KEY (user_id)
+                                              REFERENCES users(user_id)
+                                              ON DELETE CASCADE
+);
+
+
 
 CREATE TABLE IF NOT EXISTS transaction_request(
     id bigint primary key ,

@@ -17,17 +17,13 @@ import java.math.BigDecimal;
 public class Wallet {
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id", nullable = false)
-    private User users;
-
-    @NotNull
-    @ColumnDefault("nextval('wallet_user_id_seq')")
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "balance", precision = 10, scale = 2)
     private BigDecimal balance;

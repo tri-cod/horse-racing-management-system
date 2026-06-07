@@ -34,4 +34,5 @@ public class TrainerController {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 trainerService.getProfile(userDetails.getId())));
     }
+
 }

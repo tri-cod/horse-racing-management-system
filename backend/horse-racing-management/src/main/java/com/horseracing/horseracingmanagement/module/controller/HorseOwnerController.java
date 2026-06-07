@@ -48,6 +48,8 @@ public class HorseOwnerController {
                 horseOwnerService.assignTrainer(horseId, trainerId, userId)));
     }
 
+
+
     @GetMapping("/horses/{horseId}")
     public ResponseEntity<ApiResponse<SignHorseResponse>> getHorse(@PathVariable Long horseId) {
         return ResponseEntity.ok(ApiResponse.success("Success",

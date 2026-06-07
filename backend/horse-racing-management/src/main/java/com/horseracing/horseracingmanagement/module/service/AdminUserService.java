@@ -9,4 +9,5 @@ public interface AdminUserService {
     PageResponse<AdminUserItemResponse> getUsers(int page, int size, String keyword, RoleName role, UserStatus status);
     void updateRole(Long userId, RoleName roleName);
     void updateStatus(Long userId, UserStatus status);
+
 }

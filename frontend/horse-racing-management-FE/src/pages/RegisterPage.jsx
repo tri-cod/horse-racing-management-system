@@ -27,6 +27,13 @@ const JockeyIcon = () => (
   </svg>
 );
 
+const TrainerIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2 4 7v5c0 5 4 9 8 9s8-4 8-9V7l-8-5z" />
+    <path d="M9 9h6M9 13h6" />
+  </svg>
+);
+
 const ChevronRightIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="15" height="15">
     <path d="M9 18l6-6-6-6" />
@@ -48,6 +55,12 @@ const ROLES = [
     Icon: StableIcon,
   },
   {
+    id: 'trainer',
+    label: 'TRAINER',
+    desc: 'Prepare horses, manage training schedules and optimize performance',
+    Icon: TrainerIcon,
+  },
+  {
     id: 'jockey',
     label: 'JOCKEY',
     desc: 'Compete in races and manage your professional career',
@@ -58,6 +71,7 @@ const ROLES = [
 const ROLE_CONFIG = {
   spectator:   { apiRole: 'USER',        roleLabel: 'Spectator' },
   horse_owner: { apiRole: 'HORSE_OWNER', roleLabel: 'Horse Owner' },
+  trainer:     { apiRole: 'TRAINER',     roleLabel: 'Trainer' },
   jockey:      { apiRole: 'JOCKEY',      roleLabel: 'Jockey' },
 };
 
