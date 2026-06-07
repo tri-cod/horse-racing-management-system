@@ -6,6 +6,8 @@ import HomePage from './pages/HomePage'
 import RegisterPage from './pages/RegisterPage'
 import LoginPage from './pages/LoginPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import RacePage from './pages/RacePage'
+import RaceHorsePage from './pages/RaceHorsePage'
 import { ProtectedRoute } from './router/ProtectedRoute'
 
 function Layout({ children }) {
@@ -25,6 +27,17 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/races" element={<Layout><RacePage /></Layout>} />
+      <Route
+        path="/race-horse"
+        element={
+          <Layout>
+            <ProtectedRoute>
+              <RaceHorsePage />
+            </ProtectedRoute>
+          </Layout>
+        }
+      />
     </Routes>
   )
 }

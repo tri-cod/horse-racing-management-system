@@ -8,7 +8,8 @@ const NAV_ITEMS = [
   { label: 'Bet', href: '/bet' },
   { label: 'Venue hire', href: '/venue-hire' },
   { label: 'News', href: '/news' },
-  { label: 'About', href: '/about' },
+  { label: 'About',      href: '/about'      },
+  { label: 'Race Horse', href: '/race-horse' },
 ];
 
 function Header() {

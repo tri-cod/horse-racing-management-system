@@ -1,0 +1,929 @@
+/**
+ * race.css — Styles for Race Management Module
+ * Prefix: --race- / .race-
+ */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* ── CSS Variables ─────────────────────────────────────────────────────────── */
+:root {
+  --race-primary:       #1e55cb;
+  --race-primary-hover: #2563eb;
+  --race-primary-dark:  #1a47af;
+  --race-primary-dim:   rgba(30, 85, 203, 0.12);
+  --race-bg-page:       #f8fafc;
+  --race-bg-card:       #ffffff;
+  --race-bg-dark:       #0a0a0a;
+  --race-border:        #e2e8f0;
+  --race-shadow:        0 2px 12px rgba(0, 0, 0, 0.07);
+  --race-shadow-hover:  0 8px 32px rgba(0, 0, 0, 0.14);
+  --race-radius:        14px;
+  --race-text-primary:  #0a0a0a;
+  --race-text-secondary:#5a6478;
+  --race-text-muted:    #94a3b8;
+
+  /* Status badge tokens */
+  --race-upcoming-bg:     #eff6ff;
+  --race-upcoming-text:   #1d4ed8;
+  --race-upcoming-border: #bfdbfe;
+  --race-ongoing-bg:      #f0fdf4;
+  --race-ongoing-text:    #15803d;
+  --race-ongoing-border:  #bbf7d0;
+  --race-completed-bg:    #f1f5f9;
+  --race-completed-text:  #475569;
+  --race-completed-border:#cbd5e1;
+  --race-cancelled-bg:    #fff1f2;
+  --race-cancelled-text:  #be123c;
+  --race-cancelled-border:#fecdd3;
+}
+
+/* ── Page wrapper ───────────────────────────────────────────────────────────── */
+.race-page {
+  min-height: 100vh;
+  background: var(--race-bg-page);
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ── Hero Banner ────────────────────────────────────────────────────────────── */
+.race-hero {
+  background: var(--race-bg-dark);
+  background-image:
+    radial-gradient(ellipse at 18% 55%, rgba(30, 85, 203, 0.38) 0%, transparent 58%),
+    radial-gradient(ellipse at 80% 18%, rgba(37, 99, 235, 0.22) 0%, transparent 50%);
+  padding: 80px 40px 68px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.race-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.55), transparent);
+}
+
+.race-hero__eyebrow {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: #6399f5;
+  margin-bottom: 14px;
+}
+
+.race-hero__title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.15;
+  margin-bottom: 14px;
+}
+
+.race-hero__subtitle {
+  font-size: 0.975rem;
+  color: rgba(255, 255, 255, 0.58);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+/* ── Section container ──────────────────────────────────────────────────────── */
+.race-section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 48px 40px;
+}
+
+/* ── Top bar ────────────────────────────────────────────────────────────────── */
+.race-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+/* ── Filter Pills ───────────────────────────────────────────────────────────── */
+.race-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.race-filter-pill {
+  padding: 7px 18px;
+  border-radius: 20px;
+  border: 1.5px solid var(--race-border);
+  background: #fff;
+  color: var(--race-text-secondary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+
+.race-filter-pill:hover {
+  border-color: var(--race-primary);
+  color: var(--race-primary);
+}
+
+.race-filter-pill--active {
+  background: var(--race-primary);
+  border-color: var(--race-primary);
+  color: #fff;
+}
+
+.race-filter-pill--active:hover {
+  background: var(--race-primary-hover);
+  border-color: var(--race-primary-hover);
+}
+
+/* ── Create button ──────────────────────────────────────────────────────────── */
+.race-btn-create {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 20px;
+  background: var(--race-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.race-btn-create:hover {
+  background: var(--race-primary-hover);
+  box-shadow: 0 4px 16px rgba(30, 85, 203, 0.32);
+  transform: translateY(-1px);
+}
+
+/* ── Card Grid ──────────────────────────────────────────────────────────────── */
+.race-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+/* ── Race Card ──────────────────────────────────────────────────────────────── */
+.race-card {
+  background: var(--race-bg-card);
+  border-radius: var(--race-radius);
+  border: 1px solid var(--race-border);
+  box-shadow: var(--race-shadow);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.race-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--race-shadow-hover);
+}
+
+.race-card__header {
+  background: linear-gradient(140deg, #0f172a 0%, #1e293b 100%);
+  padding: 20px 22px 18px;
+  position: relative;
+}
+
+.race-card__badge-wrap {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.race-card__name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.35;
+  padding-right: 96px;
+  margin-bottom: 6px;
+}
+
+.race-card__id {
+  font-size: 0.73rem;
+  color: rgba(255, 255, 255, 0.38);
+  font-variant-numeric: tabular-nums;
+}
+
+.race-card__body {
+  padding: 18px 22px 0;
+}
+
+.race-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 16px;
+}
+
+.race-card__info-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.845rem;
+  color: var(--race-text-secondary);
+}
+
+.race-card__info-icon {
+  color: var(--race-primary);
+  flex-shrink: 0;
+}
+
+.race-card__prize {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.race-card__prize-label {
+  font-size: 0.72rem;
+  color: #3b82f6;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+}
+
+.race-card__prize-value {
+  font-size: 0.975rem;
+  font-weight: 700;
+  color: var(--race-primary-dark);
+}
+
+/* Card action buttons */
+.race-card__actions {
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid var(--race-border);
+  padding: 14px 0;
+}
+
+.race-card__btn {
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.race-card__btn--view {
+  background: var(--race-primary);
+  color: #fff;
+}
+
+.race-card__btn--view:hover {
+  background: var(--race-primary-hover);
+}
+
+.race-card__btn--edit {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.race-card__btn--edit:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.race-card__btn--delete {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.race-card__btn--delete:hover {
+  background: #ffe4e6;
+}
+
+/* ── Status Badge ────────────────────────────────────────────────────────────── */
+.race-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.race-status-badge--UPCOMING {
+  background: var(--race-upcoming-bg);
+  color: var(--race-upcoming-text);
+  border-color: var(--race-upcoming-border);
+}
+
+.race-status-badge--ONGOING {
+  background: var(--race-ongoing-bg);
+  color: var(--race-ongoing-text);
+  border-color: var(--race-ongoing-border);
+}
+
+.race-status-badge--COMPLETED {
+  background: var(--race-completed-bg);
+  color: var(--race-completed-text);
+  border-color: var(--race-completed-border);
+}
+
+.race-status-badge--CANCELLED {
+  background: var(--race-cancelled-bg);
+  color: var(--race-cancelled-text);
+  border-color: var(--race-cancelled-border);
+}
+
+/* ── Skeleton Loading ────────────────────────────────────────────────────────── */
+@keyframes race-shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.race-skeleton {
+  background: linear-gradient(90deg, #f0f2f5 25%, #e4e8ed 50%, #f0f2f5 75%);
+  background-size: 1200px 100%;
+  animation: race-shimmer 1.5s infinite linear;
+  border-radius: 5px;
+}
+
+.race-card-skeleton {
+  background: #fff;
+  border-radius: var(--race-radius);
+  border: 1px solid var(--race-border);
+  overflow: hidden;
+}
+
+.race-card-skeleton__header {
+  height: 94px;
+  background: #e2e8f0;
+}
+
+.race-card-skeleton__body {
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.race-card-skeleton__line {
+  height: 14px;
+}
+
+.race-card-skeleton__body .race-card-skeleton__line:nth-child(1) { width: 72%; }
+.race-card-skeleton__body .race-card-skeleton__line:nth-child(2) { width: 52%; }
+.race-card-skeleton__body .race-card-skeleton__line:nth-child(3) { width: 64%; }
+.race-card-skeleton__body .race-card-skeleton__line:nth-child(4) { width: 42%; }
+
+/* ── Empty State ─────────────────────────────────────────────────────────────── */
+.race-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 40px;
+}
+
+.race-empty__icon {
+  width: 64px;
+  height: 64px;
+  background: #f1f5f9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: #94a3b8;
+}
+
+.race-empty__title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--race-text-primary);
+  margin-bottom: 7px;
+}
+
+.race-empty__desc {
+  font-size: 0.875rem;
+  color: var(--race-text-muted);
+}
+
+/* ── Error State ─────────────────────────────────────────────────────────────── */
+.race-error-state {
+  grid-column: 1 / -1;
+  padding: 16px 20px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  color: #be123c;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* ── Pagination ──────────────────────────────────────────────────────────────── */
+.race-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.race-pagination__btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1.5px solid var(--race-border);
+  background: #fff;
+  color: var(--race-text-secondary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.race-pagination__btn:hover:not(:disabled) {
+  border-color: var(--race-primary);
+  color: var(--race-primary);
+}
+
+.race-pagination__btn--active {
+  background: var(--race-primary);
+  border-color: var(--race-primary);
+  color: #fff;
+}
+
+.race-pagination__btn--active:hover {
+  background: var(--race-primary-hover);
+}
+
+.race-pagination__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Modal Backdrop ──────────────────────────────────────────────────────────── */
+.race-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.62);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: race-backdrop-in 0.2s ease both;
+}
+
+@keyframes race-backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Modal Box ───────────────────────────────────────────────────────────────── */
+.race-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.26);
+  animation: race-modal-in 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes race-modal-in {
+  from { opacity: 0; transform: scale(0.91) translateY(22px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+.race-modal--detail  { max-width: 660px; }
+.race-modal--confirm { max-width: 420px; }
+
+/* ── Modal Header ────────────────────────────────────────────────────────────── */
+.race-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 28px 18px;
+  border-bottom: 1px solid var(--race-border);
+}
+
+.race-modal__title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.22rem;
+  font-weight: 600;
+  color: var(--race-text-primary);
+}
+
+.race-modal__close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.18s, color 0.18s;
+}
+
+.race-modal__close:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+/* ── Modal Body ──────────────────────────────────────────────────────────────── */
+.race-modal__body {
+  padding: 24px 28px;
+}
+
+/* ── Modal Footer ────────────────────────────────────────────────────────────── */
+.race-modal__footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 28px 22px;
+  border-top: 1px solid var(--race-border);
+  justify-content: flex-end;
+}
+
+/* ── Form inside Modal ───────────────────────────────────────────────────────── */
+.race-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.race-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.race-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.race-form__label {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.race-form__label--required::after {
+  content: ' *';
+  color: #dc2626;
+}
+
+.race-form__input,
+.race-form__select,
+.race-form__textarea {
+  height: 42px;
+  width: 100%;
+  padding: 0 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  color: #111;
+  background: #fafafa;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  outline: none;
+}
+
+.race-form__textarea {
+  height: auto;
+  min-height: 90px;
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.race-form__select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.race-form__input:focus,
+.race-form__select:focus,
+.race-form__textarea:focus {
+  border-color: var(--race-primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px var(--race-primary-dim);
+}
+
+.race-form__input--error,
+.race-form__select--error,
+.race-form__textarea--error {
+  border-color: #dc2626;
+}
+
+.race-form__field-error {
+  font-size: 0.775rem;
+  color: #dc2626;
+  margin-top: 2px;
+}
+
+/* ── Alert inside Modal ──────────────────────────────────────────────────────── */
+.race-alert {
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.845rem;
+  margin-bottom: 16px;
+}
+
+.race-alert--error {
+  color: #b91c1c;
+  background: #fff0f0;
+  border: 1px solid #fca5a5;
+}
+
+.race-alert--success {
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+}
+
+/* ── Action buttons ──────────────────────────────────────────────────────────── */
+.race-btn-cancel {
+  padding: 10px 20px;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.race-btn-cancel:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.race-btn-cancel:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.race-btn-submit {
+  padding: 10px 24px;
+  background: var(--race-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.race-btn-submit:hover:not(:disabled) {
+  background: var(--race-primary-hover);
+  transform: translateY(-1px);
+}
+
+.race-btn-submit:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.race-btn-danger {
+  padding: 10px 24px;
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.race-btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.race-btn-danger:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+/* ── Detail Modal ────────────────────────────────────────────────────────────── */
+.race-detail__name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.32rem;
+  font-weight: 600;
+  color: var(--race-text-primary);
+  margin-bottom: 10px;
+}
+
+.race-detail__header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.race-detail__id {
+  font-size: 0.78rem;
+  color: var(--race-text-muted);
+}
+
+.race-detail__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+}
+
+.race-detail__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.race-detail__item--full {
+  grid-column: 1 / -1;
+}
+
+.race-detail__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: var(--race-text-muted);
+}
+
+.race-detail__value {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--race-text-primary);
+  line-height: 1.45;
+}
+
+.race-detail__value--prize {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--race-primary-dark);
+}
+
+.race-detail__divider {
+  grid-column: 1 / -1;
+  height: 1px;
+  background: var(--race-border);
+  margin: 2px 0;
+}
+
+/* ── Loading skeleton inside detail modal ────────────────────────────────────── */
+.race-detail-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.race-detail-skeleton__line {
+  height: 16px;
+}
+
+.race-detail-loading .race-detail-skeleton__line:nth-child(1) { width: 55%; }
+.race-detail-loading .race-detail-skeleton__line:nth-child(2) { width: 80%; }
+.race-detail-loading .race-detail-skeleton__line:nth-child(3) { width: 68%; }
+.race-detail-loading .race-detail-skeleton__line:nth-child(4) { width: 45%; }
+
+/* ── Delete Confirm ──────────────────────────────────────────────────────────── */
+.race-confirm__icon-wrap {
+  width: 56px;
+  height: 56px;
+  background: #fff1f2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.race-confirm__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--race-text-primary);
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.race-confirm__text {
+  font-size: 0.875rem;
+  color: var(--race-text-secondary);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.race-confirm__name {
+  font-weight: 700;
+  color: var(--race-text-primary);
+}
+
+/* ── Spinner ─────────────────────────────────────────────────────────────────── */
+.race-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: race-spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes race-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .race-hero {
+    padding: 60px 20px 50px;
+  }
+
+  .race-section {
+    padding: 32px 16px;
+  }
+
+  .race-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .race-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .race-form__row {
+    grid-template-columns: 1fr;
+  }
+
+  .race-detail__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .race-detail__item--full {
+    grid-column: 1;
+  }
+
+  .race-modal__body,
+  .race-modal__header,
+  .race-modal__footer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .race-modal {
+    max-height: 96vh;
+  }
+}
