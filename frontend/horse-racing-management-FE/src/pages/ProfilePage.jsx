@@ -1,45 +1,9 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { User, Lock, LogOut, ChevronLeft, Shield, Mail } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { updateProfile, resetPassword, forgotPassword } from '../api/authApi';
 import '../assets/css/ProfilePage.css';
-
-// ── icons ─────────────────────────────────────────────────────────────────────
-const IconUser = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="12" cy="8" r="4" />
-        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-    </svg>
-);
-const IconLock = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <rect x="3" y="11" width="18" height="11" rx="2" />
-        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-);
-const IconLogout = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-        <polyline points="16 17 21 12 16 7" />
-        <line x1="21" y1="12" x2="9" y2="12" />
-    </svg>
-);
-const IconBack = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-        <polyline points="15 18 9 12 15 6" />
-    </svg>
-);
-const IconShield = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    </svg>
-);
-const IconMail = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-        <polyline points="22,6 12,13 2,6" />
-    </svg>
-);
 
 // ── Logout modal ──────────────────────────────────────────────────────────────
 function LogoutModal({ user, onConfirm, onCancel }) {
@@ -47,7 +11,7 @@ function LogoutModal({ user, onConfirm, onCancel }) {
         <div className="profile-overlay" onClick={onCancel}>
             <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-icon modal-icon--red">
-                    <IconLogout />
+                    <LogOut size={16} />
                 </div>
                 <h3 className="modal-title">Sign out of Royal Derby?</h3>
                 <p className="modal-desc">
@@ -77,6 +41,11 @@ function PersonalInfoPane({ user, onUpdate }) {
         fullName: user?.fullName || '',
         phoneNumber: user?.phoneNumber || '',
     });
+    // baseline là giá trị đã lưu gần nhất — Cancel sẽ về đây, không phải giá trị lúc mount
+    const [baseline, setBaseline] = useState({
+        fullName: user?.fullName || '',
+        phoneNumber: user?.phoneNumber || '',
+    });
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState('');
     const [error, setError]     = useState('');
@@ -94,7 +63,10 @@ function PersonalInfoPane({ user, onUpdate }) {
         setError('');
         try {
             const updated = await updateProfile({ fullName: form.fullName, phoneNumber: form.phoneNumber });
-            onUpdate(updated);
+            // Merge response vào user hiện tại để không mất các field khác (id, role, email,...)
+            onUpdate({ ...user, ...updated });
+            // Cập nhật baseline sau khi save thành công
+            setBaseline({ fullName: form.fullName, phoneNumber: form.phoneNumber });
             setSuccess('Profile updated successfully.');
         } catch (err) {
             setError(err.message || 'Failed to update profile.');
@@ -104,7 +76,8 @@ function PersonalInfoPane({ user, onUpdate }) {
     };
 
     const handleCancel = () => {
-        setForm({ fullName: user?.fullName || '', phoneNumber: user?.phoneNumber || '' });
+        // Reset về giá trị đã lưu gần nhất, không phải giá trị lúc mở trang
+        setForm({ fullName: baseline.fullName, phoneNumber: baseline.phoneNumber });
         setSuccess('');
         setError('');
     };
@@ -127,13 +100,18 @@ function PersonalInfoPane({ user, onUpdate }) {
 
                 {/* avatar + name row */}
                 <div className="profile-hero">
-                    <div className="avatar-ring">
-                        <div className="avatar-ring-inner">
-                            <span className="avatar-ring-letter">
-                                {user?.username?.charAt(0)?.toUpperCase() || 'U'}
-                            </span>
+                    <div className="avatar-wrap">
+                        <div className="avatar-ring">
+                            <div className="avatar-ring-inner">
+                                <span className="avatar-ring-letter">
+                                    {user?.username?.charAt(0)?.toUpperCase() || 'U'}
+                                </span>
+                            </div>
                         </div>
-                        <span className="avatar-online" />
+                        <span className="avatar-ring-anim" />
+                        <span className="avatar-online">
+                            <span className="avatar-online-pulse" />
+                        </span>
                     </div>
                     <div className="profile-hero-info">
                         <p className="profile-hero-name">{user?.fullName || user?.username}</p>
@@ -285,7 +263,8 @@ function SecurityPane({ user }) {
             </div>
 
             <div className="card">
-                <p className="card-section-title">Change password</p>
+                {/* Tiêu đề rõ hơn: dùng OTP email để reset, không phải đổi trực tiếp */}
+                <p className="card-section-title">Reset password via email</p>
 
                 {/* Bước 1 — gửi OTP */}
                 <div className="otp-send-row">
@@ -310,7 +289,7 @@ function SecurityPane({ user }) {
                 {/* thông báo OTP đã gửi */}
                 {otpSent && (
                     <div className="otp-notice">
-                        <IconMail />
+                        <Mail size={16} />
                         OTP sent to <strong>{user?.email}</strong> — check your inbox and enter it below.
                     </div>
                 )}
@@ -383,7 +362,7 @@ function SecurityPane({ user }) {
                 <p className="card-section-title">Security overview</p>
                 <div className="security-row">
                     <div className="security-row-left">
-                        <IconMail />
+                        <Mail size={16} />
                         <div>
                             <p className="security-label">Email address</p>
                             <p className="security-sub">{user?.email}</p>
@@ -395,17 +374,17 @@ function SecurityPane({ user }) {
                 </div>
                 <div className="security-row">
                     <div className="security-row-left">
-                        <IconLock />
+                        <Lock size={16} />
                         <div>
                             <p className="security-label">Password</p>
-                            <p className="security-sub">Use the form above to change your password</p>
+                            <p className="security-sub">Use the form above to reset your password</p>
                         </div>
                     </div>
                     <span className="badge badge--amber">Keep it safe</span>
                 </div>
                 <div className="security-row" style={{ borderBottom: 'none' }}>
                     <div className="security-row-left">
-                        <IconShield />
+                        <Shield size={16} />
                         <div>
                             <p className="security-label">Account status</p>
                             <p className="security-sub">Active and in good standing</p>
@@ -433,8 +412,8 @@ function ProfilePage() {
     };
 
     const NAV = [
-        { pane: 'info',     label: 'Personal Info', icon: <IconUser /> },
-        { pane: 'security', label: 'Security',       icon: <IconLock /> },
+        { pane: 'info',     label: 'Personal Info', icon: <User size={16} /> },
+        { pane: 'security', label: 'Security',       icon: <Lock size={16} /> },
     ];
 
     const roleColor = {
@@ -447,7 +426,7 @@ function ProfilePage() {
             {/* back bar */}
             <div className="profile-back-bar">
                 <button className="profile-back-btn" onClick={() => navigate(-1)}>
-                    <IconBack />
+                    <ChevronLeft size={16} />
                     Back
                 </button>
                 <nav className="profile-breadcrumb">
@@ -463,13 +442,18 @@ function ProfilePage() {
                 {/* SIDEBAR */}
                 <aside className="profile-sidebar">
                     <div className="sidebar-user">
-                        <div className="avatar-ring avatar-ring--lg">
-                            <div className="avatar-ring-inner">
-                                <span className="avatar-ring-letter avatar-ring-letter--lg">
-                                    {user?.username?.charAt(0)?.toUpperCase() || 'U'}
-                                </span>
+                        <div className="avatar-wrap">
+                            <div className="avatar-ring avatar-ring--lg">
+                                <div className="avatar-ring-inner">
+                                    <span className="avatar-ring-letter avatar-ring-letter--lg">
+                                        {user?.username?.charAt(0)?.toUpperCase() || 'U'}
+                                    </span>
+                                </div>
                             </div>
-                            <span className="avatar-online" />
+                            <span className="avatar-ring-anim" />
+                            <span className="avatar-online">
+                                <span className="avatar-online-pulse" />
+                            </span>
                         </div>
                         <p className="sidebar-name">{user?.fullName || user?.username}</p>
                         <p className="sidebar-email">{user?.email}</p>
@@ -499,7 +483,7 @@ function ProfilePage() {
                             className="sidebar-nav-btn sidebar-nav-btn--danger"
                             onClick={() => setShowLogout(true)}
                         >
-                            <IconLogout />
+                            <LogOut size={16} />
                             Sign out
                         </button>
                     </nav>

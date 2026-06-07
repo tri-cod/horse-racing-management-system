@@ -82,6 +82,18 @@
   margin-bottom: 10px;
 }
 
+/* avatar wrap */
+.avatar-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 12px;
+}
+.profile-hero .avatar-wrap {
+  margin: 0;
+  flex-shrink: 0;
+}
+
 /* avatar ring */
 .avatar-ring {
   width: 80px;
@@ -89,10 +101,24 @@
   border-radius: 50%;
   padding: 3px;
   background: linear-gradient(135deg, #1565c0, #42a5f5);
-  margin: 0 auto 12px;
   position: relative;
 }
-.avatar-ring--lg { width: 80px; height: 80px; }
+
+/* animated spinning ring */
+.avatar-ring-anim {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2.5px solid transparent;
+  border-top-color: #42a5f5;
+  border-right-color: #1565c0;
+  animation: avatar-spin 3s linear infinite;
+  display: block;
+}
+@keyframes avatar-spin {
+  to { transform: rotate(360deg); }
+}
+
 .avatar-ring-inner {
   width: 100%;
   height: 100%;
@@ -121,6 +147,18 @@
   border: 2.5px solid #ffffff;
   display: block;
 }
+.avatar-online-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: online-pulse 2s ease-in-out infinite;
+  display: block;
+}
+@keyframes online-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 0; transform: scale(2.2); }
+}
 
 /* avatar circle (modal) */
 .avatar-circle {
@@ -136,7 +174,7 @@
   flex-shrink: 0;
   display: block;
 }
-.avatar-circle--sm { width: 38px; height: 38px; line-height: 38px; }
+
 
 /* chips */
 .chip-row { display: flex; gap: 5px; flex-wrap: wrap; }
@@ -388,7 +426,6 @@
   margin: 0 auto 16px;
 }
 .modal-icon--red { background: #fdf0f0; color: #c0392b; }
-.modal-icon svg { width: 24px; height: 24px; }
 .modal-title { font-size: 17px; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
 .modal-desc { font-size: 13px; color: #9ca3af; line-height: 1.65; margin-bottom: 16px; }
 .modal-user {
@@ -418,4 +455,6 @@
   .form-grid { grid-template-columns: 1fr; }
   .profile-back-bar { padding: 0 16px; }
   .otp-send-row { flex-direction: column; align-items: flex-start; }
+  .sidebar-user { padding: 16px; }
+  .chip-row--center { justify-content: flex-start; }
 }
