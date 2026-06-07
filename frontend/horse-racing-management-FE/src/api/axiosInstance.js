@@ -8,10 +8,10 @@ const axiosInstance = axios.create({
   },
 });
 
-// Tự động gắn token vào header trước mỗi request
+// Automatically attach the token to the header before each request
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -20,13 +20,18 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Xử lý lỗi response toàn cục
+// Handle response errors globally
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('tokenType');
+      localStorage.removeItem('user');
+      // ✅ Only redirect if the user is on a page that requires auth, not on every 401
+      if (!['/login', '/register', '/forgot-password'].includes(window.location.pathname)) {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

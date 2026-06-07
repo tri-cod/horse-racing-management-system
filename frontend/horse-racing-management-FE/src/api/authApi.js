@@ -13,6 +13,18 @@ export const login = (payload) =>
   axiosInstance.post('/auth/login', payload).then((res) => res.data.data);
 
 /**
+ * Get current authenticated user
+ */
+export const getMe = () =>
+  axiosInstance.get('/auth/me').then((res) => res.data.data);
+
+/**
+ * Logout on server
+ */
+export const logoutApi = () =>
+  axiosInstance.post('/auth/logout').then((res) => res.data);
+
+/**
  * Step 1: Send OTP to email for password reset
  */
 export async function forgotPassword(email) {
