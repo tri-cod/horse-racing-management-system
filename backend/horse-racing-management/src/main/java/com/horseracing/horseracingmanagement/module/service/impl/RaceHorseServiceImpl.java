@@ -8,6 +8,7 @@ import com.horseracing.horseracingmanagement.module.service.RaceHorseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
     private final HorseOwnerRepository horseOwnerRepository;
     private final JockeyRepository jockeyRepository;
 
+    private final NotificationService notificationService;
     @Override
     public RaceHorseResponse registerHorseToRace(RegisterRaceHorseRequest request, Long userId) {
         HorseOwner owner = horseOwnerRepository.findByUserId(userId)
@@ -55,6 +57,11 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         // Check jockey đã tham gia race này chưa
         if (raceHorseRepository.existsByRace_IdAndJockey_Id(race.getId(), jockey.getId())) {
             throw new RuntimeException("Jockey already assigned in this race");
+        }
+
+        if (race.getRegistrationDeadline() != null &&
+                Instant.now().isAfter(race.getRegistrationDeadline())) {
+            throw new RuntimeException("Registration deadline has passed");
         }
 
         long registered = raceHorseRepository.countByRace_IdAndStatus(race.getId(), "Approved");

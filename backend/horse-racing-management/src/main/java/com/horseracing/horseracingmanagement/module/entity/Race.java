@@ -70,6 +70,9 @@ public class Race {
     @Column(name = "banner_imageurl")
     private String bannerImageurl;
 
+    @Column(name = "registration_deadline")
+    private Instant registrationDeadline;  // ← hạn đăng ký
+
     @Size(max = 20)
     @Column(name = "status", length = 20)
     private String status;

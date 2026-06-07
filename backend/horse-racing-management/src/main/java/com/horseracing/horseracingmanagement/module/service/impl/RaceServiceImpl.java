@@ -43,6 +43,7 @@ public class RaceServiceImpl implements RaceService {
                 .location(request.getLocation())
                 .capacity(request.getCapacity())
                 .bannerImageurl(request.getBannerImageurl())
+                .registrationDeadline(request.getRegistrationDeadline())
                 .status(request.getStatus() != null ? request.getStatus() : "Upcoming")
                 .referee(referee)
                 .build();
@@ -129,6 +130,7 @@ public class RaceServiceImpl implements RaceService {
                 .capacity(race.getCapacity())
                 .bannerImageurl(race.getBannerImageurl())
                 .status(race.getStatus())
+                .registrationDeadline(race.getRegistrationDeadline())
                 .createdAt(race.getCreatedAt())
                 .updatedAt(race.getUpdatedAt())
                 .refereeId(refereeId)

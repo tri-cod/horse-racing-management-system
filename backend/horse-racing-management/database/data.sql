@@ -90,6 +90,9 @@ ALTER TABLE trainer ALTER COLUMN experience_years DROP NOT NULL;
 
 DROP TABLE IF EXISTS trainer CASCADE;
 
+ALTER TABLE race ADD COLUMN registration_deadline TIMESTAMP;
+
+
 CREATE TABLE trainer (
                          id BIGSERIAL PRIMARY KEY,
                          user_id BIGINT UNIQUE REFERENCES users(user_id),
