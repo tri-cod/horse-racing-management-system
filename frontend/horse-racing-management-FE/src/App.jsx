@@ -26,8 +26,17 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-      <Route path="/profile" element={<ProfilePage />} />
-      {/* <Route path="/profile" element={<Layout><ProfilePage /></Layout>} /> header*/}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <ProfilePage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      
     </Routes>
   )
 }

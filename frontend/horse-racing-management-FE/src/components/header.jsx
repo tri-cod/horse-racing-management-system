@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../assets/css/Header.css';
 import { AuthContext } from '../context/AuthContext';
@@ -13,16 +13,38 @@ const NAV_ITEMS = [
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useContext(AuthContext);
+  const dropdownRef = useRef(null);
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
-  const handleLogout = () => {
-    logout();
+  const handleNavigateProfile = () => {
+    navigate('/profile');
+    setDropdownOpen(false);
+  };
+
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
+
+  const toggleDropdown = (event) => {
+    event.stopPropagation();
+    setDropdownOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    function handleOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    window.addEventListener('click', handleOutside);
+    return () => window.removeEventListener('click', handleOutside);
+  }, []);
 
   return (
     <header className="header">
@@ -49,12 +71,28 @@ function Header() {
 
       <div className={`header__actions${menuOpen ? ' open' : ''}`}>
         {user ? (
-          <div className="header__user">
+          <div className="header__user" ref={dropdownRef}>
             <span className="header__welcome">WELCOME</span>
             <span className="header__username">{user.username}</span>
-            <button className="header__avatar" onClick={handleLogout} title="Click to log out">
+            <button
+              type="button"
+              className="header__avatar"
+              aria-haspopup="menu"
+              aria-expanded={dropdownOpen}
+              onClick={toggleDropdown}
+              title="Tài khoản"
+            >
               {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
             </button>
+
+            <div className={`header__dropdown${dropdownOpen ? ' open' : ''}`}>
+              <button type="button" className="header__dropdown-item" onClick={handleNavigateProfile}>
+                My profile
+              </button>
+              <button type="button" className="header__dropdown-item header__dropdown-item--danger" onClick={handleLogout}>
+                Sign out
+              </button>
+            </div>
           </div>
         ) : (
           <>
