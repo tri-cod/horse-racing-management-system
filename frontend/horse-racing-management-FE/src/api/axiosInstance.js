@@ -1,5 +1,11 @@
 import axios from 'axios';
 
+const getAuthHeader = () => {
+  const token = localStorage.getItem('accessToken');
+  const tokenType = localStorage.getItem('tokenType') || 'Bearer';
+  return token ? `${tokenType} ${token}` : null;
+};
+
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api',
   timeout: 10000,
@@ -11,9 +17,9 @@ const axiosInstance = axios.create({
 // Automatically attach the token to the header before each request
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const authHeader = getAuthHeader();
+    if (authHeader && config.headers) {
+      config.headers.Authorization = authHeader;
     }
     return config;
   },
@@ -28,7 +34,6 @@ axiosInstance.interceptors.response.use(
       localStorage.removeItem('accessToken');
       localStorage.removeItem('tokenType');
       localStorage.removeItem('user');
-      // ✅ Only redirect if the user is on a page that requires auth, not on every 401
       if (!['/login', '/register', '/forgot-password'].includes(window.location.pathname)) {
         window.location.href = '/login';
       }

@@ -3,6 +3,7 @@
   gap: 16px;
   align-items: center;
   background-color: var(--card);
+  border: 1px solid #000000;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 18px;
