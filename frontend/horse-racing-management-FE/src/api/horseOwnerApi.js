@@ -7,6 +7,18 @@ export const signHorse = (payload) =>
   axiosInstance.post('/horse-owner/horses', payload).then((res) => res.data.data);
 
 /**
+ * Upload an avatar image and return its URL.
+ * Backend must expose an endpoint to accept multipart file uploads and return the stored image URL.
+ */
+export const uploadAvatar = (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return axiosInstance
+    .post('/horse-owner/horses/avatar', formData)
+    .then((res) => res.data.data?.avatarUrl || res.data.data);
+};
+
+/**
  * Get the list of horses owned by the current horse owner
  */
 export const getMyHorses = () =>

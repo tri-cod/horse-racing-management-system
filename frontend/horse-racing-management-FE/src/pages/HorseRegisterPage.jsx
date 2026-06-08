@@ -6,7 +6,19 @@ import '../assets/css/HorseRegisterPage.css';
 
 export default function HorseRegisterPage() {
   const navigate = useNavigate();
-  const { form, errors, loading, apiError, handleChange, handleBlur, handleSubmit } = useHorseForm();
+  const {
+    form,
+    errors,
+    loading,
+    apiError,
+    avatarPreview,
+    avatarFileName,
+    handleChange,
+    handleBlur,
+    handleAvatarChange,
+    handleAvatarRemove,
+    handleSubmit,
+  } = useHorseForm();
 
   return (
     <div className="horse-register-page">
@@ -29,8 +41,12 @@ export default function HorseRegisterPage() {
               form={form}
               errors={errors}
               loading={loading}
+              avatarPreview={avatarPreview}
+              avatarFileName={avatarFileName}
               handleChange={handleChange}
               handleBlur={handleBlur}
+              handleAvatarChange={handleAvatarChange}
+              handleAvatarRemove={handleAvatarRemove}
             />
 
             <button type="submit" className="horse-register__submit-btn" disabled={loading}>

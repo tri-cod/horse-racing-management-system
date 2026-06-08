@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dataSource name="Viniorun">
+<dataSource name="horse_racing_management_system@localhost">
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.55">
     <root id="1">
       <DateStyle>mdy</DateStyle>
@@ -11,7 +11,6 @@
 4||10|c|G
 4||10|C|G
 4||10|T|G</Grants>
-      <IntrospectionStateNumber>1152</IntrospectionStateNumber>
       <ServerVersion>18.4</ServerVersion>
       <StartupTime>1780923439</StartupTime>
       <TimeZones>true ACDT
@@ -799,21 +798,6 @@ false Zulu
 </TimeZones>
     </root>
     <database id="2" parent="1" name="horse_racing_management_system">
-      <Grants>11||10|C|G
-11||-9223372036854775808|U|G
-11||10|U|G
-2200||6171|C|G
-2200||-9223372036854775808|U|G
-2200||6171|U|G
-14860||10|C|G
-14860||-9223372036854775808|U|G
-14860||10|U|G</Grants>
-      <IntrospectionStateNumber>1152</IntrospectionStateNumber>
-      <ObjectId>16388</ObjectId>
-      <OwnerName>postgres</OwnerName>
-    </database>
-    <database id="3" parent="1" name="postgres">
-      <Comment>default administrative connection database</Comment>
       <Current>1</Current>
       <Grants>11||10|C|G
 11||-9223372036854775808|U|G
@@ -824,59 +808,64 @@ false Zulu
 14860||10|C|G
 14860||-9223372036854775808|U|G
 14860||10|U|G</Grants>
+      <ObjectId>16388</ObjectId>
+      <OwnerName>postgres</OwnerName>
+    </database>
+    <database id="3" parent="1" name="postgres">
+      <Comment>default administrative connection database</Comment>
       <ObjectId>5</ObjectId>
       <OwnerName>postgres</OwnerName>
     </database>
-    <role id="4" parent="1" name="pg_checkpoint">
-      <ObjectId>4544</ObjectId>
-    </role>
-    <role id="5" parent="1" name="pg_create_subscription">
-      <ObjectId>6304</ObjectId>
-    </role>
-    <role id="6" parent="1" name="pg_database_owner">
+    <role id="4" parent="1" name="pg_database_owner">
       <ObjectId>6171</ObjectId>
     </role>
-    <role id="7" parent="1" name="pg_execute_server_program">
-      <ObjectId>4571</ObjectId>
+    <role id="5" parent="1" name="pg_read_all_data">
+      <ObjectId>6181</ObjectId>
     </role>
-    <role id="8" parent="1" name="pg_maintain">
-      <ObjectId>6337</ObjectId>
+    <role id="6" parent="1" name="pg_write_all_data">
+      <ObjectId>6182</ObjectId>
     </role>
-    <role id="9" parent="1" name="pg_monitor">
+    <role id="7" parent="1" name="pg_monitor">
       <ObjectId>3373</ObjectId>
       <RoleGrants>3374
 3375
 3377</RoleGrants>
     </role>
-    <role id="10" parent="1" name="pg_read_all_data">
-      <ObjectId>6181</ObjectId>
-    </role>
-    <role id="11" parent="1" name="pg_read_all_settings">
+    <role id="8" parent="1" name="pg_read_all_settings">
       <ObjectId>3374</ObjectId>
     </role>
-    <role id="12" parent="1" name="pg_read_all_stats">
+    <role id="9" parent="1" name="pg_read_all_stats">
       <ObjectId>3375</ObjectId>
     </role>
-    <role id="13" parent="1" name="pg_read_server_files">
+    <role id="10" parent="1" name="pg_stat_scan_tables">
+      <ObjectId>3377</ObjectId>
+    </role>
+    <role id="11" parent="1" name="pg_read_server_files">
       <ObjectId>4569</ObjectId>
     </role>
-    <role id="14" parent="1" name="pg_signal_autovacuum_worker">
-      <ObjectId>6392</ObjectId>
+    <role id="12" parent="1" name="pg_write_server_files">
+      <ObjectId>4570</ObjectId>
     </role>
-    <role id="15" parent="1" name="pg_signal_backend">
+    <role id="13" parent="1" name="pg_execute_server_program">
+      <ObjectId>4571</ObjectId>
+    </role>
+    <role id="14" parent="1" name="pg_signal_backend">
       <ObjectId>4200</ObjectId>
     </role>
-    <role id="16" parent="1" name="pg_stat_scan_tables">
-      <ObjectId>3377</ObjectId>
+    <role id="15" parent="1" name="pg_checkpoint">
+      <ObjectId>4544</ObjectId>
+    </role>
+    <role id="16" parent="1" name="pg_maintain">
+      <ObjectId>6337</ObjectId>
     </role>
     <role id="17" parent="1" name="pg_use_reserved_connections">
       <ObjectId>4550</ObjectId>
     </role>
-    <role id="18" parent="1" name="pg_write_all_data">
-      <ObjectId>6182</ObjectId>
+    <role id="18" parent="1" name="pg_create_subscription">
+      <ObjectId>6304</ObjectId>
     </role>
-    <role id="19" parent="1" name="pg_write_server_files">
-      <ObjectId>4570</ObjectId>
+    <role id="19" parent="1" name="pg_signal_autovacuum_worker">
+      <ObjectId>6392</ObjectId>
     </role>
     <role id="20" parent="1" name="postgres">
       <BypassRls>1</BypassRls>
@@ -4340,11 +4329,1858 @@ false Zulu
       <Comment>standard public schema</Comment>
       <Current>1</Current>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2026-06-08.06:45:42</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2026-06-08.05:40:01</LastIntrospectionLocalTimestamp>
       <LastIntrospectionVersion>260210</LastIntrospectionVersion>
       <ObjectId>2200</ObjectId>
       <StateNumber>546</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
     </schema>
+    <sequence id="273" parent="272" name="bank_account_user_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16423</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>780</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="274" parent="272" name="bet_items_bet_amount_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16616</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>813</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="275" parent="272" name="bet_items_bet_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16614</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>813</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="276" parent="272" name="bet_items_race_horse_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16615</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>813</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="277" parent="272" name="bet_race_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16600</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>810</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="278" parent="272" name="forgot_password_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16718</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>837</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="279" parent="272" name="horse_horse_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16921</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>1022</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="280" parent="272" name="horse_owner_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16988</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>1093</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="281" parent="272" name="jockey_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16859</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>984</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="282" parent="272" name="notification_user_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16642</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>816</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="283" parent="272" name="payment_transaction_request_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16686</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>828</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="284" parent="272" name="penalty_amount_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16702</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>831</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="285" parent="272" name="penalty_race_horse_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16701</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>831</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="286" parent="272" name="race_horse_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16832</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>978</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="287" parent="272" name="race_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16967</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>1088</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="288" parent="272" name="race_referee_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16816</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>970</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="289" parent="272" name="race_result_penalty_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16582</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>807</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="290" parent="272" name="race_result_race_horse_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16580</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>807</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="291" parent="272" name="race_result_rewards_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16581</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>807</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="292" parent="272" name="roles_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16389</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>771</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="293" parent="272" name="trainer_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16877</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>997</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="294" parent="272" name="transaction_request_amount_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16673</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>825</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="295" parent="272" name="users_user_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16400</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>775</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="296" parent="272" name="wallet_wallet_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16947</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>1057</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <table id="297" parent="272" name="bank_account">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16424</ObjectId>
+      <StateNumber>780</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="298" parent="272" name="bet">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16601</ObjectId>
+      <StateNumber>810</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="299" parent="272" name="bet_items">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16617</ObjectId>
+      <StateNumber>813</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="300" parent="272" name="forgot_password">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16719</ObjectId>
+      <StateNumber>841</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="301" parent="272" name="horse">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16922</ObjectId>
+      <StateNumber>1076</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="302" parent="272" name="horse_owner">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16989</ObjectId>
+      <StateNumber>1100</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="303" parent="272" name="jockey">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16860</ObjectId>
+      <StateNumber>984</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="304" parent="272" name="notification">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16643</ObjectId>
+      <StateNumber>1122</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="305" parent="272" name="payment_transaction">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16687</ObjectId>
+      <StateNumber>828</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="306" parent="272" name="penalty">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16703</ObjectId>
+      <StateNumber>831</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="307" parent="272" name="race">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16968</ObjectId>
+      <StateNumber>1123</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="308" parent="272" name="race_horse">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16833</ObjectId>
+      <StateNumber>978</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="309" parent="272" name="race_referee">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16817</ObjectId>
+      <StateNumber>970</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="310" parent="272" name="race_result">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16583</ObjectId>
+      <StateNumber>807</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="311" parent="272" name="roles">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16390</ObjectId>
+      <StateNumber>775</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="312" parent="272" name="trainer">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16878</ObjectId>
+      <StateNumber>1094</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="313" parent="272" name="transaction_request">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16674</ObjectId>
+      <StateNumber>828</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="314" parent="272" name="users">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16401</ObjectId>
+      <StateNumber>838</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="315" parent="272" name="wallet">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>16948</ObjectId>
+      <StateNumber>1095</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <column id="316" parent="297" name="bank_account_id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>780</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="317" parent="297" name="user_id">
+      <DefaultExpression>nextval(&apos;bank_account_user_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>780</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16423</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="318" parent="297" name="bank_name">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>780</StateNumber>
+      <StoredType>varchar(150)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="319" parent="297" name="bank_user_name">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>780</StateNumber>
+      <StoredType>varchar(150)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="320" parent="297" name="bank_number">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>780</StateNumber>
+      <StoredType>varchar(150)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <foreign-key id="321" parent="297" name="fk_bank_user_user">
+      <ColNames>user_id</ColNames>
+      <ObjectId>16435</ObjectId>
+      <StateNumber>780</StateNumber>
+      <RefKeyColPositions>2</RefKeyColPositions>
+      <RefTableId>16401</RefTableId>
+    </foreign-key>
+    <index id="322" parent="297" name="bank_account_pkey">
+      <ColNames>bank_account_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16433</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>780</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="323" parent="297" name="bank_account_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16434</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>780</StateNumber>
+      <UnderlyingIndexId>16433</UnderlyingIndexId>
+    </key>
+    <column id="324" parent="298" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>810</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="325" parent="298" name="race_id">
+      <DefaultExpression>nextval(&apos;bet_race_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>810</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16600</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="326" parent="298" name="total_amount">
+      <Position>3</Position>
+      <StateNumber>810</StateNumber>
+      <StoredType>numeric(12,2 digit)|0s</StoredType>
+      <TypeId>1700</TypeId>
+    </column>
+    <column id="327" parent="298" name="status">
+      <Position>4</Position>
+      <StateNumber>810</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="328" parent="298" name="created_at">
+      <Position>5</Position>
+      <StateNumber>810</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <foreign-key id="329" parent="298" name="fklbunxj7wac15gyxk8xa9ahfrj">
+      <ColNames>race_id</ColNames>
+      <ObjectId>17007</ObjectId>
+      <StateNumber>1098</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16968</RefTableId>
+    </foreign-key>
+    <index id="330" parent="298" name="bet_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16607</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>810</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="331" parent="298" name="bet_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16608</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>810</StateNumber>
+      <UnderlyingIndexId>16607</UnderlyingIndexId>
+    </key>
+    <column id="332" parent="299" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>813</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="333" parent="299" name="bet_id">
+      <DefaultExpression>nextval(&apos;bet_items_bet_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>813</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16614</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="334" parent="299" name="race_horse_id">
+      <DefaultExpression>nextval(&apos;bet_items_race_horse_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>813</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16615</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="335" parent="299" name="bet_amount">
+      <DefaultExpression>nextval(&apos;bet_items_bet_amount_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>813</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16616</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="336" parent="299" name="odds">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>813</StateNumber>
+      <StoredType>numeric(10,2 digit)|0s</StoredType>
+      <TypeId>1700</TypeId>
+    </column>
+    <column id="337" parent="299" name="result_status">
+      <DefaultExpression>&apos;Pending&apos;::character varying</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>813</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <foreign-key id="338" parent="299" name="fk_betitems_bet_id">
+      <ColNames>bet_id</ColNames>
+      <ObjectId>16632</ObjectId>
+      <StateNumber>813</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16601</RefTableId>
+    </foreign-key>
+    <foreign-key id="339" parent="299" name="fk4df2i8phoaq7kj27rtfbiefka">
+      <ColNames>race_horse_id</ColNames>
+      <ObjectId>17012</ObjectId>
+      <StateNumber>1099</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16833</RefTableId>
+    </foreign-key>
+    <index id="340" parent="299" name="bet_items_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16630</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>813</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="341" parent="299" name="bet_items_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16631</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>813</StateNumber>
+      <UnderlyingIndexId>16630</UnderlyingIndexId>
+    </key>
+    <column id="342" parent="300" name="id">
+      <GeneratedKind>identity-by-default</GeneratedKind>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>837</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16718</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="343" parent="300" name="expiration_time">
+      <Position>2</Position>
+      <StateNumber>837</StateNumber>
+      <StoredType>timestamp(6)|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="344" parent="300" name="otp">
+      <Position>3</Position>
+      <StateNumber>837</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="345" parent="300" name="user_id">
+      <Position>4</Position>
+      <StateNumber>837</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <foreign-key id="346" parent="300" name="fkjfa13lhndn1q66kheuyjk2i5l">
+      <ColNames>user_id</ColNames>
+      <ObjectId>16728</ObjectId>
+      <StateNumber>841</StateNumber>
+      <RefKeyColPositions>2</RefKeyColPositions>
+      <RefTableId>16401</RefTableId>
+    </foreign-key>
+    <index id="347" parent="300" name="forgot_password_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16723</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>837</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="348" parent="300" name="ukss96nm4ed1jmllpxib14p1r7v">
+      <ColNames>user_id</ColNames>
+      <ObjectId>16726</ObjectId>
+      <StateNumber>840</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="349" parent="300" name="forgot_password_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16724</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>837</StateNumber>
+      <UnderlyingIndexId>16723</UnderlyingIndexId>
+    </key>
+    <key id="350" parent="300" name="ukss96nm4ed1jmllpxib14p1r7v">
+      <ObjectId>16727</ObjectId>
+      <StateNumber>840</StateNumber>
+      <UnderlyingIndexId>16726</UnderlyingIndexId>
+    </key>
+    <column id="351" parent="301" name="horse_id">
+      <DefaultExpression>nextval(&apos;horse_horse_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>1022</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16921</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="352" parent="301" name="trainer_id">
+      <Position>2</Position>
+      <StateNumber>1022</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="353" parent="301" name="owner_id">
+      <Position>3</Position>
+      <StateNumber>1022</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="354" parent="301" name="horse_name">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>1022</StateNumber>
+      <StoredType>varchar(150)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="355" parent="301" name="breed">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>1022</StateNumber>
+      <StoredType>varchar(50)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="356" parent="301" name="age">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>1022</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="357" parent="301" name="speed_rating">
+      <Position>7</Position>
+      <StateNumber>1022</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="358" parent="301" name="history_rank">
+      <Position>8</Position>
+      <StateNumber>1022</StateNumber>
+      <StoredType>varchar(50)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="359" parent="301" name="avatar_url">
+      <Position>9</Position>
+      <StateNumber>1138</StateNumber>
+      <StoredType>varchar(2024)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="360" parent="301" name="gender">
+      <Position>10</Position>
+      <StateNumber>1091</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="361" parent="301" name="weight">
+      <Position>11</Position>
+      <StateNumber>1022</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="362" parent="301" name="status">
+      <DefaultExpression>&apos;Active&apos;::character varying</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>12</Position>
+      <StateNumber>1092</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="363" parent="301" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <Position>13</Position>
+      <StateNumber>1073</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="364" parent="301" name="updated_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <Position>14</Position>
+      <StateNumber>1076</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <foreign-key id="365" parent="301" name="horse_trainer_id_fkey">
+      <ColNames>trainer_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16936</ObjectId>
+      <StateNumber>1022</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16878</RefTableId>
+    </foreign-key>
+    <index id="366" parent="301" name="horse_pkey">
+      <ColNames>horse_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16934</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>1022</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="367" parent="301" name="horse_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16935</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>1022</StateNumber>
+      <UnderlyingIndexId>16934</UnderlyingIndexId>
+    </key>
+    <column id="368" parent="302" name="id">
+      <GeneratedKind>identity-by-default</GeneratedKind>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>1093</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16988</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="369" parent="302" name="description">
+      <Position>2</Position>
+      <StateNumber>1093</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="370" parent="302" name="name">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>1093</StateNumber>
+      <StoredType>varchar(150)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="371" parent="302" name="status">
+      <Position>4</Position>
+      <StateNumber>1093</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="372" parent="302" name="user_id">
+      <Position>5</Position>
+      <StateNumber>1093</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <foreign-key id="373" parent="302" name="fkg8n5obbp2va5v0dwcx69gc1xj">
+      <ColNames>user_id</ColNames>
+      <ObjectId>17017</ObjectId>
+      <StateNumber>1100</StateNumber>
+      <RefKeyColPositions>2</RefKeyColPositions>
+      <RefTableId>16401</RefTableId>
+    </foreign-key>
+    <index id="374" parent="302" name="horse_owner_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16996</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>1093</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="375" parent="302" name="ukt2so26mwtg1laj3qx77jhsd52">
+      <ColNames>user_id</ColNames>
+      <ObjectId>17005</ObjectId>
+      <StateNumber>1097</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="376" parent="302" name="horse_owner_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16997</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>1093</StateNumber>
+      <UnderlyingIndexId>16996</UnderlyingIndexId>
+    </key>
+    <key id="377" parent="302" name="ukt2so26mwtg1laj3qx77jhsd52">
+      <ObjectId>17006</ObjectId>
+      <StateNumber>1097</StateNumber>
+      <UnderlyingIndexId>17005</UnderlyingIndexId>
+    </key>
+    <column id="378" parent="303" name="id">
+      <DefaultExpression>nextval(&apos;jockey_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>984</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16859</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="379" parent="303" name="user_id">
+      <Position>2</Position>
+      <StateNumber>984</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="380" parent="303" name="age">
+      <Position>3</Position>
+      <StateNumber>984</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="381" parent="303" name="description">
+      <Position>4</Position>
+      <StateNumber>984</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="382" parent="303" name="experience_year">
+      <Position>5</Position>
+      <StateNumber>984</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="383" parent="303" name="status">
+      <DefaultExpression>&apos;Active&apos;::character varying</DefaultExpression>
+      <Position>6</Position>
+      <StateNumber>984</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <foreign-key id="384" parent="303" name="jockey_user_id_fkey">
+      <ColNames>user_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16872</ObjectId>
+      <StateNumber>984</StateNumber>
+      <RefKeyColPositions>2</RefKeyColPositions>
+      <RefTableId>16401</RefTableId>
+    </foreign-key>
+    <index id="385" parent="303" name="jockey_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16868</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>984</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="386" parent="303" name="jockey_user_id_key">
+      <ColNames>user_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16870</ObjectId>
+      <StateNumber>984</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="387" parent="303" name="jockey_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16869</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>984</StateNumber>
+      <UnderlyingIndexId>16868</UnderlyingIndexId>
+    </key>
+    <key id="388" parent="303" name="jockey_user_id_key">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16871</ObjectId>
+      <StateNumber>984</StateNumber>
+      <UnderlyingIndexId>16870</UnderlyingIndexId>
+    </key>
+    <check id="389" parent="304" name="notification_type_check">
+      <ColNames>type</ColNames>
+      <ObjectId>17047</ObjectId>
+      <Predicate>(type &gt;= 0) AND (type &lt;= &apos;-1&apos;::integer)</Predicate>
+      <StateNumber>1122</StateNumber>
+    </check>
+    <column id="390" parent="304" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>816</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="391" parent="304" name="user_id">
+      <DefaultExpression>nextval(&apos;notification_user_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>816</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16642</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="392" parent="304" name="title">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>816</StateNumber>
+      <StoredType>varchar(150)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="393" parent="304" name="content">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>816</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="394" parent="304" name="created_at">
+      <Position>5</Position>
+      <StateNumber>816</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="395" parent="304" name="is_read">
+      <Position>6</Position>
+      <StateNumber>1120</StateNumber>
+      <StoredType>boolean|0s</StoredType>
+      <TypeId>16</TypeId>
+    </column>
+    <column id="396" parent="304" name="reference_id">
+      <Position>7</Position>
+      <StateNumber>1121</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="397" parent="304" name="type">
+      <Position>8</Position>
+      <StateNumber>1122</StateNumber>
+      <StoredType>smallint|0s</StoredType>
+      <TypeId>21</TypeId>
+    </column>
+    <foreign-key id="398" parent="304" name="fk_notification_user_id">
+      <ColNames>user_id</ColNames>
+      <ObjectId>16653</ObjectId>
+      <StateNumber>816</StateNumber>
+      <RefKeyColPositions>2</RefKeyColPositions>
+      <RefTableId>16401</RefTableId>
+    </foreign-key>
+    <index id="399" parent="304" name="notification_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16651</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>816</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="400" parent="304" name="notification_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16652</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>816</StateNumber>
+      <UnderlyingIndexId>16651</UnderlyingIndexId>
+    </key>
+    <column id="401" parent="305" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>828</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="402" parent="305" name="request_id">
+      <DefaultExpression>nextval(&apos;payment_transaction_request_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>828</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16686</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="403" parent="305" name="transaction_type">
+      <Position>3</Position>
+      <StateNumber>828</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="404" parent="305" name="status">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>828</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="405" parent="305" name="completed_at">
+      <Position>5</Position>
+      <StateNumber>828</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <foreign-key id="406" parent="305" name="payment_transaction_request_id_fkey">
+      <ColNames>request_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16696</ObjectId>
+      <StateNumber>828</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16674</RefTableId>
+    </foreign-key>
+    <index id="407" parent="305" name="payment_transaction_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16694</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>828</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="408" parent="305" name="payment_transaction_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16695</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>828</StateNumber>
+      <UnderlyingIndexId>16694</UnderlyingIndexId>
+    </key>
+    <column id="409" parent="306" name="penalty_id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>831</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="410" parent="306" name="race_horse_id">
+      <DefaultExpression>nextval(&apos;penalty_race_horse_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>831</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16701</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="411" parent="306" name="reason">
+      <Position>3</Position>
+      <StateNumber>831</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="412" parent="306" name="penalty_type">
+      <Position>4</Position>
+      <StateNumber>831</StateNumber>
+      <StoredType>varchar(50)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="413" parent="306" name="amount">
+      <DefaultExpression>nextval(&apos;penalty_amount_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>831</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16702</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <foreign-key id="414" parent="306" name="fkda48ysjp5kvtrwqkypdiuxjw0">
+      <ColNames>race_horse_id</ColNames>
+      <ObjectId>17022</ObjectId>
+      <StateNumber>1101</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16833</RefTableId>
+    </foreign-key>
+    <index id="415" parent="306" name="penalty_pkey">
+      <ColNames>penalty_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16711</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>831</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="416" parent="306" name="penalty_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16712</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>831</StateNumber>
+      <UnderlyingIndexId>16711</UnderlyingIndexId>
+    </key>
+    <column id="417" parent="307" name="id">
+      <DefaultExpression>nextval(&apos;race_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16967</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="418" parent="307" name="referee_id">
+      <Position>2</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="419" parent="307" name="race_name">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>varchar(150)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="420" parent="307" name="race_date">
+      <Position>4</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="421" parent="307" name="start_time">
+      <Position>5</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="422" parent="307" name="end_time">
+      <Position>6</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="423" parent="307" name="track_name">
+      <Position>7</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>varchar(150)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="424" parent="307" name="track_condition">
+      <Position>8</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>varchar(50)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="425" parent="307" name="surface_type">
+      <Position>9</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>varchar(50)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="426" parent="307" name="totalprizepool">
+      <Position>10</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="427" parent="307" name="distance">
+      <Position>11</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="428" parent="307" name="location">
+      <Position>12</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>varchar(150)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="429" parent="307" name="capacity">
+      <Position>13</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="430" parent="307" name="banner_imageurl">
+      <Position>14</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="431" parent="307" name="status">
+      <DefaultExpression>&apos;Upcoming&apos;::character varying</DefaultExpression>
+      <Position>15</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="432" parent="307" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <Position>16</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="433" parent="307" name="updated_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <Position>17</Position>
+      <StateNumber>1088</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="434" parent="307" name="registration_deadline">
+      <Position>18</Position>
+      <StateNumber>1123</StateNumber>
+      <StoredType>timestamp(6) with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="435" parent="307" name="race_referee_id_fkey">
+      <ColNames>referee_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16981</ObjectId>
+      <StateNumber>1088</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16817</RefTableId>
+    </foreign-key>
+    <index id="436" parent="307" name="race_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16979</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>1088</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="437" parent="307" name="race_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16980</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>1088</StateNumber>
+      <UnderlyingIndexId>16979</UnderlyingIndexId>
+    </key>
+    <column id="438" parent="308" name="id">
+      <DefaultExpression>nextval(&apos;race_horse_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>978</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16832</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="439" parent="308" name="race_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>978</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="440" parent="308" name="horse_id">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>978</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="441" parent="308" name="jockey_id">
+      <Position>4</Position>
+      <StateNumber>978</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="442" parent="308" name="lane_number">
+      <Position>5</Position>
+      <StateNumber>978</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="443" parent="308" name="start_position">
+      <Position>6</Position>
+      <StateNumber>978</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="444" parent="308" name="register_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <Position>7</Position>
+      <StateNumber>978</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="445" parent="308" name="status">
+      <DefaultExpression>&apos;Pending&apos;::character varying</DefaultExpression>
+      <Position>8</Position>
+      <StateNumber>978</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <foreign-key id="446" parent="308" name="fk9ya4ym73pq8pwruox8kocb9kg">
+      <ColNames>race_id</ColNames>
+      <ObjectId>17037</ObjectId>
+      <StateNumber>1104</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16968</RefTableId>
+    </foreign-key>
+    <foreign-key id="447" parent="308" name="fk19nr3dwuy26l5f53owkh965n2">
+      <ColNames>horse_id</ColNames>
+      <ObjectId>17027</ObjectId>
+      <StateNumber>1102</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16922</RefTableId>
+    </foreign-key>
+    <foreign-key id="448" parent="308" name="fk18r6cm7yap02oqr9q7woxr4ix">
+      <ColNames>jockey_id</ColNames>
+      <ObjectId>17032</ObjectId>
+      <StateNumber>1103</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16860</RefTableId>
+    </foreign-key>
+    <index id="449" parent="308" name="race_horse_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16842</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>978</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="450" parent="308" name="race_horse_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16843</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>978</StateNumber>
+      <UnderlyingIndexId>16842</UnderlyingIndexId>
+    </key>
+    <column id="451" parent="309" name="id">
+      <DefaultExpression>nextval(&apos;race_referee_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>970</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16816</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="452" parent="309" name="user_id">
+      <Position>2</Position>
+      <StateNumber>970</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="453" parent="309" name="experienceyears">
+      <Position>3</Position>
+      <StateNumber>970</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="454" parent="309" name="status">
+      <DefaultExpression>&apos;Active&apos;::character varying</DefaultExpression>
+      <Position>4</Position>
+      <StateNumber>970</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <foreign-key id="455" parent="309" name="race_referee_user_id_fkey">
+      <ColNames>user_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16827</ObjectId>
+      <StateNumber>970</StateNumber>
+      <RefKeyColPositions>2</RefKeyColPositions>
+      <RefTableId>16401</RefTableId>
+    </foreign-key>
+    <index id="456" parent="309" name="race_referee_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16823</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>970</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="457" parent="309" name="race_referee_user_id_key">
+      <ColNames>user_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16825</ObjectId>
+      <StateNumber>970</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="458" parent="309" name="race_referee_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16824</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>970</StateNumber>
+      <UnderlyingIndexId>16823</UnderlyingIndexId>
+    </key>
+    <key id="459" parent="309" name="race_referee_user_id_key">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16826</ObjectId>
+      <StateNumber>970</StateNumber>
+      <UnderlyingIndexId>16825</UnderlyingIndexId>
+    </key>
+    <column id="460" parent="310" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>807</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="461" parent="310" name="race_horse_id">
+      <DefaultExpression>nextval(&apos;race_result_race_horse_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>807</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16580</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="462" parent="310" name="rank">
+      <Position>3</Position>
+      <StateNumber>807</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="463" parent="310" name="completiontime">
+      <Position>4</Position>
+      <StateNumber>807</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="464" parent="310" name="rewards">
+      <DefaultExpression>nextval(&apos;race_result_rewards_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>807</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16581</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="465" parent="310" name="penalty_id">
+      <DefaultExpression>nextval(&apos;race_result_penalty_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>807</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16582</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <foreign-key id="466" parent="310" name="fkp045ci09qxfvyoltn1bal2d25">
+      <ColNames>id</ColNames>
+      <ObjectId>17042</ObjectId>
+      <StateNumber>1105</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16833</RefTableId>
+    </foreign-key>
+    <index id="467" parent="310" name="race_result_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16593</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>807</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="468" parent="310" name="race_result_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16594</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>807</StateNumber>
+      <UnderlyingIndexId>16593</UnderlyingIndexId>
+    </key>
+    <column id="469" parent="311" name="id">
+      <DefaultExpression>nextval(&apos;roles_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>771</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16389</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="470" parent="311" name="rolename">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>771</StateNumber>
+      <StoredType>varchar(50)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="471" parent="311" name="description">
+      <Position>3</Position>
+      <StateNumber>771</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <index id="472" parent="311" name="roles_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16396</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>771</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="473" parent="311" name="roles_rolename_key">
+      <ColNames>rolename</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16398</ObjectId>
+      <StateNumber>771</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <key id="474" parent="311" name="roles_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16397</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>771</StateNumber>
+      <UnderlyingIndexId>16396</UnderlyingIndexId>
+    </key>
+    <key id="475" parent="311" name="roles_rolename_key">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16399</ObjectId>
+      <StateNumber>771</StateNumber>
+      <UnderlyingIndexId>16398</UnderlyingIndexId>
+    </key>
+    <column id="476" parent="312" name="id">
+      <DefaultExpression>nextval(&apos;trainer_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>997</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16877</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="477" parent="312" name="user_id">
+      <Position>2</Position>
+      <StateNumber>997</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="478" parent="312" name="age">
+      <Position>4</Position>
+      <StateNumber>997</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="479" parent="312" name="experience_years">
+      <Position>5</Position>
+      <StateNumber>997</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="480" parent="312" name="description">
+      <Position>6</Position>
+      <StateNumber>997</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="481" parent="312" name="avatar_url">
+      <Position>7</Position>
+      <StateNumber>997</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="482" parent="312" name="status">
+      <DefaultExpression>&apos;Active&apos;::character varying</DefaultExpression>
+      <Position>8</Position>
+      <StateNumber>997</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="483" parent="312" name="name">
+      <Position>9</Position>
+      <StateNumber>1094</StateNumber>
+      <StoredType>varchar(150)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <foreign-key id="484" parent="312" name="trainer_user_id_fkey">
+      <ColNames>user_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16891</ObjectId>
+      <StateNumber>997</StateNumber>
+      <RefKeyColPositions>2</RefKeyColPositions>
+      <RefTableId>16401</RefTableId>
+    </foreign-key>
+    <index id="485" parent="312" name="trainer_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16887</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>997</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="486" parent="312" name="trainer_user_id_key">
+      <ColNames>user_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16889</ObjectId>
+      <StateNumber>997</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="487" parent="312" name="trainer_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16888</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>997</StateNumber>
+      <UnderlyingIndexId>16887</UnderlyingIndexId>
+    </key>
+    <key id="488" parent="312" name="trainer_user_id_key">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16890</ObjectId>
+      <StateNumber>997</StateNumber>
+      <UnderlyingIndexId>16889</UnderlyingIndexId>
+    </key>
+    <column id="489" parent="313" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>825</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="490" parent="313" name="request_type">
+      <DefaultExpression>&apos;Pending&apos;::character varying</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>825</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="491" parent="313" name="amount">
+      <DefaultExpression>nextval(&apos;transaction_request_amount_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>825</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16673</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="492" parent="313" name="request_status">
+      <DefaultExpression>&apos;Pending&apos;::character varying</DefaultExpression>
+      <Position>4</Position>
+      <StateNumber>825</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="493" parent="313" name="payment_method">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>825</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="494" parent="313" name="verify_note">
+      <Position>6</Position>
+      <StateNumber>825</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="495" parent="313" name="created_at">
+      <Position>7</Position>
+      <StateNumber>825</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="496" parent="313" name="processedby">
+      <Position>8</Position>
+      <StateNumber>825</StateNumber>
+      <StoredType>varchar(50)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="497" parent="313" name="processedat">
+      <Position>9</Position>
+      <StateNumber>825</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <index id="498" parent="313" name="transaction_request_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16684</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>825</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="499" parent="313" name="transaction_request_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16685</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>825</StateNumber>
+      <UnderlyingIndexId>16684</UnderlyingIndexId>
+    </key>
+    <column id="500" parent="314" name="role_id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>775</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="501" parent="314" name="user_id">
+      <DefaultExpression>nextval(&apos;users_user_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>775</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16400</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="502" parent="314" name="email">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>775</StateNumber>
+      <StoredType>varchar(150)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="503" parent="314" name="username">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>775</StateNumber>
+      <StoredType>varchar(150)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="504" parent="314" name="password">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>775</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="505" parent="314" name="full_name">
+      <Position>6</Position>
+      <StateNumber>775</StateNumber>
+      <StoredType>varchar(150)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="506" parent="314" name="phonenumber">
+      <Position>7</Position>
+      <StateNumber>775</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="507" parent="314" name="avatar_url">
+      <Position>8</Position>
+      <StateNumber>775</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="508" parent="314" name="status">
+      <DefaultExpression>&apos;ACTIVE&apos;::character varying</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>9</Position>
+      <StateNumber>775</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="509" parent="314" name="created_at">
+      <Position>10</Position>
+      <StateNumber>775</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="510" parent="314" name="updated_at">
+      <Position>11</Position>
+      <StateNumber>775</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="511" parent="314" name="verified">
+      <NotNull>1</NotNull>
+      <Position>12</Position>
+      <StateNumber>838</StateNumber>
+      <StoredType>boolean|0s</StoredType>
+      <TypeId>16</TypeId>
+    </column>
+    <foreign-key id="512" parent="314" name="fk_user_roles_role">
+      <ColNames>role_id</ColNames>
+      <ObjectId>16418</ObjectId>
+      <StateNumber>775</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16390</RefTableId>
+    </foreign-key>
+    <index id="513" parent="314" name="users_pkey">
+      <ColNames>user_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16414</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>775</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="514" parent="314" name="users_email_key">
+      <ColNames>email</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16416</ObjectId>
+      <StateNumber>775</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <key id="515" parent="314" name="users_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16415</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>775</StateNumber>
+      <UnderlyingIndexId>16414</UnderlyingIndexId>
+    </key>
+    <key id="516" parent="314" name="users_email_key">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16417</ObjectId>
+      <StateNumber>775</StateNumber>
+      <UnderlyingIndexId>16416</UnderlyingIndexId>
+    </key>
+    <column id="517" parent="315" name="wallet_id">
+      <DefaultExpression>nextval(&apos;wallet_wallet_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>1057</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <SequenceId>16947</SequenceId>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="518" parent="315" name="user_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>1057</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="519" parent="315" name="balance">
+      <DefaultExpression>0.00</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>1095</StateNumber>
+      <StoredType>numeric(10,2 digit)|0s</StoredType>
+      <TypeId>1700</TypeId>
+    </column>
+    <foreign-key id="520" parent="315" name="fk_wallet_user">
+      <ColNames>user_id</ColNames>
+      <ObjectId>16960</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>1057</StateNumber>
+      <RefKeyColPositions>2</RefKeyColPositions>
+      <RefTableId>16401</RefTableId>
+    </foreign-key>
+    <index id="521" parent="315" name="wallet_pkey">
+      <ColNames>wallet_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16956</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>1095</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="522" parent="315" name="wallet_user_id_key">
+      <ColNames>user_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16958</ObjectId>
+      <StateNumber>1095</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="523" parent="315" name="wallet_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16957</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>1057</StateNumber>
+      <UnderlyingIndexId>16956</UnderlyingIndexId>
+    </key>
+    <key id="524" parent="315" name="wallet_user_id_key">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16959</ObjectId>
+      <StateNumber>1057</StateNumber>
+      <UnderlyingIndexId>16958</UnderlyingIndexId>
+    </key>
   </database-model>
 </dataSource>
