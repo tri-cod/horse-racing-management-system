@@ -14,7 +14,6 @@ const axiosInstance = axios.create({
   },
 });
 
-// Automatically attach the token to the header before each request
 axiosInstance.interceptors.request.use(
   (config) => {
     const authHeader = getAuthHeader();
