@@ -52,7 +52,21 @@ function Header() {
           <div className="header__user">
             <span className="header__welcome">WELCOME</span>
             <span className="header__username">{user.username}</span>
-            <button className="header__avatar" onClick={handleLogout} title="Click to log out">
+
+            {user.role === 'TRAINER' && (
+              <Link
+                to="/trainer/profile"
+                style={{ fontSize: '13px', color: '#cbd5e1', marginRight: '8px' }}
+              >
+                My Profile
+              </Link>
+            )}
+
+            <button
+              className="header__avatar"
+              onClick={handleLogout}
+              title="Click to log out"
+            >
               {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
             </button>
           </div>
