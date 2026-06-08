@@ -1,0 +1,211 @@
+/* ============================================================
+   ADMIN SHELL — sidebar + content layout
+   Tokens dùng chung cho mọi trang /admin/*.
+============================================================ */
+
+.adm-shell {
+  --adm-sidebar-bg:       #0f172a;
+  --adm-sidebar-text:     #cbd5e1;
+  --adm-sidebar-text-mut: #64748b;
+  --adm-sidebar-hover:    #1e293b;
+  --adm-sidebar-active:   #1565c0;
+  --adm-sidebar-width:    240px;
+  --adm-sidebar-width-c:  72px;
+
+  --adm-bg:        #f7f8fb;
+  --adm-surface:   #ffffff;
+  --adm-border:    #e5e7eb;
+  --adm-border-st: #d4d7dc;
+  --adm-text:      #0f172a;
+  --adm-text-mut:  #64748b;
+  --adm-primary:        #1565c0;
+  --adm-primary-hover:  #0d47a1;
+  --adm-primary-soft:   #e7f0fa;
+  --adm-danger:         #c62828;
+  --adm-danger-hover:   #991b1b;
+  --adm-danger-soft:    #fde8e8;
+  --adm-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --adm-shadow-md: 0 6px 24px rgba(15, 23, 42, 0.08);
+  --adm-shadow-lg: 0 24px 48px -12px rgba(15, 23, 42, 0.25);
+
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--adm-bg);
+  color: var(--adm-text);
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ============================================================
+   SIDEBAR
+============================================================ */
+
+.adm-sidebar {
+  width: var(--adm-sidebar-width);
+  flex-shrink: 0;
+  background: var(--adm-sidebar-bg);
+  color: var(--adm-sidebar-text);
+  display: flex;
+  flex-direction: column;
+  padding: 22px 12px 16px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  transition: width 0.22s ease;
+  overflow: hidden;
+}
+
+.adm-sidebar.is-collapsed {
+  width: var(--adm-sidebar-width-c);
+}
+
+/* Hover-expand khi đã collapsed */
+.adm-sidebar.is-collapsed:hover {
+  width: var(--adm-sidebar-width);
+}
+
+/* --- Brand "Royal Derby" --- */
+.adm-sidebar__brand {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 0 12px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 14px;
+  white-space: nowrap;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  letter-spacing: 0.3px;
+}
+
+.adm-sidebar__brand-royal {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.adm-sidebar__brand-derby {
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 600;
+  color: #60a5fa;
+}
+
+/* Khi collapsed, brand chỉ còn chữ R */
+.adm-sidebar.is-collapsed:not(:hover) .adm-sidebar__brand-derby {
+  display: none;
+}
+
+/* --- Nav items --- */
+.adm-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-grow: 1;
+}
+
+.adm-sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--adm-sidebar-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.adm-sidebar__item:hover {
+  background-color: var(--adm-sidebar-hover);
+  color: #ffffff;
+}
+
+.adm-sidebar__item.is-active {
+  background-color: var(--adm-sidebar-active);
+  color: #ffffff;
+  box-shadow: 0 1px 4px rgba(21, 101, 192, 0.4);
+}
+
+.adm-sidebar__icon {
+  flex-shrink: 0;
+}
+
+.adm-sidebar.is-collapsed:not(:hover) .adm-sidebar__label {
+  opacity: 0;
+}
+
+/* --- Nút thu/mở --- */
+.adm-sidebar__toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--adm-sidebar-text-mut);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.adm-sidebar__toggle:hover {
+  background-color: var(--adm-sidebar-hover);
+  color: #ffffff;
+}
+
+.adm-sidebar.is-collapsed:not(:hover) .adm-sidebar__toggle span {
+  display: none;
+}
+
+/* ============================================================
+   CONTENT
+============================================================ */
+
+.adm-content {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 32px 40px;
+}
+
+/* ---- Mobile ---- */
+@media (max-width: 768px) {
+  .adm-shell {
+    flex-direction: column;
+  }
+  .adm-sidebar {
+    width: 100% !important;
+    height: auto;
+    position: relative;
+    padding: 12px 16px;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  .adm-sidebar__brand {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding: 0;
+  }
+  .adm-sidebar__nav {
+    flex-direction: row;
+    overflow-x: auto;
+    flex-grow: 1;
+  }
+  .adm-sidebar__item {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+  .adm-sidebar__label {
+    display: none;
+  }
+  .adm-sidebar__toggle {
+    display: none;
+  }
+  .adm-content {
+    padding: 16px;
+  }
+}
