@@ -1,0 +1,31 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-12) var(--space-6);
+  gap: var(--space-4);
+}
+
+.empty-state__icon {
+  color: var(--black-20);
+}
+
+.empty-state__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.empty-state__subtitle {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  max-width: 360px;
+  line-height: var(--lh-base);
+  margin: 0;
+}
+
+.empty-state__action {
+  margin-top: var(--space-2);
+}
