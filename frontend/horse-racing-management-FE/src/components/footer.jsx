@@ -1,79 +1,93 @@
+import { Globe, Camera, Video, MessageCircle, MapPin, Phone, Mail } from 'lucide-react';
+import Container from './ui/Container';
 import '../assets/css/Footer.css';
 
-const QUICK_LINKS = [
-  { label: 'Upcoming Races', href: '/races' },
-  { label: 'Live Results', href: '/results' },
-  { label: 'Ranking', href: '/ranking' },
-  { label: 'Statistics', href: '/statistics' },
+const ABOUT_LINKS = [
+  { label: 'About Us', href: '/about' },
+  { label: 'Rules', href: '/rules' },
+  { label: 'Our Team', href: '/about#team' },
+  { label: 'Contact', href: '/contact' },
 ];
 
-const RESOURCES = [
-  { label: 'Help Center', href: '/help' },
-  { label: 'News & Updates', href: '/news' },
-  { label: 'Rules & Regulations', href: '/rules' },
-  { label: 'Contact US', href: '/contact' },
+const EXPLORE_LINKS = [
+  { label: 'Race Schedule', href: '/races' },
+  { label: 'Jockeys', href: '/jockeys' },
+  { label: 'Horse Collection', href: '/horses' },
+  { label: 'News', href: '/news' },
 ];
 
-const CONNECT = [
-  { label: 'Facebook', href: '#' },
-  { label: 'Twitter', href: '#' },
-  { label: 'Instagram', href: '#' },
-  { label: 'Youtube', href: '#' },
+const SOCIALS = [
+  { label: 'Facebook', href: '#', Icon: Globe },
+  { label: 'Instagram', href: '#', Icon: Camera },
+  { label: 'Youtube', href: '#', Icon: Video },
+  { label: 'Twitter', href: '#', Icon: MessageCircle },
 ];
 
 function Footer() {
   return (
     <footer className="footer">
-      <div className="footer__main">
-        <div className="footer__brand">
-          <a href="/" className="footer__brand-logo">
-            <span className="footer__brand-royal">Royal</span>
-            <span className="footer__brand-derby">Derby</span>
-          </a>
-          <p className="footer__brand-desc">
-            Premier horse racing management platform for enthusiasts and professionals.
-          </p>
+      <Container>
+        <div className="footer__main">
+          <div className="footer__brand">
+            <a href="/" className="footer__brand-logo">
+              <span className="footer__brand-royal">Royal</span>
+              <span className="footer__brand-derby">Derby</span>
+            </a>
+            <p className="footer__brand-desc">
+              An international-class horse racing arena — where champion jockeys, mighty
+              steeds and unforgettable moments of the sport come together.
+            </p>
+            <ul className="footer__contact">
+              <li><MapPin size={16} /><span>285 W Huntington Dr, Arcadia, CA 91007</span></li>
+              <li><Phone size={16} /><span>+84 28 1234 5678</span></li>
+              <li><Mail size={16} /><span>contact@royalderby.vn</span></li>
+            </ul>
+          </div>
+
+          <div className="footer__col">
+            <h4 className="footer__col-title">About Royal Derby</h4>
+            <ul className="footer__col-list">
+              {ABOUT_LINKS.map((item) => (
+                <li key={item.href}>
+                  <a href={item.href}>{item.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="footer__col">
+            <h4 className="footer__col-title">Explore</h4>
+            <ul className="footer__col-list">
+              {EXPLORE_LINKS.map((item) => (
+                <li key={item.href}>
+                  <a href={item.href}>{item.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="footer__col">
+            <h4 className="footer__col-title">Follow Us</h4>
+            <div className="footer__socials">
+              {SOCIALS.map(({ label, href, Icon }) => (
+                <a key={label} href={href} className="footer__social-icon" aria-label={label}>
+                  <Icon size={18} />
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="footer__col">
-          <h4 className="footer__col-title">Quick Links</h4>
-          <ul className="footer__col-list">
-            {QUICK_LINKS.map((item) => (
-              <li key={item.href}>
-                <a href={item.href}>{item.label}</a>
-              </li>
-            ))}
-          </ul>
+        <hr className="footer__divider" />
+
+        <div className="footer__bottom">
+          <p>&copy; {new Date().getFullYear()} Royal Derby. All rights reserved.</p>
+          <div className="footer__legal">
+            <a href="/privacy">Privacy</a>
+            <a href="/terms">Terms</a>
+          </div>
         </div>
-
-        <div className="footer__col">
-          <h4 className="footer__col-title">Resources</h4>
-          <ul className="footer__col-list">
-            {RESOURCES.map((item) => (
-              <li key={item.href}>
-                <a href={item.href}>{item.label}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="footer__col">
-          <h4 className="footer__col-title">Connect</h4>
-          <ul className="footer__col-list">
-            {CONNECT.map((item) => (
-              <li key={item.label}>
-                <a href={item.href}>{item.label}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <hr className="footer__divider" />
-
-      <div className="footer__bottom">
-        <p>&copy; {new Date().getFullYear()} Royal Derby. All rights reserved.</p>
-      </div>
+      </Container>
     </footer>
   );
 }

@@ -140,7 +140,7 @@ public class AuthServiceImpl  implements AuthService {
                 .role(role)
                 .verified(user.isVerified())
                 .status(user.getStatus().name())
-                .balance(user.getWallet().getBalance())
+                .balance(user.getWallet() == null ? BigDecimal.ZERO : user.getWallet().getBalance())
                 .build();
     }
 
@@ -209,9 +209,9 @@ public class AuthServiceImpl  implements AuthService {
 
     @Override
     public AuthMeResponse  resetPassword(ResetPasswordRequest request){
-      User user =  userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
+        User user =  userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
 
-      user.setPassword(passwordEncoder.encode((request.getNewPassWord())));
+        user.setPassword(passwordEncoder.encode((request.getNewPassWord())));
 
         User.builder().
                 email(request.getEmail())
