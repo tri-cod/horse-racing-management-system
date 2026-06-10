@@ -1,8 +1,10 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
+import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.CreateRaceRequest;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.CreateRaceResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.RaceResponse;
+import com.horseracing.horseracingmanagement.module.dto.RaceDto.RaceStatusUpdate;
 import com.horseracing.horseracingmanagement.module.entity.Race;
 import com.horseracing.horseracingmanagement.module.entity.RaceReferee;
 import com.horseracing.horseracingmanagement.module.entity.User;
@@ -13,7 +15,10 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +26,52 @@ public class RaceServiceImpl implements RaceService {
 
     private final RaceRepository raceRepository;
     private final RaceRefereeRepository raceRefereeRepository;
+    private final WebSocketNotificationService wsService;  // ← inject
+
+
+    // Admin start race → đóng bet
+    public RaceResponse startRace(Long raceId) {
+        Race race = raceRepository.findById(raceId)
+                .orElseThrow(() -> new RuntimeException("Race not found"));
+
+        if (!race.getStatus().equals("Upcoming")) {
+            throw new RuntimeException("Race is not in Upcoming status");
+        }
+
+        race.setStatus(RaceStatus.ONGOING);
+        raceRepository.save(race);
+
+        // ← Push WebSocket → FE tự disable nút đặt cược
+        wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
+                .raceId(race.getId())
+                .raceName(race.getRaceName())
+                .status("Ongoing")
+                .message("Race has started! Betting is now closed.")
+                .updatedAt(Instant.now())
+                .build());
+
+        return mapToResponse(race);
+    }
+
+    // Referee finish race → push kết quả
+    public RaceResponse finishRace(Long raceId) {
+        Race race = raceRepository.findById(raceId)
+                .orElseThrow(() -> new RuntimeException("Race not found"));
+
+        race.setStatus(RaceStatus.FINISHED);
+        raceRepository.save(race);
+
+        // ← Push WebSocket → FE load kết quả
+        wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
+                .raceId(race.getId())
+                .raceName(race.getRaceName())
+                .status("Finished")
+                .message("Race has finished! Results are being calculated.")
+                .updatedAt(Instant.now())
+                .build());
+
+        return mapToResponse(race);
+    }
 
     @Override
     public RaceResponse createRace(CreateRaceRequest request) {
@@ -43,11 +94,25 @@ public class RaceServiceImpl implements RaceService {
                 .location(request.getLocation())
                 .capacity(request.getCapacity())
                 .bannerImageurl(request.getBannerImageurl())
-                .status(request.getStatus() != null ? request.getStatus() : "Upcoming")
+                .registrationDeadline(request.getRegistrationDeadline())
+                .status(request.getStatus())
                 .referee(referee)
                 .build();
 
         return mapToResponse(raceRepository.save(race));
+    }
+
+    @Override
+    public RaceResponse closeRace(Long raceId) {
+
+        Race race = raceRepository.findById(raceId)
+                .orElseThrow();
+
+        race.setStatus(RaceStatus.CLOSED_REGISTRATION);
+
+        raceRepository.save(race);
+
+        return mapToResponse(race);
     }
 
     @Override
@@ -128,7 +193,8 @@ public class RaceServiceImpl implements RaceService {
                 .location(race.getLocation())
                 .capacity(race.getCapacity())
                 .bannerImageurl(race.getBannerImageurl())
-                .status(race.getStatus())
+                .status(race.getStatus().name())
+                .registrationDeadline(race.getRegistrationDeadline())
                 .createdAt(race.getCreatedAt())
                 .updatedAt(race.getUpdatedAt())
                 .refereeId(refereeId)

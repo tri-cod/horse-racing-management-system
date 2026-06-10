@@ -63,4 +63,19 @@ public class RaceController {
         raceService.deleteRace(id);
         return ResponseEntity.ok(ApiResponse.success("Race deleted successfully", null));
     }
+
+    @PutMapping("/{id}/start")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'REFEREE')")
+    public ResponseEntity<ApiResponse<RaceResponse>> startRace(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Race started",
+                raceService.startRace(id)));
+    }
+
+    // Referee/Admin finish race
+    @PutMapping("/{id}/finish")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'REFEREE')")
+    public ResponseEntity<ApiResponse<RaceResponse>> finishRace(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Race finished",
+                raceService.finishRace(id)));
+    }
 }

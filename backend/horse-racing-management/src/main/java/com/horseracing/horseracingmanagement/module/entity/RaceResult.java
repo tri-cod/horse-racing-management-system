@@ -7,27 +7,21 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@Entity
-@Table(name = "race_result")
+@Builder @AllArgsConstructor @NoArgsConstructor @Getter @Setter
+@Entity @Table(name = "race_result")
 public class RaceResult {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @MapsId
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "race_horse_id", nullable = false)
     private RaceHorse raceHorse;
 
-    @NotNull
-    @ColumnDefault("nextval('race_result_race_horse_id_seq')")
-    @Column(name = "race_horse_id", nullable = false)
-    private Long raceHorseId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "race_id", nullable = false)
+    private Race race;
 
     @Column(name = "rank")
     private Long rank;
@@ -35,15 +29,6 @@ public class RaceResult {
     @Column(name = "completiontime")
     private Instant completiontime;
 
-    @NotNull
-    @ColumnDefault("nextval('race_result_rewards_seq')")
-    @Column(name = "rewards", nullable = false)
+    @Column(name = "rewards")
     private Long rewards;
-
-    @NotNull
-    @ColumnDefault("nextval('race_result_penalty_id_seq')")
-    @Column(name = "penalty_id", nullable = false)
-    private Long penaltyId;
-
-
 }

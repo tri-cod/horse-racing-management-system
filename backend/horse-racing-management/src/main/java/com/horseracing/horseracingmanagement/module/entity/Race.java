@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.entity;
 
+import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -70,9 +71,12 @@ public class Race {
     @Column(name = "banner_imageurl")
     private String bannerImageurl;
 
-    @Size(max = 20)
+    @Column(name = "registration_deadline")
+    private Instant registrationDeadline;  // ← hạn đăng ký
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
-    private String status;
+    private RaceStatus status;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

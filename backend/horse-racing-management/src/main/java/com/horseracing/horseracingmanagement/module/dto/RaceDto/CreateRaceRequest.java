@@ -26,6 +26,7 @@ public class CreateRaceRequest {
     private String location;
     private Long capacity;
     private String bannerImageurl;
-    private String status;
-    private Long refereeId;  // ← thêm
+    private RaceStatus status;
+    private Long refereeId;
+    private Instant registrationDeadline;
 }

@@ -1,62 +1,54 @@
 package com.horseracing.horseracingmanagement.module.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@Entity
-@Table(name = "transaction_request")
+@Builder @AllArgsConstructor @NoArgsConstructor @Getter @Setter
+@Entity @Table(name = "transaction_request")
 public class TransactionRequest {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Size(max = 20)
-    @NotNull
-    @ColumnDefault("'Pending'")
-    @Column(name = "request_type", nullable = false, length = 20)
-    private String requestType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;  // ← thêm user_id
 
-    @NotNull
-    @ColumnDefault("nextval('transaction_request_amount_seq')")
+    @Column(name = "request_type", length = 20)
+    private String requestType;  // DEPOSIT, WITHDRAW
+
     @Column(name = "amount", nullable = false)
     private Long amount;
 
-    @Size(max = 20)
-    @ColumnDefault("'Pending'")
     @Column(name = "request_status", length = 20)
-    private String requestStatus;
+    private String requestStatus;  // PENDING, APPROVED, REJECTED
 
-    @Size(max = 20)
-    @NotNull
-    @Column(name = "payment_method", nullable = false, length = 20)
-    private String paymentMethod;
+    @Column(name = "payment_method", length = 20)
+    private String paymentMethod;  // QR_CODE, BANK_TRANSFER
 
-    @Size(max = 20)
-    @Column(name = "verify_note", length = 20)
-    private String verifyNote;
+    @Column(name = "reference_code", length = 50)
+    private String referenceCode;  // ← mã ghi chú unique để đối soát
 
-    @Column(name = "created_at")
-    private Instant createdAt;
+    @Column(name = "qr_url")
+    private String qrUrl;  // ← url QR code
 
-    @Size(max = 50)
+    @Column(name = "verify_note", length = 255)
+    private String verifyNote;  // ← staff ghi chú khi duyệt
+
     @Column(name = "processedby", length = 50)
     private String processedby;
 
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Instant createdAt;
+
     @Column(name = "processedat")
     private Instant processedat;
-
-
 }

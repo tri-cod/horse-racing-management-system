@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,5 +15,6 @@ import java.time.LocalDateTime;
 public class CreateRaceResponse {
     private Long id;
     private CreateRaceRequest createRaceRequest;
+    private Instant registrationDeadline;
     private LocalDateTime createdAt;
 }

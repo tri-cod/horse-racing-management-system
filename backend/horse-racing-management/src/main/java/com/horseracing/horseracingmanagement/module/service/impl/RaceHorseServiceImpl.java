@@ -1,13 +1,17 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
+import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RegisterRaceHorseRequest;
 import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
+import com.horseracing.horseracingmanagement.module.service.NotificationService;
 import com.horseracing.horseracingmanagement.module.service.RaceHorseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +24,9 @@ public class RaceHorseServiceImpl implements RaceHorseService {
     private final HorseRepository horseRepository;
     private final HorseOwnerRepository horseOwnerRepository;
     private final JockeyRepository jockeyRepository;
+    private final BetItemRepository betItemRepository;
 
+    private final NotificationService notificationService;
     @Override
     public RaceHorseResponse registerHorseToRace(RegisterRaceHorseRequest request, Long userId) {
         HorseOwner owner = horseOwnerRepository.findByUserId(userId)
@@ -57,6 +63,11 @@ public class RaceHorseServiceImpl implements RaceHorseService {
             throw new RuntimeException("Jockey already assigned in this race");
         }
 
+        if (race.getRegistrationDeadline() != null &&
+                Instant.now().isAfter(race.getRegistrationDeadline())) {
+            throw new RuntimeException("Registration deadline has passed");
+        }
+
         long registered = raceHorseRepository.countByRace_IdAndStatus(race.getId(), "Approved");
         if (race.getCapacity() != null && registered >= race.getCapacity()) {
             throw new RuntimeException("Race is full");
@@ -68,6 +79,14 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                 .jockey(jockey)  // ← thêm
                 .status("Pending")
                 .build();
+
+        notificationService.sendToAllAdmins(
+                "New Race Registration",
+                String.format("Horse '%s' requested to join race '%s'",
+                        horse.getHorseName(), race.getRaceName()),
+                NotificationType.RACE_REGISTRATION,  // ← truyền enum trực tiếp
+                raceHorse.getId()
+        );
 
         return mapToResponse(raceHorseRepository.save(raceHorse));
     }
@@ -93,9 +112,19 @@ public class RaceHorseServiceImpl implements RaceHorseService {
 
     @Override
     public RaceHorseResponse approveHorse(Long raceHorseId) {
+
+
         RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
         raceHorse.setStatus("Approved");
+
+        notificationService.sendToUser(raceHorse.getHorse().getOwnerId(),
+                "Registration Approved!",
+                String.format("Your horse '%s' has been approved!",
+                        raceHorse.getHorse().getHorseName()),
+                NotificationType.RACE_APPROVED,  // ← truyền enum trực tiếp
+                raceHorseId
+        );
         return mapToResponse(raceHorseRepository.save(raceHorse));
     }
 
@@ -104,10 +133,24 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
         raceHorse.setStatus("Rejected");
+
+        notificationService.sendToUser(
+                raceHorse.getHorse().getOwnerId(),
+                "Registration Rejected",
+                String.format("Your horse '%s' has been rejected",
+                        raceHorse.getHorse().getHorseName()),
+                NotificationType.RACE_REJECTED,
+                raceHorseId
+        );
         return mapToResponse(raceHorseRepository.save(raceHorse));
     }
 
     private RaceHorseResponse mapToResponse(RaceHorse raceHorse) {
+        BigDecimal totalBet = betItemRepository
+                .getTotalBetAmountByRaceHorse(raceHorse.getId());
+        Long totalCount = betItemRepository
+                .getTotalBetCountByRaceHorse(raceHorse.getId());
+
         return RaceHorseResponse.builder()
                 .id(raceHorse.getId())
                 .raceId(raceHorse.getRace().getId())
@@ -120,6 +163,9 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                 .startPosition(raceHorse.getStartPosition())
                 .status(raceHorse.getStatus())
                 .registerAt(raceHorse.getRegisterAt())
+                .totalBetAmount(totalBet != null ? totalBet : BigDecimal.ZERO)
+                .totalBetCount(totalCount != null ? totalCount : 0L)
+                .odds(BigDecimal.valueOf(2.0))  // sau này tính động
                 .build();
     }
 }

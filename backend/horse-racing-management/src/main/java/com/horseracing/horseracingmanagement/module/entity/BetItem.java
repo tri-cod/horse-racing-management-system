@@ -47,5 +47,8 @@ public class BetItem {
     @Column(name = "result_status", nullable = false, length = 20)
     private String resultStatus;
 
+    @Column(name = "payout", precision = 12, scale = 2)
+    private BigDecimal payout;
+
 
 }

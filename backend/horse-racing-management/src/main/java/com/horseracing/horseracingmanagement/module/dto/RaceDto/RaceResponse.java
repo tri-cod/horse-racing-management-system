@@ -21,6 +21,7 @@ public class RaceResponse {
     private Long capacity;
     private String bannerImageurl;
     private String status;
+    private Instant registrationDeadline;
     private Instant createdAt;
     private Instant updatedAt;
 
