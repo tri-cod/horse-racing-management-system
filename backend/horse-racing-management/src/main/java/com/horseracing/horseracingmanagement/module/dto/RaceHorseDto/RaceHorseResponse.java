@@ -3,6 +3,7 @@ package com.horseracing.horseracingmanagement.module.dto.RaceHorseDto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 // Response
@@ -20,4 +21,9 @@ public class RaceHorseResponse {
     private Long startPosition;
     private String status;
     private Instant registerAt;
+
+    // ← thêm để hiển thị cạnh con ngựa
+    private BigDecimal totalBetAmount;  // tổng tiền đang được bet vào con này
+    private Long totalBetCount;         // số người đang bet
+    private BigDecimal odds;
 }

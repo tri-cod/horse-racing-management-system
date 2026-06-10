@@ -18,6 +18,7 @@ import java.time.Instant;
 @Table(name = "bet")
 public class Bet {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -26,6 +27,11 @@ public class Bet {
     @ColumnDefault("nextval('bet_race_id_seq')")
     @JoinColumn(name = "race_id", nullable = false)
     private Race race;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "total_amount", precision = 12, scale = 2)
     private BigDecimal totalAmount;

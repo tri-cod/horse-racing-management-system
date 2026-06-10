@@ -92,6 +92,70 @@ DROP TABLE IF EXISTS trainer CASCADE;
 
 ALTER TABLE race ADD COLUMN registration_deadline TIMESTAMP;
 
+ALTER TABLE notification DROP COLUMN type;
+ALTER TABLE notification ADD COLUMN type VARCHAR(50);
+
+ALTER TABLE bet
+    ADD COLUMN user_id BIGINT NOT NULL;
+
+ALTER TABLE bet
+    ADD CONSTRAINT fk_bet_user
+        FOREIGN KEY (user_id)
+            REFERENCES users(user_id);
+
+-- Bet
+DROP TABLE IF EXISTS bet CASCADE;
+CREATE TABLE bet (
+                     id           BIGSERIAL PRIMARY KEY,
+                     race_id      BIGINT NOT NULL REFERENCES race(id),
+                     user_id      BIGINT NOT NULL REFERENCES users(user_id),
+                     total_amount NUMERIC(12,2),
+                     status       VARCHAR(20) DEFAULT 'PENDING',
+                     created_at   TIMESTAMP DEFAULT NOW()
+);
+
+-- BetItem
+DROP TABLE IF EXISTS bet_items CASCADE;
+CREATE TABLE bet_items (
+                           id             BIGSERIAL PRIMARY KEY,
+                           bet_id         BIGINT NOT NULL REFERENCES bet(id),
+                           race_horse_id  BIGINT NOT NULL REFERENCES race_horse(id),
+                           bet_amount     BIGINT NOT NULL,
+                           odds           NUMERIC(10,2) DEFAULT 2.0,
+                           result_status  VARCHAR(20) DEFAULT 'PENDING',
+                           payout         NUMERIC(12,2) DEFAULT 0
+);
+
+-- TransactionRequest
+DROP TABLE IF EXISTS transaction_request CASCADE;
+CREATE TABLE transaction_request (
+                                     id               BIGSERIAL PRIMARY KEY,
+                                     user_id          BIGINT NOT NULL REFERENCES users(user_id),
+                                     request_type     VARCHAR(20) NOT NULL,
+                                     amount           BIGINT NOT NULL,
+                                     request_status   VARCHAR(20) DEFAULT 'PENDING',
+                                     payment_method   VARCHAR(20),
+                                     reference_code   VARCHAR(50) UNIQUE,
+                                     qr_url           TEXT,
+                                     verify_note      VARCHAR(255),
+                                     processedby      VARCHAR(50),
+                                     created_at       TIMESTAMP DEFAULT NOW(),
+                                     processedat      TIMESTAMP
+);
+
+-- RaceResult
+DROP TABLE IF EXISTS race_result CASCADE;
+CREATE TABLE race_result (
+                             id              BIGSERIAL PRIMARY KEY,
+                             race_id         BIGINT NOT NULL REFERENCES race(id),
+                             race_horse_id   BIGINT NOT NULL REFERENCES race_horse(id),
+                             rank            BIGINT,
+                             completiontime  TIMESTAMP,
+                             rewards         BIGINT DEFAULT 0
+);
+
+-- Wallet fix (thêm DEFAULT 0)
+ALTER TABLE wallet ALTER COLUMN balance SET DEFAULT 0;
 
 CREATE TABLE trainer (
                          id BIGSERIAL PRIMARY KEY,

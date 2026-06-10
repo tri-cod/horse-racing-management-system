@@ -1,11 +1,9 @@
 package com.horseracing.horseracingmanagement.module.entity;
-
-import com.horseracing.horseracingmanagement.common.constant.NoiStatus;
+import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
@@ -40,8 +38,9 @@ public class Notification {
     @Column(name = "is_read")
     private Boolean isRead = false;  // ← thêm
 
-    @Column(name = "type", length = 50)
-    private NoiStatus type;  // ← thêm: RACE_REGISTRATION, APPROVED, REJECTED
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private NotificationType type;
 
     @Column(name = "reference_id")
     private Long referenceId;  // ← id của RaceHorse để admin biết duyệt cái nào

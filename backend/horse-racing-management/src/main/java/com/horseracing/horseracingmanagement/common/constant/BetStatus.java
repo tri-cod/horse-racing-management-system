@@ -1,4 +1,4 @@
 package com.horseracing.horseracingmanagement.common.constant;
 
-public enum NoiStatus {
+public enum BetStatus {
 }

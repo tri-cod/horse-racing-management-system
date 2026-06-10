@@ -30,6 +30,8 @@ public class RaceHorseController {
     public ResponseEntity<ApiResponse<RaceHorseResponse>> registerHorseToRace(
             @Valid @RequestBody RegisterRaceHorseRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Horse registered to race successfully",
                         raceHorseService.registerHorseToRace(request, userDetails.getId())));

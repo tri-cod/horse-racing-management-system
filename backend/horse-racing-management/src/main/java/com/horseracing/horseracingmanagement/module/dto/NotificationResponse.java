@@ -1,4 +1,4 @@
-package com.horseracing.horseracingmanagement.module.dto;
+    package com.horseracing.horseracingmanagement.module.dto;
 
 import lombok.Builder;
 import lombok.Data;

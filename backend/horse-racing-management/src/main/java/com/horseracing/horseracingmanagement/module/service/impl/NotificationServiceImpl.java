@@ -1,6 +1,6 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
-import com.horseracing.horseracingmanagement.common.constant.NoiStatus;
+import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RoleName;
 import com.horseracing.horseracingmanagement.module.dto.NotificationResponse;
 import com.horseracing.horseracingmanagement.module.entity.Notification;
@@ -20,10 +20,11 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final WebSocketNotificationService wsNotificationService;
 
     @Override
     public void sendToUser(Long userId, String title, String content,
-                           String type, Long referenceId) {
+                           NotificationType type, Long referenceId) {  // ← đổi String → NoiStatus
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -31,30 +32,34 @@ public class NotificationServiceImpl implements NotificationService {
                 .user(user)
                 .title(title)
                 .content(content)
-                .type(type)
+                .type(type)  // ← truyền thẳng enum, không cần valueOf
                 .referenceId(referenceId)
                 .isRead(false)
                 .build();
-
         notificationRepository.save(notification);
+
+        wsNotificationService.sendToUser(user.getUsername(), mapToResponse(notification));
     }
 
     @Override
     public void sendToAllAdmins(String title, String content,
-                                String type, Long referenceId) {
-        // Lấy tất cả user có role ADMIN
+                                NotificationType type, Long referenceId) {  // ← đổi String → NoiStatus
         List<User> admins = userRepository.findByRole_Rolename(RoleName.ADMIN);
-        admins.forEach(admin ->
-                notificationRepository.save(Notification.builder()
-                        .user(admin)
-                        .title(title)
-                        .content(content)
-                        .type(NoiStatus.valueOf(type))
-                        .referenceId(referenceId)
-                        .isRead(false)
-                        .build())
-        );
+        admins.forEach(admin -> {
+            Notification notification = notificationRepository.save(
+                    Notification.builder()
+                            .user(admin)
+                            .title(title)
+                            .content(content)
+                            .type(type)  // ← truyền thẳng enum
+                            .referenceId(referenceId)
+                            .isRead(false)
+                            .build()
+            );
+            wsNotificationService.sendToUser(admin.getUsername(), mapToResponse(notification));
+        });
     }
+
 
     @Override
     public List<NotificationResponse> getMyNotifications(Long userId) {
