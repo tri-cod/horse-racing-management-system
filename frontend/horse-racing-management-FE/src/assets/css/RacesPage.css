@@ -1,0 +1,98 @@
+.races-page {
+  min-height: 100vh;
+}
+
+.races-page__hero {
+  background: var(--bg-dark);
+  padding-block: var(--space-12);
+}
+
+.races-page__hero-inner {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.races-page__eyebrow {
+  color: var(--accent) !important;
+}
+
+.races-page__hero-title {
+  font-size: var(--fs-hero);
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  line-height: var(--lh-tight);
+}
+
+.races-page__hero-subtitle {
+  font-size: 1.125rem;
+  color: var(--black-40);
+  max-width: 480px;
+  line-height: var(--lh-base);
+  margin: 0;
+}
+
+.races-page__content {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: var(--space-8) clamp(1rem, 4vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.races-page__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.races-page__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+}
+
+@media (max-width: 1024px) {
+  .races-page__grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .races-page__grid { grid-template-columns: 1fr; }
+}
+
+.races-page__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--error-bg);
+  border: 1px solid var(--error);
+  border-radius: var(--radius);
+  font-size: var(--fs-small);
+  color: var(--error);
+  font-weight: 500;
+}
+
+.races-page__error button {
+  background: var(--error);
+  border: 1px solid var(--error);
+  border-radius: var(--radius);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--white);
+  transition: background var(--transition);
+}
+
+.races-page__error button:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}

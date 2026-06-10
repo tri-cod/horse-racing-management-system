@@ -1,0 +1,24 @@
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+}
+
+.spinner--sm { padding: var(--space-4); }
+.spinner--lg { padding: var(--space-12); }
+
+.spinner__circle {
+  border-radius: 50%;
+  border: 3px solid var(--ocean-100);
+  border-top-color: var(--primary);
+  animation: spin 0.7s linear infinite;
+}
+
+.spinner--sm .spinner__circle { width: 24px; height: 24px; }
+.spinner--md .spinner__circle { width: 40px; height: 40px; }
+.spinner--lg .spinner__circle { width: 56px; height: 56px; }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

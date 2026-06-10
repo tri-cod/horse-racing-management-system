@@ -318,28 +318,29 @@
 }
 
 .rg-form__input--error {
-  border-color: var(--black-90);
+  border-color: var(--error);
 }
 
 .rg-form__input--error:focus {
-  border-color: var(--black-90);
+  border-color: var(--error);
 }
 
 .rg-form__error {
   font-size: var(--fs-xs);
-  color: var(--black-90);
+  color: var(--error);
   font-weight: 600;
   margin-top: var(--space-1);
 }
 
 .rg-form__api-error {
   font-size: var(--fs-small);
-  color: var(--black-90);
-  background: var(--black-5);
-  border: 1.5px solid var(--black-20);
+  color: var(--error);
+  background: var(--error-bg);
+  border: 1.5px solid var(--error);
   border-radius: var(--radius-sm);
   padding: var(--space-3) var(--space-4);
   margin-bottom: var(--space-4);
+  font-weight: 500;
 }
 
 .rg-form__submit:disabled {
@@ -490,11 +491,11 @@
 }
 
 .rg-otp__input--error {
-  border-color: var(--black-90);
+  border-color: var(--error);
 }
 
 .rg-otp__input--error:focus {
-  box-shadow: 0 0 0 3px var(--black-10);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
 }
 
 .rg-verify-card__otp-error {
