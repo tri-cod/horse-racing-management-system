@@ -34,7 +34,7 @@ public class RaceServiceImpl implements RaceService {
         Race race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
-        if (!race.getStatus().equals("Upcoming")) {
+        if (race.getStatus() != RaceStatus.UPCOMING) {
             throw new RuntimeException("Race is not in Upcoming status");
         }
 
@@ -193,7 +193,7 @@ public class RaceServiceImpl implements RaceService {
                 .location(race.getLocation())
                 .capacity(race.getCapacity())
                 .bannerImageurl(race.getBannerImageurl())
-                .status(race.getStatus().name())
+                .status(race.getStatus() != null ? race.getStatus().name() : null)
                 .registrationDeadline(race.getRegistrationDeadline())
                 .createdAt(race.getCreatedAt())
                 .updatedAt(race.getUpdatedAt())

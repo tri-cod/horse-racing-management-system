@@ -21,7 +21,7 @@ export function useLogin() {
       return result;
     } catch (err) {
       console.error('LOGIN ERROR:', err);
-      setError(err.message || 'Login failed. Please try again.');
+      setError(err.response?.data?.message || err.message || 'Login failed. Please try again.');
       return null;
     } finally {
       setLoading(false);

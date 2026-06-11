@@ -120,7 +120,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
       location: form.location.trim(),
       capacity: Number(form.capacity),
       bannerImageurl: form.bannerImageurl.trim(),
-      status: mode === 'create' ? 'Upcoming' : (initialValues?.status ?? 'Upcoming'),
+      status: mode === 'create' ? 'UPCOMING' : (initialValues?.status ?? 'UPCOMING'),
     };
 
     // Chỉ gửi refereeId nếu admin có nhập (giá trị khác chuỗi rỗng)

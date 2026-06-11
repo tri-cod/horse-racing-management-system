@@ -30,7 +30,11 @@ axiosInstance.interceptors.response.use(
       localStorage.removeItem('accessToken');
       localStorage.removeItem('tokenType');
       localStorage.removeItem('user');
-      if (!['/login', '/register', '/forgot-password'].includes(window.location.pathname)) {
+      const path = window.location.pathname;
+      const isPublicPath =
+        ['/', '/login', '/register', '/forgot-password', '/races', '/jockeys'].includes(path) ||
+        path.startsWith('/races/');
+      if (!isPublicPath) {
         window.location.href = '/login';
       }
     }

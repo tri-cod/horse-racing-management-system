@@ -281,9 +281,9 @@
 }
 
 .login-error {
-  color: var(--black-90);
-  background: var(--black-5);
-  border: 1px solid var(--black-20);
+  color: var(--error);
+  background: var(--error-bg);
+  border: 1px solid var(--error);
   border-radius: var(--radius-sm);
   padding: var(--space-3) var(--space-4);
   font-size: var(--fs-small);

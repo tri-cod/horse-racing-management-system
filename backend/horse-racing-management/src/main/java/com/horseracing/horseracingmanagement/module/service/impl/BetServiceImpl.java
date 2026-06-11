@@ -1,6 +1,7 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
+import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.module.dto.Bet.*;
 import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
@@ -34,7 +35,7 @@ public class BetServiceImpl implements BetService {
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
         // Check race đang mở bet không
-        if (!race.getStatus().equals("Upcoming") && !race.getStatus().equals("Ongoing")) {
+        if (race.getStatus() != RaceStatus.UPCOMING && race.getStatus() != RaceStatus.ONGOING) {
             throw new RuntimeException("Race is not open for betting");
         }
 

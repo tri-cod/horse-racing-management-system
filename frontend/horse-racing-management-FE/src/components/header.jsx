@@ -1,6 +1,6 @@
 import { useState, useContext, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, User, LogOut } from 'lucide-react';
+import { Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react';
 import '../assets/css/Header.css';
 import { AuthContext } from '../context/AuthContext';
 import Button from './ui/Button';
@@ -9,10 +9,7 @@ import Container from './ui/Container';
 const NAV_ITEMS = [
   { label: 'Home', href: '/' },
   { label: 'Races', href: '/races' },
-  { label: 'Horses', href: '/horses' },
   { label: 'Jockeys', href: '/jockeys' },
-  { label: 'News', href: '/news' },
-  { label: 'Contact', href: '/contact' },
 ];
 
 function Header() {
@@ -82,13 +79,46 @@ function Header() {
               </li>
             ))}
             {user?.role === 'HORSE_OWNER' && (
+              <>
+                <li className="header__nav-item">
+                  <Link
+                    to="/horse-owner/horses"
+                    className={pathname.startsWith('/horse-owner/horses') ? 'active' : ''}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    My Horses
+                  </Link>
+                </li>
+                <li className="header__nav-item">
+                  <Link
+                    to="/horse-owner/race-registrations"
+                    className={pathname === '/horse-owner/race-registrations' ? 'active' : ''}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    My Registrations
+                  </Link>
+                </li>
+              </>
+            )}
+            {user?.role === 'REFEREE' && (
               <li className="header__nav-item">
                 <Link
-                  to="/horse-owner/horses"
-                  className={pathname.startsWith('/horse-owner/horses') ? 'active' : ''}
+                  to="/races"
+                  className={pathname === '/races' ? 'active' : ''}
                   onClick={() => setMenuOpen(false)}
                 >
-                  My Horses
+                  Race Control
+                </Link>
+              </li>
+            )}
+            {user?.role === 'TRAINER' && (
+              <li className="header__nav-item">
+                <Link
+                  to="/trainer/profile"
+                  className={pathname === '/trainer/profile' ? 'active' : ''}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  My Profile
                 </Link>
               </li>
             )}
@@ -116,6 +146,16 @@ function Header() {
                   <User size={16} />
                   <span>My Profile</span>
                 </button>
+                {user?.role === 'ADMIN' && (
+                  <button
+                    type="button"
+                    className="header__dropdown-item"
+                    onClick={() => { navigate('/admin/users'); setDropdownOpen(false); }}
+                  >
+                    <LayoutDashboard size={16} />
+                    <span>Admin Panel</span>
+                  </button>
+                )}
                 <button type="button" className="header__dropdown-item header__dropdown-item--danger" onClick={handleLogout}>
                   <LogOut size={16} />
                   <span>Log Out</span>

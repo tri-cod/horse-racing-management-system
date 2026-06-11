@@ -1,10 +1,10 @@
 import { useContext, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { Edit, Trash2, Plus, XCircle } from 'lucide-react';
+import { Edit, Trash2, Plus, XCircle, Play, Flag } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { useRaceDetail } from '../hooks/useRaceDetail';
 import { useToast } from '../components/ui/ToastProvider';
-import { deleteRace, updateRace } from '../api/raceApi';
+import { deleteRace, updateRace, startRace, finishRace } from '../api/raceApi';
 import { computeRaceStatus } from '../utils/raceStatus';
 import RaceStatusBadge from '../components/race/RaceStatusBadge';
 import RaceMetaStrip from '../components/race/RaceMetaStrip';
@@ -26,8 +26,12 @@ export default function RaceDetailPage() {
   const [showRegModal, setShowRegModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [showStartConfirm, setShowStartConfirm] = useState(false);
+  const [showFinishConfirm, setShowFinishConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [starting, setStarting] = useState(false);
+  const [finishing, setFinishing] = useState(false);
 
   const handleDelete = async () => {
     setDeleting(true);
@@ -57,6 +61,34 @@ export default function RaceDetailPage() {
     }
   };
 
+  const handleStart = async () => {
+    setStarting(true);
+    try {
+      await startRace(id);
+      addToast('Race started!', 'success');
+      refetch();
+    } catch (e) {
+      addToast(e.response?.data?.message || 'Failed to start race.', 'error');
+    } finally {
+      setStarting(false);
+      setShowStartConfirm(false);
+    }
+  };
+
+  const handleFinish = async () => {
+    setFinishing(true);
+    try {
+      await finishRace(id);
+      addToast('Race finished!', 'success');
+      refetch();
+    } catch (e) {
+      addToast(e.response?.data?.message || 'Failed to finish race.', 'error');
+    } finally {
+      setFinishing(false);
+      setShowFinishConfirm(false);
+    }
+  };
+
   if (loading) return <LoadingSpinner size="lg" />;
   if (error) return (
     <div className="race-detail-page__error">
@@ -68,9 +100,12 @@ export default function RaceDetailPage() {
 
   const isAdmin = user?.role === 'ADMIN';
   const isOwner = user?.role === 'HORSE_OWNER';
+  const isReferee = user?.role === 'REFEREE';
   const computedStatus = computeRaceStatus(race);
   const canRegister = isOwner && computedStatus === 'UPCOMING';
   const canCancel = isAdmin && computedStatus === 'UPCOMING';
+  const canStart = (isAdmin || isReferee) && computedStatus === 'UPCOMING';
+  const canFinish = (isAdmin || isReferee) && computedStatus === 'ONGOING';
 
   return (
     <div className="race-detail-page">
@@ -93,6 +128,16 @@ export default function RaceDetailPage() {
         <div className="race-detail-page__actions">
           <RaceStatusBadge race={race} size="lg" />
           <div className="race-detail-page__actions-btns">
+            {canStart && (
+              <Button variant="primary" size="sm" onClick={() => setShowStartConfirm(true)}>
+                <Play size={15} /> Start Race
+              </Button>
+            )}
+            {canFinish && (
+              <Button variant="primary" size="sm" onClick={() => setShowFinishConfirm(true)}>
+                <Flag size={15} /> Finish Race
+              </Button>
+            )}
             {isAdmin && (
               <>
                 <Link to={`/admin/races/${id}/edit`}>
@@ -157,6 +202,28 @@ export default function RaceDetailPage() {
         message="This race will be marked as cancelled. Registered horse owners will be notified."
         confirmLabel="Cancel Race"
         variant="danger"
+      />
+
+      <ConfirmDialog
+        open={showStartConfirm}
+        onClose={() => setShowStartConfirm(false)}
+        onConfirm={handleStart}
+        loading={starting}
+        title="Start Race?"
+        message="Once started, betting will close and registration is final. Proceed?"
+        confirmLabel="Start Race"
+        variant="warning"
+      />
+
+      <ConfirmDialog
+        open={showFinishConfirm}
+        onClose={() => setShowFinishConfirm(false)}
+        onConfirm={handleFinish}
+        loading={finishing}
+        title="Finish Race?"
+        message="This will end the race. Results can then be submitted by the referee."
+        confirmLabel="Finish Race"
+        variant="warning"
       />
     </div>
   );
