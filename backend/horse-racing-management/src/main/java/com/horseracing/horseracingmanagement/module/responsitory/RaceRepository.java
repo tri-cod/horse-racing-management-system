@@ -6,10 +6,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.Instant;
 import java.util.List;
 
 public interface RaceRepository extends JpaRepository<Race, Long> {
     Page<Race> findAll(Pageable pageable);
-    Page<Race> findByStatus(String status, Pageable pageable);
+
+    // ← chỉ dùng RaceStatus enum, bỏ String version
+    Page<Race> findByStatus(RaceStatus status, Pageable pageable);
     List<Race> findByStatus(RaceStatus status);
+
+    // ← thêm để scheduler dùng
+    List<Race> findByStatusAndStartTimeBefore(RaceStatus status, Instant time);
 }

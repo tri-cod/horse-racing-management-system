@@ -26,7 +26,7 @@ public interface UserRepository  extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
     List<User> findByRole_Rolename(RoleName rolename);
-
+    Optional<User> findFirstByRole_Rolename(RoleName roleName);
 
 
     @Query("""

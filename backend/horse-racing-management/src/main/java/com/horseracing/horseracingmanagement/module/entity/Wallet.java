@@ -16,17 +16,14 @@ import java.math.BigDecimal;
 @Table(name = "wallet")
 public class Wallet {
     @Id
-    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @MapsId
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)  // ← bỏ @MapsId
     private User user;
 
     @Column(name = "balance", precision = 10, scale = 2)
-    private BigDecimal balance;
-
-
+    private BigDecimal balance = BigDecimal.ZERO;
 }

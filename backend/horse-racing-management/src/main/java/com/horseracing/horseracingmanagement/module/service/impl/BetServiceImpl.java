@@ -2,6 +2,7 @@ package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
+import com.horseracing.horseracingmanagement.common.constant.RoleName;
 import com.horseracing.horseracingmanagement.module.dto.Bet.*;
 import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,9 +36,15 @@ public class BetServiceImpl implements BetService {
         Race race = raceRepository.findById(request.getRaceId())
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
-        // Check race đang mở bet không
-        if (race.getStatus() != RaceStatus.UPCOMING && race.getStatus() != RaceStatus.ONGOING) {
+        // ← chỉ OPEN_REGISTRATION mới được bet
+        if (race.getStatus() != RaceStatus.OPEN_REGISTRATION) {
             throw new RuntimeException("Race is not open for betting");
+        }
+
+        // Check deadline
+        if (race.getRegistrationDeadline() != null &&
+                Instant.now().isAfter(race.getRegistrationDeadline())) {
+            throw new RuntimeException("Registration deadline has passed");
         }
 
         // Tính tổng tiền bet
@@ -103,30 +111,31 @@ public class BetServiceImpl implements BetService {
         });
 
         return mapToResponse(savedBet, betItems);
-
     }
 
     // System tự tính sau khi referee confirm kết quả
     @Transactional
     public void calculateBetResults(Long raceId) {
-        // Lấy kết quả race — con ngựa về nhất
         RaceResult winner = raceResultRepository.findByRace_IdOrderByRankAsc(raceId)
                 .stream().findFirst()
                 .orElseThrow(() -> new RuntimeException("Race result not found"));
 
         Long winnerRaceHorseId = winner.getRaceHorse().getId();
-
-        // Lấy tất cả bet PENDING của race này
         List<Bet> bets = betRepository.findByRaceIdAndStatus(raceId, "PENDING");
+
+        // ← tìm wallet admin để nhận tiền thua
+        User adminUser = userRepository.findFirstByRole_Rolename(RoleName.ADMIN)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        Wallet adminWallet = walletRepository.findByUser_Id(adminUser.getId())
+                .orElseThrow(() -> new RuntimeException("Admin wallet not found"));
 
         bets.forEach(bet -> {
             List<BetItem> items = betItemRepository.findByBet_Id(bet.getId());
             boolean hasWon = false;
             BigDecimal totalPayout = BigDecimal.ZERO;
-
+            BigDecimal totalLost = BigDecimal.ZERO;
             for (BetItem item : items) {
                 if (item.getRaceHorse().getId().equals(winnerRaceHorseId)) {
-                    // Bet đúng → tính tiền thắng
                     BigDecimal payout = BigDecimal.valueOf(item.getBetAmount())
                             .multiply(item.getOdds());
                     item.setResultStatus("WON");
@@ -136,44 +145,45 @@ public class BetServiceImpl implements BetService {
                 } else {
                     item.setResultStatus("LOST");
                     item.setPayout(BigDecimal.ZERO);
+                    totalLost = totalLost.add(BigDecimal.valueOf(item.getBetAmount()));  // ← tính tiền thua
                 }
                 betItemRepository.save(item);
             }
 
-            // Cập nhật status bet
             bet.setStatus(hasWon ? "WON" : "LOST");
             betRepository.save(bet);
 
-            // Nếu thắng → cộng tiền vào wallet
             if (hasWon && totalPayout.compareTo(BigDecimal.ZERO) > 0) {
-                Wallet wallet = walletRepository.findByUser_Id(bet.getUser().getId())
-                        .orElseThrow();
+                Wallet wallet = walletRepository.findByUser_Id(bet.getUser().getId()).orElseThrow();
                 wallet.setBalance(wallet.getBalance().add(totalPayout));
                 walletRepository.save(wallet);
 
-                // Gửi notification
                 notificationService.sendToUser(
                         bet.getUser().getId(),
                         "🏆 You Won!",
                         String.format("Congratulations! You won %s from race '%s'",
                                 totalPayout, bet.getRace().getRaceName()),
-                        NotificationType.RACE_RESULT_PUBLISHED,
-                        raceId
+                        NotificationType.RACE_RESULT_PUBLISHED, raceId
                 );
             } else {
+                // ← tiền thua chuyển vào wallet admin
+                adminWallet.setBalance(adminWallet.getBalance().add(totalLost));
+
                 notificationService.sendToUser(
                         bet.getUser().getId(),
                         "Race Result",
-                        String.format("Better luck next time! Your bet on race '%s' did not win.",
-                                bet.getRace().getRaceName()),
-                        NotificationType.RACE_RESULT_PUBLISHED,
-                        raceId
+                        String.format("Better luck next time! You lost %s on race '%s'.",
+                                totalLost, bet.getRace().getRaceName()),
+                        NotificationType.RACE_RESULT_PUBLISHED, raceId
                 );
             }
         });
+
+        // ← save admin wallet sau khi tính hết
+        walletRepository.save(adminWallet);
     }
 
-    @Override
+            @Override
     public List<BetResponse> getMyBets(Long userId) {
         List<Bet> bets = betRepository.findByUserId(userId);
         return bets.stream()
