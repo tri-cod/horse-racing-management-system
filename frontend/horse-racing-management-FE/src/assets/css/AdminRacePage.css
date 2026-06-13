@@ -1,0 +1,24 @@
+.admin-race-page {
+  min-height: 100vh;
+}
+
+.admin-race-page__content {
+  max-width: 800px;
+  margin-inline: auto;
+  padding: var(--space-10) clamp(1rem, 4vw, 2rem);
+}
+
+.admin-race-page__error {
+  max-width: 480px;
+  margin: var(--space-12) auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.admin-race-page__error p {
+  color: var(--error);
+  font-weight: 500;
+}

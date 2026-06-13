@@ -1,0 +1,30 @@
+.jockey-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.jockey-selector__select {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #0f172a;
+  background-color: var(--card);
+  cursor: pointer;
+}
+
+.jockey-selector__select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.jockey-selector__hint {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.jockey-selector__hint--error {
+  color: #b91c1c;
+}
