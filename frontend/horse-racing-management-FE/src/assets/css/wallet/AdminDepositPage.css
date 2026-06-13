@@ -1,0 +1,146 @@
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.admin-deposit-page { min-height: 100vh; }
+
+.admin-deposit-page__hero { background: var(--bg-dark); padding-block: var(--space-8); }
+.admin-deposit-page__hero-inner {
+  max-width: var(--container); margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+  display: flex; flex-direction: column; gap: var(--space-4);
+}
+.admin-deposit-page__eyebrow { color: var(--accent) !important; }
+.admin-deposit-page__title {
+  font-size: var(--fs-hero); font-weight: 700; color: var(--white);
+  letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
+}
+.admin-deposit-page__sub { font-size: 1.125rem; color: var(--black-40); max-width: 480px; margin: 0; }
+
+.admin-deposit-page__body {
+  max-width: var(--container); margin-inline: auto;
+  padding: var(--space-8) clamp(1rem, 4vw, 2rem);
+  display: flex; flex-direction: column; gap: var(--space-5);
+}
+
+/* Toast */
+.admin-deposit-page__toast {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background: #dcfce7; border: 1px solid #86efac;
+  border-radius: var(--radius); font-size: var(--fs-small); color: #15803d; font-weight: 500;
+  animation: fadein .3s ease;
+}
+@keyframes fadein { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+
+/* Toolbar */
+.admin-deposit-page__toolbar {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-3);
+}
+.admin-deposit-page__count {
+  display: flex; align-items: center; gap: var(--space-2);
+  font-size: var(--fs-small); color: var(--text-muted);
+}
+.admin-deposit-page__count strong { color: var(--text); }
+
+/* Error */
+.admin-deposit-page__error {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-4); background: #fee2e2; border: 1px solid #fca5a5;
+  border-radius: var(--radius); font-size: var(--fs-small); color: #dc2626;
+}
+.admin-deposit-page__error button {
+  margin-left: auto; background: #dc2626; border: none; border-radius: var(--radius);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-small); font-weight: 600; color: var(--white); cursor: pointer;
+}
+
+/* Skeleton */
+.admin-deposit-page__skeletons { display: flex; flex-direction: column; gap: var(--space-3); }
+.deposit-skeleton {
+  height: 64px; border-radius: var(--radius);
+  background: linear-gradient(90deg, var(--black-5) 25%, var(--black-10) 50%, var(--black-5) 75%);
+  background-size: 200% 100%; animation: skel 1.4s ease-in-out infinite;
+}
+@keyframes skel { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* Empty */
+.admin-deposit-page__empty {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding: var(--space-12) var(--space-6); gap: var(--space-3);
+  color: #16a34a;
+}
+.admin-deposit-page__empty h3 { font-size: var(--fs-h3); color: var(--text); }
+.admin-deposit-page__empty p { font-size: var(--fs-small); color: var(--text-muted); margin: 0; }
+
+/* Table */
+.deposit-table-wrap {
+  overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.deposit-table { width: 100%; border-collapse: collapse; font-size: var(--fs-small); }
+.deposit-table thead th {
+  padding: var(--space-3) var(--space-4); text-align: left;
+  font-size: var(--fs-xs); font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: var(--tracking-wide);
+  background: var(--black-5); border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+.deposit-table__row td {
+  padding: var(--space-4) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  color: var(--text); vertical-align: middle;
+}
+.deposit-table__row:last-child td { border-bottom: none; }
+.deposit-table__row:hover td { background: var(--black-5); }
+
+.deposit-table__user { display: flex; align-items: center; gap: var(--space-3); }
+.deposit-table__avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--primary); color: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-small); font-weight: 700; flex-shrink: 0;
+}
+.deposit-table__username { display: block; font-weight: 600; color: var(--text); }
+.deposit-table__email { display: block; font-size: var(--fs-xs); color: var(--text-muted); }
+.deposit-table__amount { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text); }
+.deposit-table__ref {
+  padding: 3px 8px; background: var(--black-5); border-radius: var(--radius-sm);
+  font-size: var(--fs-xs); color: var(--text); font-family: monospace;
+}
+.deposit-table__method { color: var(--text-muted); }
+.deposit-table__date { font-size: var(--fs-xs); color: var(--text-muted); white-space: nowrap; }
+
+.deposit-table__actions { display: flex; gap: var(--space-2); }
+.deposit-table__btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: var(--space-1) var(--space-3); border-radius: var(--radius);
+  border: none; font-size: var(--fs-xs); font-weight: 600; cursor: pointer;
+  transition: all var(--transition);
+}
+.deposit-table__btn--approve { background: #dcfce7; color: #15803d; }
+.deposit-table__btn--approve:hover { background: #15803d; color: var(--white); }
+.deposit-table__btn--reject { background: #fee2e2; color: #dc2626; }
+.deposit-table__btn--reject:hover { background: #dc2626; color: var(--white); }
+
+/* Note modal */
+.admin-note-modal__body { display: flex; flex-direction: column; gap: var(--space-4); }
+.admin-note-modal__field { display: flex; flex-direction: column; gap: var(--space-1); }
+.admin-note-modal__label {
+  font-size: var(--fs-xs); font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: var(--tracking-wide);
+}
+.admin-note-modal__textarea {
+  width: 100%; padding: var(--space-3);
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  font-family: var(--font-sans); font-size: var(--fs-small);
+  resize: vertical; box-sizing: border-box; outline: none;
+  transition: border-color var(--transition);
+}
+.admin-note-modal__textarea:focus { border-color: var(--primary); }
+.admin-note-modal__actions { display: flex; justify-content: flex-end; gap: var(--space-3); }
+.admin-note-modal__btn-reject {
+  background: #dc2626; color: var(--white); border: none;
+  padding: 0.5rem 1.25rem; border-radius: var(--radius);
+  font-size: var(--fs-small); font-weight: 600; cursor: pointer;
+  transition: background var(--transition);
+}
+.admin-note-modal__btn-reject:hover { background: #b91c1c; }
+.admin-note-modal__btn-reject:disabled { opacity: .6; cursor: not-allowed; }

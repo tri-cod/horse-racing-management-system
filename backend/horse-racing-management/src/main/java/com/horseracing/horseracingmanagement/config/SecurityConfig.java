@@ -11,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,6 +34,8 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
 
     private static final String[] PUBLIC_URLS = {
+            "/error",
+            "/uploads/**",
             "/v3/api-docs.yaml",
             "/api/auth/**",
             "/api/health",
@@ -40,7 +43,11 @@ public class SecurityConfig {
             "/api/categories/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            
+            "/api/races/**",        // ← THÊM
+            "/api/race-horse/**",   // ← THÊM
+            "/api/jockeys/**",      // ← THÊM
     };
 
     @Bean
@@ -48,6 +55,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> {})
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(PUBLIC_URLS).permitAll()

@@ -34,7 +34,7 @@ public class BetServiceImpl implements BetService {
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
         // Check race đang mở bet không
-        if (!race.getStatus().equals("Upcoming") && !race.getStatus().equals("Ongoing")) {
+        if (race.getStatus() != com.horseracing.horseracingmanagement.common.constant.RaceStatus.ONGOING) {
             throw new RuntimeException("Race is not open for betting");
         }
 

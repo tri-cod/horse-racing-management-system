@@ -23,7 +23,7 @@ public class RedisConfig {
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration config =
-                new RedisStandaloneConfiguration("172.20.25.195", 6379); // đổi thành 127.0.0.1
+                new RedisStandaloneConfiguration(host, port); // đổi thành 127.0.0.1
         return new LettuceConnectionFactory(config);
     }
 

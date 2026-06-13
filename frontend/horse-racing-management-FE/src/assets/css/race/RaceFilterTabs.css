@@ -1,0 +1,34 @@
+.race-filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.race-filter-tabs__tab {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.race-filter-tabs__tab:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.race-filter-tabs__tab--active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--white);
+}
+
+.race-filter-tabs__tab--active:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  color: var(--white);
+}

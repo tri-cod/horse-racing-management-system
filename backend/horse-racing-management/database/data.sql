@@ -431,12 +431,3 @@ CREATE TABLE IF NOT EXISTS payment_transaction(
     foreign key (request_id) references transaction_request(id)
 )
 
-
-
-
-
-
-
-
-
-
