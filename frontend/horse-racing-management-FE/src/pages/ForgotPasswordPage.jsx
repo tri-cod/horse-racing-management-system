@@ -3,6 +3,7 @@ import "../assets/css/forgotPassword.css";
 import { Eye, EyeOff } from "lucide-react";
 import { forgotPassword, verifyResetOtp, resetPassword } from "../api/authApi";
 import { useNavigate } from "react-router-dom";
+import logoLogin from "../assets/img/logoLogin.jpg";
 
 export default function ForgotPasswordPage() {
     const navigate = useNavigate();
@@ -27,7 +28,7 @@ export default function ForgotPasswordPage() {
             await forgotPassword(email);
             setSuccess("OTP has been sent to your email.");
             setStep(2);
-        } catch (err) { setError(err.message); }
+        } catch (err) { setError(err.response?.data?.message || err.message); }
         finally { setLoading(false); }
     };
 
@@ -39,7 +40,7 @@ export default function ForgotPasswordPage() {
             await verifyResetOtp(email, otp);
             setSuccess("OTP verified. Please set your new password.");
             setStep(3);
-        } catch (err) { setError(err.message); }
+        } catch (err) { setError(err.response?.data?.message || err.message); }
         finally { setLoading(false); }
     };
 
@@ -53,7 +54,7 @@ export default function ForgotPasswordPage() {
             await resetPassword(otp, email, newPassword);
             setSuccess("Success! Redirecting to login...");
             setTimeout(() => navigate("/login"), 2000);
-        } catch (err) { setError(err.message); }
+        } catch (err) { setError(err.response?.data?.message || err.message); }
         finally { setLoading(false); }
     };
 
@@ -61,6 +62,7 @@ export default function ForgotPasswordPage() {
 
     return (
         <div className="fp-page">
+            <div className="fp-card">
             <div className="fp-box">
 
                 {/* Step indicator */}
@@ -89,7 +91,7 @@ export default function ForgotPasswordPage() {
                 {error   && <div className="fp-alert fp-alert-error">{error}</div>}
                 {success && <div className="fp-alert fp-alert-success">{success}</div>}
 
-                {/* Bước 1: Email */}
+                {/* Step 1: Email */}
                 {step === 1 && (
                     <div className="fp-form">
                         <div className="fp-form-group">
@@ -112,7 +114,7 @@ export default function ForgotPasswordPage() {
                     </div>
                 )}
 
-                {/* Bước 2: OTP */}
+                {/* Step 2: OTP */}
                 {step === 2 && (
                     <div className="fp-form">
                         <div className="fp-form-group">
@@ -136,7 +138,7 @@ export default function ForgotPasswordPage() {
                     </div>
                 )}
 
-                {/* Bước 3: Mật khẩu mới */}
+                {/* Step 3: New Password */}
                 {step === 3 && (
                     <div className="fp-form">
                         <div className="fp-form-group">
@@ -175,6 +177,14 @@ export default function ForgotPasswordPage() {
                     </div>
                 )}
 
+            </div>
+
+            <div className="fp-image-panel" style={{ backgroundImage: `url(${logoLogin})` }}>
+                <div className="fp-image-overlay" />
+                <blockquote className="fp-image-quote">
+                    "Every great journey begins with a single steady stride."
+                </blockquote>
+            </div>
             </div>
         </div>
     );

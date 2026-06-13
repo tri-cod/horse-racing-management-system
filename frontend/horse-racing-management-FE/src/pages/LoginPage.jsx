@@ -28,7 +28,7 @@ export default function LoginPage() {
                         </svg>
                         Back to Home
                     </Link>
-                    <h1 className="login-title">Welcome back!</h1>
+                    <h1 className="login-title">Welcome Back</h1>
                     {success && <div className="login-success">{success}</div>}
                     {error && <div className="login-error">{error}</div>}
 
@@ -103,6 +103,9 @@ export default function LoginPage() {
                 {/* Right Panel - Image */}
                 <div className="login-image-panel" style={{ backgroundImage: `url(${logoLogin})` }}>
                     <div className="image-overlay" />
+                    <blockquote className="login-image-quote">
+                        "Where champions are born."
+                    </blockquote>
                 </div>
             </div>
         </div>

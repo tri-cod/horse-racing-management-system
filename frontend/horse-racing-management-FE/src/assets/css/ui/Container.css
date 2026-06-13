@@ -1,0 +1,16 @@
+.ui-container {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+.ui-container--narrow {
+  max-width: var(--container-narrow);
+}
+
+@media (max-width: 640px) {
+  .ui-container {
+    padding: 0 var(--space-4);
+  }
+}

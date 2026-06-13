@@ -60,14 +60,15 @@ public class AuthController {
 
 
     @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponse<AuthMeResponse>> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest,
-                                                                           @RequestParam String otp) {
-        boolean valid = authService.verifyForgotPasswordOtp(resetPasswordRequest.email, otp);
-        if (!valid) {
-            return ResponseEntity.ok(ApiResponse.error("Invalid or expired OTP",authService.resetPassword(resetPasswordRequest)));
+    public ResponseEntity<ApiResponse<AuthMeResponse>> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest resetPasswordRequest,
+            @RequestParam String otp) {
+        if (!authService.verifyForgotPasswordOtp(resetPasswordRequest.email, otp)) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Invalid or expired OTP"));
         }
-        authService.resetPassword(resetPasswordRequest);
-        return ResponseEntity.ok(ApiResponse.success("Reset password successfull", authService.resetPassword(resetPasswordRequest)));
+        AuthMeResponse user = authService.resetPassword(resetPasswordRequest);
+        return ResponseEntity.ok(ApiResponse.success("Reset password successful", user));
     }
 
     @PostMapping("/login")

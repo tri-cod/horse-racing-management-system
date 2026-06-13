@@ -1,0 +1,81 @@
+.my-reg-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.my-reg-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-small);
+}
+
+.my-reg-table th {
+  background: var(--black-5);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.my-reg-table__row {
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+
+.my-reg-table__row:last-child {
+  border-bottom: none;
+}
+
+.my-reg-table__row:hover {
+  background: var(--ocean-50);
+}
+
+.my-reg-table__row td {
+  padding: var(--space-3) var(--space-4);
+  vertical-align: middle;
+}
+
+.my-reg-table__race-link {
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.my-reg-table__race-link:hover {
+  text-decoration: underline;
+}
+
+.my-reg-table__horse {
+  font-weight: 500;
+}
+
+.my-reg-table__muted {
+  color: var(--text-muted);
+}
+
+@media (max-width: 767px) {
+  .my-reg-table-wrap { border: none; }
+  .my-reg-table thead { display: none; }
+  .my-reg-table,
+  .my-reg-table tbody,
+  .my-reg-table__row,
+  .my-reg-table__row td { display: block; }
+  .my-reg-table__row {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: var(--space-3);
+    padding: var(--space-4);
+  }
+  .my-reg-table__row td {
+    padding: var(--space-2) 0;
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+  }
+}

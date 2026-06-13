@@ -1,0 +1,101 @@
+.reg-horses__error {
+  color: var(--error);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  padding: var(--space-4);
+  background: var(--error-bg);
+  border: 1px solid var(--error);
+  border-radius: var(--radius);
+}
+
+.reg-horses__table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.reg-horses__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-small);
+}
+
+.reg-horses__table th {
+  background: var(--black-5);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+}
+
+.reg-horses__row {
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+
+.reg-horses__row:last-child {
+  border-bottom: none;
+}
+
+.reg-horses__row:hover {
+  background: var(--ocean-50);
+}
+
+.reg-horses__row td {
+  padding: var(--space-3) var(--space-4);
+  vertical-align: middle;
+}
+
+.reg-horses__lane {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.reg-horses__horse {
+  font-weight: 600;
+}
+
+.reg-horses__jockey {
+  color: var(--text-muted);
+}
+
+.reg-horses__actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.reg-horses__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.reg-horses__btn--approve {
+  color: var(--primary);
+}
+
+.reg-horses__btn--approve:hover {
+  background: var(--ocean-50);
+  border-color: var(--primary);
+}
+
+.reg-horses__btn--reject {
+  color: var(--black-60);
+}
+
+.reg-horses__btn--reject:hover {
+  background: var(--black-5);
+  color: var(--black-90);
+  border-color: var(--black-90);
+}

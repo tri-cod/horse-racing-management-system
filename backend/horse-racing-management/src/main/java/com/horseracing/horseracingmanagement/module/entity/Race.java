@@ -67,7 +67,7 @@ public class Race {
     @Column(name = "capacity")
     private Long capacity;
 
-    @Size(max = 255)
+    // @Size(max = 255)
     @Column(name = "banner_imageurl")
     private String bannerImageurl;
 

@@ -1,6 +1,7 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
+import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RegisterRaceHorseRequest;
 import com.horseracing.horseracingmanagement.module.entity.*;
@@ -35,7 +36,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         Race race = raceRepository.findById(request.getRaceId())
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
-        if (!race.getStatus().equals("Upcoming")) {
+        if (race.getStatus() != RaceStatus.UPCOMING && race.getStatus() != RaceStatus.OPEN_REGISTRATION) {
             throw new RuntimeException("Race is not open for registration");
         }
 

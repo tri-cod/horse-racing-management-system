@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* === OCEAN BLUE === (replaces Vinpearl's green) */
+  --ocean-50:  #f0f9ff;
+  --ocean-100: #e0f2fe;
+  --ocean-200: #bae6fd;
+  --ocean-300: #7dd3fc;
+  --ocean-400: #38bdf8;
+  --ocean-500: #0ea5e9;
+  --ocean-600: #0284c7;
+  --ocean-700: #0369a1;
+  --ocean-800: #075985;
+  --ocean-900: #0c4a6e;
+  --ocean-950: #082f49;
+
+  /* === BLACK === */
+  --black:     #0a0a0a;
+  --black-90:  #171717;
+  --black-80:  #262626;
+  --black-60:  #525252;
+  --black-40:  #a3a3a3;
+  --black-20:  #d4d4d4;
+  --black-10:  #e5e5e5;
+  --black-5:   #f5f5f5;
+
+  /* === WHITE === */
+  --white:     #ffffff;
+  --white-95:  #fafafa;
+  --white-90:  #f5f5f5;
+
+  /* === SEMANTIC === */
+  --bg:           var(--white);
+  --bg-soft:      var(--ocean-50);
+  --bg-dark:      var(--black);
+  --surface:      var(--white);
+  --text:         var(--black-90);
+  --text-muted:   var(--black-60);
+  --text-invert:  var(--white);
+  --primary:      var(--ocean-700);
+  --primary-hover: var(--ocean-800);
+  --accent:       var(--ocean-500);
+  --border:       var(--black-10);
+  --border-strong: var(--black-20);
+  --shadow-sm:    0 2px 8px rgba(10, 10, 10, 0.04);
+  --shadow-md:    0 8px 24px rgba(10, 10, 10, 0.08);
+  --shadow-lg:    0 20px 50px rgba(10, 10, 10, 0.12);
+
+  /* === ERROR (semantic only, for inline error states) === */
+  --error:        #b91c1c;
+  --error-bg:     #fef2f2;
+
+  /* === TYPOGRAPHY === */
+  --font-sans:  'Inter', system-ui, -apple-system, sans-serif;
+
+  --fs-hero:   clamp(2.5rem, 5vw, 4.5rem);
+  --fs-h1:     clamp(2rem, 3.5vw, 3rem);
+  --fs-h2:     clamp(1.5rem, 2.5vw, 2.25rem);
+  --fs-h3:     1.5rem;
+  --fs-body:   1rem;
+  --fs-small:  0.875rem;
+  --fs-xs:     0.75rem;
+
+  --lh-tight:  1.15;
+  --lh-base:   1.6;
+  --lh-loose:  1.8;
+
+  --tracking-tight:  -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide:   0.05em;
+  --tracking-wider:  0.1em;
+
+  /* === SPACING & RADIUS === */
+  --space-1: 0.25rem;  --space-2: 0.5rem;   --space-3: 0.75rem;
+  --space-4: 1rem;     --space-5: 1.5rem;   --space-6: 2rem;
+  --space-8: 3rem;     --space-10: 4rem;    --space-12: 6rem;
+  --space-16: 8rem;
+
+  --radius-sm: 4px;
+  --radius:    8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  --container: 1280px;
+  --container-narrow: 960px;
+
+  --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text);
+  background: var(--bg);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  color: var(--text);
+  line-height: var(--lh-tight);
+  margin: 0;
+}
+
+h3, h4 {
+  letter-spacing: 0;
+}
+
+p {
+  line-height: var(--lh-base);
+  color: var(--text-muted);
+}
+
+a {
+  color: inherit;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--primary);
+}
