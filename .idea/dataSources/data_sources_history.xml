@@ -95,7 +95,7 @@
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </DataSourceFromHistory>
-  <DataSourceFromHistory isRemovedFromProject="false">
+  <DataSourceFromHistory isRemovedFromProject="true">
     <data-source source="LOCAL" name="0@localhost" uuid="636f408d-1f70-44d1-a041-82ac86a35669">
       <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="REDIS" />
       <driver-ref>redis</driver-ref>

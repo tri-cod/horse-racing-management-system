@@ -16,9 +16,5 @@
         </introspection-scope>
       </schema-mapping>
     </data-source>
-    <data-source name="0@localhost" uuid="636f408d-1f70-44d1-a041-82ac86a35669">
-      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="REDIS" />
-      <schema-mapping />
-    </data-source>
   </component>
 </project>

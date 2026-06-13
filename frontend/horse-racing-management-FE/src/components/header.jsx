@@ -1,6 +1,6 @@
 import { useState, useContext, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, User, LogOut, Ticket } from 'lucide-react';
+import { Menu, X, User, LogOut, Ticket, Plus, Wallet } from 'lucide-react';
 import '../assets/css/Header.css';
 import { AuthContext } from '../context/AuthContext';
 import Button from './ui/Button';
@@ -26,19 +26,11 @@ function Header() {
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
-  const handleNavigateProfile = () => {
-    navigate('/profile');
-    setDropdownOpen(false);
-  };
-  const handleNavigateBets = () => {
-  navigate('/my-bets');
-  setDropdownOpen(false);
-};
+  const handleNavigateProfile = () => { navigate('/profile'); setDropdownOpen(false); };
+  const handleNavigateBets    = () => { navigate('/my-bets'); setDropdownOpen(false); };
+  const handleNavigateWallet  = () => { navigate('/my-wallet'); setDropdownOpen(false); };
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/');
-  };
+  const handleLogout = async () => { await logout(); navigate('/'); };
 
   const toggleDropdown = (event) => {
     event.stopPropagation();
@@ -56,15 +48,13 @@ function Header() {
   }, []);
 
   useEffect(() => {
-    function handleScroll() {
-      setScrolled(window.scrollY > 12);
-    }
+    function handleScroll() { setScrolled(window.scrollY > 12); }
     handleScroll();
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-       // bet chi cho customer 
- const isCustomer = user?.role === 'USER';
+
+  const isCustomer = user?.role === 'USER';
 
   return (
     <header className={`header${scrolled ? ' header--scrolled' : ''}`}>
@@ -87,6 +77,7 @@ function Header() {
                 </Link>
               </li>
             ))}
+
             {user?.role === 'HORSE_OWNER' && (
               <li className="header__nav-item">
                 <Link
@@ -98,14 +89,15 @@ function Header() {
                 </Link>
               </li>
             )}
-                        {isCustomer && (
-              <li className="header__nav-item header__nav-item--mobile-only">
+
+            {user?.role === 'ADMIN' && (
+              <li className="header__nav-item">
                 <Link
-                  to="/my-bets"
-                  className={pathname === '/my-bets' ? 'active' : ''}
+                  to="/admin/users"
+                  className={pathname.startsWith('/admin') ? 'active' : ''}
                   onClick={() => setMenuOpen(false)}
                 >
-                  My Bets
+                  Admin
                 </Link>
               </li>
             )}
@@ -129,24 +121,65 @@ function Header() {
               </button>
 
               <div className={`header__dropdown${dropdownOpen ? ' open' : ''}`}>
+
+              
                 <button type="button" className="header__dropdown-item" onClick={handleNavigateProfile}>
                   <User size={16} />
                   <span>My Profile</span>
                 </button>
-                  {isCustomer && (
-    <button
-      type="button"
-      className={`header__dropdown-item${pathname === '/my-bets' ? ' header__dropdown-item--active' : ''}`}
-      onClick={handleNavigateBets}
-    >
-      <Ticket size={16} />
-      <span>My Bets</span>
-    </button>
-  )}
+
+          
+                {isCustomer && (
+                  <button
+                    type="button"
+                    className={`header__dropdown-item${pathname === '/my-bets' ? ' header__dropdown-item--active' : ''}`}
+                    onClick={handleNavigateBets}
+                  >
+                    <Ticket size={16} />
+                    <span>My Bets</span>
+                  </button>
+                )}
+
+                
+                {user && (
+                  <button
+                    type="button"
+                    className={`header__dropdown-item${pathname === '/my-wallet' ? ' header__dropdown-item--active' : ''}`}
+                    onClick={handleNavigateWallet}
+                  >
+                    <Wallet size={16} />
+                    <span>My Wallet</span>
+                  </button>
+                )}
+
+               
+                {user?.role === 'ADMIN' && (
+                  <>
+                    <button type="button" className="header__dropdown-item"
+                      onClick={() => { navigate('/admin/users'); setDropdownOpen(false); }}>
+                      <User size={16} />
+                      <span>Manage Users</span>
+                    </button>
+                    <button type="button" className="header__dropdown-item"
+                      onClick={() => { navigate('/admin/races/create'); setDropdownOpen(false); }}>
+                      <Plus size={16} />
+                      <span>Create Race</span>
+                    </button>
+                    <button type="button"
+                      className={`header__dropdown-item${pathname === '/admin/deposits' ? ' header__dropdown-item--active' : ''}`}
+                      onClick={() => { navigate('/admin/deposits'); setDropdownOpen(false); }}>
+                      <Wallet size={16} />
+                      <span>Deposits</span>
+                    </button>
+                  </>
+                )}
+
+                {/* Log Out */}
                 <button type="button" className="header__dropdown-item header__dropdown-item--danger" onClick={handleLogout}>
                   <LogOut size={16} />
                   <span>Log Out</span>
                 </button>
+
               </div>
             </div>
           ) : (

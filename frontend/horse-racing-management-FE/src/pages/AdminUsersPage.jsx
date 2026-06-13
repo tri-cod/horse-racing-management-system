@@ -11,7 +11,7 @@ import Pagination from '../components/ui/Pagination';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import '../assets/css/AdminUsersPage.css';
 
-const ROLES = ['', 'ADMIN', 'MANAGER', 'STAFF', 'REFEREE', 'HORSE_OWNER', 'TRAINER', 'JOCKEY', 'SPECTATOR', 'USER'];
+const ROLES = ['', 'ADMIN', 'STAFF', 'SPECTATOR', 'USER', 'HORSE_OWNER', 'JOCKEY', 'REFEREE', 'MANAGER', 'TRAINER'];
 const STATUSES = ['', 'ACTIVE', 'INACTIVE', 'BANNED'];
 
 export default function AdminUsersPage() {

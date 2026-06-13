@@ -4342,7 +4342,16 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="278" parent="266" name="notification_user_id_seq">
+    <sequence id="278" parent="266" name="notification_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>17772</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>1195</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="279" parent="266" name="notification_user_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17632</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4351,7 +4360,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="279" parent="266" name="payment_transaction_request_id_seq">
+    <sequence id="280" parent="266" name="payment_transaction_request_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17665</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4360,7 +4369,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="280" parent="266" name="penalty_amount_seq">
+    <sequence id="281" parent="266" name="penalty_amount_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17558</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4369,7 +4378,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="281" parent="266" name="penalty_race_horse_id_seq">
+    <sequence id="282" parent="266" name="penalty_race_horse_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17557</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4378,7 +4387,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="282" parent="266" name="race_horse_horse_id_seq">
+    <sequence id="283" parent="266" name="race_horse_horse_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17511</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4387,7 +4396,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="283" parent="266" name="race_horse_id_seq">
+    <sequence id="284" parent="266" name="race_horse_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17762</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4396,7 +4405,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="284" parent="266" name="race_horse_jockey_id_seq">
+    <sequence id="285" parent="266" name="race_horse_jockey_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17512</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4405,7 +4414,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="285" parent="266" name="race_horse_lane_number_seq">
+    <sequence id="286" parent="266" name="race_horse_lane_number_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17513</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4414,7 +4423,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="286" parent="266" name="race_horse_race_id_seq">
+    <sequence id="287" parent="266" name="race_horse_race_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17510</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4423,7 +4432,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="287" parent="266" name="race_horse_start_position_seq">
+    <sequence id="288" parent="266" name="race_horse_start_position_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17514</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4432,7 +4441,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="288" parent="266" name="race_id_seq">
+    <sequence id="289" parent="266" name="race_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17752</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4441,7 +4450,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="289" parent="266" name="race_referee_experienceyears_seq">
+    <sequence id="290" parent="266" name="race_referee_experienceyears_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17407</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4450,7 +4459,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="290" parent="266" name="race_referee_id_seq">
+    <sequence id="291" parent="266" name="race_referee_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17406</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4459,7 +4468,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="291" parent="266" name="race_referee_id_seq1">
+    <sequence id="292" parent="266" name="race_referee_id_seq1">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17440</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4468,7 +4477,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="292" parent="266" name="race_result_penalty_id_seq">
+    <sequence id="293" parent="266" name="race_result_penalty_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17543</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4477,7 +4486,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="293" parent="266" name="race_result_race_horse_id_seq">
+    <sequence id="294" parent="266" name="race_result_race_horse_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17541</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4486,7 +4495,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="294" parent="266" name="race_result_rewards_seq">
+    <sequence id="295" parent="266" name="race_result_rewards_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17542</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4495,7 +4504,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="295" parent="266" name="race_totalprizepool_seq">
+    <sequence id="296" parent="266" name="race_totalprizepool_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17441</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4504,7 +4513,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="296" parent="266" name="roles_id_seq">
+    <sequence id="297" parent="266" name="roles_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17360</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4513,7 +4522,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="297" parent="266" name="trainer_age_seq">
+    <sequence id="298" parent="266" name="trainer_age_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17588</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4522,7 +4531,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="298" parent="266" name="trainer_experience_years_seq">
+    <sequence id="299" parent="266" name="trainer_experience_years_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17589</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4531,7 +4540,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="299" parent="266" name="trainer_id_seq">
+    <sequence id="300" parent="266" name="trainer_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17758</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4540,7 +4549,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="300" parent="266" name="transaction_request_amount_seq">
+    <sequence id="301" parent="266" name="transaction_request_amount_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17656</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4549,7 +4558,16 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="301" parent="266" name="users_user_id_seq">
+    <sequence id="302" parent="266" name="transaction_request_id_seq">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>17770</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>1186</StateNumber>
+      <StoredType>bigint|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="303" parent="266" name="users_user_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17369</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4558,7 +4576,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="302" parent="266" name="wallet_id_seq">
+    <sequence id="304" parent="266" name="wallet_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17745</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4567,7 +4585,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="303" parent="266" name="wallet_user_id_seq">
+    <sequence id="305" parent="266" name="wallet_user_id_seq">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17644</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
@@ -4576,147 +4594,147 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <table id="304" parent="266" name="bank_account">
+    <table id="306" parent="266" name="bank_account">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17387</ObjectId>
       <StateNumber>971</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="305" parent="266" name="bet">
+    <table id="307" parent="266" name="bet">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17599</ObjectId>
       <StateNumber>1045</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="306" parent="266" name="bet_items">
+    <table id="308" parent="266" name="bet_items">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17613</ObjectId>
       <StateNumber>1046</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="307" parent="266" name="forgot_password">
+    <table id="309" parent="266" name="forgot_password">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17679</ObjectId>
       <StateNumber>1047</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="308" parent="266" name="horse">
+    <table id="310" parent="266" name="horse">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17398</ObjectId>
       <StateNumber>1052</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="309" parent="266" name="horse_owner">
+    <table id="311" parent="266" name="horse_owner">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17573</ObjectId>
       <StateNumber>998</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="310" parent="266" name="jockey">
+    <table id="312" parent="266" name="jockey">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17483</ObjectId>
       <StateNumber>985</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="311" parent="266" name="notification">
+    <table id="313" parent="266" name="notification">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17633</ObjectId>
       <StateNumber>1055</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="312" parent="266" name="payment_transaction">
+    <table id="314" parent="266" name="payment_transaction">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17666</ObjectId>
       <StateNumber>1022</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="313" parent="266" name="penalty">
+    <table id="315" parent="266" name="penalty">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17559</ObjectId>
       <StateNumber>993</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="314" parent="266" name="race">
+    <table id="316" parent="266" name="race">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17442</ObjectId>
       <StateNumber>1058</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="315" parent="266" name="race_horse">
+    <table id="317" parent="266" name="race_horse">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17515</ObjectId>
       <StateNumber>989</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="316" parent="266" name="race_referee">
+    <table id="318" parent="266" name="race_referee">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17408</ObjectId>
       <StateNumber>1059</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="317" parent="266" name="race_result">
+    <table id="319" parent="266" name="race_result">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17544</ObjectId>
       <StateNumber>1060</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="318" parent="266" name="roles">
+    <table id="320" parent="266" name="roles">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17361</ObjectId>
       <StateNumber>969</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="319" parent="266" name="trainer">
+    <table id="321" parent="266" name="trainer">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17590</ObjectId>
       <StateNumber>1077</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="320" parent="266" name="transaction_request">
+    <table id="322" parent="266" name="transaction_request">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17657</ObjectId>
       <StateNumber>1067</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="321" parent="266" name="users">
+    <table id="323" parent="266" name="users">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17370</ObjectId>
       <StateNumber>1068</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="322" parent="266" name="wallet">
+    <table id="324" parent="266" name="wallet">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17645</ObjectId>
       <StateNumber>1013</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <column id="323" parent="304" name="bank_account_id">
+    <column id="325" parent="306" name="bank_account_id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>971</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="324" parent="304" name="user_id">
+    <column id="326" parent="306" name="user_id">
       <DefaultExpression>nextval(&apos;bank_account_user_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
@@ -4725,35 +4743,35 @@ false Zulu
       <SequenceId>17386</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="325" parent="304" name="bank_name">
+    <column id="327" parent="306" name="bank_name">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>971</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="326" parent="304" name="bank_user_name">
+    <column id="328" parent="306" name="bank_user_name">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>971</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="327" parent="304" name="bank_number">
+    <column id="329" parent="306" name="bank_number">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>971</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <foreign-key id="328" parent="304" name="fk_bank_user_user">
+    <foreign-key id="330" parent="306" name="fk_bank_user_user">
       <ColNames>user_id</ColNames>
       <ObjectId>17393</ObjectId>
       <StateNumber>971</StateNumber>
       <RefKeyColPositions>2</RefKeyColPositions>
       <RefTableId>17370</RefTableId>
     </foreign-key>
-    <index id="329" parent="304" name="bank_account_pkey">
+    <index id="331" parent="306" name="bank_account_pkey">
       <ColNames>bank_account_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17391</ObjectId>
@@ -4762,14 +4780,14 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="330" parent="304" name="bank_account_pkey">
+    <key id="332" parent="306" name="bank_account_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17392</ObjectId>
       <Primary>1</Primary>
       <StateNumber>971</StateNumber>
       <UnderlyingIndexId>17391</UnderlyingIndexId>
     </key>
-    <column id="331" parent="305" name="id">
+    <column id="333" parent="307" name="id">
       <DefaultExpression>nextval(&apos;bet_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -4777,7 +4795,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="332" parent="305" name="race_id">
+    <column id="334" parent="307" name="race_id">
       <DefaultExpression>nextval(&apos;bet_race_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
@@ -4786,46 +4804,46 @@ false Zulu
       <SequenceId>17598</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="333" parent="305" name="total_amount">
+    <column id="335" parent="307" name="total_amount">
       <Position>3</Position>
       <StateNumber>1007</StateNumber>
       <StoredType>numeric(12,2 digit)|0s</StoredType>
       <TypeId>1700</TypeId>
     </column>
-    <column id="334" parent="305" name="status">
+    <column id="336" parent="307" name="status">
       <Position>4</Position>
       <StateNumber>1007</StateNumber>
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="335" parent="305" name="created_at">
+    <column id="337" parent="307" name="created_at">
       <Position>5</Position>
       <StateNumber>1007</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="336" parent="305" name="user_id">
+    <column id="338" parent="307" name="user_id">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StateNumber>1045</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <foreign-key id="337" parent="305" name="fk_bet_race_id">
+    <foreign-key id="339" parent="307" name="fk_bet_race_id">
       <ColNames>race_id</ColNames>
       <ObjectId>17605</ObjectId>
       <StateNumber>1007</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17442</RefTableId>
     </foreign-key>
-    <foreign-key id="338" parent="305" name="fkq5rv2e6soot2iosewr8r4i235">
+    <foreign-key id="340" parent="307" name="fkq5rv2e6soot2iosewr8r4i235">
       <ColNames>user_id</ColNames>
       <ObjectId>17710</ObjectId>
       <StateNumber>1073</StateNumber>
       <RefKeyColPositions>2</RefKeyColPositions>
       <RefTableId>17370</RefTableId>
     </foreign-key>
-    <index id="339" parent="305" name="bet_pkey">
+    <index id="341" parent="307" name="bet_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17603</ObjectId>
@@ -4834,14 +4852,14 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="340" parent="305" name="bet_pkey">
+    <key id="342" parent="307" name="bet_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17604</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1007</StateNumber>
       <UnderlyingIndexId>17603</UnderlyingIndexId>
     </key>
-    <column id="341" parent="306" name="id">
+    <column id="343" parent="308" name="id">
       <DefaultExpression>nextval(&apos;bet_items_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -4849,7 +4867,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="342" parent="306" name="bet_id">
+    <column id="344" parent="308" name="bet_id">
       <DefaultExpression>nextval(&apos;bet_items_bet_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
@@ -4858,7 +4876,7 @@ false Zulu
       <SequenceId>17610</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="343" parent="306" name="race_horse_id">
+    <column id="345" parent="308" name="race_horse_id">
       <DefaultExpression>nextval(&apos;bet_items_race_horse_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
@@ -4867,7 +4885,7 @@ false Zulu
       <SequenceId>17611</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="344" parent="306" name="bet_amount">
+    <column id="346" parent="308" name="bet_amount">
       <DefaultExpression>nextval(&apos;bet_items_bet_amount_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>4</Position>
@@ -4876,14 +4894,14 @@ false Zulu
       <SequenceId>17612</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="345" parent="306" name="odds">
+    <column id="347" parent="308" name="odds">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>1009</StateNumber>
       <StoredType>numeric(10,2 digit)|0s</StoredType>
       <TypeId>1700</TypeId>
     </column>
-    <column id="346" parent="306" name="result_status">
+    <column id="348" parent="308" name="result_status">
       <DefaultExpression>&apos;Pending&apos;::character varying</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>6</Position>
@@ -4891,27 +4909,27 @@ false Zulu
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="347" parent="306" name="payout">
+    <column id="349" parent="308" name="payout">
       <Position>7</Position>
       <StateNumber>1046</StateNumber>
       <StoredType>numeric(12,2 digit)|0s</StoredType>
       <TypeId>1700</TypeId>
     </column>
-    <foreign-key id="348" parent="306" name="fk_betitems_bet_id">
+    <foreign-key id="350" parent="308" name="fk_betitems_bet_id">
       <ColNames>bet_id</ColNames>
       <ObjectId>17622</ObjectId>
       <StateNumber>1009</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17599</RefTableId>
     </foreign-key>
-    <foreign-key id="349" parent="306" name="fk_betitems_racehorse_id">
+    <foreign-key id="351" parent="308" name="fk_betitems_racehorse_id">
       <ColNames>race_horse_id</ColNames>
       <ObjectId>17627</ObjectId>
       <StateNumber>1009</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17515</RefTableId>
     </foreign-key>
-    <index id="350" parent="306" name="bet_items_pkey">
+    <index id="352" parent="308" name="bet_items_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17620</ObjectId>
@@ -4920,14 +4938,14 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="351" parent="306" name="bet_items_pkey">
+    <key id="353" parent="308" name="bet_items_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17621</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1009</StateNumber>
       <UnderlyingIndexId>17620</UnderlyingIndexId>
     </key>
-    <column id="352" parent="307" name="id">
+    <column id="354" parent="309" name="id">
       <DefaultExpression>nextval(&apos;forgot_password_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -4936,27 +4954,27 @@ false Zulu
       <SequenceId>17678</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="353" parent="307" name="otp">
+    <column id="355" parent="309" name="otp">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>1047</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="354" parent="307" name="expiration_time">
+    <column id="356" parent="309" name="expiration_time">
       <Position>3</Position>
       <StateNumber>1028</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="355" parent="307" name="user_id">
+    <column id="357" parent="309" name="user_id">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>1028</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <foreign-key id="356" parent="307" name="fk_verification_user">
+    <foreign-key id="358" parent="309" name="fk_verification_user">
       <ColNames>user_id</ColNames>
       <ObjectId>17687</ObjectId>
       <OnDelete>cascade</OnDelete>
@@ -4964,7 +4982,7 @@ false Zulu
       <RefKeyColPositions>2</RefKeyColPositions>
       <RefTableId>17370</RefTableId>
     </foreign-key>
-    <index id="357" parent="307" name="forgot_password_pkey">
+    <index id="359" parent="309" name="forgot_password_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17683</ObjectId>
@@ -4973,7 +4991,7 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="358" parent="307" name="forgot_password_user_id_key">
+    <index id="360" parent="309" name="forgot_password_user_id_key">
       <ColNames>user_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17685</ObjectId>
@@ -4981,20 +4999,20 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="359" parent="307" name="forgot_password_pkey">
+    <key id="361" parent="309" name="forgot_password_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17684</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1028</StateNumber>
       <UnderlyingIndexId>17683</UnderlyingIndexId>
     </key>
-    <key id="360" parent="307" name="forgot_password_user_id_key">
+    <key id="362" parent="309" name="forgot_password_user_id_key">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17686</ObjectId>
       <StateNumber>1028</StateNumber>
       <UnderlyingIndexId>17685</UnderlyingIndexId>
     </key>
-    <column id="361" parent="308" name="horse_id">
+    <column id="363" parent="310" name="horse_id">
       <DefaultExpression>nextval(&apos;horse_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -5002,59 +5020,59 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="362" parent="308" name="trainer_id">
+    <column id="364" parent="310" name="trainer_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>973</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="363" parent="308" name="owner_id">
+    <column id="365" parent="310" name="owner_id">
       <Position>3</Position>
       <StateNumber>973</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="364" parent="308" name="horse_name">
+    <column id="366" parent="310" name="horse_name">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>973</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="365" parent="308" name="breed">
+    <column id="367" parent="310" name="breed">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>973</StateNumber>
       <StoredType>varchar(50)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="366" parent="308" name="age">
+    <column id="368" parent="310" name="age">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StateNumber>973</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="367" parent="308" name="speed_rating">
+    <column id="369" parent="310" name="speed_rating">
       <Position>7</Position>
       <StateNumber>973</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="368" parent="308" name="history_rank">
+    <column id="370" parent="310" name="history_rank">
       <Position>8</Position>
       <StateNumber>973</StateNumber>
       <StoredType>varchar(50)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="369" parent="308" name="avatar_url">
+    <column id="371" parent="310" name="avatar_url">
       <Position>9</Position>
       <StateNumber>973</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="370" parent="308" name="status">
+    <column id="372" parent="310" name="status">
       <DefaultExpression>&apos;Active&apos;::character varying</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>10</Position>
@@ -5062,31 +5080,31 @@ false Zulu
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="371" parent="308" name="created_at">
+    <column id="373" parent="310" name="created_at">
       <Position>11</Position>
       <StateNumber>1048</StateNumber>
       <StoredType>timestamp(6) with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <column id="372" parent="308" name="gender">
+    <column id="374" parent="310" name="gender">
       <Position>12</Position>
       <StateNumber>1049</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="373" parent="308" name="updated_at">
+    <column id="375" parent="310" name="updated_at">
       <Position>13</Position>
       <StateNumber>1051</StateNumber>
       <StoredType>timestamp(6) with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <column id="374" parent="308" name="weight">
+    <column id="376" parent="310" name="weight">
       <Position>14</Position>
       <StateNumber>1052</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <index id="375" parent="308" name="horse_pkey">
+    <index id="377" parent="310" name="horse_pkey">
       <ColNames>horse_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17404</ObjectId>
@@ -5095,14 +5113,14 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="376" parent="308" name="horse_pkey">
+    <key id="378" parent="310" name="horse_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17405</ObjectId>
       <Primary>1</Primary>
       <StateNumber>973</StateNumber>
       <UnderlyingIndexId>17404</UnderlyingIndexId>
     </key>
-    <column id="377" parent="309" name="id">
+    <column id="379" parent="311" name="id">
       <DefaultExpression>nextval(&apos;horse_owner_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -5111,33 +5129,33 @@ false Zulu
       <SequenceId>17572</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="378" parent="309" name="user_id">
+    <column id="380" parent="311" name="user_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>998</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="379" parent="309" name="name">
+    <column id="381" parent="311" name="name">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>998</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="380" parent="309" name="description">
+    <column id="382" parent="311" name="description">
       <Position>4</Position>
       <StateNumber>998</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="381" parent="309" name="status">
+    <column id="383" parent="311" name="status">
       <Position>5</Position>
       <StateNumber>998</StateNumber>
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <foreign-key id="382" parent="309" name="horse_owner_user_id_fkey">
+    <foreign-key id="384" parent="311" name="horse_owner_user_id_fkey">
       <ColNames>user_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17583</ObjectId>
@@ -5145,7 +5163,7 @@ false Zulu
       <RefKeyColPositions>2</RefKeyColPositions>
       <RefTableId>17370</RefTableId>
     </foreign-key>
-    <index id="383" parent="309" name="horse_owner_pkey">
+    <index id="385" parent="311" name="horse_owner_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17579</ObjectId>
@@ -5154,7 +5172,7 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="384" parent="309" name="horse_owner_user_id_key">
+    <index id="386" parent="311" name="horse_owner_user_id_key">
       <ColNames>user_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17581</ObjectId>
@@ -5162,20 +5180,20 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="385" parent="309" name="horse_owner_pkey">
+    <key id="387" parent="311" name="horse_owner_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17580</ObjectId>
       <Primary>1</Primary>
       <StateNumber>998</StateNumber>
       <UnderlyingIndexId>17579</UnderlyingIndexId>
     </key>
-    <key id="386" parent="309" name="horse_owner_user_id_key">
+    <key id="388" parent="311" name="horse_owner_user_id_key">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17582</ObjectId>
       <StateNumber>998</StateNumber>
       <UnderlyingIndexId>17581</UnderlyingIndexId>
     </key>
-    <column id="387" parent="310" name="id">
+    <column id="389" parent="312" name="id">
       <DefaultExpression>nextval(&apos;jockey_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -5184,38 +5202,38 @@ false Zulu
       <SequenceId>17482</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="388" parent="310" name="user_id">
+    <column id="390" parent="312" name="user_id">
       <Position>2</Position>
       <StateNumber>985</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="389" parent="310" name="age">
+    <column id="391" parent="312" name="age">
       <Position>3</Position>
       <StateNumber>985</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="390" parent="310" name="description">
+    <column id="392" parent="312" name="description">
       <Position>4</Position>
       <StateNumber>985</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="391" parent="310" name="experience_year">
+    <column id="393" parent="312" name="experience_year">
       <Position>5</Position>
       <StateNumber>985</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="392" parent="310" name="status">
+    <column id="394" parent="312" name="status">
       <DefaultExpression>&apos;Active&apos;::character varying</DefaultExpression>
       <Position>6</Position>
       <StateNumber>985</StateNumber>
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <foreign-key id="393" parent="310" name="jockey_user_id_fkey">
+    <foreign-key id="395" parent="312" name="jockey_user_id_fkey">
       <ColNames>user_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17494</ObjectId>
@@ -5223,7 +5241,7 @@ false Zulu
       <RefKeyColPositions>2</RefKeyColPositions>
       <RefTableId>17370</RefTableId>
     </foreign-key>
-    <index id="394" parent="310" name="jockey_pkey">
+    <index id="396" parent="312" name="jockey_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17490</ObjectId>
@@ -5232,7 +5250,7 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="395" parent="310" name="jockey_user_id_key">
+    <index id="397" parent="312" name="jockey_user_id_key">
       <ColNames>user_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17492</ObjectId>
@@ -5240,27 +5258,28 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="396" parent="310" name="jockey_pkey">
+    <key id="398" parent="312" name="jockey_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17491</ObjectId>
       <Primary>1</Primary>
       <StateNumber>985</StateNumber>
       <UnderlyingIndexId>17490</UnderlyingIndexId>
     </key>
-    <key id="397" parent="310" name="jockey_user_id_key">
+    <key id="399" parent="312" name="jockey_user_id_key">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17493</ObjectId>
       <StateNumber>985</StateNumber>
       <UnderlyingIndexId>17492</UnderlyingIndexId>
     </key>
-    <column id="398" parent="311" name="id">
+    <column id="400" parent="313" name="id">
+      <DefaultExpression>nextval(&apos;notification_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1011</StateNumber>
+      <StateNumber>1196</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="399" parent="311" name="user_id">
+    <column id="401" parent="313" name="user_id">
       <DefaultExpression>nextval(&apos;notification_user_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
@@ -5269,52 +5288,52 @@ false Zulu
       <SequenceId>17632</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="400" parent="311" name="title">
+    <column id="402" parent="313" name="title">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>1011</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="401" parent="311" name="content">
+    <column id="403" parent="313" name="content">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>1011</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="402" parent="311" name="created_at">
+    <column id="404" parent="313" name="created_at">
       <Position>5</Position>
       <StateNumber>1011</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="403" parent="311" name="type">
+    <column id="405" parent="313" name="type">
       <Position>6</Position>
       <StateNumber>1055</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="404" parent="311" name="is_read">
+    <column id="406" parent="313" name="is_read">
       <Position>7</Position>
       <StateNumber>1053</StateNumber>
       <StoredType>boolean|0s</StoredType>
       <TypeId>16</TypeId>
     </column>
-    <column id="405" parent="311" name="reference_id">
+    <column id="407" parent="313" name="reference_id">
       <Position>8</Position>
       <StateNumber>1054</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <foreign-key id="406" parent="311" name="fk_notification_user_id">
+    <foreign-key id="408" parent="313" name="fk_notification_user_id">
       <ColNames>user_id</ColNames>
       <ObjectId>17639</ObjectId>
       <StateNumber>1011</StateNumber>
       <RefKeyColPositions>2</RefKeyColPositions>
       <RefTableId>17370</RefTableId>
     </foreign-key>
-    <index id="407" parent="311" name="notification_pkey">
+    <index id="409" parent="313" name="notification_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17637</ObjectId>
@@ -5323,21 +5342,21 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="408" parent="311" name="notification_pkey">
+    <key id="410" parent="313" name="notification_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17638</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1011</StateNumber>
       <UnderlyingIndexId>17637</UnderlyingIndexId>
     </key>
-    <column id="409" parent="312" name="id">
+    <column id="411" parent="314" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>1022</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="410" parent="312" name="request_id">
+    <column id="412" parent="314" name="request_id">
       <DefaultExpression>nextval(&apos;payment_transaction_request_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
@@ -5346,26 +5365,26 @@ false Zulu
       <SequenceId>17665</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="411" parent="312" name="transaction_type">
+    <column id="413" parent="314" name="transaction_type">
       <Position>3</Position>
       <StateNumber>1022</StateNumber>
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="412" parent="312" name="status">
+    <column id="414" parent="314" name="status">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>1022</StateNumber>
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="413" parent="312" name="completed_at">
+    <column id="415" parent="314" name="completed_at">
       <Position>5</Position>
       <StateNumber>1022</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <foreign-key id="414" parent="312" name="payment_transaction_request_id_fkey">
+    <foreign-key id="416" parent="314" name="payment_transaction_request_id_fkey">
       <ColNames>request_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17672</ObjectId>
@@ -5373,7 +5392,7 @@ false Zulu
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17657</RefTableId>
     </foreign-key>
-    <index id="415" parent="312" name="payment_transaction_pkey">
+    <index id="417" parent="314" name="payment_transaction_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17670</ObjectId>
@@ -5382,21 +5401,21 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="416" parent="312" name="payment_transaction_pkey">
+    <key id="418" parent="314" name="payment_transaction_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17671</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1022</StateNumber>
       <UnderlyingIndexId>17670</UnderlyingIndexId>
     </key>
-    <column id="417" parent="313" name="penalty_id">
+    <column id="419" parent="315" name="penalty_id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>993</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="418" parent="313" name="race_horse_id">
+    <column id="420" parent="315" name="race_horse_id">
       <DefaultExpression>nextval(&apos;penalty_race_horse_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
@@ -5405,19 +5424,19 @@ false Zulu
       <SequenceId>17557</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="419" parent="313" name="reason">
+    <column id="421" parent="315" name="reason">
       <Position>3</Position>
       <StateNumber>993</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="420" parent="313" name="penalty_type">
+    <column id="422" parent="315" name="penalty_type">
       <Position>4</Position>
       <StateNumber>993</StateNumber>
       <StoredType>varchar(50)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="421" parent="313" name="amount">
+    <column id="423" parent="315" name="amount">
       <DefaultExpression>nextval(&apos;penalty_amount_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>5</Position>
@@ -5426,14 +5445,14 @@ false Zulu
       <SequenceId>17558</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <foreign-key id="422" parent="313" name="fk_pen_racehorse_id">
+    <foreign-key id="424" parent="315" name="fk_pen_racehorse_id">
       <ColNames>race_horse_id</ColNames>
       <ObjectId>17566</ObjectId>
       <StateNumber>993</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17515</RefTableId>
     </foreign-key>
-    <index id="423" parent="313" name="penalty_pkey">
+    <index id="425" parent="315" name="penalty_pkey">
       <ColNames>penalty_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17564</ObjectId>
@@ -5442,14 +5461,14 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="424" parent="313" name="penalty_pkey">
+    <key id="426" parent="315" name="penalty_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17565</ObjectId>
       <Primary>1</Primary>
       <StateNumber>993</StateNumber>
       <UnderlyingIndexId>17564</UnderlyingIndexId>
     </key>
-    <column id="425" parent="314" name="id">
+    <column id="427" parent="316" name="id">
       <DefaultExpression>nextval(&apos;race_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -5457,7 +5476,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="426" parent="314" name="referee_id">
+    <column id="428" parent="316" name="referee_id">
       <DefaultExpression>nextval(&apos;race_referee_id_seq1&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
@@ -5466,52 +5485,52 @@ false Zulu
       <SequenceId>17440</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="427" parent="314" name="race_name">
+    <column id="429" parent="316" name="race_name">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>981</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="428" parent="314" name="race_date">
+    <column id="430" parent="316" name="race_date">
       <Position>4</Position>
       <StateNumber>981</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="429" parent="314" name="start_time">
+    <column id="431" parent="316" name="start_time">
       <Position>5</Position>
       <StateNumber>981</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="430" parent="314" name="end_time">
+    <column id="432" parent="316" name="end_time">
       <Position>6</Position>
       <StateNumber>981</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="431" parent="314" name="track_name">
+    <column id="433" parent="316" name="track_name">
       <NotNull>1</NotNull>
       <Position>7</Position>
       <StateNumber>981</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="432" parent="314" name="track_condition">
+    <column id="434" parent="316" name="track_condition">
       <NotNull>1</NotNull>
       <Position>8</Position>
       <StateNumber>981</StateNumber>
       <StoredType>varchar(50)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="433" parent="314" name="surface_type">
+    <column id="435" parent="316" name="surface_type">
       <Position>9</Position>
       <StateNumber>981</StateNumber>
       <StoredType>varchar(50)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="434" parent="314" name="totalprizepool">
+    <column id="436" parent="316" name="totalprizepool">
       <DefaultExpression>nextval(&apos;race_totalprizepool_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>10</Position>
@@ -5520,63 +5539,63 @@ false Zulu
       <SequenceId>17441</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="435" parent="314" name="distance">
+    <column id="437" parent="316" name="distance">
       <NotNull>1</NotNull>
       <Position>11</Position>
       <StateNumber>981</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="436" parent="314" name="location">
+    <column id="438" parent="316" name="location">
       <Position>12</Position>
       <StateNumber>981</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="437" parent="314" name="capacity">
+    <column id="439" parent="316" name="capacity">
       <Position>13</Position>
       <StateNumber>981</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="438" parent="314" name="banner_imageurl">
+    <column id="440" parent="316" name="banner_imageurl">
       <Position>14</Position>
       <StateNumber>981</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="439" parent="314" name="status">
+    <column id="441" parent="316" name="status">
       <Position>15</Position>
       <StateNumber>981</StateNumber>
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="440" parent="314" name="created_at">
+    <column id="442" parent="316" name="created_at">
       <Position>16</Position>
       <StateNumber>1056</StateNumber>
       <StoredType>timestamp(6) with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <column id="441" parent="314" name="registration_deadline">
+    <column id="443" parent="316" name="registration_deadline">
       <Position>17</Position>
       <StateNumber>1057</StateNumber>
       <StoredType>timestamp(6) with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <column id="442" parent="314" name="updated_at">
+    <column id="444" parent="316" name="updated_at">
       <Position>18</Position>
       <StateNumber>1058</StateNumber>
       <StoredType>timestamp(6) with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <foreign-key id="443" parent="314" name="fk_race_referee_refereeid">
+    <foreign-key id="445" parent="316" name="fk_race_referee_refereeid">
       <ColNames>referee_id</ColNames>
       <ObjectId>17451</ObjectId>
       <StateNumber>981</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17408</RefTableId>
     </foreign-key>
-    <index id="444" parent="314" name="race_pkey">
+    <index id="446" parent="316" name="race_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17449</ObjectId>
@@ -5585,14 +5604,14 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="445" parent="314" name="race_pkey">
+    <key id="447" parent="316" name="race_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17450</ObjectId>
       <Primary>1</Primary>
       <StateNumber>981</StateNumber>
       <UnderlyingIndexId>17449</UnderlyingIndexId>
     </key>
-    <column id="446" parent="315" name="id">
+    <column id="448" parent="317" name="id">
       <DefaultExpression>nextval(&apos;race_horse_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -5600,7 +5619,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="447" parent="315" name="race_id">
+    <column id="449" parent="317" name="race_id">
       <DefaultExpression>nextval(&apos;race_horse_race_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
@@ -5609,7 +5628,7 @@ false Zulu
       <SequenceId>17510</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="448" parent="315" name="horse_id">
+    <column id="450" parent="317" name="horse_id">
       <DefaultExpression>nextval(&apos;race_horse_horse_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
@@ -5618,7 +5637,7 @@ false Zulu
       <SequenceId>17511</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="449" parent="315" name="jockey_id">
+    <column id="451" parent="317" name="jockey_id">
       <DefaultExpression>nextval(&apos;race_horse_jockey_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>4</Position>
@@ -5627,7 +5646,7 @@ false Zulu
       <SequenceId>17512</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="450" parent="315" name="lane_number">
+    <column id="452" parent="317" name="lane_number">
       <DefaultExpression>nextval(&apos;race_horse_lane_number_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>5</Position>
@@ -5636,7 +5655,7 @@ false Zulu
       <SequenceId>17513</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="451" parent="315" name="start_position">
+    <column id="453" parent="317" name="start_position">
       <DefaultExpression>nextval(&apos;race_horse_start_position_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>6</Position>
@@ -5645,41 +5664,41 @@ false Zulu
       <SequenceId>17514</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="452" parent="315" name="register_at">
+    <column id="454" parent="317" name="register_at">
       <Position>7</Position>
       <StateNumber>989</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="453" parent="315" name="status">
+    <column id="455" parent="317" name="status">
       <DefaultExpression>&apos;Actice&apos;::character varying</DefaultExpression>
       <Position>8</Position>
       <StateNumber>989</StateNumber>
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <foreign-key id="454" parent="315" name="fk_racehorse_race_id">
+    <foreign-key id="456" parent="317" name="fk_racehorse_race_id">
       <ColNames>race_id</ColNames>
       <ObjectId>17526</ObjectId>
       <StateNumber>989</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17442</RefTableId>
     </foreign-key>
-    <foreign-key id="455" parent="315" name="fk_racehorse_horse_id">
+    <foreign-key id="457" parent="317" name="fk_racehorse_horse_id">
       <ColNames>horse_id</ColNames>
       <ObjectId>17531</ObjectId>
       <StateNumber>989</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17398</RefTableId>
     </foreign-key>
-    <foreign-key id="456" parent="315" name="fk_racehorse_jokcey_id">
+    <foreign-key id="458" parent="317" name="fk_racehorse_jokcey_id">
       <ColNames>jockey_id</ColNames>
       <ObjectId>17536</ObjectId>
       <StateNumber>989</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17483</RefTableId>
     </foreign-key>
-    <index id="457" parent="315" name="race_horse_pkey">
+    <index id="459" parent="317" name="race_horse_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17524</ObjectId>
@@ -5688,14 +5707,14 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="458" parent="315" name="race_horse_pkey">
+    <key id="460" parent="317" name="race_horse_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17525</ObjectId>
       <Primary>1</Primary>
       <StateNumber>989</StateNumber>
       <UnderlyingIndexId>17524</UnderlyingIndexId>
     </key>
-    <column id="459" parent="316" name="id">
+    <column id="461" parent="318" name="id">
       <DefaultExpression>nextval(&apos;race_referee_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -5704,13 +5723,13 @@ false Zulu
       <SequenceId>17406</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="460" parent="316" name="full_name">
+    <column id="462" parent="318" name="full_name">
       <Position>2</Position>
       <StateNumber>975</StateNumber>
       <StoredType>varchar(50)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="461" parent="316" name="experienceyears">
+    <column id="463" parent="318" name="experienceyears">
       <DefaultExpression>nextval(&apos;race_referee_experienceyears_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
@@ -5719,26 +5738,26 @@ false Zulu
       <SequenceId>17407</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="462" parent="316" name="status">
+    <column id="464" parent="318" name="status">
       <Position>4</Position>
       <StateNumber>975</StateNumber>
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="463" parent="316" name="user_id">
+    <column id="465" parent="318" name="user_id">
       <Position>5</Position>
       <StateNumber>1059</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <foreign-key id="464" parent="316" name="fkjmkna7sfkfyxsw3a83l40w290">
+    <foreign-key id="466" parent="318" name="fkjmkna7sfkfyxsw3a83l40w290">
       <ColNames>user_id</ColNames>
       <ObjectId>17715</ObjectId>
       <StateNumber>1074</StateNumber>
       <RefKeyColPositions>2</RefKeyColPositions>
       <RefTableId>17370</RefTableId>
     </foreign-key>
-    <index id="465" parent="316" name="race_referee_pkey">
+    <index id="467" parent="318" name="race_referee_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17413</ObjectId>
@@ -5747,33 +5766,33 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="466" parent="316" name="ukolmni9xih0lur6b6bpy8h1ill">
+    <index id="468" parent="318" name="ukolmni9xih0lur6b6bpy8h1ill">
       <ColNames>user_id</ColNames>
       <ObjectId>17706</ObjectId>
       <StateNumber>1070</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="467" parent="316" name="race_referee_pkey">
+    <key id="469" parent="318" name="race_referee_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17414</ObjectId>
       <Primary>1</Primary>
       <StateNumber>975</StateNumber>
       <UnderlyingIndexId>17413</UnderlyingIndexId>
     </key>
-    <key id="468" parent="316" name="ukolmni9xih0lur6b6bpy8h1ill">
+    <key id="470" parent="318" name="ukolmni9xih0lur6b6bpy8h1ill">
       <ObjectId>17707</ObjectId>
       <StateNumber>1070</StateNumber>
       <UnderlyingIndexId>17706</UnderlyingIndexId>
     </key>
-    <column id="469" parent="317" name="id">
+    <column id="471" parent="319" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>991</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="470" parent="317" name="race_horse_id">
+    <column id="472" parent="319" name="race_horse_id">
       <DefaultExpression>nextval(&apos;race_result_race_horse_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
@@ -5782,19 +5801,19 @@ false Zulu
       <SequenceId>17541</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="471" parent="317" name="rank">
+    <column id="473" parent="319" name="rank">
       <Position>3</Position>
       <StateNumber>991</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="472" parent="317" name="completiontime">
+    <column id="474" parent="319" name="completiontime">
       <Position>4</Position>
       <StateNumber>991</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="473" parent="317" name="rewards">
+    <column id="475" parent="319" name="rewards">
       <DefaultExpression>nextval(&apos;race_result_rewards_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>5</Position>
@@ -5803,7 +5822,7 @@ false Zulu
       <SequenceId>17542</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="474" parent="317" name="penalty_id">
+    <column id="476" parent="319" name="penalty_id">
       <DefaultExpression>nextval(&apos;race_result_penalty_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>6</Position>
@@ -5812,35 +5831,35 @@ false Zulu
       <SequenceId>17543</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="475" parent="317" name="race_id">
+    <column id="477" parent="319" name="race_id">
       <NotNull>1</NotNull>
       <Position>7</Position>
       <StateNumber>1060</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <foreign-key id="476" parent="317" name="fk_raceresult_racehorse">
+    <foreign-key id="478" parent="319" name="fk_raceresult_racehorse">
       <ColNames>id</ColNames>
       <ObjectId>17552</ObjectId>
       <StateNumber>991</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17515</RefTableId>
     </foreign-key>
-    <foreign-key id="477" parent="317" name="fks0bx5shc13knf5pp2xefahuy6">
+    <foreign-key id="479" parent="319" name="fks0bx5shc13knf5pp2xefahuy6">
       <ColNames>race_horse_id</ColNames>
       <ObjectId>17725</ObjectId>
       <StateNumber>1076</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17515</RefTableId>
     </foreign-key>
-    <foreign-key id="478" parent="317" name="fkko06spjnaxu6pd4f2qucqdg1">
+    <foreign-key id="480" parent="319" name="fkko06spjnaxu6pd4f2qucqdg1">
       <ColNames>race_id</ColNames>
       <ObjectId>17720</ObjectId>
       <StateNumber>1075</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17442</RefTableId>
     </foreign-key>
-    <index id="479" parent="317" name="race_result_pkey">
+    <index id="481" parent="319" name="race_result_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17550</ObjectId>
@@ -5849,14 +5868,14 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="480" parent="317" name="race_result_pkey">
+    <key id="482" parent="319" name="race_result_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17551</ObjectId>
       <Primary>1</Primary>
       <StateNumber>991</StateNumber>
       <UnderlyingIndexId>17550</UnderlyingIndexId>
     </key>
-    <column id="481" parent="318" name="id">
+    <column id="483" parent="320" name="id">
       <DefaultExpression>nextval(&apos;roles_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -5865,20 +5884,20 @@ false Zulu
       <SequenceId>17360</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="482" parent="318" name="rolename">
+    <column id="484" parent="320" name="rolename">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>967</StateNumber>
       <StoredType>varchar(50)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="483" parent="318" name="description">
+    <column id="485" parent="320" name="description">
       <Position>3</Position>
       <StateNumber>967</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <index id="484" parent="318" name="roles_pkey">
+    <index id="486" parent="320" name="roles_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17365</ObjectId>
@@ -5887,7 +5906,7 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="485" parent="318" name="roles_rolename_key">
+    <index id="487" parent="320" name="roles_rolename_key">
       <ColNames>rolename</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17367</ObjectId>
@@ -5898,20 +5917,20 @@ false Zulu
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="486" parent="318" name="roles_pkey">
+    <key id="488" parent="320" name="roles_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17366</ObjectId>
       <Primary>1</Primary>
       <StateNumber>967</StateNumber>
       <UnderlyingIndexId>17365</UnderlyingIndexId>
     </key>
-    <key id="487" parent="318" name="roles_rolename_key">
+    <key id="489" parent="320" name="roles_rolename_key">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17368</ObjectId>
       <StateNumber>967</StateNumber>
       <UnderlyingIndexId>17367</UnderlyingIndexId>
     </key>
-    <column id="488" parent="319" name="id">
+    <column id="490" parent="321" name="id">
       <DefaultExpression>nextval(&apos;trainer_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -5919,14 +5938,14 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="489" parent="319" name="name">
+    <column id="491" parent="321" name="name">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>1001</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="490" parent="319" name="age">
+    <column id="492" parent="321" name="age">
       <DefaultExpression>nextval(&apos;trainer_age_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
@@ -5935,7 +5954,7 @@ false Zulu
       <SequenceId>17588</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="491" parent="319" name="experience_years">
+    <column id="493" parent="321" name="experience_years">
       <DefaultExpression>nextval(&apos;trainer_experience_years_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>4</Position>
@@ -5944,39 +5963,39 @@ false Zulu
       <SequenceId>17589</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="492" parent="319" name="status">
+    <column id="494" parent="321" name="status">
       <DefaultExpression>&apos;Active&apos;::character varying</DefaultExpression>
       <Position>5</Position>
       <StateNumber>1001</StateNumber>
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="493" parent="319" name="avatar_url">
+    <column id="495" parent="321" name="avatar_url">
       <Position>6</Position>
       <StateNumber>1061</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="494" parent="319" name="description">
+    <column id="496" parent="321" name="description">
       <Position>7</Position>
       <StateNumber>1062</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="495" parent="319" name="user_id">
+    <column id="497" parent="321" name="user_id">
       <Position>8</Position>
       <StateNumber>1063</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <foreign-key id="496" parent="319" name="fkcvrnk74l63joim36fu4m2r4f8">
+    <foreign-key id="498" parent="321" name="fkcvrnk74l63joim36fu4m2r4f8">
       <ColNames>user_id</ColNames>
       <ObjectId>17730</ObjectId>
       <StateNumber>1077</StateNumber>
       <RefKeyColPositions>2</RefKeyColPositions>
       <RefTableId>17370</RefTableId>
     </foreign-key>
-    <index id="497" parent="319" name="trainer_pkey">
+    <index id="499" parent="321" name="trainer_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17596</ObjectId>
@@ -5985,33 +6004,34 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="498" parent="319" name="ukgeuofcxp00v2rcu9fj9g7olue">
+    <index id="500" parent="321" name="ukgeuofcxp00v2rcu9fj9g7olue">
       <ColNames>user_id</ColNames>
       <ObjectId>17708</ObjectId>
       <StateNumber>1072</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="499" parent="319" name="trainer_pkey">
+    <key id="501" parent="321" name="trainer_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17597</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1001</StateNumber>
       <UnderlyingIndexId>17596</UnderlyingIndexId>
     </key>
-    <key id="500" parent="319" name="ukgeuofcxp00v2rcu9fj9g7olue">
+    <key id="502" parent="321" name="ukgeuofcxp00v2rcu9fj9g7olue">
       <ObjectId>17709</ObjectId>
       <StateNumber>1072</StateNumber>
       <UnderlyingIndexId>17708</UnderlyingIndexId>
     </key>
-    <column id="501" parent="320" name="id">
+    <column id="503" parent="322" name="id">
+      <DefaultExpression>nextval(&apos;transaction_request_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1020</StateNumber>
+      <StateNumber>1187</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="502" parent="320" name="request_type">
+    <column id="504" parent="322" name="request_type">
       <DefaultExpression>&apos;Pending&apos;::character varying</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
@@ -6019,7 +6039,7 @@ false Zulu
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="503" parent="320" name="amount">
+    <column id="505" parent="322" name="amount">
       <DefaultExpression>nextval(&apos;transaction_request_amount_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
@@ -6028,71 +6048,71 @@ false Zulu
       <SequenceId>17656</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="504" parent="320" name="request_status">
+    <column id="506" parent="322" name="request_status">
       <DefaultExpression>&apos;Pending&apos;::character varying</DefaultExpression>
       <Position>4</Position>
       <StateNumber>1020</StateNumber>
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="505" parent="320" name="payment_method">
+    <column id="507" parent="322" name="payment_method">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>1020</StateNumber>
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="506" parent="320" name="verify_note">
+    <column id="508" parent="322" name="verify_note">
       <Position>6</Position>
       <StateNumber>1066</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="507" parent="320" name="created_at">
+    <column id="509" parent="322" name="created_at">
       <Position>7</Position>
       <StateNumber>1020</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="508" parent="320" name="processedby">
+    <column id="510" parent="322" name="processedby">
       <Position>8</Position>
       <StateNumber>1020</StateNumber>
       <StoredType>varchar(50)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="509" parent="320" name="processedat">
+    <column id="511" parent="322" name="processedat">
       <Position>9</Position>
       <StateNumber>1020</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="510" parent="320" name="qr_url">
+    <column id="512" parent="322" name="qr_url">
       <Position>10</Position>
       <StateNumber>1064</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="511" parent="320" name="reference_code">
+    <column id="513" parent="322" name="reference_code">
       <Position>11</Position>
       <StateNumber>1065</StateNumber>
       <StoredType>varchar(50)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="512" parent="320" name="user_id">
+    <column id="514" parent="322" name="user_id">
       <NotNull>1</NotNull>
       <Position>12</Position>
       <StateNumber>1067</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <foreign-key id="513" parent="320" name="fkp7fcb1hyn8u70yx2eswa37pk9">
+    <foreign-key id="515" parent="322" name="fkp7fcb1hyn8u70yx2eswa37pk9">
       <ColNames>user_id</ColNames>
       <ObjectId>17735</ObjectId>
       <StateNumber>1078</StateNumber>
       <RefKeyColPositions>2</RefKeyColPositions>
       <RefTableId>17370</RefTableId>
     </foreign-key>
-    <index id="514" parent="320" name="transaction_request_pkey">
+    <index id="516" parent="322" name="transaction_request_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17663</ObjectId>
@@ -6101,21 +6121,21 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="515" parent="320" name="transaction_request_pkey">
+    <key id="517" parent="322" name="transaction_request_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17664</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1020</StateNumber>
       <UnderlyingIndexId>17663</UnderlyingIndexId>
     </key>
-    <column id="516" parent="321" name="role_id">
+    <column id="518" parent="323" name="role_id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>969</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="517" parent="321" name="user_id">
+    <column id="519" parent="323" name="user_id">
       <DefaultExpression>nextval(&apos;users_user_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
@@ -6124,46 +6144,46 @@ false Zulu
       <SequenceId>17369</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="518" parent="321" name="email">
+    <column id="520" parent="323" name="email">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>969</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="519" parent="321" name="username">
+    <column id="521" parent="323" name="username">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>969</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="520" parent="321" name="password">
+    <column id="522" parent="323" name="password">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>969</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="521" parent="321" name="full_name">
+    <column id="523" parent="323" name="full_name">
       <Position>6</Position>
       <StateNumber>969</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="522" parent="321" name="phonenumber">
+    <column id="524" parent="323" name="phonenumber">
       <Position>7</Position>
       <StateNumber>969</StateNumber>
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="523" parent="321" name="avatar_url">
+    <column id="525" parent="323" name="avatar_url">
       <Position>8</Position>
       <StateNumber>969</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="524" parent="321" name="status">
+    <column id="526" parent="323" name="status">
       <DefaultExpression>&apos;ACTIVE&apos;::character varying</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>9</Position>
@@ -6171,33 +6191,33 @@ false Zulu
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="525" parent="321" name="created_at">
+    <column id="527" parent="323" name="created_at">
       <Position>10</Position>
       <StateNumber>969</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="526" parent="321" name="updated_at">
+    <column id="528" parent="323" name="updated_at">
       <Position>11</Position>
       <StateNumber>969</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="527" parent="321" name="verified">
+    <column id="529" parent="323" name="verified">
       <NotNull>1</NotNull>
       <Position>12</Position>
       <StateNumber>1068</StateNumber>
       <StoredType>boolean|0s</StoredType>
       <TypeId>16</TypeId>
     </column>
-    <foreign-key id="528" parent="321" name="fk_user_roles_role">
+    <foreign-key id="530" parent="323" name="fk_user_roles_role">
       <ColNames>role_id</ColNames>
       <ObjectId>17381</ObjectId>
       <StateNumber>969</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17361</RefTableId>
     </foreign-key>
-    <index id="529" parent="321" name="users_pkey">
+    <index id="531" parent="323" name="users_pkey">
       <ColNames>user_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17377</ObjectId>
@@ -6206,7 +6226,7 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="530" parent="321" name="users_email_key">
+    <index id="532" parent="323" name="users_email_key">
       <ColNames>email</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17379</ObjectId>
@@ -6217,20 +6237,20 @@ false Zulu
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="531" parent="321" name="users_pkey">
+    <key id="533" parent="323" name="users_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17378</ObjectId>
       <Primary>1</Primary>
       <StateNumber>969</StateNumber>
       <UnderlyingIndexId>17377</UnderlyingIndexId>
     </key>
-    <key id="532" parent="321" name="users_email_key">
+    <key id="534" parent="323" name="users_email_key">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17380</ObjectId>
       <StateNumber>969</StateNumber>
       <UnderlyingIndexId>17379</UnderlyingIndexId>
     </key>
-    <column id="533" parent="322" name="id">
+    <column id="535" parent="324" name="id">
       <DefaultExpression>nextval(&apos;wallet_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -6238,7 +6258,7 @@ false Zulu
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="534" parent="322" name="user_id">
+    <column id="536" parent="324" name="user_id">
       <DefaultExpression>nextval(&apos;wallet_user_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
@@ -6247,13 +6267,13 @@ false Zulu
       <SequenceId>17644</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="535" parent="322" name="balance">
+    <column id="537" parent="324" name="balance">
       <Position>3</Position>
       <StateNumber>1013</StateNumber>
       <StoredType>numeric(10,2 digit)|0s</StoredType>
       <TypeId>1700</TypeId>
     </column>
-    <foreign-key id="536" parent="322" name="fk_wallet_user">
+    <foreign-key id="538" parent="324" name="fk_wallet_user">
       <ColNames>user_id</ColNames>
       <ObjectId>17747</ObjectId>
       <OnDelete>cascade</OnDelete>
@@ -6261,14 +6281,14 @@ false Zulu
       <RefKeyColPositions>2</RefKeyColPositions>
       <RefTableId>17370</RefTableId>
     </foreign-key>
-    <foreign-key id="537" parent="322" name="fkgbusavqq0bdaodex4ee6v0811">
+    <foreign-key id="539" parent="324" name="fkgbusavqq0bdaodex4ee6v0811">
       <ColNames>user_id</ColNames>
       <ObjectId>17740</ObjectId>
       <StateNumber>1079</StateNumber>
       <RefKeyColPositions>2</RefKeyColPositions>
       <RefTableId>17370</RefTableId>
     </foreign-key>
-    <index id="538" parent="322" name="wallet_pkey">
+    <index id="540" parent="324" name="wallet_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17649</ObjectId>
@@ -6277,7 +6297,7 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="539" parent="322" name="wallet_pkey">
+    <key id="541" parent="324" name="wallet_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17650</ObjectId>
       <Primary>1</Primary>

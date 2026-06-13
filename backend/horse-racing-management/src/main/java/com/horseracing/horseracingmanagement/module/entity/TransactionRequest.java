@@ -19,6 +19,7 @@ public class TransactionRequest {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "wallet", "role", "transactionRequests"})
     private User user;  // ← thêm user_id
 
     @Column(name = "request_type", length = 20)

@@ -1,0 +1,170 @@
+/* ── Step indicators ── */
+.deposit-modal__header-left {
+  display: flex; align-items: center; gap: var(--space-3);
+}
+.deposit-modal__back {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: var(--radius);
+  border: 1.5px solid var(--border); background: transparent;
+  cursor: pointer; color: var(--text-muted);
+  transition: all var(--transition);
+}
+.deposit-modal__back:hover { border-color: var(--primary); color: var(--primary); }
+
+.deposit-modal__steps {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border-bottom: 1px solid var(--border);
+}
+.deposit-modal__step {
+  display: flex; align-items: center; gap: var(--space-2);
+  font-size: var(--fs-small); color: var(--text-muted); font-weight: 500;
+}
+.deposit-modal__step.active { color: var(--primary); font-weight: 600; }
+.deposit-modal__step.done { color: #15803d; }
+
+.deposit-modal__step-dot {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-xs); font-weight: 700;
+  background: var(--black-10); color: var(--text-muted);
+  flex-shrink: 0;
+}
+.deposit-modal__step.active .deposit-modal__step-dot {
+  background: var(--primary); color: var(--white);
+}
+.deposit-modal__step.done .deposit-modal__step-dot {
+  background: #dcfce7; color: #15803d;
+}
+.deposit-modal__step-line {
+  flex: 1; height: 1px; background: var(--border);
+}
+
+/* ── Form ── */
+.deposit-form { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.deposit-form__field { display: flex; flex-direction: column; gap: var(--space-1); }
+.deposit-form__label {
+  font-size: var(--fs-xs); font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: var(--tracking-wide);
+}
+.deposit-form__input-wrap { position: relative; }
+.deposit-form__input {
+  width: 100%; height: 52px;
+  padding: 0 3rem 0 var(--space-4);
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  font-family: var(--font-sans); font-size: 1.25rem; font-weight: 700;
+  color: var(--text); background: var(--white); outline: none; box-sizing: border-box;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.deposit-form__input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(3,105,161,.1);
+}
+.deposit-form__suffix {
+  position: absolute; right: var(--space-4); top: 50%; transform: translateY(-50%);
+  font-size: var(--fs-small); color: var(--text-muted); pointer-events: none; font-weight: 600;
+}
+.deposit-form__preview {
+  font-size: var(--fs-small); color: var(--primary); font-weight: 600;
+  margin-top: 2px;
+}
+
+.deposit-form__quick {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2);
+}
+.deposit-form__quick-btn {
+  padding: var(--space-2) var(--space-2);
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  background: var(--white); font-size: var(--fs-small); font-weight: 600;
+  color: var(--text-muted); cursor: pointer; transition: all var(--transition);
+  white-space: nowrap;
+}
+.deposit-form__quick-btn:hover { border-color: var(--ocean-300); color: var(--primary); }
+.deposit-form__quick-btn.active { border-color: var(--primary); background: var(--primary); color: var(--white); }
+
+.deposit-form__error {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: #fee2e2; border: 1px solid #fca5a5;
+  border-radius: var(--radius); font-size: var(--fs-small); color: #dc2626; font-weight: 500;
+}
+.deposit-form__info {
+  padding: var(--space-3) var(--space-4);
+  background: var(--ocean-50); border: 1px solid var(--ocean-100);
+  border-radius: var(--radius); font-size: var(--fs-small); color: var(--ocean-800); line-height: 1.5;
+}
+.deposit-form__info p { margin: 0; }
+.deposit-form__actions {
+  display: flex; justify-content: flex-end; gap: var(--space-3); padding-top: var(--space-2);
+}
+
+/* ── QR Step ── */
+.deposit-qr {
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-4);
+}
+.deposit-qr__amount {
+  text-align: center;
+  padding: var(--space-3) var(--space-6);
+  background: var(--ocean-50); border: 1px solid var(--ocean-100);
+  border-radius: var(--radius); width: 100%; box-sizing: border-box;
+}
+.deposit-qr__amount-label {
+  display: block; font-size: var(--fs-xs); font-weight: 600;
+  color: var(--ocean-700); text-transform: uppercase; letter-spacing: var(--tracking-wide);
+  margin-bottom: 4px;
+}
+.deposit-qr__amount-value {
+  display: block; font-size: 1.5rem; font-weight: 700; color: var(--primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.deposit-qr__img-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-2);
+}
+.deposit-qr__img {
+  width: 200px; height: 200px; border: 2px solid var(--border);
+  border-radius: var(--radius); object-fit: contain;
+}
+.deposit-qr__brand {
+  font-size: var(--fs-xs); color: var(--text-muted); font-weight: 500;
+}
+.deposit-qr__no-qr {
+  padding: var(--space-4); background: var(--black-5);
+  border-radius: var(--radius); font-size: var(--fs-small); color: var(--text-muted);
+  text-align: center;
+}
+
+.deposit-qr__ref {
+  width: 100%; display: flex; flex-direction: column; gap: var(--space-2);
+}
+.deposit-qr__ref-label {
+  font-size: var(--fs-xs); font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: var(--tracking-wide);
+}
+.deposit-qr__ref-row {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  background: var(--black-5);
+}
+.deposit-qr__ref-code {
+  flex: 1; font-size: 1rem; font-weight: 700; color: var(--text);
+  font-family: monospace; letter-spacing: 1px;
+}
+.deposit-qr__copy {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--white);
+  font-size: var(--fs-xs); font-weight: 600; color: var(--text-muted); cursor: pointer;
+  transition: all var(--transition); white-space: nowrap;
+}
+.deposit-qr__copy:hover { border-color: var(--primary); color: var(--primary); }
+
+.deposit-qr__note {
+  display: flex; align-items: flex-start; gap: var(--space-2);
+  width: 100%; padding: var(--space-3) var(--space-4);
+  background: #dcfce7; border: 1px solid #86efac;
+  border-radius: var(--radius); font-size: var(--fs-small); color: #15803d; line-height: 1.5;
+}
+.deposit-qr__done { width: 100%; justify-content: center; }
