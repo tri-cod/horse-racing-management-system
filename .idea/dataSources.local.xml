@@ -1,24 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="dataSourceStorageLocal" created-in="IU-261.25134.95">
-    <data-source name="Viniorun" uuid="ac1f3669-575a-4330-b0c4-9c03be6732be">
-      <database-info product="PostgreSQL" version="18.4" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.3" dbms="POSTGRES" exact-version="18.4" exact-driver-version="42.7">
+    <data-source name="horse_racing_management_system" uuid="be517e4c-69be-4683-860f-73538c12e955">
+      <database-info product="PostgreSQL" version="17.10" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.3" dbms="POSTGRES" exact-version="17.10" exact-driver-version="42.7">
         <identifier-quote-string>&quot;</identifier-quote-string>
       </database-info>
       <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
       <secret-storage>master_key</secret-storage>
-      <user-name>postgres</user-name>
-      <schema-mapping>
-        <introspection-scope>
-          <node kind="database" qname="horse_racing_management_system" />
-        </introspection-scope>
-      </schema-mapping>
-    </data-source>
-    <data-source name="horse_racing_management_system@localhost" uuid="8721d9b3-5903-4df6-ac1c-73d187e5120c">
-      <database-info product="PostgreSQL" version="18.4" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.3" dbms="POSTGRES" exact-version="18.4" exact-driver-version="42.7">
-        <identifier-quote-string>&quot;</identifier-quote-string>
-      </database-info>
-      <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
       <user-name>postgres</user-name>
       <schema-mapping>
         <introspection-scope>
@@ -28,7 +16,7 @@
         </introspection-scope>
       </schema-mapping>
     </data-source>
-    <data-source name="0@localhost" uuid="9120bcb1-4319-4b53-96d8-9ec671c9f629">
+    <data-source name="0@localhost" uuid="636f408d-1f70-44d1-a041-82ac86a35669">
       <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="REDIS" />
       <schema-mapping />
     </data-source>

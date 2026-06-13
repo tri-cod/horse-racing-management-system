@@ -1,0 +1,28 @@
+.bet-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+.bet-status-badge--pending   { background: var(--ocean-50);  color: var(--ocean-700); }
+.bet-status-badge--won       { background: #dcfce7;           color: #15803d; }
+.bet-status-badge--lost      { background: var(--black-5);   color: var(--black-60); }
+.bet-status-badge--cancelled { background: #fee2e2;           color: #dc2626; }
+
+.bet-status-badge__dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.bet-status-badge__dot--pulse { animation: bsb-pulse 1.5s ease-in-out infinite; }
+@keyframes bsb-pulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: .35; }
+}

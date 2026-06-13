@@ -1,0 +1,187 @@
+/* PlaceBetModal – extends modal-dialog from Modal.css */
+
+.bet-place-modal__header { padding-bottom: var(--space-4); }
+
+/* Race info strip */
+.bet-place-modal__race-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--ocean-50);
+  border: 1px solid var(--ocean-100);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-5);
+}
+.bet-place-modal__race-info-item,
+.bet-place-modal__running-total {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-small);
+  color: var(--ocean-800);
+}
+.bet-place-modal__running-total strong { font-weight: 700; }
+
+/* Form */
+.bet-place-form { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.bet-place-form__items { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.bet-place-form__item {
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--white-95);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  transition: border-color var(--transition);
+}
+.bet-place-form__item:focus-within { border-color: var(--ocean-300); }
+
+.bet-place-form__item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.bet-place-form__item-num {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--ocean-700);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+.bet-place-form__remove {
+  display: flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px;
+  background: transparent; border: none; border-radius: var(--radius-sm);
+  cursor: pointer; color: var(--black-40);
+  transition: background var(--transition), color var(--transition);
+}
+.bet-place-form__remove:hover { background: #fee2e2; color: #dc2626; }
+
+.bet-place-form__field { display: flex; flex-direction: column; gap: var(--space-1); }
+
+.bet-place-form__label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+.bet-place-form__select,
+.bet-place-form__input {
+  width: 100%; height: 40px;
+  padding: 0 var(--space-3);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  color: var(--text);
+  background: var(--white);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.bet-place-form__select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23525252' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+.bet-place-form__select:focus,
+.bet-place-form__input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(3,105,161,.1);
+}
+
+.bet-place-form__input-wrap { position: relative; }
+.bet-place-form__input-wrap .bet-place-form__input { padding-right: 28px; }
+.bet-place-form__suffix {
+  position: absolute; right: var(--space-3); top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--fs-xs); color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* Quick pick chips */
+.bet-place-form__quick {
+  display: flex; flex-wrap: wrap; gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+.bet-place-form__quick-btn {
+  padding: 3px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.bet-place-form__quick-btn:hover,
+.bet-place-form__quick-btn.active {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--white);
+}
+
+/* Add horse */
+.bet-place-form__add-btn {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  align-self: flex-start;
+  padding: var(--space-2) var(--space-4);
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius);
+  background: transparent;
+  font-size: var(--fs-small); font-weight: 600; color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.bet-place-form__add-btn:hover {
+  border-color: var(--primary); color: var(--primary); background: var(--ocean-50);
+}
+
+/* Error */
+.bet-place-form__error {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: #fee2e2; border: 1px solid #fca5a5;
+  border-radius: var(--radius);
+  font-size: var(--fs-small); font-weight: 500; color: #dc2626;
+}
+
+/* Summary */
+.bet-place-form__summary {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-2);
+}
+.bet-place-form__summary-row {
+  display: flex; justify-content: space-between;
+  font-size: var(--fs-small); color: var(--text-muted);
+}
+.bet-place-form__summary-row span:last-child { font-weight: 600; color: var(--text); }
+.bet-place-form__summary-row--total {
+  font-size: 1rem; padding-top: var(--space-2);
+}
+.bet-place-form__total-value {
+  font-size: 1.125rem !important;
+  color: var(--primary) !important;
+}
+
+/* Actions */
+.bet-place-form__actions {
+  display: flex; justify-content: flex-end; gap: var(--space-3);
+}
+@media (max-width: 400px) {
+  .bet-place-form__actions { flex-direction: column-reverse; }
+  .bet-place-form__actions .ui-btn { width: 100%; justify-content: center; }
+}

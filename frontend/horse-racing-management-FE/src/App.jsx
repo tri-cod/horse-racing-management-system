@@ -10,6 +10,11 @@ import MyHorsesPage from './pages/MyHorsesPage'
 import HorseRegisterPage from './pages/HorseRegisterPage'
 import HorseDetailPage from './pages/HorseDetailPage'
 import JockeysPage from './pages/JockeysPage'
+import RacesPage from './pages/RacesPage'
+import RaceDetailPage from './pages/RaceDetailPage'
+import AdminCreateRacePage from './pages/AdminCreateRacePage'
+import AdminEditRacePage from './pages/AdminEditRacePage'
+import MyBetsPage from './pages/MyBetsPage'
 import { ProtectedRoute } from './router/ProtectedRoute'
 
 export default function App() {
@@ -20,6 +25,8 @@ export default function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/jockeys" element={<Layout><JockeysPage /></Layout>} />
+      <Route path="/races" element={<Layout><RacesPage /></Layout>} />
+      <Route path="/races/:id" element={<Layout><RaceDetailPage /></Layout>} />
       <Route
         path="/profile"
         element={
@@ -61,6 +68,35 @@ export default function App() {
         }
       />
 
+
+      <Route
+        path="/admin/races/create"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <Layout>
+              <AdminCreateRacePage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/races/:id/edit"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <Layout>
+              <AdminEditRacePage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+<Route
+  path="/my-bets"
+  element={
+    <ProtectedRoute allowedRoles={['USER']}>
+      <Layout><MyBetsPage /></Layout>
+    </ProtectedRoute>
+  }
+/>
     </Routes>
   )
 }

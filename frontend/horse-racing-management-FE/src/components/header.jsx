@@ -1,6 +1,6 @@
 import { useState, useContext, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, User, LogOut } from 'lucide-react';
+import { Menu, X, User, LogOut, Ticket } from 'lucide-react';
 import '../assets/css/Header.css';
 import { AuthContext } from '../context/AuthContext';
 import Button from './ui/Button';
@@ -30,6 +30,10 @@ function Header() {
     navigate('/profile');
     setDropdownOpen(false);
   };
+  const handleNavigateBets = () => {
+  navigate('/my-bets');
+  setDropdownOpen(false);
+};
 
   const handleLogout = async () => {
     await logout();
@@ -59,6 +63,8 @@ function Header() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+       // bet chi cho customer 
+ const isCustomer = user?.role === 'USER';
 
   return (
     <header className={`header${scrolled ? ' header--scrolled' : ''}`}>
@@ -92,6 +98,17 @@ function Header() {
                 </Link>
               </li>
             )}
+                        {isCustomer && (
+              <li className="header__nav-item header__nav-item--mobile-only">
+                <Link
+                  to="/my-bets"
+                  className={pathname === '/my-bets' ? 'active' : ''}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  My Bets
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
 
@@ -116,6 +133,16 @@ function Header() {
                   <User size={16} />
                   <span>My Profile</span>
                 </button>
+                  {isCustomer && (
+    <button
+      type="button"
+      className={`header__dropdown-item${pathname === '/my-bets' ? ' header__dropdown-item--active' : ''}`}
+      onClick={handleNavigateBets}
+    >
+      <Ticket size={16} />
+      <span>My Bets</span>
+    </button>
+  )}
                 <button type="button" className="header__dropdown-item header__dropdown-item--danger" onClick={handleLogout}>
                   <LogOut size={16} />
                   <span>Log Out</span>

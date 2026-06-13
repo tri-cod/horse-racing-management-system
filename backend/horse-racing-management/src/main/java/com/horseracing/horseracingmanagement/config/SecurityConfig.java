@@ -43,7 +43,11 @@ public class SecurityConfig {
             "/api/categories/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            
+            "/api/races/**",        // ← THÊM
+            "/api/race-horse/**",   // ← THÊM
+            "/api/jockeys/**",      // ← THÊM
     };
 
     @Bean

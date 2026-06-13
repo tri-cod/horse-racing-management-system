@@ -8,25 +8,36 @@
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/ac1f3669-575a-4330-b0c4-9c03be6732be.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/ac1f3669-575a-4330-b0c4-9c03be6732be.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/ac1f3669-575a-4330-b0c4-9c03be6732be/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/ac1f3669-575a-4330-b0c4-9c03be6732be/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/public.abK9xQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8721d9b3-5903-4df6-ac1c-73d187e5120c.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8721d9b3-5903-4df6-ac1c-73d187e5120c/storage_v2/_src_/database/horse_racing_management_system.HJkssA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8721d9b3-5903-4df6-ac1c-73d187e5120c/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8721d9b3-5903-4df6-ac1c-73d187e5120c/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8721d9b3-5903-4df6-ac1c-73d187e5120c/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/public.abK9xQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/ac1f3669-575a-4330-b0c4-9c03be6732be.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/ac1f3669-575a-4330-b0c4-9c03be6732be/storage_v2/_src_/database/horse_racing_management_system.HJkssA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/ac1f3669-575a-4330-b0c4-9c03be6732be/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/ac1f3669-575a-4330-b0c4-9c03be6732be/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/ac1f3669-575a-4330-b0c4-9c03be6732be/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/public.abK9xQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/ac1f3669-575a-4330-b0c4-9c03be6732be/storage_v2/_src_/database/postgres.edMnLQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/ac1f3669-575a-4330-b0c4-9c03be6732be/storage_v2/_src_/database/postgres.edMnLQ/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/ac1f3669-575a-4330-b0c4-9c03be6732be/storage_v2/_src_/database/postgres.edMnLQ/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/ac1f3669-575a-4330-b0c4-9c03be6732be/storage_v2/_src_/database/postgres.edMnLQ/schema/public.abK9xQ.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/db-forest-config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/db-forest-config.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/db-forest-config.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/config/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/config/CorsConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/config/RedisConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/config/RedisConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/database/data.sql" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/database/data.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/controller/HorseOwnerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/controller/HorseOwnerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/service/impl/AuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/service/impl/AuthServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/controller/BetController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/controller/BetController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/entity/BetItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/entity/BetItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/service/impl/BetServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/service/impl/BetServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/security/CustomUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/security/CustomUserDetails.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/api/axiosInstance.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/api/axiosInstance.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/api/horseOwnerApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/api/horseOwnerApi.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/HorseRegisterPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/HorseRegisterPage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/Register.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/Register.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/horse-owner/HorseForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/horse-owner/HorseForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/hooks/useHorseForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/hooks/useHorseForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/HorseRegisterPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/HorseRegisterPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/Header.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/Header.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/header.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/header.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/main.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/main.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/RaceDetailPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/RaceDetailPage.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,46 +133,47 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "JUnit.HorseRacingManagementApplicationTests.contextLoads.executor": "Run",
-    "JUnit.HorseRacingManagementApplicationTests.executor": "Run",
-    "Maven.horse-racing-management [clean].executor": "Run",
-    "Maven.horse-racing-management [compile].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "Spring Boot.HorseRacingManagementApplication.executor": "Run",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "interface/HorseOwner",
-    "ignore.virus.scanning.warn.message": "true",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "SDKs",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.keymap",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;JUnit.HorseRacingManagementApplicationTests.contextLoads.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HorseRacingManagementApplicationTests.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.horse-racing-management [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.horse-racing-management [compile].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;Spring Boot.HorseRacingManagementApplication.executor&quot;: &quot;Run&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Feature/Bet__ui&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/SWP/horse-racing-management-system&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Spring Boot.HorseRacingManagementApplication">
     <configuration name="HorseRacingManagementApplicationTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="horse-racing-management" />
@@ -193,6 +205,17 @@
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="horse-racing-management" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="horse-racing-management" />
+      <option name="filePath" />
+      <method v="2" />
     </configuration>
     <configuration name="HorseRacingManagementApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
@@ -234,11 +257,44 @@
       <workItem from="1780906276686" duration="2795000" />
       <workItem from="1780923481353" duration="12939000" />
       <workItem from="1780947561649" duration="1917000" />
+      <workItem from="1781279581116" duration="2988000" />
+      <workItem from="1781282678868" duration="7798000" />
+      <workItem from="1781336581103" duration="1100000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:org.springframework.security:spring-security-core" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-core" />
+    <option featureType="dependencySupport" implementationName="javascript:npm:react" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.validation:jakarta.validation-api" />
+    <option featureType="dependencySupport" implementationName="javascript:npm:vite" />
+    <option featureType="dependencySupport" implementationName="java:io.projectreactor:reactor-core" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.data:spring-data-commons" />
+    <option featureType="dependencySupport" implementationName="executable:kubectl" />
+    <option featureType="dependencySupport" implementationName="java:org.hibernate.validator:hibernate-validator" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-webmvc" />
+    <option featureType="dependencySupport" implementationName="java:org.projectlombok:lombok" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-websocket" />
+    <option featureType="dependencySupport" implementationName="executable:docker" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.persistence:jakarta.persistence-api" />
+    <option featureType="dependencySupport" implementationName="java:org.thymeleaf:thymeleaf" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-messaging" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/controller/BetController.java</url>
+          <line>39</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/horse_racing_management_system$HorseRacingManagementApplication.ic" NAME="HorseRacingManagementApplication Coverage Results" MODIFIED="1779959819860" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />

@@ -296,4 +296,22 @@
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--border);
   }
+
+  
+  .header__dropdown-item--active {
+    background-color: var(--ocean-50);
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  
+  .header__nav-item--mobile-only {
+    display: none;
+  }
+
+  @media (max-width: 960px) {
+    .header__nav-item--mobile-only {
+      display: list-item;
+    }
+  }
 }

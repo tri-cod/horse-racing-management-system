@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { Edit, Trash2, Plus, XCircle } from 'lucide-react';
+import { Edit, Trash2, Plus, XCircle, Ticket } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { useRaceDetail } from '../hooks/useRaceDetail';
 import { useToast } from '../components/ui/ToastProvider';
@@ -11,6 +11,8 @@ import RaceMetaStrip from '../components/race/RaceMetaStrip';
 import RaceInfoSection from '../components/race/RaceInfoSection';
 import RegisteredHorsesList from '../components/race-horse/RegisteredHorsesList';
 import RegisterHorseToRaceModal from '../components/race-horse/RegisterHorseToRaceModal';
+import { getHorsesByRace } from '../api/raceHorseApi';
+import PlaceBetModal from '../components/bet/PlaceBetModal';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Button from '../components/ui/Button';
@@ -28,6 +30,10 @@ export default function RaceDetailPage() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+
+  const [showBetModal, setShowBetModal] = useState(false);
+  const [raceHorses, setRaceHorses] = useState([]);
+  const [loadingHorses, setLoadingHorses] = useState(false);
 
   const handleDelete = async () => {
     setDeleting(true);
@@ -57,6 +63,20 @@ export default function RaceDetailPage() {
     }
   };
 
+  const handleOpenBet = async () => {
+    try {
+      setLoadingHorses(true);
+      const horses = await getHorsesByRace(id);
+      setRaceHorses(Array.isArray(horses) ? horses : []);
+    } catch {
+      addToast('Không thể tải danh sách ngựa. Vui lòng thử lại.', 'error');
+      return;
+    } finally {
+      setLoadingHorses(false);
+    }
+    setShowBetModal(true);
+  };
+
   if (loading) return <LoadingSpinner size="lg" />;
   if (error) return (
     <div className="race-detail-page__error">
@@ -71,6 +91,9 @@ export default function RaceDetailPage() {
   const computedStatus = computeRaceStatus(race);
   const canRegister = isOwner && computedStatus === 'UPCOMING';
   const canCancel = isAdmin && computedStatus === 'UPCOMING';
+
+const isCustomer = user?.role === 'USER';
+  const canBet = isCustomer && computedStatus === 'ONGOING';
 
   return (
     <div className="race-detail-page">
@@ -115,6 +138,12 @@ export default function RaceDetailPage() {
                 <Plus size={16} /> Register My Horse
               </Button>
             )}
+            {canBet && (
+              <Button variant="primary" onClick={handleOpenBet} disabled={loadingHorses}>
+                <Ticket size={16} />
+                {loadingHorses ? 'Loading…' : 'Place Bet'}
+              </Button>
+            )}
           </div>
         </div>
 
@@ -135,6 +164,15 @@ export default function RaceDetailPage() {
         raceId={Number(id)}
         onClose={() => setShowRegModal(false)}
         onSuccess={(msg) => { addToast(msg, 'success'); }}
+      />
+      <PlaceBetModal
+        open={showBetModal}
+        onClose={() => setShowBetModal(false)}
+        race={race}
+        raceHorses={raceHorses}
+        onSuccess={() => {
+          addToast('Bet placed successfully! Good luck 🏇', 'success');
+        }}
       />
 
       <ConfirmDialog

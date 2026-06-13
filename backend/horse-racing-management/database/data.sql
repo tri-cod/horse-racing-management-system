@@ -431,12 +431,6 @@ CREATE TABLE IF NOT EXISTS payment_transaction(
     foreign key (request_id) references transaction_request(id)
 )
 
-
-
-
-
-
-
-
-
-
+UPDATE bet_items
+SET result_status = 'WON', payout = 200000
+WHERE race_horse_id = 3;

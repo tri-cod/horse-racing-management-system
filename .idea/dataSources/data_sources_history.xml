@@ -1,5 +1,5 @@
 <DataSourcesHistory>
-  <DataSourceFromHistory isRemovedFromProject="false">
+  <DataSourceFromHistory isRemovedFromProject="true">
     <data-source source="LOCAL" name="Viniorun" uuid="ac1f3669-575a-4330-b0c4-9c03be6732be">
       <database-info product="PostgreSQL" version="18.4" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.3" dbms="POSTGRES" exact-version="18.4" exact-driver-version="42.7">
         <identifier-quote-string>&quot;</identifier-quote-string>
@@ -24,16 +24,16 @@
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </DataSourceFromHistory>
-  <DataSourceFromHistory isRemovedFromProject="false">
+  <DataSourceFromHistory isRemovedFromProject="true">
     <data-source source="LOCAL" name="horse_racing_management_system@localhost" uuid="8721d9b3-5903-4df6-ac1c-73d187e5120c">
-      <database-info product="PostgreSQL" version="18.4" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.3" dbms="POSTGRES" exact-version="18.4" exact-driver-version="42.7">
+      <database-info product="PostgreSQL" version="17.10" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.3" dbms="POSTGRES" exact-version="17.10" exact-driver-version="42.7">
         <identifier-quote-string>&quot;</identifier-quote-string>
       </database-info>
       <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <imported>true</imported>
-      <remarks>E:/Study/Project/horse-racing-management-system/backend/horse-racing-management/src/main/resources/application.properties</remarks>
+      <remarks>D:/SWP/horse-racing-management-system/backend/horse-racing-management/src/main/resources/application.properties</remarks>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://localhost:5432/horse_racing_management_system</jdbc-url>
       <jdbc-additional-properties>
@@ -41,6 +41,49 @@
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
         <property name="com.intellij.clouds.kubernetes.db.container.port" />
       </jdbc-additional-properties>
+      <user-name>postgres</user-name>
+      <schema-mapping>
+        <introspection-scope>
+          <node negative="1">
+            <node kind="database" qname="@">
+              <node kind="schema" qname="@" />
+            </node>
+            <node kind="database" qname="horse_racing_management_system" />
+          </node>
+        </introspection-scope>
+      </schema-mapping>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </DataSourceFromHistory>
+  <DataSourceFromHistory isRemovedFromProject="true">
+    <data-source source="LOCAL" name="0@localhost" uuid="9120bcb1-4319-4b53-96d8-9ec671c9f629">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="REDIS" />
+      <driver-ref>redis</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>D:/SWP/horse-racing-management-system/backend/horse-racing-management/src/main/resources/application.properties</remarks>
+      <jdbc-driver>jdbc.RedisDriver</jdbc-driver>
+      <jdbc-url>jdbc:redis://localhost:6379/0</jdbc-url>
+      <schema-mapping />
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </DataSourceFromHistory>
+  <DataSourceFromHistory isRemovedFromProject="false">
+    <data-source source="LOCAL" name="horse_racing_management_system" uuid="be517e4c-69be-4683-860f-73538c12e955">
+      <database-info product="PostgreSQL" version="17.10" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.3" dbms="POSTGRES" exact-version="17.10" exact-driver-version="42.7">
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/horse_racing_management_system</jdbc-url>
+      <jdbc-additional-properties>
+        <property name="com.intellij.clouds.kubernetes.db.host.port" />
+        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
+        <property name="com.intellij.clouds.kubernetes.db.container.port" />
+      </jdbc-additional-properties>
+      <secret-storage>master_key</secret-storage>
       <user-name>postgres</user-name>
       <schema-mapping>
         <introspection-scope>
@@ -53,14 +96,19 @@
     </data-source>
   </DataSourceFromHistory>
   <DataSourceFromHistory isRemovedFromProject="false">
-    <data-source source="LOCAL" name="0@localhost" uuid="9120bcb1-4319-4b53-96d8-9ec671c9f629">
+    <data-source source="LOCAL" name="0@localhost" uuid="636f408d-1f70-44d1-a041-82ac86a35669">
       <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="REDIS" />
       <driver-ref>redis</driver-ref>
       <synchronize>true</synchronize>
       <imported>true</imported>
-      <remarks>E:/Study/Project/horse-racing-management-system/backend/horse-racing-management/src/main/resources/application.properties</remarks>
+      <remarks>D:/SWP/horse-racing-management-system/backend/horse-racing-management/src/main/resources/application.properties</remarks>
       <jdbc-driver>jdbc.RedisDriver</jdbc-driver>
       <jdbc-url>jdbc:redis://localhost:6379/0</jdbc-url>
+      <jdbc-additional-properties>
+        <property name="com.intellij.clouds.kubernetes.db.host.port" />
+        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
+        <property name="com.intellij.clouds.kubernetes.db.container.port" />
+      </jdbc-additional-properties>
       <schema-mapping />
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
