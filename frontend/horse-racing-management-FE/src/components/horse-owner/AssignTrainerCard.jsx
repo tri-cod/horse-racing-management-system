@@ -1,23 +1,26 @@
 import { useState } from 'react';
 import { UserPlus } from 'lucide-react';
 import { assignTrainer } from '../../api/horseOwnerApi';
+import { useTrainers } from '../../hooks/useTrainers';
+import '../../assets/css/horse-owner/AssignTrainerCard.css';
 
 export default function AssignTrainerCard({ horseId, currentTrainerId, onAssigned }) {
   const [editing, setEditing] = useState(!currentTrainerId);
-  const [trainerId, setTrainerId] = useState(currentTrainerId || '');
+  const [selectedId, setSelectedId] = useState(currentTrainerId || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { trainers, loading: loadingTrainers } = useTrainers();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!trainerId || Number(trainerId) <= 0) {
-      setError('Please enter a valid trainerId');
+    if (!selectedId) {
+      setError('Please select a trainer');
       return;
     }
     setLoading(true);
     setError('');
     try {
-      const updated = await assignTrainer(horseId, Number(trainerId));
+      const updated = await assignTrainer(horseId, Number(selectedId));
       setEditing(false);
       onAssigned?.(updated);
     } catch (err) {
@@ -38,32 +41,31 @@ export default function AssignTrainerCard({ horseId, currentTrainerId, onAssigne
 
   return (
     <form className="assign-trainer" onSubmit={handleSubmit}>
-      <p className="assign-trainer__note">Contact an admin to get the trainerId</p>
       <div className="assign-trainer__row">
-        <input
-          type="number"
-          min="1"
-          className="assign-trainer__input"
-          placeholder="Enter trainerId"
-          value={trainerId}
-          onChange={(e) => {
-            setTrainerId(e.target.value);
-            setError('');
-          }}
-          disabled={loading}
-        />
-        <button type="submit" className="assign-trainer__btn" disabled={loading}>
+        <select
+          className="assign-trainer__select"
+          value={selectedId}
+          onChange={(e) => { setSelectedId(e.target.value); setError(''); }}
+          disabled={loading || loadingTrainers}
+        >
+          <option value="">
+            {loadingTrainers ? 'Loading trainers...' : '— Select a trainer —'}
+          </option>
+          {trainers.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name || `Trainer #${t.id}`}
+              {t.experienceYears != null ? ` (${t.experienceYears} yrs exp)` : ''}
+            </option>
+          ))}
+        </select>
+        <button type="submit" className="assign-trainer__btn" disabled={loading || loadingTrainers}>
           {loading ? 'Assigning...' : 'Assign Trainer'}
         </button>
         {currentTrainerId && (
           <button
             type="button"
             className="assign-trainer__cancel-btn"
-            onClick={() => {
-              setEditing(false);
-              setError('');
-              setTrainerId(currentTrainerId);
-            }}
+            onClick={() => { setEditing(false); setError(''); setSelectedId(currentTrainerId); }}
             disabled={loading}
           >
             Cancel

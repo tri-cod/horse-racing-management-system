@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   /* === OCEAN BLUE === (replaces Vinpearl's green) */
@@ -46,9 +46,12 @@
   --shadow-md:    0 8px 24px rgba(10, 10, 10, 0.08);
   --shadow-lg:    0 20px 50px rgba(10, 10, 10, 0.12);
 
+  /* === ERROR (semantic only, for inline error states) === */
+  --error:        #b91c1c;
+  --error-bg:     #fef2f2;
+
   /* === TYPOGRAPHY === */
-  --font-serif: 'Cormorant Garamond', 'Times New Roman', serif;
-  --font-sans:  'Inter', system-ui, sans-serif;
+  --font-sans:  'Inter', system-ui, -apple-system, sans-serif;
 
   --fs-hero:   clamp(2.5rem, 5vw, 4.5rem);
   --fs-h1:     clamp(2rem, 3.5vw, 3rem);
@@ -92,11 +95,16 @@ body {
 }
 
 h1, h2, h3, h4 {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
+  font-weight: 700;
   letter-spacing: var(--tracking-tight);
   color: var(--text);
   line-height: var(--lh-tight);
   margin: 0;
+}
+
+h3, h4 {
+  letter-spacing: 0;
 }
 
 p {

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getMyRaceRegistrations } from '../api/raceHorseApi';
+import { getTrainerList } from '../api/trainerApi';
 
-export function useMyRaceRegistrations() {
-  const [registrations, setRegistrations] = useState([]);
+export function useTrainers() {
+  const [trainers, setTrainers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -10,8 +10,8 @@ export function useMyRaceRegistrations() {
     setLoading(true);
     setError(null);
     try {
-      const data = await getMyRaceRegistrations();
-      setRegistrations(data ?? []);
+      const data = await getTrainerList();
+      setTrainers(data ?? []);
     } catch (e) {
       setError(e.response?.data?.message || e.message);
     } finally {
@@ -21,5 +21,5 @@ export function useMyRaceRegistrations() {
 
   useEffect(() => { fetch(); }, [fetch]);
 
-  return { registrations, loading, error, refetch: fetch };
+  return { trainers, loading, error, refetch: fetch };
 }

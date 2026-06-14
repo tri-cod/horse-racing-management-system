@@ -1,6 +1,19 @@
 
 
 
+DROP TABLE IF EXISTS notification CASCADE;
+
+CREATE TABLE notification (
+                              id           BIGSERIAL PRIMARY KEY,
+                              user_id      BIGINT NOT NULL REFERENCES users(user_id),
+                              title        VARCHAR(150) NOT NULL,
+                              content      VARCHAR(255) NOT NULL,
+                              type         VARCHAR(50),
+                              reference_id BIGINT,
+                              is_read      BOOLEAN DEFAULT FALSE,
+                              created_at   TIMESTAMP DEFAULT NOW()
+);
+
 
 --drop database horse_racing_management_system
 

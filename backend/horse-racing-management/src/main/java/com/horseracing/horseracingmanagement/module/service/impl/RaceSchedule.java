@@ -1,8 +1,11 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
+import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.module.entity.Race;
+import com.horseracing.horseracingmanagement.module.responsitory.RaceRefereeRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.RaceRepository;
+import com.horseracing.horseracingmanagement.module.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -17,23 +20,61 @@ import java.util.List;
 public class RaceSchedule {
 
     private final RaceRepository raceRepository;
+    private final NotificationService notificationService;
+    private final RaceRefereeRepository raceRefereeRepository;
 
+    // Chạy mỗi phút
     @Scheduled(fixedRate = 60000)
-    public void autoCloseRace() {
+    public void autoCloseRegistration() {
+        Instant now = Instant.now();
+        Instant oneDayFromNow = now.plus(1, ChronoUnit.DAYS);
 
-        LocalDateTime now = LocalDateTime.now();
+        // Đóng đăng ký khi còn 1 ngày đến startTime
+        List<Race> races = raceRepository.findByStatus(RaceStatus.OPEN_REGISTRATION);
+        for (Race race : races) {
+            if (race.getStartTime() != null && now.isAfter(
+                    race.getStartTime().minus(1, ChronoUnit.DAYS))) {
 
-        List<Race> races =
-                raceRepository.findByStatus(RaceStatus.OPEN_REGISTRATION);
-        for (Race race : races) {if (Instant.now().isAfter(
-                race.getStartTime()
-                        .minus(1, ChronoUnit.DAYS)
-        )) {
+                race.setStatus(RaceStatus.CLOSED_REGISTRATION);
+                raceRepository.save(race);  // ← fix: save trong if block
 
-            race.setStatus(
-                    RaceStatus.CLOSED_REGISTRATION
-            );
-        }                raceRepository.save(race);
+
+                if (race.getReferee() != null && race.getReferee().getUser() != null) {
+                    notificationService.sendToUser(
+                            race.getReferee().getUser().getId(),
+                            "⚠️ Race Tomorrow!",
+                            String.format("Race '%s' is scheduled for tomorrow. Please be ready.",
+                                    race.getRaceName()),
+                            NotificationType.RACE_CREATED,
+                            race.getId()
+                    );
+                }
             }
         }
     }
+
+    // Ngày đua — gửi thông báo cho referee vào buổi sáng
+    @Scheduled(cron = "0 0 7 * * *")  // 7h sáng mỗi ngày
+    public void notifyRefereeOnRaceDay() {
+        Instant startOfDay = Instant.now().truncatedTo(ChronoUnit.DAYS);
+        Instant endOfDay = startOfDay.plus(1, ChronoUnit.DAYS);
+
+        List<Race> todayRaces = raceRepository.findByStatus(RaceStatus.CLOSED_REGISTRATION);
+        todayRaces.stream()
+                .filter(race -> race.getStartTime() != null
+                        && race.getStartTime().isAfter(startOfDay)
+                        && race.getStartTime().isBefore(endOfDay))
+                .forEach(race -> {
+                    if (race.getReferee() != null && race.getReferee().getUser() != null) {
+                        notificationService.sendToUser(
+                                race.getReferee().getUser().getId(),
+                                "🏇 Race Day!",
+                                String.format("Race '%s' starts today at %s. Please start the race when ready.",
+                                        race.getRaceName(), race.getStartTime()),
+                                NotificationType.RACE_STARTED,
+                                race.getId()
+                        );
+                    }
+                });
+    }
+}

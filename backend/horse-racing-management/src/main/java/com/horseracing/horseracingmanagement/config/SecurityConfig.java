@@ -41,6 +41,7 @@ public class SecurityConfig {
             "/api/health",
             "/api/products/**",
             "/api/categories/**",
+            "/api/trainer/list",
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-ui.html",
@@ -58,6 +59,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/races", "/api/races/**").permitAll()
                         .requestMatchers(PUBLIC_URLS).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session

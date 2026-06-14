@@ -5,3 +5,6 @@ export const getTrainerProfile = () =>
 
 export const completeTrainerProfile = (payload) =>
   axiosInstance.put('/trainer/complete-profile', payload).then((res) => res.data.data);
+
+export const getTrainerList = () =>
+  axiosInstance.get('/trainer/list').then((res) => res.data.data);

@@ -17,3 +17,9 @@ export const updateRace = (id, payload) =>
 
 export const deleteRace = (id) =>
   axiosInstance.delete(`/races/${id}`).then((res) => res.data.data);
+
+export const startRace = (id) =>
+  axiosInstance.put(`/races/${id}/start`).then((res) => res.data.data);
+
+export const finishRace = (id) =>
+  axiosInstance.put(`/races/${id}/finish`).then((res) => res.data.data);

@@ -34,18 +34,18 @@ public class RaceServiceImpl implements RaceService {
         Race race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
-        if (!race.getStatus().equals("Upcoming")) {
-            throw new RuntimeException("Race is not in Upcoming status");
+        // ← fix: phải là CLOSED_REGISTRATION mới được start
+        if (race.getStatus() != RaceStatus.CLOSED_REGISTRATION) {
+            throw new RuntimeException("Race must be CLOSED_REGISTRATION to start");
         }
 
         race.setStatus(RaceStatus.ONGOING);
         raceRepository.save(race);
 
-        // ← Push WebSocket → FE tự disable nút đặt cược
         wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
                 .raceId(race.getId())
                 .raceName(race.getRaceName())
-                .status("Ongoing")
+                .status("ONGOING")
                 .message("Race has started! Betting is now closed.")
                 .updatedAt(Instant.now())
                 .build());
@@ -125,7 +125,8 @@ public class RaceServiceImpl implements RaceService {
     @Override
     public Page<RaceResponse> getRaceList(String status, Pageable pageable) {
         if (status != null) {
-            return raceRepository.findByStatus(status, pageable).map(this::mapToResponse);
+            RaceStatus raceStatus = RaceStatus.valueOf(status.toUpperCase());  // ← convert đúng
+            return raceRepository.findByStatus(raceStatus, pageable).map(this::mapToResponse);
         }
         return raceRepository.findAll(pageable).map(this::mapToResponse);
     }
@@ -193,7 +194,7 @@ public class RaceServiceImpl implements RaceService {
                 .location(race.getLocation())
                 .capacity(race.getCapacity())
                 .bannerImageurl(race.getBannerImageurl())
-                .status(race.getStatus().name())
+                .status(race.getStatus() != null ? race.getStatus().name() : null)
                 .registrationDeadline(race.getRegistrationDeadline())
                 .createdAt(race.getCreatedAt())
                 .updatedAt(race.getUpdatedAt())

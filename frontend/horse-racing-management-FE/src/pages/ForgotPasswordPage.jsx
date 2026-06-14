@@ -28,7 +28,7 @@ export default function ForgotPasswordPage() {
             await forgotPassword(email);
             setSuccess("OTP has been sent to your email.");
             setStep(2);
-        } catch (err) { setError(err.message); }
+        } catch (err) { setError(err.response?.data?.message || err.message); }
         finally { setLoading(false); }
     };
 
@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
             await verifyResetOtp(email, otp);
             setSuccess("OTP verified. Please set your new password.");
             setStep(3);
-        } catch (err) { setError(err.message); }
+        } catch (err) { setError(err.response?.data?.message || err.message); }
         finally { setLoading(false); }
     };
 
@@ -54,7 +54,7 @@ export default function ForgotPasswordPage() {
             await resetPassword(otp, email, newPassword);
             setSuccess("Success! Redirecting to login...");
             setTimeout(() => navigate("/login"), 2000);
-        } catch (err) { setError(err.message); }
+        } catch (err) { setError(err.response?.data?.message || err.message); }
         finally { setLoading(false); }
     };
 
