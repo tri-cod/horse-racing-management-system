@@ -444,3 +444,6 @@ CREATE TABLE IF NOT EXISTS payment_transaction(
     foreign key (request_id) references transaction_request(id)
 )
 
+SELECT id, race_name, status FROM race;
+
+UPDATE race SET status = 'CLOSED_REGISTRATION' WHERE id = 6;

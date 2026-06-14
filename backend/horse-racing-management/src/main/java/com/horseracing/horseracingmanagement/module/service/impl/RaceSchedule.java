@@ -29,14 +29,13 @@ public class RaceSchedule {
         Instant now = Instant.now();
         Instant oneDayFromNow = now.plus(1, ChronoUnit.DAYS);
 
-        // Đóng đăng ký khi còn 1 ngày đến startTime
         List<Race> races = raceRepository.findByStatus(RaceStatus.OPEN_REGISTRATION);
         for (Race race : races) {
             if (race.getStartTime() != null && now.isAfter(
                     race.getStartTime().minus(1, ChronoUnit.DAYS))) {
 
                 race.setStatus(RaceStatus.CLOSED_REGISTRATION);
-                raceRepository.save(race);  // ← fix: save trong if block
+                raceRepository.save(race);
 
 
                 if (race.getReferee() != null && race.getReferee().getUser() != null) {

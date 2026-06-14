@@ -5,8 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="71f9b656-b1d0-485a-abcc-d8d204940871" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/2f4f764b-bacd-44ae-b103-fa0b0fd85157.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/2f4f764b-bacd-44ae-b103-fa0b0fd85157/storage_v2/_src_/database/horse_racing_management_system.HJkssA.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/2f4f764b-bacd-44ae-b103-fa0b0fd85157/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/information_schema.FNRwLQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/2f4f764b-bacd-44ae-b103-fa0b0fd85157/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/pg_catalog.0S1ZNQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/2f4f764b-bacd-44ae-b103-fa0b0fd85157/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/public.abK9xQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/database/data.sql" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/database/data.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/database/fix-sql1.sql" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/database/fix-sql1.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/common/constant/RaceStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/common/constant/RaceStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/entity/Race.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/entity/Race.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/service/impl/BetServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/service/impl/BetServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/service/impl/RaceSchedule.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/service/impl/RaceSchedule.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/RaceDetailPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/RaceDetailPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/utils/raceStatus.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/utils/raceStatus.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,6 +34,10 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -35,18 +57,25 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Spring Boot.HorseRacingManagementApplication.executor": "Run",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "Feature/bet__wallet__ui",
+    "git-widget-placeholder": "Merging Feature/bet__wallet__ui",
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
     "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   }
@@ -77,6 +106,8 @@
       <option name="presentableId" value="Default" />
       <updated>1781118750452</updated>
       <workItem from="1781118752005" duration="71000" />
+      <workItem from="1781455218662" duration="2702000" />
+      <workItem from="1781459491663" duration="130000" />
     </task>
     <servers />
   </component>
