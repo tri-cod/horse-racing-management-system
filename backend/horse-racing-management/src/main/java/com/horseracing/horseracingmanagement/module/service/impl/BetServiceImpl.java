@@ -36,8 +36,8 @@ public class BetServiceImpl implements BetService {
         Race race = raceRepository.findById(request.getRaceId())
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
-        // ← chỉ OPEN_REGISTRATION mới được bet
-        if (race.getStatus() != RaceStatus.OPEN_REGISTRATION) {
+        // ← chỉ CLOSED_REGISTRATION mới được bet
+        if (race.getStatus() != RaceStatus.CLOSED_REGISTRATION) {
             throw new RuntimeException("Race is not open for betting");
         }
 

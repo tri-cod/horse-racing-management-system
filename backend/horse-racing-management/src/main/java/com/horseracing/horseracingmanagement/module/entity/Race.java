@@ -72,7 +72,7 @@ public class Race {
     private String bannerImageurl;
 
     @Column(name = "registration_deadline")
-    private Instant registrationDeadline;  // ← hạn đăng ký
+    private Instant registrationDeadline;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
