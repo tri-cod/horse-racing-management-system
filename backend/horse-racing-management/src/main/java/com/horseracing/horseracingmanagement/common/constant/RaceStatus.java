@@ -4,6 +4,7 @@ public enum RaceStatus {
     UPCOMING,
     OPEN_REGISTRATION,
     CLOSED_REGISTRATION,
+    OPEN_BETTING,
     ONGOING,
     FINISHED,
     CANCELLED

@@ -8,7 +8,7 @@ ALTER TABLE bet_items ALTER COLUMN id SET DEFAULT nextval('bet_items_id_seq');
 CREATE SEQUENCE IF NOT EXISTS bet_items_id_seq;
 ALTER TABLE bet_items ALTER COLUMN id SET DEFAULT nextval('bet_items_id_seq');
 
--- Hoặc drop và tạo lại cho chắc
+
 DROP TABLE IF EXISTS bet_items CASCADE;
 CREATE TABLE bet_items (
                            id            BIGSERIAL PRIMARY KEY,
