@@ -93,7 +93,7 @@ export default function RaceDetailPage() {
   const canCancel = isAdmin && computedStatus === 'UPCOMING';
 
 const isCustomer = user?.role === 'USER';
-  const canBet = isCustomer && computedStatus === 'ONGOING';
+const canBet = isCustomer && computedStatus === 'OPEN_REGISTRATION';
 
   return (
     <div className="race-detail-page">
