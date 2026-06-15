@@ -4,7 +4,13 @@ import Badge from '../ui/Badge';
 
 export default function RaceStatusBadge({ race, size = 'md' }) {
   const now = useNow(60_000);
-  const status = computeRaceStatus(race, now);
+
+  // Dùng race.status từ API nếu là status do admin/hệ thống set thủ công
+  // chỉ fallback sang computeRaceStatus khi status là UPCOMING (tính theo thời gian)
+  const MANUAL_STATUSES = ['OPEN_REGISTRATION', 'CLOSED_REGISTRATION', 'ONGOING', 'FINISHED', 'CANCELLED'];
+  const status = MANUAL_STATUSES.includes(race?.status)
+    ? race.status
+    : computeRaceStatus(race, now);
 
   return (
     <Badge variant={getRaceStatusVariant(status)} size={size}>

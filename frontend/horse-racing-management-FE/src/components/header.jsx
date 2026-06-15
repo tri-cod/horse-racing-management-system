@@ -1,6 +1,6 @@
 import { useState, useContext, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react';
+import { Menu, X, User, LogOut, LayoutDashboard, Ticket, Wallet, BadgeDollarSign } from 'lucide-react';
 import '../assets/css/Header.css';
 import { AuthContext } from '../context/AuthContext';
 import Button from './ui/Button';
@@ -147,13 +147,45 @@ function Header() {
                   <span>My Profile</span>
                 </button>
                 {user?.role === 'ADMIN' && (
+                  <>
+                    <button
+                      type="button"
+                      className="header__dropdown-item"
+                      onClick={() => { navigate('/admin/users'); setDropdownOpen(false); }}
+                    >
+                      <LayoutDashboard size={16} />
+                      <span>Admin Panel</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="header__dropdown-item"
+                      onClick={() => { navigate('/admin/deposits'); setDropdownOpen(false); }}
+                    >
+                      <BadgeDollarSign size={16} />
+                      <span>Deposit Requests</span>
+                    </button>
+                  </>
+                )}
+                {user?.role === 'USER' && (
+                  <>
+                    <button
+                      type="button"
+                      className="header__dropdown-item"
+                      onClick={() => { navigate('/my-bets'); setDropdownOpen(false); }}
+                    >
+                      <Ticket size={16} />
+                      <span>My Bets</span>
+                    </button>
+                  </>
+                )}
+                {user?.role !== 'ADMIN' && (
                   <button
                     type="button"
                     className="header__dropdown-item"
-                    onClick={() => { navigate('/admin/users'); setDropdownOpen(false); }}
+                    onClick={() => { navigate('/my-wallet'); setDropdownOpen(false); }}
                   >
-                    <LayoutDashboard size={16} />
-                    <span>Admin Panel</span>
+                    <Wallet size={16} />
+                    <span>My Wallet</span>
                   </button>
                 )}
                 <button type="button" className="header__dropdown-item header__dropdown-item--danger" onClick={handleLogout}>

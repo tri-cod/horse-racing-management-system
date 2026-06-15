@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { Upload, X } from 'lucide-react';
+import axiosInstance from '../../api/axiosInstance';
 import Button from '../ui/Button';
 import '../../assets/css/race/RaceForm.css';
 
@@ -61,6 +63,26 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
   });
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      setUploading(true);
+      const res = await axiosInstance.post('/horse-owner/horses/avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setField('bannerImageurl', res.data.data);
+    } catch (err) {
+      alert('Upload failed: ' + (err?.response?.data?.message || err.message));
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const set = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
   const setField = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
@@ -120,7 +142,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
       location: form.location.trim(),
       capacity: Number(form.capacity),
       bannerImageurl: form.bannerImageurl.trim(),
-      status: mode === 'create' ? 'UPCOMING' : (initialValues?.status ?? 'UPCOMING'),
+      status: mode === 'create' ? 'OPEN_REGISTRATION' : (initialValues?.status ?? 'UPCOMING'),
     };
 
     // Chỉ gửi refereeId nếu admin có nhập (giá trị khác chuỗi rỗng)
@@ -200,18 +222,115 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
 
       <section className="race-form__section">
         <h3 className="race-form__section-title">Media</h3>
-        <Field id="rf-banner" label="Banner Image URL" required error={errors.bannerImageurl}>
-          <div className="race-form__url-row">
-            {inp('rf-banner', 'bannerImageurl', 'url', { placeholder: 'https://...' })}
-            {form.bannerImageurl && (
+        <Field id="rf-banner" label="Banner Image" required error={errors.bannerImageurl}>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={handleFileUpload}
+          />
+
+          {!form.bannerImageurl ? (
+            /* Drop zone */
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={(e) => { e.preventDefault(); e.currentTarget.setAttribute('data-drag', 'true'); }}
+              onDragLeave={(e) => e.currentTarget.removeAttribute('data-drag')}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.currentTarget.removeAttribute('data-drag');
+                const file = e.dataTransfer.files[0];
+                if (file) handleFileUpload({ target: { files: [file] } });
+              }}
+              style={{
+                border: '2px dashed var(--border)',
+                borderRadius: 12,
+                padding: '2.5rem 1rem',
+                textAlign: 'center',
+                cursor: uploading ? 'wait' : 'pointer',
+                background: 'var(--surface)',
+                transition: 'border-color .15s, background .15s',
+                userSelect: 'none',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-light, rgba(99,102,241,.04))'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--surface)'; }}
+            >
+              {uploading ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+                  <div style={{
+                    width: 36, height: 36, border: '3px solid var(--border)',
+                    borderTopColor: 'var(--accent)', borderRadius: '50%',
+                    animation: 'spin .7s linear infinite',
+                  }} />
+                  <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>Uploading…</span>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+                  <div style={{
+                    width: 48, height: 48, borderRadius: '50%',
+                    background: 'var(--accent-light, rgba(99,102,241,.08))',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <Upload size={22} style={{ color: 'var(--accent)' }} />
+                  </div>
+                  <div>
+                    <p style={{ margin: 0, fontWeight: 600, fontSize: 14 }}>
+                      Click to upload <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>or drag & drop</span>
+                    </p>
+                    <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--text-muted)' }}>
+                      JPG, PNG, WEBP — max 10MB
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Preview */
+            <div style={{ position: 'relative', borderRadius: 12, overflow: 'hidden', border: '1px solid var(--border)' }}>
               <img
-                className="race-form__thumb"
                 src={form.bannerImageurl}
                 alt="Banner preview"
+                style={{ width: '100%', height: 200, objectFit: 'cover', display: 'block' }}
                 onError={(e) => { e.target.style.display = 'none'; }}
               />
-            )}
-          </div>
+              {/* Overlay actions */}
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'rgba(0,0,0,.45)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                gap: 10, opacity: 0, transition: 'opacity .2s',
+              }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = 1; }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = 0; }}
+              >
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  style={{
+                    padding: '0.5rem 1rem', borderRadius: 8, border: 'none',
+                    background: 'white', color: '#111', fontWeight: 600,
+                    fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                  }}
+                >
+                  <Upload size={14} /> {uploading ? 'Uploading…' : 'Change'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setField('bannerImageurl', '')}
+                  style={{
+                    padding: '0.5rem 1rem', borderRadius: 8, border: 'none',
+                    background: 'rgba(255,255,255,.15)', color: 'white', fontWeight: 600,
+                    fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                    backdropFilter: 'blur(4px)',
+                  }}
+                >
+                  <X size={14} /> Remove
+                </button>
+              </div>
+            </div>
+          )}
         </Field>
       </section>
 

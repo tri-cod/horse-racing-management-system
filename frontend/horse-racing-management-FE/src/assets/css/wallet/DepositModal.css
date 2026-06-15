@@ -1,0 +1,208 @@
+.deposit-modal__header-left { display: flex; align-items: center; gap: var(--space-3); }
+
+.deposit-modal__back {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-1) var(--space-2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  transition: all var(--transition);
+}
+.deposit-modal__back:hover { border-color: var(--primary); color: var(--primary); }
+
+.deposit-modal__steps {
+  display: flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-6);
+  border-bottom: 1px solid var(--border);
+  gap: var(--space-2);
+}
+.deposit-modal__step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+.deposit-modal__step.active { color: var(--primary); font-weight: 600; }
+.deposit-modal__step.done   { color: #16a34a; }
+.deposit-modal__step-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+.deposit-modal__step-line { flex: 1; height: 1px; background: var(--border); }
+
+.deposit-form__field { margin-bottom: var(--space-4); }
+.deposit-form__label {
+  display: block;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+  color: var(--text-muted);
+}
+.deposit-form__input-wrap { position: relative; }
+.deposit-form__input {
+  width: 100%;
+  padding: var(--space-3) 2.5rem var(--space-3) var(--space-3);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: var(--fs-body);
+  font-family: var(--font-sans);
+  transition: border-color var(--transition);
+}
+.deposit-form__input:focus { outline: none; border-color: var(--accent); }
+.deposit-form__suffix {
+  position: absolute;
+  right: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.deposit-form__preview {
+  font-size: var(--fs-small);
+  color: var(--primary);
+  margin-top: var(--space-1);
+  display: block;
+}
+
+.deposit-form__quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.deposit-form__quick-btn {
+  padding: var(--space-1) var(--space-3);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  font-size: var(--fs-small);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all var(--transition);
+  color: var(--text-muted);
+}
+.deposit-form__quick-btn.active,
+.deposit-form__quick-btn:hover {
+  background: var(--primary);
+  color: var(--text-invert);
+  border-color: var(--primary);
+}
+
+.deposit-form__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--error);
+  background: var(--error-bg);
+  border: 1px solid #fecaca;
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-small);
+  margin-bottom: var(--space-3);
+}
+
+.deposit-form__info {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  background: var(--bg-soft);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-5);
+}
+.deposit-form__info p { margin: 0; }
+
+.deposit-form__actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+/* Step 2 - QR */
+.deposit-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+.deposit-qr__amount { text-align: center; }
+.deposit-qr__amount-label {
+  display: block;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+.deposit-qr__amount-value {
+  font-size: var(--fs-h2);
+  font-weight: 800;
+  color: var(--primary);
+}
+.deposit-qr__img-wrap { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
+.deposit-qr__img {
+  width: 200px;
+  height: 200px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+.deposit-qr__brand { font-size: var(--fs-xs); color: var(--text-muted); }
+.deposit-qr__no-qr { text-align: center; color: var(--text-muted); font-size: var(--fs-small); }
+
+.deposit-qr__ref { width: 100%; }
+.deposit-qr__ref-label {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
+}
+.deposit-qr__ref-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--bg-soft);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+}
+.deposit-qr__ref-code {
+  flex: 1;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  font-family: monospace;
+}
+.deposit-qr__copy {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+  font-size: var(--fs-xs);
+  font-family: var(--font-sans);
+  transition: all var(--transition);
+}
+.deposit-qr__copy:hover { border-color: var(--primary); color: var(--primary); }
+
+.deposit-qr__note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-small);
+  color: #16a34a;
+  background: #f0fdf4;
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  width: 100%;
+}
+.deposit-qr__done { width: 100%; justify-content: center; }

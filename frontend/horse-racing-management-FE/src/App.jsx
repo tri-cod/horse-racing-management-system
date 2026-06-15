@@ -29,6 +29,11 @@ import AdminUsersPage from './pages/AdminUsersPage'
 import AdminCreateRacePage from './pages/AdminCreateRacePage'
 import AdminEditRacePage from './pages/AdminEditRacePage'
 
+// Bet & Wallet
+import MyBetsPage from './pages/MyBetsPage'
+import MyWalletPage from './pages/MyWalletPage'
+import AdminDepositPage from './pages/AdminDepositPage'
+
 export default function App() {
   return (
     <Routes>
@@ -95,6 +100,24 @@ export default function App() {
         }
       />
 
+      {/* Bet & Wallet (USER role) */}
+      <Route
+        path="/my-bets"
+        element={
+          <ProtectedRoute allowedRoles={['USER']}>
+            <Layout><MyBetsPage /></Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/my-wallet"
+        element={
+          <ProtectedRoute allowedRoles={['USER', 'HORSE_OWNER', 'JOCKEY', 'REFEREE', 'TRAINER', 'STAFF']}>
+            <Layout><MyWalletPage /></Layout>
+          </ProtectedRoute>
+        }
+      />
+
       {/* Admin */}
       <Route
         path="/admin/users"
@@ -109,6 +132,14 @@ export default function App() {
         element={
           <ProtectedRoute allowedRoles={['ADMIN']}>
             <Layout><AdminCreateRacePage /></Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/deposits"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <Layout><AdminDepositPage /></Layout>
           </ProtectedRoute>
         }
       />
