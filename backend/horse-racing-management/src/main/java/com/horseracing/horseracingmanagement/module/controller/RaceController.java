@@ -33,7 +33,7 @@ public class RaceController {
                         raceService.createRace(request)));
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<RaceResponse>> getRace(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success("Success", raceService.getRace(id)));
     }

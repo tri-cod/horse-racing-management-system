@@ -1,16 +1,18 @@
 import { useContext, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { Edit, Trash2, Plus, XCircle, Play, Flag } from 'lucide-react';
+import { Edit, Trash2, Plus, XCircle, Play, Flag, Target } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { useRaceDetail } from '../hooks/useRaceDetail';
 import { useToast } from '../components/ui/ToastProvider';
 import { deleteRace, updateRace, startRace, finishRace } from '../api/raceApi';
 import { computeRaceStatus } from '../utils/raceStatus';
+import { useHorsesByRace } from '../hooks/useHorsesByRace';
 import RaceStatusBadge from '../components/race/RaceStatusBadge';
 import RaceMetaStrip from '../components/race/RaceMetaStrip';
 import RaceInfoSection from '../components/race/RaceInfoSection';
 import RegisteredHorsesList from '../components/race-horse/RegisteredHorsesList';
 import RegisterHorseToRaceModal from '../components/race-horse/RegisterHorseToRaceModal';
+import PlaceBetModal from '../components/bet/PlaceBetModal';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Button from '../components/ui/Button';
@@ -22,8 +24,10 @@ export default function RaceDetailPage() {
   const navigate = useNavigate();
   const addToast = useToast();
   const { race, loading, error, refetch } = useRaceDetail(id);
+  const { entries: raceHorses } = useHorsesByRace(id);
 
   const [showRegModal, setShowRegModal] = useState(false);
+  const [showBetModal, setShowBetModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [showStartConfirm, setShowStartConfirm] = useState(false);
@@ -101,11 +105,14 @@ export default function RaceDetailPage() {
   const isAdmin = user?.role === 'ADMIN';
   const isOwner = user?.role === 'HORSE_OWNER';
   const isReferee = user?.role === 'REFEREE';
+  const isUser = user?.role === 'USER';
   const computedStatus = computeRaceStatus(race);
-  const canRegister = isOwner && computedStatus === 'UPCOMING';
-  const canCancel = isAdmin && computedStatus === 'UPCOMING';
-  const canStart = (isAdmin || isReferee) && computedStatus === 'UPCOMING';
-  const canFinish = (isAdmin || isReferee) && computedStatus === 'ONGOING';
+  // canBet dùng race.status từ API vì backend chỉ cho bet khi status = CLOSED_REGISTRATION
+  const canBet = isUser && race.status === 'CLOSED_REGISTRATION';
+  const canRegister = isOwner && race.status === 'OPEN_REGISTRATION';
+  const canCancel = isAdmin && (computedStatus === 'UPCOMING' || race.status === 'OPEN_REGISTRATION' || race.status === 'CLOSED_REGISTRATION');
+  const canStart = (isAdmin || isReferee) && race.status === 'CLOSED_REGISTRATION';
+  const canFinish = (isAdmin || isReferee) && race.status === 'ONGOING';
 
   return (
     <div className="race-detail-page">
@@ -160,6 +167,11 @@ export default function RaceDetailPage() {
                 <Plus size={16} /> Register My Horse
               </Button>
             )}
+            {canBet && (
+              <Button variant="primary" onClick={() => setShowBetModal(true)}>
+                <Target size={16} /> Place Bet
+              </Button>
+            )}
           </div>
         </div>
 
@@ -180,6 +192,14 @@ export default function RaceDetailPage() {
         raceId={Number(id)}
         onClose={() => setShowRegModal(false)}
         onSuccess={(msg) => { addToast(msg, 'success'); }}
+      />
+
+      <PlaceBetModal
+        open={showBetModal}
+        onClose={() => setShowBetModal(false)}
+        race={race}
+        raceHorses={raceHorses}
+        onSuccess={() => addToast('Bet placed successfully!', 'success')}
       />
 
       <ConfirmDialog

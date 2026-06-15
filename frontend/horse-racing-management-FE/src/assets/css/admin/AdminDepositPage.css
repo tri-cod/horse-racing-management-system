@@ -1,0 +1,123 @@
+.admin-deposit-page { min-height: 100vh; }
+
+.admin-deposit-page__content {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: var(--space-8) clamp(1rem, 4vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* Stats */
+.admin-deposit-page__stats {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+.adep-stat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  min-width: 180px;
+  box-shadow: var(--shadow-sm);
+}
+.adep-stat__icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.adep-stat__icon--blue { background: var(--ocean-50); color: var(--ocean-700); }
+.adep-stat__icon--gold { background: #fefce8; color: #ca8a04; }
+.adep-stat__val { display: block; font-size: var(--fs-h3); font-weight: 700; color: var(--text); line-height: 1.2; }
+.adep-stat__val--sm { font-size: 1rem; }
+.adep-stat__lbl { font-size: var(--fs-xs); color: var(--text-muted); }
+
+/* Toolbar */
+.admin-deposit-page__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.admin-deposit-page__section-title {
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Error */
+.admin-deposit-page__error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--error-bg);
+  border: 1px solid #fecaca;
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  color: var(--error);
+  font-size: var(--fs-small);
+}
+
+/* Empty */
+.admin-deposit-page__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-12) var(--space-5);
+  text-align: center;
+  color: var(--text-muted);
+}
+.admin-deposit-page__empty svg { margin-bottom: var(--space-4); color: #16a34a; }
+.admin-deposit-page__empty h3 { font-size: var(--fs-h3); margin-bottom: var(--space-2); color: var(--text); }
+
+/* Table */
+.adep-table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+.adep-table { width: 100%; border-collapse: collapse; font-size: var(--fs-small); }
+.adep-table th {
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-soft);
+}
+.adep-table__row td { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+.adep-table__row:last-child td { border-bottom: none; }
+.adep-table__row:hover td { background: var(--bg-soft); }
+
+.adep-table__user { display: flex; align-items: center; gap: var(--space-2); }
+.adep-table__avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--ocean-50);
+  color: var(--ocean-700);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.adep-table__username { display: block; font-weight: 600; }
+.adep-table__email    { display: block; font-size: var(--fs-xs); color: var(--text-muted); }
+.adep-table__amount   { color: var(--primary); font-size: var(--fs-body); }
+.adep-table__ref      { font-size: var(--fs-xs); background: var(--bg-soft); padding: 2px var(--space-2); border-radius: var(--radius-sm); font-family: monospace; }
+.adep-table__date     { color: var(--text-muted); white-space: nowrap; }
+.adep-table__actions  { display: flex; gap: var(--space-2); }
+
+.adep-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+.adep-badge--pending { background: #fef9c3; color: #854d0e; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
