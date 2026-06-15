@@ -23,6 +23,7 @@ const EMPTY = {
   raceName: '',
   startTime: '',
   endTime: '',
+  registrationDeadline: '',
   trackName: '',
   trackCondition: 'Dry',
   surfaceType: 'Turf',
@@ -56,6 +57,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
       ...base,
       startTime: toLocalDatetime(base.startTime),
       endTime: toLocalDatetime(base.endTime),
+      registrationDeadline: toLocalDatetime(base.registrationDeadline),
       totalprizepool: base.totalprizepool ?? '',
       capacity: base.capacity ?? '',
       refereeId: base.refereeId ?? '',
@@ -84,8 +86,15 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
     }
   };
 
-  const set = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
   const setField = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
+  const set = (field) => (e) => {
+    const value = e.target.value;
+    setForm((prev) => ({ ...prev, [field]: value }));
+    // Khi đổi startTime → tự gợi ý registrationDeadline = startTime (bet được đến lúc race bắt đầu)
+    if (field === 'startTime' && value) {
+      setForm((prev) => ({ ...prev, registrationDeadline: value }));
+    }
+  };
 
   const inp = (id, field, type = 'text', extra = {}) => (
     <input
@@ -134,6 +143,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
       raceName: form.raceName.trim(),
       startTime: toISO(form.startTime),
       endTime: toISO(form.endTime),
+      registrationDeadline: form.registrationDeadline ? toISO(form.registrationDeadline) : null,
       trackName: form.trackName.trim(),
       trackCondition: form.trackCondition,
       surfaceType: form.surfaceType,
@@ -188,6 +198,10 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
           </Field>
           <Field id="rf-end" label="End Time" required error={errors.endTime}>
             {inp('rf-end', 'endTime', 'datetime-local')}
+          </Field>
+          <Field id="rf-reg-deadline" label="Registration Deadline" error={errors.registrationDeadline}
+            hint="Hạn chót Horse Owner đăng ký ngựa. Để trống thì tự đóng khi còn 1 ngày trước startTime.">
+            {inp('rf-reg-deadline', 'registrationDeadline', 'datetime-local')}
           </Field>
           <Field id="rf-track" label="Track Name" required error={errors.trackName}>
             {inp('rf-track', 'trackName', 'text', { placeholder: 'e.g. Main Track' })}

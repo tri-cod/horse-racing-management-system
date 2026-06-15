@@ -112,7 +112,7 @@ export default function App() {
       <Route
         path="/my-wallet"
         element={
-          <ProtectedRoute allowedRoles={['USER', 'HORSE_OWNER', 'JOCKEY', 'REFEREE', 'TRAINER', 'STAFF']}>
+          <ProtectedRoute allowedRoles={['USER', 'HORSE_OWNER', 'JOCKEY', 'REFEREE', 'TRAINER']}>
             <Layout><MyWalletPage /></Layout>
           </ProtectedRoute>
         }
@@ -138,7 +138,7 @@ export default function App() {
       <Route
         path="/admin/deposits"
         element={
-          <ProtectedRoute allowedRoles={['ADMIN']}>
+          <ProtectedRoute allowedRoles={['ADMIN', 'STAFF']}>
             <Layout><AdminDepositPage /></Layout>
           </ProtectedRoute>
         }

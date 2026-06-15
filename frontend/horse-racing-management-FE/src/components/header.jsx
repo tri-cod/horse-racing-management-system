@@ -156,15 +156,17 @@ function Header() {
                       <LayoutDashboard size={16} />
                       <span>Admin Panel</span>
                     </button>
-                    <button
-                      type="button"
-                      className="header__dropdown-item"
-                      onClick={() => { navigate('/admin/deposits'); setDropdownOpen(false); }}
-                    >
-                      <BadgeDollarSign size={16} />
-                      <span>Deposit Requests</span>
-                    </button>
                   </>
+                )}
+                {(user?.role === 'ADMIN' || user?.role === 'STAFF') && (
+                  <button
+                    type="button"
+                    className="header__dropdown-item"
+                    onClick={() => { navigate('/admin/deposits'); setDropdownOpen(false); }}
+                  >
+                    <BadgeDollarSign size={16} />
+                    <span>Deposit Requests</span>
+                  </button>
                 )}
                 {user?.role === 'USER' && (
                   <>
@@ -178,7 +180,7 @@ function Header() {
                     </button>
                   </>
                 )}
-                {user?.role !== 'ADMIN' && (
+                {user?.role !== 'ADMIN' && user?.role !== 'STAFF' && (
                   <button
                     type="button"
                     className="header__dropdown-item"
