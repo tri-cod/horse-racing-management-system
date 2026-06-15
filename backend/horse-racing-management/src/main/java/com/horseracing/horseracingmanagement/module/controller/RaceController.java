@@ -33,12 +33,12 @@ public class RaceController {
                         raceService.createRace(request)));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping
     public ResponseEntity<ApiResponse<RaceResponse>> getRace(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success("Success", raceService.getRace(id)));
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public ResponseEntity<ApiResponse<Page<RaceResponse>>> getRaceList(
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
