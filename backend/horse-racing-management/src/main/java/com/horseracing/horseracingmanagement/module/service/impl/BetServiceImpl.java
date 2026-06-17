@@ -71,19 +71,21 @@ public class BetServiceImpl implements BetService {
                 .build();
         Bet savedBet = betRepository.save(bet);
 
-        // Tạo BetItems
+        // Tạo BetItems — lấy odds từ RaceHorse thay vì hardcode 2.0
         List<BetItem> betItems = request.getBetItems().stream().map(item -> {
             RaceHorse raceHorse = raceHorseRepository.findById(item.getRaceHorseId())
                     .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
 
-            // Odds mặc định = 2.0, sau này admin có thể set
-            BigDecimal odds = BigDecimal.valueOf(2.0);
+            // ← lấy odds từ RaceHorse, nếu chưa set thì báo lỗi
+            if (raceHorse.getOdds() == null) {
+                throw new RuntimeException("Odds not set for horse: " + raceHorse.getHorse().getHorseName());
+            }
 
             return BetItem.builder()
                     .bet(savedBet)
                     .raceHorse(raceHorse)
                     .betAmount(item.getBetAmount())
-                    .odds(odds)
+                    .odds(raceHorse.getOdds())  // ← lấy từ RaceHorse
                     .resultStatus("PENDING")
                     .build();
         }).collect(Collectors.toList());

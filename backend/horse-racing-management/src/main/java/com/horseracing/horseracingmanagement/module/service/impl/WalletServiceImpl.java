@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -139,7 +140,8 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public BigDecimal getAdminWallet() {
-       return walletRepository.findByRole(RoleName.ADMIN)
+       Optional<User> user = userRepository.findFirstByRole_Rolename(RoleName.ADMIN);
+       return walletRepository.findByUser_Id(user.get().getId())
                .map(Wallet::getBalance)
                .orElse(BigDecimal.ZERO);
     }

@@ -4,6 +4,8 @@ import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RegisterRaceHorseRequest;
+import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetAllOddsRequest;
+import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetOddsRequest;
 import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
 import com.horseracing.horseracingmanagement.module.service.NotificationService;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -135,14 +138,54 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
         raceHorse.setStatus("Rejected");
 
+      HorseOwner ho =  horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
+              .orElseThrow(() -> new RuntimeException("Owner not found"));
+
         notificationService.sendToUser(
-                raceHorse.getHorse().getOwnerId(),
+                ho.getUser().getId(),
                 "Registration Rejected",
                 String.format("Your horse '%s' has been rejected",
                         raceHorse.getHorse().getHorseName()),
                 NotificationType.RACE_REJECTED,
                 raceHorseId
         );
+        return mapToResponse(raceHorseRepository.save(raceHorse));
+    }
+
+    @Override
+    public void setOdds(SetAllOddsRequest request) {
+        Race race = raceRepository.findById(request.getRaceId())
+                .orElseThrow(() -> new RuntimeException("Race not found"));
+
+        // Chỉ set odds khi race CLOSED_REGISTRATION
+        if (race.getStatus() != RaceStatus.CLOSED_REGISTRATION) {
+            throw new RuntimeException("Can only set odds when race is CLOSED_REGISTRATION");
+        }
+
+        request.getOddsList().forEach(item -> {
+            RaceHorse raceHorse = raceHorseRepository.findById(item.getRaceHorseId())
+                    .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
+
+            // Validate odds hợp lệ
+            if (item.getOdds().compareTo(BigDecimal.ONE) <= 0) {
+                throw new RuntimeException("Odds must be greater than 1");
+            }
+
+            raceHorse.setOdds(item.getOdds());
+            raceHorseRepository.save(raceHorse);
+        });
+    }
+
+    @Override
+    public RaceHorseResponse setOddsForOne(SetOddsRequest request) {
+        RaceHorse raceHorse = raceHorseRepository.findById(request.getRaceHorseId())
+                .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
+
+        if (request.getOdds().compareTo(BigDecimal.ONE) <= 0) {
+            throw new RuntimeException("Odds must be greater than 1");
+        }
+
+        raceHorse.setOdds(request.getOdds());
         return mapToResponse(raceHorseRepository.save(raceHorse));
     }
 

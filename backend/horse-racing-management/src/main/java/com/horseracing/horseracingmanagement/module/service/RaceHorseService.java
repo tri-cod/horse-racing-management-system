@@ -2,6 +2,8 @@ package com.horseracing.horseracingmanagement.module.service;
 
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RegisterRaceHorseRequest;
+import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetAllOddsRequest;
+import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetOddsRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,5 +14,7 @@ public interface RaceHorseService {
     List<RaceHorseResponse> getRaceHorseList(Long raceId);
     List<RaceHorseResponse> getMyHorseRaces(Long userId);
     RaceHorseResponse approveHorse(Long raceHorseId);    // Admin duyệt
-    RaceHorseResponse rejectHorse(Long raceHorseId);     // Admin từ chối
+    RaceHorseResponse rejectHorse(Long raceHorseId);
+    void setOdds(SetAllOddsRequest request);        // set odds cho tất cả horse
+    RaceHorseResponse setOddsForOne(SetOddsRequest request);// Admin từ chối
 }
