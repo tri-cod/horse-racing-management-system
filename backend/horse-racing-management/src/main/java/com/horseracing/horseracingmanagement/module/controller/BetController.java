@@ -24,7 +24,7 @@ public class BetController {
     private final BetService betService;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     public ResponseEntity<ApiResponse<BetResponse>> placeBet(
             @Valid @RequestBody CreateBetRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {

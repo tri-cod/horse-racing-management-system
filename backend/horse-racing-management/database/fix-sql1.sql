@@ -26,3 +26,6 @@ CREATE TABLE wallet (
                         user_id BIGINT NOT NULL UNIQUE REFERENCES users(user_id),
                         balance NUMERIC(10,2) DEFAULT 0
 );
+
+
+ALTER TABLE race_horse ADD COLUMN IF NOT EXISTS odds NUMERIC(10,2);

@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface HorseOwnerRepository extends JpaRepository<HorseOwner, Long> {
 
     Optional<HorseOwner> findByUserId(Long userId);
+
+    Optional<HorseOwner> findById(Long id);
 }

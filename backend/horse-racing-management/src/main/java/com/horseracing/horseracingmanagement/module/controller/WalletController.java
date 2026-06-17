@@ -33,6 +33,15 @@ public class WalletController {
                 walletService.getBalance(userDetails.getId())));
     }
 
+    @GetMapping("/balance/system")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    public ResponseEntity<ApiResponse<BigDecimal>> getSystemBalance(
+            @AuthenticationPrincipal CustomUserDetails userDetails){
+        return  ResponseEntity.ok(ApiResponse.success("Success",
+                walletService.getAdminWallet()));
+    }
+
+
     @PostMapping("/deposit")
     public ResponseEntity<ApiResponse<DepositResponse>> createDeposit(
             @Valid @RequestBody DepositRequest request,
@@ -70,4 +79,6 @@ public class WalletController {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 transactionRepository.findByRequestStatus("PENDING")));
     }
+
+
 }

@@ -1,6 +1,7 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
+import com.horseracing.horseracingmanagement.common.constant.RoleName;
 import com.horseracing.horseracingmanagement.module.dto.Deposit.DepositRequest;
 import com.horseracing.horseracingmanagement.module.dto.Deposit.DepositResponse;
 import com.horseracing.horseracingmanagement.module.entity.TransactionRequest;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -75,6 +77,13 @@ public class WalletServiceImpl implements WalletService {
         Wallet wallet = walletRepository.findByUser_Id(transaction.getUser().getId())
                 .orElseThrow(() -> new RuntimeException("Wallet not found"));
 
+
+        Wallet adminWallet = walletRepository.findByUser_Id(Long.valueOf(15)).orElseThrow(() -> new RuntimeException("Wallet not found"));
+
+        adminWallet.setBalance(wallet.getBalance()
+                .add(BigDecimal.valueOf(transaction.getAmount())));
+        walletRepository.save(adminWallet);
+
         wallet.setBalance(wallet.getBalance()
                 .add(BigDecimal.valueOf(transaction.getAmount())));
         walletRepository.save(wallet);
@@ -128,6 +137,15 @@ public class WalletServiceImpl implements WalletService {
                 bankId, accountNo, amount, referenceCode
         );
     }
+
+    @Override
+    public BigDecimal getAdminWallet() {
+       Optional<User> user = userRepository.findFirstByRole_Rolename(RoleName.ADMIN);
+       return walletRepository.findByUser_Id(user.get().getId())
+               .map(Wallet::getBalance)
+               .orElse(BigDecimal.ZERO);
+    }
+
 
     public BigDecimal getBalance(Long userId) {
         return walletRepository.findByUser_Id(userId)

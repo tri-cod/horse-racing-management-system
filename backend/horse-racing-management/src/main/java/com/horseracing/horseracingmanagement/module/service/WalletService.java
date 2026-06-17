@@ -10,6 +10,6 @@ public interface WalletService {
     void approveDeposit(Long transactionId, String staffUsername, String note);
     void rejectDeposit(Long transactionId, String staffUsername, String note);
     String generateQrUrl(Long amount, String referenceCode);
-
+    BigDecimal getAdminWallet();
     BigDecimal getBalance(Long id);
 }

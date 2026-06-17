@@ -88,9 +88,7 @@
             <node kind="database" qname="@">
               <node kind="schema" qname="@" />
             </node>
-            <node kind="database" qname="horse_racing_management_system">
-              <node kind="schema" qname="public" />
-            </node>
+            <node kind="database" qname="horse_racing_management_system" />
           </node>
         </introspection-scope>
       </schema-mapping>
