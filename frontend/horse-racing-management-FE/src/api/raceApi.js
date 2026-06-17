@@ -9,7 +9,7 @@ export const getRaceById = (id) =>
 export const getRaces = ({ status, page = 0, size = 10 } = {}) => {
   const params = { page, size };
   if (status) params.status = status;
-  return axiosInstance.get('/races', { params }).then((res) => res.data.data);
+  return axiosInstance.get('/races/list', { params }).then((res) => res.data.data);
 };
 
 export const updateRace = (id, payload) =>

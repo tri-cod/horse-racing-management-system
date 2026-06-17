@@ -7,6 +7,7 @@ export default function RaceInfoSection({ race }) {
     { label: 'Surface Type', value: race.surfaceType },
     { label: 'Capacity', value: race.capacity ? `${race.capacity} horses` : '—' },
     { label: 'Referee', value: race.refereeName || '—' },
+    { label: 'Registration Deadline', value: race.registrationDeadline ? new Date(race.registrationDeadline).toLocaleString('en-GB') : '—' },
     { label: 'End Time', value: race.endTime ? new Date(race.endTime).toLocaleString('en-GB') : '—' },
   ];
 

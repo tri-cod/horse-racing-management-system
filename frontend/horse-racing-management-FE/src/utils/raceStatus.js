@@ -13,11 +13,14 @@ export function computeRaceStatus(race, now = new Date()) {
 export function getRaceStatusLabel(status) {
   return (
     {
-      UPCOMING: 'Upcoming',
-      ONGOING: 'Live Now',
-      COMPLETED: 'Completed',
-      CANCELLED: 'Cancelled',
-      UNKNOWN: 'Unknown',
+      UPCOMING:             'Upcoming',
+      OPEN_REGISTRATION:    'Open Registration',
+      CLOSED_REGISTRATION:  'Closed Registration',
+      ONGOING:              'Live Now',
+      FINISHED:             'Finished',
+      COMPLETED:            'Completed',
+      CANCELLED:            'Cancelled',
+      UNKNOWN:              'Unknown',
     }[status] || status
   );
 }
@@ -25,11 +28,14 @@ export function getRaceStatusLabel(status) {
 export function getRaceStatusVariant(status) {
   return (
     {
-      UPCOMING: 'ocean',
-      ONGOING: 'danger',
-      COMPLETED: 'neutral',
-      CANCELLED: 'dark',
-      UNKNOWN: 'neutral',
+      UPCOMING:             'ocean',
+      OPEN_REGISTRATION:    'ocean',
+      CLOSED_REGISTRATION:  'warning',
+      ONGOING:              'danger',
+      FINISHED:             'neutral',
+      COMPLETED:            'neutral',
+      CANCELLED:            'dark',
+      UNKNOWN:              'neutral',
     }[status] || 'neutral'
   );
 }

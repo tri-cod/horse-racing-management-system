@@ -29,6 +29,8 @@ public class RaceResult {
     @Column(name = "completiontime")
     private Instant completiontime;
 
-    @Column(name = "rewards")
-    private Long rewards;
+    @ColumnDefault("0")
+    @Builder.Default
+    @Column(name = "rewards", nullable = false)
+    private Long rewards = 0L;
 }

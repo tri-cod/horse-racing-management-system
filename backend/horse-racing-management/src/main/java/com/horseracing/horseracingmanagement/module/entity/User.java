@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -52,6 +53,7 @@ public class User {
     @Column(name = "phonenumber", length = 20)
     private String phonenumber;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
