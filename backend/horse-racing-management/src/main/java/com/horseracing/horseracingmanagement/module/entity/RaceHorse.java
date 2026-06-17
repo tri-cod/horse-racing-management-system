@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Builder
@@ -46,4 +47,7 @@ public class RaceHorse {
 
     @Column(name = "status", length = 20)
     private String status;
+
+    @Column(name = "odds", precision = 10, scale = 2)
+    private BigDecimal odds;
 }
