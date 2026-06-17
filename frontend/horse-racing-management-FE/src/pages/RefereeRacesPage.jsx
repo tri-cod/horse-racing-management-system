@@ -80,7 +80,7 @@ export default function RefereeRacesPage() {
       );
       setRaces(sorted);
     } catch {
-      setError('Không thể tải danh sách race. Thử lại sau.');
+      setError('Failed to load races. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -89,28 +89,28 @@ export default function RefereeRacesPage() {
   useEffect(() => { fetchRaces(); }, [fetchRaces]);
 
   const handleStart = async (race) => {
-    if (!window.confirm(`Bắt đầu race "${race.raceName}"?`)) return;
+    if (!window.confirm(`Start race "${race.raceName}"?`)) return;
     setActionLoading(race.id);
     try {
       await startRace(race.id);
-      addToast(`Race "${race.raceName}" đã bắt đầu!`, 'success');
+      addToast(`Race "${race.raceName}" has started!`, 'success');
       fetchRaces();
     } catch (e) {
-      addToast(e?.response?.data?.message ?? 'Không thể bắt đầu race.', 'error');
+      addToast(e?.response?.data?.message ?? 'Failed to start race.', 'error');
     } finally {
       setActionLoading(null);
     }
   };
 
   const handleFinish = async (race) => {
-    if (!window.confirm(`Kết thúc race "${race.raceName}"? Hành động này không thể hoàn tác.`)) return;
+    if (!window.confirm(`Finish race "${race.raceName}"? This action cannot be undone.`)) return;
     setActionLoading(race.id);
     try {
       await finishRace(race.id);
-      addToast(`Race "${race.raceName}" đã kết thúc!`, 'success');
+      addToast(`Race "${race.raceName}" has finished!`, 'success');
       fetchRaces();
     } catch (e) {
-      addToast(e?.response?.data?.message ?? 'Không thể kết thúc race.', 'error');
+      addToast(e?.response?.data?.message ?? 'Failed to finish race.', 'error');
     } finally {
       setActionLoading(null);
     }
@@ -118,7 +118,7 @@ export default function RefereeRacesPage() {
 
   const onResultSaved = () => {
     setSetResultRace(null);
-    addToast('Kết quả đã được lưu thành công!', 'success');
+    addToast('Results saved successfully!', 'success');
     fetchRaces();
   };
 

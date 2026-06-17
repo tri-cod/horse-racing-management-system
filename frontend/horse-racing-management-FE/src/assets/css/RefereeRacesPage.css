@@ -1,0 +1,238 @@
+/* ═══════════════════════════════════════════════════════════════ */
+/* RefereeRacesPage.css - Referee Race Management Styling          */
+/* ═══════════════════════════════════════════════════════════════ */
+
+.ref-page {
+  min-height: 100vh;
+}
+
+.ref-page__content {
+  max-width: var(--container, 1100px);
+  margin-inline: auto;
+  padding: var(--space-8, 2rem) clamp(1rem, 4vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6, 1.5rem);
+}
+
+/* ═══ TOOLBAR ══════════════════════════════════════════════════ */
+.ref-page__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ref-page__count {
+  font-size: 0.875rem;
+  color: #888;
+  font-weight: 500;
+}
+
+/* ═══ ALERT ═════════════════════════════════════════════════════ */
+.ref-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+.ref-alert--error {
+  background: #fff5f5;
+  border: 1px solid #fed7d7;
+  color: #c53030;
+}
+
+.ref-alert button {
+  margin-left: auto;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* ═══ EMPTY ═════════════════════════════════════════════════════ */
+.ref-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #aaa;
+  font-size: 0.95rem;
+}
+
+/* ═══ TABLE ═════════════════════════════════════════════════════ */
+.ref-table-wrap {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  overflow-x: auto;
+}
+
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.ref-table thead {
+  background: #f8f9fa;
+}
+
+.ref-table th {
+  padding: 0.875rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #555;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid #e8e8e8;
+  white-space: nowrap;
+}
+
+.ref-table td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  color: #333;
+  vertical-align: middle;
+}
+
+.ref-row:last-child td {
+  border-bottom: none;
+}
+
+.ref-row:hover td {
+  background: #fafafa;
+}
+
+/* ═══ RACE NAME ═════════════════════════════════════════════════ */
+.ref-race-name {
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 0.2rem;
+}
+
+.ref-race-track {
+  font-size: 0.78rem;
+  color: #999;
+}
+
+/* ═══ STATUS BADGE ══════════════════════════════════════════════ */
+.ref-badge {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ref-badge--upcoming {
+  background: #e8f4fd;
+  color: #2980b9;
+}
+
+.ref-badge--closed {
+  background: #fef9e7;
+  color: #d68910;
+}
+
+.ref-badge--ongoing {
+  background: #eafaf1;
+  color: #1e8449;
+}
+
+.ref-badge--finished {
+  background: #f4f4f4;
+  color: #777;
+}
+
+.ref-badge--cancelled {
+  background: #fdf2f2;
+  color: #c0392b;
+}
+
+/* ═══ ACTIONS ═══════════════════════════════════════════════════ */
+.ref-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+/* ═══ BUTTONS ═══════════════════════════════════════════════════ */
+.ref-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.ref-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ref-btn--ghost {
+  background: transparent;
+  border: 1px solid #d0d0d0;
+  color: #555;
+}
+
+.ref-btn--ghost:hover:not(:disabled) {
+  background: #f5f5f5;
+  border-color: #aaa;
+}
+
+.ref-btn--start {
+  background: linear-gradient(135deg, #27ae60, #1e8449);
+  color: white;
+}
+
+.ref-btn--start:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1e8449, #196f3d);
+  transform: translateY(-1px);
+}
+
+.ref-btn--finish {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+}
+
+.ref-btn--finish:hover:not(:disabled) {
+  background: linear-gradient(135deg, #c0392b, #a93226);
+  transform: translateY(-1px);
+}
+
+.ref-btn--result {
+  background: linear-gradient(135deg, #f39c12, #d68910);
+  color: white;
+}
+
+.ref-btn--result:hover:not(:disabled) {
+  background: linear-gradient(135deg, #d68910, #b7770d);
+  transform: translateY(-1px);
+}
+
+/* ═══ RESPONSIVE ════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .ref-table th:nth-child(2),
+  .ref-table td:nth-child(2),
+  .ref-table th:nth-child(4),
+  .ref-table td:nth-child(4) {
+    display: none;
+  }
+}

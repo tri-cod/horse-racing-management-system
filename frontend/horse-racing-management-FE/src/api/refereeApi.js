@@ -9,7 +9,7 @@ export const finishRace = (id) =>
 export const getAllRaces = ({ status, page = 0, size = 100 } = {}) => {
   const params = { page, size };
   if (status) params.status = status;
-  return axiosInstance.get('/races', { params }).then((res) => res.data.data);
+  return axiosInstance.get('/races/list', { params }).then((res) => res.data.data);
 };
 
 export const getHorsesByRace = (raceId) =>

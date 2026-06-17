@@ -4,8 +4,7 @@ import { useRaceResults } from '../hooks/useRaceResults';
 import { useRaces } from '../hooks/useRaces';
 import { computeRaceStatus } from '../utils/raceStatus';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import '../assets/css/RaceResultPage.css';
-
+import "../assets/css/race/RaceResultPage.css";
 /* ─── helpers ─────────────────────────────────────────────── */
 function formatDate(iso) {
   if (!iso) return '—';

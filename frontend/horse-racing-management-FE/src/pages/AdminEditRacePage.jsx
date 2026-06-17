@@ -31,7 +31,7 @@ export default function AdminEditRacePage() {
   };
 
   const handleCloseRegistration = async () => {
-    if (!window.confirm(`Đóng đăng ký race "${race.raceName}"? Người dùng sẽ không thể đăng ký thêm.`)) return;
+    if (!window.confirm(`Close registration for race "${race.raceName}"? Users will no longer be able to register.`)) return;
     setClosing(true);
     try {
       await updateRace(id, {
@@ -50,10 +50,10 @@ export default function AdminEditRacePage() {
         refereeId: race.refereeId ?? null,
         status: 'CLOSED_REGISTRATION',
       });
-      addToast('Đã đóng đăng ký race!', 'success');
+      addToast('Registration closed successfully!', 'success');
       refetch();
     } catch (e) {
-      addToast(e.response?.data?.message || 'Không thể đóng đăng ký.', 'error');
+      addToast(e.response?.data?.message || 'Failed to close registration.', 'error');
     } finally {
       setClosing(false);
     }
@@ -76,13 +76,13 @@ export default function AdminEditRacePage() {
         {canClose && (
           <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end' }}>
             <Button variant="outline" onClick={handleCloseRegistration} disabled={closing}>
-              {closing ? 'Đang xử lý...' : '🔒 Đóng đăng ký'}
+              {closing ? 'Đang xử lý...' : 'Close Registration'}
             </Button>
           </div>
         )}
         {race?.status === 'CLOSED_REGISTRATION' && (
           <div style={{ marginBottom: '16px', padding: '10px 14px', background: '#fef3c7', color: '#92400e', borderRadius: '8px', fontSize: '13px' }}>
-            Đăng ký đã đóng — referee có thể bắt đầu race.
+            Registration closed — the referee can now start the race.
           </div>
         )}
         <RaceForm mode="edit" initialValues={race} onSubmit={handleSubmit} loading={saving} />
