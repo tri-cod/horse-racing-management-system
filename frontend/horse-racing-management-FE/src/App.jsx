@@ -14,6 +14,7 @@ import JockeysPage from './pages/JockeysPage'
 // Race pages
 import RacesPage from './pages/RacesPage'
 import RaceDetailPage from './pages/RaceDetailPage'
+import RaceResultPage from './pages/RaceResultPage'
 
 // Horse Owner
 import MyHorsesPage from './pages/MyHorsesPage'
@@ -34,6 +35,12 @@ import MyBetsPage from './pages/MyBetsPage'
 import MyWalletPage from './pages/MyWalletPage'
 import AdminDepositPage from './pages/AdminDepositPage'
 
+// Notifications
+import NotificationsPage from './pages/NotificationsPage'
+
+// Referee
+import RefereeRacesPage from './pages/RefereeRacesPage'
+
 export default function App() {
   return (
     <Routes>
@@ -45,6 +52,21 @@ export default function App() {
       <Route path="/jockeys" element={<Layout><JockeysPage /></Layout>} />
       <Route path="/races" element={<Layout><RacesPage /></Layout>} />
       <Route path="/races/:id" element={<Layout><RaceDetailPage /></Layout>} />
+      <Route path="/races/:id/result" element={<Layout><RaceResultPage /></Layout>} />
+
+      {/* Notifications */}
+      <Route path="/notifications" element={<Layout><NotificationsPage /></Layout>} />
+
+      {/* Referee */}
+      <Route
+        path="/referee/races"
+        element={
+          <ProtectedRoute allowedRoles={['REFEREE']}>
+            <Layout><RefereeRacesPage /></Layout>
+          </ProtectedRoute>
+        }
+      />
+
 
       {/* Authenticated (mọi role) */}
       <Route

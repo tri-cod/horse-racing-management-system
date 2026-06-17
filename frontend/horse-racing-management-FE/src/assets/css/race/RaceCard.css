@@ -86,3 +86,27 @@
   font-weight: 600;
   color: var(--primary);
 }
+.race-card__result-overlay {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(0,0,0,.6);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 0;
+
+  transition: .3s;
+}
+
+.race-card__result-overlay span {
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.race-card:hover .race-card__result-overlay {
+  opacity: 1;
+}
