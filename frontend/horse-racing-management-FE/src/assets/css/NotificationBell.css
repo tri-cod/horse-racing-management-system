@@ -1,0 +1,202 @@
+/* ═══════════════════════════════════════════════════════════════ */
+/* NotificationBell.css - Notification Bell Component Styling      */
+/* ═══════════════════════════════════════════════════════════════ */
+
+.notif-bell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.notif-bell__trigger {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  transition: color 0.2s, transform 0.2s;
+  border-radius: 50%;
+}
+
+.notif-bell__trigger:hover {
+  color: #667eea;
+  transform: scale(1.1);
+}
+
+.notif-bell__trigger:focus {
+  outline: none;
+}
+
+.notif-bell__badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+  animation: badgePulse 2s infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.6);
+  }
+}
+
+/* ═══ DROPDOWN ═════════════════════════════════════════════════ */
+.notif-bell__dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  min-width: 320px;
+  max-width: 400px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition: all 0.2s ease;
+  z-index: 1000;
+}
+
+.notif-bell__dropdown.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.notif-bell__header {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.notif-bell__unread-count {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* ═══ LIST ═════════════════════════════════════════════════════ */
+.notif-bell__list {
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.notif-bell__list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notif-bell__list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notif-bell__list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.notif-bell__list::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+.notif-bell__loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  color: #999;
+}
+
+.notif-bell__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  color: #999;
+}
+
+.notif-bell__empty p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #666;
+}
+
+.notif-bell__empty span {
+  font-size: 0.8rem;
+  color: #ccc;
+}
+
+/* ═══ VIEW ALL BUTTON ══════════════════════════════════════════ */
+.notif-bell__view-all {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: none;
+  background: white;
+  color: #667eea;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-top: 1px solid #eee;
+  border-radius: 0 0 8px 8px;
+  transition: all 0.2s;
+}
+
+.notif-bell__view-all:hover {
+  background: #f9f9f9;
+  color: #764ba2;
+}
+
+.notif-bell__view-all:active {
+  background: #f0f0f0;
+}
+
+/* ═══ RESPONSIVE ═══════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .notif-bell__dropdown {
+    min-width: 280px;
+    max-width: calc(100vw - 2rem);
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+  }
+
+  .notif-bell__dropdown.open {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .notif-bell__list {
+    max-height: 300px;
+  }
+}

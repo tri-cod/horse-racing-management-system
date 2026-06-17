@@ -5,6 +5,7 @@ import '../assets/css/Header.css';
 import { AuthContext } from '../context/AuthContext';
 import Button from './ui/Button';
 import Container from './ui/Container';
+import NotificationBell from './NotificationBell';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/' },
@@ -103,8 +104,8 @@ function Header() {
             {user?.role === 'REFEREE' && (
               <li className="header__nav-item">
                 <Link
-                  to="/races"
-                  className={pathname === '/races' ? 'active' : ''}
+                  to="/referee/races"
+                  className={pathname.startsWith('/referee') ? 'active' : ''}
                   onClick={() => setMenuOpen(false)}
                 >
                   Race Control
@@ -126,6 +127,9 @@ function Header() {
         </nav>
 
         <div className={`header__actions${menuOpen ? ' open' : ''}`}>
+          {user && (
+            <NotificationBell />
+          )}
           {user ? (
             <div className="header__user" ref={dropdownRef}>
               <span className="header__welcome">Hello</span>

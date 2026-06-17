@@ -72,7 +72,14 @@ export default function RacesPage() {
           />
         ) : (
           <div className="races-page__grid">
-            {filtered.map((r) => <RaceCard key={r.id} race={r} />)}
+            {filtered.map((r) => (
+              <RaceCard
+                key={r.id}
+                race={r}
+                isAdmin={user?.role === 'ADMIN'}
+                onRefetch={refetch}
+              />
+            ))}
           </div>
         )}
 
