@@ -55,6 +55,14 @@ public class RaceHorseController {
                 raceHorseService.getMyHorseRaces(userDetails.getId())));
     }
 
+    // Admin lấy danh sách ngựa đang chờ duyệt
+    @GetMapping("/pending")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<List<RaceHorseResponse>>> getPendingHorses() {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                raceHorseService.getPendingHorses()));
+    }
+
     // Admin duyệt horse
     @PutMapping("/{id}/approve")
     @PreAuthorize("hasAuthority('ADMIN')")

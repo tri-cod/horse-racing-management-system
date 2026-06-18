@@ -8,8 +8,13 @@ import com.horseracing.horseracingmanagement.module.dto.RaceDto.RaceStatusUpdate
 import com.horseracing.horseracingmanagement.module.entity.Race;
 import com.horseracing.horseracingmanagement.module.entity.RaceReferee;
 import com.horseracing.horseracingmanagement.module.entity.User;
+import com.horseracing.horseracingmanagement.module.responsitory.BetItemRepository;
+import com.horseracing.horseracingmanagement.module.responsitory.BetRepository;
+import com.horseracing.horseracingmanagement.module.responsitory.RaceHorseRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.RaceRefereeRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.RaceRepository;
+import com.horseracing.horseracingmanagement.module.responsitory.RaceResultRepository;
+import jakarta.transaction.Transactional;
 import com.horseracing.horseracingmanagement.module.service.RaceService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +31,11 @@ public class RaceServiceImpl implements RaceService {
 
     private final RaceRepository raceRepository;
     private final RaceRefereeRepository raceRefereeRepository;
-    private final WebSocketNotificationService wsService;  // ← inject
+    private final WebSocketNotificationService wsService;
+    private final BetItemRepository betItemRepository;
+    private final BetRepository betRepository;
+    private final RaceResultRepository raceResultRepository;
+    private final RaceHorseRepository raceHorseRepository;
 
 
     // Admin start race → đóng bet
@@ -62,10 +71,11 @@ public class RaceServiceImpl implements RaceService {
         raceRepository.save(race);
 
         // ← Push WebSocket → FE load kết quả
+        // [CHANGED] "Finished" → "FINISHED": nhất quán UPPER_CASE với startRace và setRaceResult
         wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
                 .raceId(race.getId())
                 .raceName(race.getRaceName())
-                .status("Finished")
+                .status("FINISHED")
                 .message("Race has finished! Results are being calculated.")
                 .updatedAt(Instant.now())
                 .build());
@@ -112,6 +122,15 @@ public class RaceServiceImpl implements RaceService {
 
         raceRepository.save(race);
 
+        // [WS] Push status update — FE cần biết ngay để hiển thị nút Bet
+        wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
+                .raceId(race.getId())
+                .raceName(race.getRaceName())
+                .status("CLOSED_REGISTRATION")
+                .message("Registration closed. Betting is now open!")
+                .updatedAt(Instant.now())
+                .build());
+
         return mapToResponse(race);
     }
 
@@ -132,10 +151,16 @@ public class RaceServiceImpl implements RaceService {
     }
 
     @Override
+    @Transactional
     public void deleteRace(Long raceId) {
         if (!raceRepository.existsById(raceId)) {
             throw new RuntimeException("Race not found");
         }
+        // Xóa theo đúng thứ tự FK: lá → gốc
+        betItemRepository.deleteByBet_Race_Id(raceId);   // bet_items → bet → race
+        betRepository.deleteByRace_Id(raceId);            // bet → race
+        raceResultRepository.deleteByRace_Id(raceId);     // race_result → race_horse + race
+        raceHorseRepository.deleteByRace_Id(raceId);      // race_horse → race
         raceRepository.deleteById(raceId);
     }
 
@@ -143,6 +168,8 @@ public class RaceServiceImpl implements RaceService {
     public RaceResponse updateRace(Long raceId, CreateRaceRequest request) {
         Race race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new RuntimeException("Race not found"));
+
+        RaceStatus oldStatus = race.getStatus(); // [WS] lưu status cũ để so sánh sau khi save
 
         if (request.getRefereeId() != null) {
             RaceReferee referee = raceRefereeRepository.findById(request.getRefereeId())
@@ -163,7 +190,20 @@ public class RaceServiceImpl implements RaceService {
         race.setBannerImageurl(request.getBannerImageurl());
         race.setStatus(request.getStatus());
 
-        return mapToResponse(raceRepository.save(race));
+        Race saved = raceRepository.save(race);
+
+        // [WS] Chỉ push khi status thực sự thay đổi tránh gây noise cho FE
+        if (request.getStatus() != null && request.getStatus() != oldStatus) {
+            wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
+                    .raceId(saved.getId())
+                    .raceName(saved.getRaceName())
+                    .status(saved.getStatus().name())
+                    .message("Race status updated.")
+                    .updatedAt(Instant.now())
+                    .build());
+        }
+
+        return mapToResponse(saved);
     }
 
 

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Flag } from 'lucide-react';
 import { useMyRaceRegistrations } from '../hooks/useMyRaceRegistrations';
 import MyRegistrationsTable from '../components/race-horse/MyRegistrationsTable';
-import PageHero from '../components/ui/PageHero';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmptyState from '../components/ui/EmptyState';
 import Button from '../components/ui/Button';
@@ -22,13 +21,7 @@ export default function MyRaceRegistrationsPage() {
 
   return (
     <div className="my-reg-page">
-      <PageHero
-        eyebrow="MY ACTIVITY"
-        title="Race Registrations"
-        subtitle="Track all your horses' race entries"
-      />
-
-      <div className="my-reg-page__content">
+<div className="my-reg-page__content">
         <div className="my-reg-page__tabs">
           {STATUS_TABS.map((t) => (
             <button

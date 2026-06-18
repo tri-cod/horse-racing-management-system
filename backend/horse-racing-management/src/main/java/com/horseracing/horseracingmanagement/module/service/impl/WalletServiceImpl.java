@@ -130,8 +130,8 @@ public class WalletServiceImpl implements WalletService {
 
     // Sinh QR URL dùng VietQR
     public String generateQrUrl(Long amount, String referenceCode) {
-        String bankId = "TPB";        // ← đổi thành bank của bạn
-        String accountNo = "39363636999";  // ← số tài khoản
+        String bankId = "MB";        // ← đổi thành bank của bạn
+        String accountNo = "0937385989";  // ← số tài khoản
         return String.format(
                 "https://img.vietqr.io/image/%s-%s-compact.png?amount=%s&addInfo=%s",
                 bankId, accountNo, amount, referenceCode

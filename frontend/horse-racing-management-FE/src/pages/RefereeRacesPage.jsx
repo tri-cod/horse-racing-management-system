@@ -1,9 +1,7 @@
 import { useContext, useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Flag, Play, CheckSquare, Trophy, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Play, CheckSquare, Trophy, AlertTriangle } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { useToast } from '../components/ui/ToastProvider';
-import PageHero from '../components/ui/PageHero';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import SetResultModal from '../components/referee/SetResultModal';
 import { getAllRaces, startRace, finishRace } from '../api/refereeApi';
@@ -61,7 +59,6 @@ function formatPrize(n) {
 export default function RefereeRacesPage() {
   const { user } = useContext(AuthContext);
   const addToast = useToast();
-  const navigate = useNavigate();
 
   const [races, setRaces] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -124,18 +121,9 @@ export default function RefereeRacesPage() {
 
   return (
     <div className="ref-page">
-      <PageHero
-        eyebrow="REFEREE PANEL"
-        title="Race Management"
-        subtitle="Start, finish races and set official results"
-      />
-
-      <div className="ref-page__content">
+<div className="ref-page__content">
         <div className="ref-page__toolbar">
           <span className="ref-page__count">{races.length} race</span>
-          <button className="ref-btn ref-btn--ghost" onClick={fetchRaces} disabled={loading}>
-            <RefreshCw size={14} /> Refresh
-          </button>
         </div>
 
         {error && (
@@ -194,11 +182,6 @@ export default function RefereeRacesPage() {
                                 <CheckSquare size={13} /> {busy ? '…' : 'Kết thúc'}
                               </button>
                             </>
-                          )}
-                          {normalizeStatus(race.status) === 'FINISHED' && (
-                            <button className="ref-btn ref-btn--ghost" onClick={() => navigate(`/races/${race.id}/result`)}>
-                              <Flag size={13} /> View result
-                            </button>
                           )}
                         </div>
                       </td>

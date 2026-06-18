@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getRaces } from '../api/raceApi';
+import { useRaceUpdates } from '../context/RaceSocketContext';
 
 export function useRaces({ page = 0, size = 9 } = {}) {
   const [races, setRaces] = useState([]);
@@ -7,6 +8,8 @@ export function useRaces({ page = 0, size = 9 } = {}) {
   const [totalElements, setTotalElements] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const wsUpdates = useRaceUpdates();
 
   const fetch = useCallback(async () => {
     setLoading(true);
@@ -26,6 +29,18 @@ export function useRaces({ page = 0, size = 9 } = {}) {
   useEffect(() => {
     fetch();
   }, [fetch]);
+
+  // Apply real-time status patches from WebSocket
+  useEffect(() => {
+    if (!wsUpdates || wsUpdates.size === 0) return;
+    setRaces((prev) =>
+      prev.map((r) => {
+        const upd = wsUpdates.get(String(r.id));
+        if (!upd || upd.status === r.status) return r;
+        return { ...r, status: upd.status };
+      })
+    );
+  }, [wsUpdates]);
 
   return { races, totalPages, totalElements, loading, error, refetch: fetch };
 }

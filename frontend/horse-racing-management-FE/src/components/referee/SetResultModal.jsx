@@ -106,10 +106,9 @@ export default function SetResultModal({ race, onClose, onSuccess }) {
                       <tr key={rh.id} style={{ borderBottom:'1px solid var(--border)' }}>
                         <td style={{ padding:'10px 12px',fontWeight:600,color:'var(--text-muted)',textAlign:'center' }}>{rh.laneNumber}</td>
                         <td style={{ padding:'10px 12px' }}>
-                          <div style={{ fontWeight:600,color:'var(--text)' }}>{rh.horse?.horseName ?? '—'}</div>
-                          <div style={{ fontSize:'11px',color:'var(--text-muted)' }}>{rh.horse?.breed ?? ''}</div>
+                          <div style={{ fontWeight:600,color:'var(--text)' }}>{rh.horseName ?? '—'}</div>
                         </td>
-                        <td style={{ padding:'10px 12px' }}>{rh.jockey?.user?.fullName ?? '—'}</td>
+                        <td style={{ padding:'10px 12px' }}>{rh.jockeyName ?? '—'}</td>
                         <td style={{ padding:'10px 12px' }}>
                           <input
                             type="number" min={1} max={horses.length} placeholder="1"

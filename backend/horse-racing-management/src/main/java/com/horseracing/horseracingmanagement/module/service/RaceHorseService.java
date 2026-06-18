@@ -16,5 +16,6 @@ public interface RaceHorseService {
     RaceHorseResponse approveHorse(Long raceHorseId);    // Admin duyệt
     RaceHorseResponse rejectHorse(Long raceHorseId);
     void setOdds(SetAllOddsRequest request);        // set odds cho tất cả horse
-    RaceHorseResponse setOddsForOne(SetOddsRequest request);// Admin từ chối
+    RaceHorseResponse setOddsForOne(SetOddsRequest request);
+    List<RaceHorseResponse> getPendingHorses(); // Admin lấy danh sách chờ duyệt
 }

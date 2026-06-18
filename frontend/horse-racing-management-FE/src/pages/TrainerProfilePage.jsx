@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useTrainerProfile } from '../hooks/useTrainerProfile';
 import { useToast } from '../components/ui/ToastProvider';
-import PageHero from '../components/ui/PageHero';
 import AvatarPreview from '../components/trainer/AvatarPreview';
 import TrainerProfileForm from '../components/trainer/TrainerProfileForm';
 import TrainerProfileView from '../components/trainer/TrainerProfileView';
@@ -43,17 +42,7 @@ export default function TrainerProfilePage() {
 
   return (
     <div className="trainer-profile-page">
-      <PageHero
-        eyebrow={isNew ? 'WELCOME' : 'TRAINER'}
-        title={isNew ? 'Complete your profile' : 'Your Profile'}
-        subtitle={
-          isNew
-            ? 'Tell us more about yourself so horse owners can find you'
-            : 'Keep your profile up to date to attract more horse owners'
-        }
-      />
-
-      <div className="trainer-profile-page__content">
+<div className="trainer-profile-page__content">
         <div className="trainer-profile-page__sidebar">
           <AvatarPreview url={profile?.avatarUrl} name={profile?.name} />
           <h2 className="trainer-profile-page__name">{profile?.name || 'Trainer'}</h2>

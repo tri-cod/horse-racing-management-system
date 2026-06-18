@@ -177,6 +177,14 @@ public class RaceHorseServiceImpl implements RaceHorseService {
     }
 
     @Override
+    public List<RaceHorseResponse> getPendingHorses() {
+        return raceHorseRepository.findByStatus("Pending")
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public RaceHorseResponse setOddsForOne(SetOddsRequest request) {
         RaceHorse raceHorse = raceHorseRepository.findById(request.getRaceHorseId())
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));

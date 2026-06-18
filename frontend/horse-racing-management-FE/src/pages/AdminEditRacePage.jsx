@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useRaceDetail } from '../hooks/useRaceDetail';
 import { updateRace } from '../api/raceApi';
 import { useToast } from '../components/ui/ToastProvider';
-import PageHero from '../components/ui/PageHero';
 import RaceForm from '../components/race/RaceForm';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Button from '../components/ui/Button';
@@ -71,8 +70,7 @@ export default function AdminEditRacePage() {
 
   return (
     <div className="admin-race-page">
-      <PageHero eyebrow="ADMIN" title="Edit Race" subtitle={race?.raceName} />
-      <div className="admin-race-page__content">
+<div className="admin-race-page__content">
         {canClose && (
           <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end' }}>
             <Button variant="outline" onClick={handleCloseRegistration} disabled={closing}>

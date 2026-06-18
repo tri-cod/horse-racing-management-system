@@ -48,6 +48,7 @@ public class RaceResultServiceImpl implements RaceResultService {
                     .race(race)
                     .raceHorse(raceHorse)
                     .rank(item.getRank())
+                    .completiontime(item.getCompletionTime()) // lưu thời gian hoàn thành từ referee nhập vào
                     .build());
         });
 

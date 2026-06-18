@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { CheckCircle, XCircle, RefreshCw, Clock, User, DollarSign } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, User, DollarSign } from 'lucide-react';
 import { getPendingDeposits, approveDeposit, rejectDeposit } from '../api/walletApi';
 import { useToast } from '../components/ui/ToastProvider';
-import PageHero from '../components/ui/PageHero';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import '../assets/css/admin/AdminDepositPage.css';
 
@@ -91,12 +90,6 @@ export default function AdminDepositPage() {
 
   return (
     <div className="admin-deposit-page">
-      <PageHero
-        eyebrow="Admin"
-        title="Deposit Requests"
-        subtitle="Review and approve or reject user deposit requests."
-        dark
-      />
 
       <div className="admin-deposit-page__content">
         {/* Stats */}
@@ -114,10 +107,6 @@ export default function AdminDepositPage() {
         {/* Toolbar */}
         <div className="admin-deposit-page__toolbar">
           <h2 className="admin-deposit-page__section-title">Pending Deposits</h2>
-          <button className="ui-btn ui-btn--outline ui-btn--sm" onClick={fetchDeposits} disabled={loading}>
-            <RefreshCw size={13} style={loading ? { animation: 'spin .7s linear infinite' } : {}} />
-            Refresh
-          </button>
         </div>
 
         {/* Content */}

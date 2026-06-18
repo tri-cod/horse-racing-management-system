@@ -4,6 +4,117 @@
   gap: var(--space-8);
 }
 
+/* ============================================================
+   STEP INDICATOR
+============================================================ */
+
+.rf-step-indicator {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.rf-step-indicator__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+}
+
+.rf-step-indicator__line {
+  position: absolute;
+  top: 18px;
+  left: calc(50% + 20px);
+  right: calc(-50% + 20px);
+  height: 2px;
+  background: var(--border);
+  transition: background var(--transition);
+}
+
+.rf-step-indicator__line.--done {
+  background: var(--primary);
+}
+
+.rf-step-indicator__num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--white);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  position: relative;
+  z-index: 1;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.rf-step-indicator__num.--active {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--white);
+}
+
+.rf-step-indicator__num.--done {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--white);
+}
+
+.rf-step-indicator__label {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  font-weight: 500;
+  text-align: center;
+  margin-top: var(--space-2);
+  white-space: nowrap;
+  transition: color var(--transition);
+}
+
+.rf-step-indicator__label.--active {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* ============================================================
+   STEP ANIMATION
+============================================================ */
+
+.rf-step {
+  overflow: hidden;
+}
+
+@keyframes rf-slide-exit-left {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-40px); }
+}
+@keyframes rf-slide-enter-right {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes rf-slide-exit-right {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(40px); }
+}
+@keyframes rf-slide-enter-left {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.rf-step--exit-fwd  { animation: rf-slide-exit-left   220ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+.rf-step--enter-fwd { animation: rf-slide-enter-right  220ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+.rf-step--exit-back { animation: rf-slide-exit-right   220ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+.rf-step--enter-back{ animation: rf-slide-enter-left   220ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+
+/* ============================================================
+   FORM FIELDS
+============================================================ */
+
 .race-form__section {
   display: flex;
   flex-direction: column;
@@ -30,6 +141,10 @@
   .race-form__grid-2 {
     grid-template-columns: 1fr;
   }
+
+  .rf-step-indicator__label {
+    display: none;
+  }
 }
 
 .race-form__field {
@@ -46,6 +161,12 @@
 
 .race-form__required {
   color: var(--ocean-600);
+}
+
+.race-form__optional {
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  color: var(--text-muted);
 }
 
 .race-form__input {
@@ -85,28 +206,151 @@ select.race-form__input {
   color: var(--text-muted);
 }
 
-.race-form__url-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.race-form__url-row .race-form__input {
-  flex: 1;
-}
-
-.race-form__thumb {
-  width: 80px;
-  height: 48px;
-  object-fit: cover;
+.race-form__alert {
+  padding: var(--space-3) var(--space-4);
   border-radius: var(--radius);
-  border: 1px solid var(--border);
-  flex-shrink: 0;
+  background: var(--error-bg);
+  color: var(--error);
+  font-size: var(--fs-small);
+  font-weight: 500;
 }
+
+/* ============================================================
+   FOOTER — back + next/submit
+============================================================ */
 
 .race-form__footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   padding-top: var(--space-6);
   border-top: 1px solid var(--border);
+}
+
+.rf-btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.6rem 1.1rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition);
+}
+
+.rf-btn-back:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* ============================================================
+   DROPZONE
+============================================================ */
+
+.rf-dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  background: var(--surface);
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.rf-dropzone:hover,
+.rf-dropzone--drag {
+  border-color: var(--accent);
+  background: rgba(14, 165, 233, 0.04);
+}
+
+.rf-dropzone__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.rf-dropzone__icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(14, 165, 233, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.rf-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ============================================================
+   BANNER PREVIEW
+============================================================ */
+
+.rf-banner-preview {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.rf-banner-preview__img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.rf-banner-preview__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.rf-banner-preview:hover .rf-banner-preview__overlay {
+  opacity: 1;
+}
+
+.rf-banner-preview__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.rf-banner-preview__btn--change {
+  background: white;
+  color: #111;
+}
+
+.rf-banner-preview__btn--remove {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  backdrop-filter: blur(4px);
 }
