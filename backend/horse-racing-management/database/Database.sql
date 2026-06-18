@@ -3,9 +3,7 @@
 --  Tổng hợp từ: data.sql + fix-sql1.sql + fix-migration.sql
 --  Thứ tự: tạo bảng theo dependency, sau đó seed data
 -- ============================================================
-
 BEGIN;
-
 -- ============================================================
 -- 1. ROLES
 -- ============================================================
@@ -285,10 +283,15 @@ CREATE TABLE IF NOT EXISTS notification (
 
 -- Seed 4 roles mặc định
 INSERT INTO roles (RoleName, description) VALUES
-    ('HORSE_OWNER', 'Horse Owner'),
-    ('TRAINER',     'Horse Trainer'),
-    ('REFEREE',     'Race Referee'),
-    ('SPECTATOR',   'Spectator')
+                                              ('ADMIN',       'System administrator'),
+                                              ('MANAGER',     'Stable manager'),
+                                              ('STAFF',       'Stable staff'),
+                                              ('USER',        'Normal user'),
+                                              ('JOCKEY',      'Jockey'),
+                                              ('HORSE_OWNER', 'Horse Owner'),
+                                              ('TRAINER',     'Horse Trainer'),
+                                              ('REFEREE',     'Race Referee'),
+                                              ('SPECTATOR',   'Spectator')
 ON CONFLICT (RoleName) DO NOTHING;
 
 -- Backfill wallet cho users chưa có (chạy sau khi đã có data)

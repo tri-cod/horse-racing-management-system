@@ -2,6 +2,7 @@ package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseRequest;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseResponse;
+import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.UpdateHorse;
 import com.horseracing.horseracingmanagement.module.entity.Horse;
 import com.horseracing.horseracingmanagement.module.entity.HorseOwner;
 import com.horseracing.horseracingmanagement.module.entity.Trainer;
@@ -104,7 +105,52 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 })
                 .collect(Collectors.toList());
     }
+    @Override
+    public SignHorseResponse updateHorse(Long horseId, UpdateHorse request, Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
 
+        Horse horse = horseRepository.findById(horseId)
+                .orElseThrow(() -> new RuntimeException("Horse not found"));
+
+        if (!horse.getOwnerId().equals(owner.getId())) {
+            throw new RuntimeException("You are not the owner of this horse");
+        }
+
+        if (request.getHorseName() != null)   horse.setHorseName(request.getHorseName());
+        if (request.getBreed() != null)        horse.setBreed(request.getBreed());
+        if (request.getAge() != null)          horse.setAge(request.getAge());
+        if (request.getGender() != null)       horse.setGender(request.getGender());
+        if (request.getSpeedRating() != null)  horse.setSpeedRating(request.getSpeedRating());
+        if (request.getHistory_rank() != null) horse.setHistoryRank(request.getHistory_rank());
+        if (request.getAvatar_url() != null)   horse.setAvatarUrl(request.getAvatar_url());
+        if (request.getWeight() != null)       horse.setWeight(request.getWeight());
+        if (request.getStatus() != null)       horse.setStatus(request.getStatus());
+
+        Horse saved = horseRepository.save(horse);
+
+        String trainerName = saved.getTrainerId() != null
+                ? trainerRepository.findById(saved.getTrainerId())
+                .map(Trainer::getName).orElse(null)
+                : null;
+
+        return mapToResponse(saved, owner.getName(), saved.getTrainerId(), trainerName);
+    }
+
+    @Override
+    public void deleteHorse(Long horseId, Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
+
+        Horse horse = horseRepository.findById(horseId)
+                .orElseThrow(() -> new RuntimeException("Horse not found"));
+
+        if (!horse.getOwnerId().equals(owner.getId())) {
+            throw new RuntimeException("You are not the owner of this horse");
+        }
+
+        horseRepository.delete(horse);
+    }
 
 
 

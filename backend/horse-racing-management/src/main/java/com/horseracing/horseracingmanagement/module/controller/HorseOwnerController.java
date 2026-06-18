@@ -3,6 +3,7 @@ package com.horseracing.horseracingmanagement.module.controller;
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseRequest;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseResponse;
+import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.UpdateHorse;
 import com.horseracing.horseracingmanagement.module.service.HorseOwnerService;
 import com.horseracing.horseracingmanagement.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -97,5 +98,25 @@ public class HorseOwnerController {
         Long userId = userDetails.getId();
         return ResponseEntity.ok(ApiResponse.success("Success",
                 horseOwnerService.getHorseList(userId)));
+    }
+    @PatchMapping("/horses/{horseId}")
+    public ResponseEntity<ApiResponse<SignHorseResponse>> updateHorse(
+            @PathVariable Long horseId,
+            @RequestBody UpdateHorse request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getId();
+        return ResponseEntity.ok(ApiResponse.success("Horse updated successfully",
+                horseOwnerService.updateHorse(horseId, request, userId)));
+    }
+
+    @DeleteMapping("/horses/{horseId}")
+    public ResponseEntity<ApiResponse<Void>> deleteHorse(
+            @PathVariable Long horseId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getId();
+        horseOwnerService.deleteHorse(horseId, userId);
+        return ResponseEntity.ok(ApiResponse.success("Horse deleted successfully", null));
     }
 }
