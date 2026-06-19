@@ -1,8 +1,12 @@
 package com.horseracing.horseracingmanagement.module.controller;
 
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
+import com.horseracing.horseracingmanagement.module.dto.BankAccountDto.CreateBankAccountRequest;
+import com.horseracing.horseracingmanagement.module.dto.BankAccountDto.WithdrawRequest;
+import com.horseracing.horseracingmanagement.module.dto.BankAccountDto.WithdrawResponse;
 import com.horseracing.horseracingmanagement.module.dto.Deposit.DepositRequest;
 import com.horseracing.horseracingmanagement.module.dto.Deposit.DepositResponse;
+import com.horseracing.horseracingmanagement.module.entity.BankAccount;
 import com.horseracing.horseracingmanagement.module.entity.TransactionRequest;
 import com.horseracing.horseracingmanagement.module.responsitory.TransactionRequestRepository;
 import com.horseracing.horseracingmanagement.module.service.WalletService;
@@ -78,6 +82,60 @@ public class WalletController {
     public ResponseEntity<ApiResponse<List<TransactionRequest>>> getPendingDeposits() {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 transactionRepository.findByRequestStatus("PENDING")));
+    }
+
+    // Thêm vào WalletController
+
+    @PostMapping("/bank-accounts")
+    public ResponseEntity<ApiResponse<BankAccount>> addBankAccount(
+            @Valid @RequestBody CreateBankAccountRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Bank account added",
+                        walletService.addBankAccount(request, userDetails.getId())));
+    }
+
+    @GetMapping("/bank-accounts")
+    public ResponseEntity<ApiResponse<List<BankAccount>>> getMyBankAccounts(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                walletService.getMyBankAccounts(userDetails.getId())));
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<ApiResponse<WithdrawResponse>> createWithdraw(
+            @Valid @RequestBody WithdrawRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Withdraw request created",
+                        walletService.createWithdrawRequest(request, userDetails.getId())));
+    }
+
+    @PutMapping("/withdraw/{id}/approve")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    public ResponseEntity<ApiResponse<String>> approveWithdraw(
+            @PathVariable Long id,
+            @RequestParam String note,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        walletService.approveWithdraw(id, userDetails.getUsername(), note);
+        return ResponseEntity.ok(ApiResponse.success("Withdraw approved", null));
+    }
+
+    @PutMapping("/withdraw/{id}/reject")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    public ResponseEntity<ApiResponse<String>> rejectWithdraw(
+            @PathVariable Long id,
+            @RequestParam String note,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        walletService.rejectWithdraw(id, userDetails.getUsername(), note);
+        return ResponseEntity.ok(ApiResponse.success("Withdraw rejected", null));
+    }
+
+    @GetMapping("/withdraw/pending")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    public ResponseEntity<ApiResponse<List<TransactionRequest>>> getPendingWithdraws() {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                transactionRepository.findByRequestTypeAndRequestStatus("WITHDRAW", "PENDING")));
     }
 
 

@@ -12,4 +12,5 @@ public interface TransactionRequestRepository extends JpaRepository<TransactionR
     List<TransactionRequest> findByUser_IdOrderByCreatedAtDesc(Long userId);
     List<TransactionRequest> findByRequestStatus(String status);
     Optional<TransactionRequest> findByReferenceCode(String referenceCode);
+    List<TransactionRequest> findByRequestTypeAndRequestStatus(String type, String status);  // ← thêm
 }
