@@ -2,6 +2,7 @@ package com.horseracing.horseracingmanagement.module.service;
 
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseRequest;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseResponse;
+import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.UpdateHorse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,4 +13,6 @@ public interface HorseOwnerService {
     SignHorseResponse assignTrainer(Long horseId, Long trainerId, Long userId);
     SignHorseResponse getHorse(Long horseId);
     List<SignHorseResponse> getHorseList(Long userId);
+    SignHorseResponse updateHorse(Long horseId, UpdateHorse request, Long userId);
+    void deleteHorse(Long horseId, Long userId);
 }

@@ -4,11 +4,53 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="71f9b656-b1d0-485a-abcc-d8d204940871" name="Changes" comment="" />
+    <list default="true" id="71f9b656-b1d0-485a-abcc-d8d204940871" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4cdd1821-d3b3-4170-b3d4-044c72a399c4.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4cdd1821-d3b3-4170-b3d4-044c72a399c4/storage_v2/_src_/database/horse_racing_management_system.HJkssA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4cdd1821-d3b3-4170-b3d4-044c72a399c4/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4cdd1821-d3b3-4170-b3d4-044c72a399c4/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4cdd1821-d3b3-4170-b3d4-044c72a399c4/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/public.abK9xQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/api/horseOwnerApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/api/horseOwnerApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/hooks/useHorseDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/hooks/useHorseDetail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/HorseDetailPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/HorseDetailPage.jsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotChats">
+    <option name="panelChat">
+      <chat>
+        <option name="activeSessionId" value="4c07c5f7-0230-4994-9f60-d1a14d8c7c09" />
+        <option name="sessions">
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="4c07c5f7-0230-4994-9f60-d1a14d8c7c09" />
+            <option name="modeId" value="Ask" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+        </option>
+        <option name="type" value="PANEL" />
+      </chat>
+    </option>
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_D:/GITHUB/Test/horse-racing-management-system" value="3ExSVLVX4uyI74woy6JbS4vTf7e" />
+    </persistenceIdMap>
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="393" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -24,6 +66,69 @@
       </MavenGeneralSettings>
     </option>
   </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="2.188042100879082E-5" />
+      <entry key="MS500" value="0.12804372364067945" />
+      <entry key="S2" value="2.1331079526964034" />
+      <entry key="S5" value="7.936230627920501" />
+      <entry key="S10" value="16.060701403485993" />
+      <entry key="S30" value="30.239621190136795" />
+      <entry key="S60" value="42.27820886893548" />
+      <entry key="M2" value="61.710782490531734" />
+      <entry key="M5" value="106.96259302106729" />
+      <entry key="M10" value="155.1071239960945" />
+      <entry key="M15" value="182.06800373327795" />
+      <entry key="M30" value="218.15880339932536" />
+      <entry key="H1" value="240.70619958020868" />
+      <entry key="H2" value="253.3442386781034" />
+      <entry key="H4" value="260.0394317946417" />
+      <entry key="D1" value="265.8209919439751" />
+      <entry key="W1" value="266.8311006353927" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0000000000036913" />
+      <entry key="S5" value="1.0000267222312427" />
+      <entry key="S10" value="1.005169356841877" />
+      <entry key="S30" value="1.1743870151655604" />
+      <entry key="S60" value="1.4668955469564562" />
+      <entry key="M2" value="1.9597125188788709" />
+      <entry key="M5" value="2.8488926019294514" />
+      <entry key="M10" value="3.5387854093998525" />
+      <entry key="M15" value="3.8947503805844237" />
+      <entry key="M30" value="4.363335626005019" />
+      <entry key="H1" value="4.6561357890790855" />
+      <entry key="H2" value="4.821001832690172" />
+      <entry key="H4" value="4.908640317209917" />
+      <entry key="D1" value="4.984506541969832" />
+      <entry key="W1" value="4.997780000883314" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="8.435140259865162E-5" />
+      <entry key="MS500" value="0.25602312154387763" />
+      <entry key="S2" value="2.7218711770059603" />
+      <entry key="S5" value="8.740539590346708" />
+      <entry key="S10" value="16.959121593762827" />
+      <entry key="S30" value="31.368912230365655" />
+      <entry key="S60" value="43.714804350638914" />
+      <entry key="M2" value="63.646929552073615" />
+      <entry key="M5" value="109.79447057539457" />
+      <entry key="M10" value="158.63412472503492" />
+      <entry key="M15" value="185.9537571580625" />
+      <entry key="M30" value="222.51689460629288" />
+      <entry key="H1" value="245.35948233322154" />
+      <entry key="H2" value="258.1637494284932" />
+      <entry key="H4" value="264.9473094730019" />
+      <entry key="D1" value="270.8053689184775" />
+      <entry key="W1" value="271.8288620652071" />
+    </decayedShown>
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0,
   &quot;fromUser&quot;: false
@@ -33,39 +138,50 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.HorseRacingManagementApplication.executor": "Run",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "feature/bet-wallet",
-    "ignore.virus.scanning.warn.message": "true",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/SWP/horse-racing-management-system",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.HorseRacingManagementApplication.executor&quot;: &quot;Run&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/updatehorse&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/GITHUB/Test/horse-racing-management-system&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\GITHUB\Test\horse-racing-management-system\backend\horse-racing-management\database" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="HorseRacingManagementApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
@@ -79,8 +195,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.25134.95" />
-        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.25134.95" />
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.24374.151" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.24374.151" />
       </set>
     </attachedChunks>
   </component>
@@ -95,10 +211,22 @@
       <workItem from="1781496954025" duration="1277000" />
       <workItem from="1781504096577" duration="8886000" />
       <workItem from="1781522658732" duration="1818000" />
+      <workItem from="1781785017883" duration="2887000" />
+      <workItem from="1781788209072" duration="2664000" />
+      <workItem from="1781790993189" duration="2762000" />
+      <workItem from="1781793830610" duration="15000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>

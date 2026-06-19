@@ -1,9 +1,13 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Cake, VenetianMask, Weight, TrendingUp, History, Calendar, User } from 'lucide-react';
+import { ArrowLeft, Cake, VenetianMask, Weight, TrendingUp, History, Calendar, User, Pencil, Trash2 } from 'lucide-react';
 import { useHorseDetail } from '../hooks/useHorseDetail';
 import HorseStatusBadge from '../components/horse-owner/HorseStatusBadge';
 import AssignTrainerCard from '../components/horse-owner/AssignTrainerCard';
+import HorseEditModal from '../components/horse-owner/HorseEditModal';
+import HorseDeleteModal from '../components/horse-owner/HorseDeleteModal';
 import '../assets/css/HorseDetailPage.css';
+import '../assets/css/HorseModal.css';
 
 const getValue = (value) => (value || value === 0 ? value : '—');
 
@@ -19,8 +23,22 @@ const formatDate = (value) => {
 export default function HorseDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { horse, loading, error, refetch } = useHorseDetail(id);
 
+  const {
+    horse, loading, error, refetch,
+    handleUpdate, updating, updateError,
+    handleDelete, deleting, deleteError,
+  } = useHorseDetail(id);
+
+  const [showEditModal, setShowEditModal]     = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const onEditSubmit = async (payload) => {
+    const success = await handleUpdate(payload);
+    if (success) setShowEditModal(false);
+  };
+
+  // ── Loading skeleton ─────────────────────────────────────────
   if (loading) {
     return (
       <div className="horse-detail-page">
@@ -44,6 +62,7 @@ export default function HorseDetailPage() {
     );
   }
 
+  // ── Error ────────────────────────────────────────────────────
   if (error) {
     return (
       <div className="horse-detail-page">
@@ -64,11 +83,14 @@ export default function HorseDetailPage() {
   return (
     <div className="horse-detail-page">
       <div className="horse-detail-page__container">
+
+        {/* Back button */}
         <button type="button" className="horse-detail__back-btn" onClick={() => navigate('/horse-owner/horses')}>
           <ArrowLeft size={18} />
           <span>Back</span>
         </button>
 
+        {/* Hero section */}
         <div className="horse-detail__hero">
           <div className="horse-detail__hero-avatar">
             {horse.avatarUrl ? (
@@ -85,8 +107,29 @@ export default function HorseDetailPage() {
               <HorseStatusBadge status={horse.status} />
             </div>
           </div>
+
+          {/* ── Nút Edit / Delete ── */}
+          <div className="horse-detail__actions">
+            <button
+              type="button"
+              className="horse-detail__action-btn horse-detail__action-btn--edit"
+              onClick={() => setShowEditModal(true)}
+            >
+              <Pencil size={16} />
+              Edit
+            </button>
+            <button
+              type="button"
+              className="horse-detail__action-btn horse-detail__action-btn--delete"
+              onClick={() => setShowDeleteModal(true)}
+            >
+              <Trash2 size={16} />
+              Delete
+            </button>
+          </div>
         </div>
 
+        {/* Detail card */}
         <div className="horse-detail__card">
           <div className="horse-detail__card-header">
             <div>
@@ -145,6 +188,7 @@ export default function HorseDetailPage() {
             </div>
           </div>
 
+          {/* Trainer section */}
           <div className="horse-detail__trainer-section">
             <div className="horse-detail__trainer-header">
               <div className="horse-detail__field-icon"><User size={18} /></div>
@@ -153,7 +197,6 @@ export default function HorseDetailPage() {
                 <p className="horse-detail__field-value">{horse.trainerName || 'No trainer assigned'}</p>
               </div>
             </div>
-
             <AssignTrainerCard
               horseId={horse.id}
               currentTrainerId={horse.trainerId}
@@ -162,6 +205,28 @@ export default function HorseDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Edit Modal ── */}
+      {showEditModal && (
+        <HorseEditModal
+          horse={horse}
+          onClose={() => setShowEditModal(false)}
+          onSubmit={onEditSubmit}
+          loading={updating}
+          error={updateError}
+        />
+      )}
+
+      {/* ── Delete Confirm Modal ── */}
+      {showDeleteModal && (
+        <HorseDeleteModal
+          horseName={horse.horseName}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleDelete}
+          loading={deleting}
+          error={deleteError}
+        />
+      )}
     </div>
   );
 }

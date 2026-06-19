@@ -37,3 +37,12 @@ export const assignTrainer = (horseId, trainerId) =>
   axiosInstance
     .put(`/horse-owner/horses/${horseId}/assign-trainer`, null, { params: { trainerId } })
     .then((res) => res.data.data);
+    
+export const updateHorse = (horseId, payload) =>
+  axiosInstance
+    .patch(`/horse-owner/horses/${horseId}`, payload)
+    .then((res) => res.data.data);
+
+
+export const deleteHorse = (horseId) =>
+  axiosInstance.delete(`/horse-owner/horses/${horseId}`).then((res) => res.data);
