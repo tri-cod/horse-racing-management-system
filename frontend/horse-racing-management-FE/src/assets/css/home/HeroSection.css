@@ -1,7 +1,8 @@
 .home-hero {
   position: relative;
-  height: 90vh;
-  min-height: 560px;
+  height: calc(90vh + 77px);
+  min-height: calc(560px + 77px);
+  margin-top: -77px;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -142,10 +143,18 @@
   50% { transform: translate(-50%, 8px); }
 }
 
+@media (max-width: 960px) {
+  .home-hero {
+    height: calc(90vh + 69px);
+    min-height: calc(560px + 69px);
+    margin-top: -69px;
+  }
+}
+
 @media (max-width: 720px) {
   .home-hero {
-    height: 70vh;
-    min-height: 460px;
+    height: calc(70vh + 69px);
+    min-height: calc(460px + 69px);
   }
 
   .home-hero__arrow {

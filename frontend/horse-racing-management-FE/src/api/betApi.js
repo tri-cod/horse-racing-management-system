@@ -1,7 +1,7 @@
 import axiosInstance from './axiosInstance';
 
 /**
- * Đặt cược (chỉ dành cho USER)
+ * Place a bet (USER role only)
  * @param {{ raceId: number, betItems: Array<{ raceHorseId: number, betAmount: number }> }} payload
  */
 export const placeBet = (payload) =>

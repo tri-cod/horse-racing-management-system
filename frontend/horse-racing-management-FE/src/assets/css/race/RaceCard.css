@@ -1,3 +1,8 @@
+/* ── Wrapper ── */
+.race-card-wrap {
+  position: relative;
+}
+
 .race-card {
   display: flex;
   flex-direction: column;
@@ -89,15 +94,11 @@
 .race-card__result-overlay {
   position: absolute;
   inset: 0;
-
   background: rgba(0,0,0,.6);
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   opacity: 0;
-
   transition: .3s;
 }
 
@@ -109,4 +110,65 @@
 
 .race-card:hover .race-card__result-overlay {
   opacity: 1;
+}
+
+/* ── Admin hover overlay ── */
+.race-card__admin-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.52);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+  z-index: 2;
+}
+
+.race-card-wrap--admin:hover .race-card__admin-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.race-card__admin-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.race-card__admin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  border-radius: var(--radius);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  width: 130px;
+  justify-content: center;
+  transition: filter 150ms ease;
+}
+
+.race-card__admin-btn:hover { filter: brightness(1.12); }
+.race-card__admin-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.race-card__admin-btn--edit {
+  background: #0ea5e9;
+  color: #fff;
+}
+
+.race-card__admin-btn--delete {
+  background: #dc2626;
+  color: #fff;
+}
+
+.race-card__admin-btn--close {
+  background: #d97706;
+  color: #fff;
 }

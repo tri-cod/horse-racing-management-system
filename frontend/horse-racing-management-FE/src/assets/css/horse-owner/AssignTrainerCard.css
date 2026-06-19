@@ -37,36 +37,21 @@
   cursor: not-allowed;
 }
 
-/* Assign Trainer — primary CTA, ocean blue gradient */
 .assign-trainer__btn {
   padding: 0.5rem 1.125rem;
-  background: linear-gradient(135deg, #126285 0%, #0A2E44 100%);
+  background: #0A2E44;
   color: #fff;
   border: none;
   border-radius: 6px;
   font-family: 'Inter', sans-serif;
   font-size: 0.875rem;
   font-weight: 700;
-  letter-spacing: 0.01em;
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(10, 46, 68, 0.35);
-  transition: filter 0.15s, box-shadow 0.15s;
-}
-
-.assign-trainer__btn:hover:not(:disabled) {
-  filter: brightness(1.08);
-  box-shadow: 0 4px 14px rgba(10, 46, 68, 0.45);
-}
-
-.assign-trainer__btn:active:not(:disabled) {
-  filter: brightness(0.95);
-  box-shadow: 0 1px 4px rgba(10, 46, 68, 0.3);
 }
 
 .assign-trainer__btn:disabled {
-  background: #7bb9d7;
-  box-shadow: none;
+  background: #7dd3fc;
   cursor: not-allowed;
 }
 
@@ -96,26 +81,20 @@
   cursor: not-allowed;
 }
 
-/* Change Trainer — solid black to stand out clearly */
 .assign-trainer__change-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
   padding: 0.48rem 0.95rem;
-  background: #0f172a;
-  color: #fff;
-  border: 1.5px solid #0f172a;
+  background: transparent;
+  color: #0f172a;
+  border: 1.5px solid #cbd5e1;
   border-radius: 6px;
   font-family: 'Inter', sans-serif;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-}
-
-.assign-trainer__change-btn:hover {
-  background: #1e293b;
-  border-color: #1e293b;
+  align-self: flex-start;
 }
 
 .assign-trainer__error {

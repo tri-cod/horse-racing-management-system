@@ -108,7 +108,7 @@
   align-items: center;
 }
 
-/* Tiến (next step): thoát sang trái, vào từ phải */
+/* Forward (next step): exit left, enter from right */
 @keyframes rg-slide-exit-left {
   from { opacity: 1; transform: translateX(0); }
   to   { opacity: 0; transform: translateX(-48px); }
@@ -118,7 +118,7 @@
   to   { opacity: 1; transform: translateX(0); }
 }
 
-/* Lùi (back): thoát sang phải, vào từ trái */
+/* Back: exit right, enter from left */
 @keyframes rg-slide-exit-right {
   from { opacity: 1; transform: translateX(0); }
   to   { opacity: 0; transform: translateX(48px); }

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, MapPin, Pencil, Lock } from 'lucide-react';
+import { Calendar, MapPin, Pencil, Lock, Trash2 } from 'lucide-react';
 import RaceStatusBadge from './RaceStatusBadge';
-import { updateRace } from '../../api/raceApi';
+import { updateRace, deleteRace } from '../../api/raceApi';
 import { useToast } from '../ui/ToastProvider';
 import '../../assets/css/race/RaceCard.css';
 import { computeRaceStatus } from '../../utils/raceStatus.js';
@@ -22,18 +22,18 @@ const CLOSEABLE = ['UPCOMING', 'OPEN_REGISTRATION'];
 export default function RaceCard({ race, isAdmin, onRefetch }) {
   const status = computeRaceStatus(race);
   const addToast = useToast();
-  const [closing, setClosing] = useState(false);
+  const [closing, setClosing]   = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const handleCloseRegistration = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!window.confirm(`Đóng đăng ký race "${race.raceName}"?`)) return;
+    if (!window.confirm(`Close registration for race "${race.raceName}"?`)) return;
     setClosing(true);
     try {
       await updateRace(race.id, {
         raceName: race.raceName,
         startTime: race.startTime,
-        endTime: race.endTime,
         trackName: race.trackName,
         trackCondition: race.trackCondition,
         surfaceType: race.surfaceType,
@@ -46,23 +46,36 @@ export default function RaceCard({ race, isAdmin, onRefetch }) {
         refereeId: race.refereeId ?? null,
         status: 'CLOSED_REGISTRATION',
       });
-      addToast(`Đã đóng đăng ký "${race.raceName}"!`, 'success');
+      addToast(`Registration closed for "${race.raceName}"!`, 'success');
       onRefetch?.();
     } catch (err) {
-      addToast(err?.response?.data?.message ?? 'Không thể đóng đăng ký.', 'error');
+      addToast(err?.response?.data?.message ?? 'Failed to close registration.', 'error');
     } finally {
       setClosing(false);
+    }
+  };
+
+  const handleDelete = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!window.confirm(`Delete race "${race.raceName}"? This cannot be undone.`)) return;
+    setDeleting(true);
+    try {
+      await deleteRace(race.id);
+      addToast(`Race "${race.raceName}" deleted.`, 'success');
+      onRefetch?.();
+    } catch (err) {
+      addToast(err?.response?.data?.message ?? 'Failed to delete race.', 'error');
+    } finally {
+      setDeleting(false);
     }
   };
 
   const canClose = isAdmin && CLOSEABLE.includes(race.status);
 
   return (
-    <div style={{ position: 'relative' }}>
-      <Link
-        to={`/races/${race.id}`}
-        className="race-card"
-      >
+    <div className={`race-card-wrap${isAdmin ? ' race-card-wrap--admin' : ''}`}>
+      <Link to={`/races/${race.id}`} className="race-card">
         <div className="race-card__banner">
           {status === 'COMPLETED' && (
             <div className="race-card__result-overlay">
@@ -97,57 +110,36 @@ export default function RaceCard({ race, isAdmin, onRefetch }) {
       </Link>
 
       {isAdmin && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-            display: 'flex',
-            gap: '6px',
-            zIndex: 2,
-          }}
-        >
-          {canClose && (
-            <button
-              onClick={handleCloseRegistration}
-              disabled={closing}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                padding: '4px 10px',
-                borderRadius: '6px',
-                background: closing ? 'rgba(180,120,0,0.7)' : 'rgba(217,119,6,0.85)',
-                color: '#fff',
-                fontSize: '12px',
-                fontWeight: '500',
-                border: 'none',
-                cursor: closing ? 'not-allowed' : 'pointer',
-                backdropFilter: 'blur(4px)',
-              }}
+        <div className="race-card__admin-overlay">
+          <div className="race-card__admin-actions">
+            {canClose && (
+              <button
+                type="button"
+                className="race-card__admin-btn race-card__admin-btn--close"
+                onClick={handleCloseRegistration}
+                disabled={closing}
+              >
+                <Lock size={14} />
+                {closing ? '...' : 'Close Reg'}
+              </button>
+            )}
+            <Link
+              to={`/admin/races/${race.id}/edit`}
+              className="race-card__admin-btn race-card__admin-btn--edit"
+              onClick={(e) => e.stopPropagation()}
             >
-              <Lock size={12} /> {closing ? '...' : 'Đóng ĐK'}
+              <Pencil size={14} /> Edit
+            </Link>
+            <button
+              type="button"
+              className="race-card__admin-btn race-card__admin-btn--delete"
+              onClick={handleDelete}
+              disabled={deleting}
+            >
+              <Trash2 size={14} />
+              {deleting ? '...' : 'Delete'}
             </button>
-          )}
-          <Link
-            to={`/admin/races/${race.id}/edit`}
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              padding: '4px 10px',
-              borderRadius: '6px',
-              background: 'rgba(0,0,0,0.55)',
-              color: '#fff',
-              fontSize: '12px',
-              fontWeight: '500',
-              textDecoration: 'none',
-              backdropFilter: 'blur(4px)',
-            }}
-          >
-            <Pencil size={12} /> Edit
-          </Link>
+          </div>
         </div>
       )}
     </div>

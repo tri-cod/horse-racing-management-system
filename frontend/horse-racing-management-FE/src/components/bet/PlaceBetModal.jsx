@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, AlertCircle, Trophy, TrendingUp } from 'lucide-react';
 import { placeBet } from '../../api/betApi';
+import { assignLanes } from '../../utils/laneUtils';
 import '../../assets/css/bet/PlaceBetModal.css';
 
 const fmt = (n) =>
@@ -11,6 +12,7 @@ const fmt = (n) =>
 const QUICK_AMOUNTS = [50_000, 100_000, 200_000, 500_000];
 
 export default function PlaceBetModal({ open, onClose, race, raceHorses = [], onSuccess }) {
+  const horsesWithLanes = assignLanes(raceHorses);
   const [items, setItems]     = useState([{ raceHorseId: '', betAmount: '' }]);
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
@@ -121,7 +123,7 @@ export default function PlaceBetModal({ open, onClose, race, raceHorses = [], on
                         required
                       >
                         <option value="">— Select a horse —</option>
-                        {raceHorses
+                        {horsesWithLanes
                           .filter((rh) => !usedIds.includes(String(rh.raceHorseId ?? rh.id)))
                           .map((rh) => (
                             <option key={rh.raceHorseId ?? rh.id} value={rh.raceHorseId ?? rh.id}>
@@ -166,7 +168,7 @@ export default function PlaceBetModal({ open, onClose, race, raceHorses = [], on
               })}
             </div>
 
-            {raceHorses.length > items.length && (
+            {horsesWithLanes.length > items.length && (
               <button type="button" className="bet-place-form__add-btn" onClick={addItem}>
                 <Plus size={14} /> Add another horse
               </button>

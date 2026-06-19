@@ -16,6 +16,7 @@ import JockeysPage from './pages/JockeysPage'
 // Race pages
 import RacesPage from './pages/RacesPage'
 import RaceDetailPage from './pages/RaceDetailPage'
+import RaceResultsPage from './pages/RaceResultsPage'
 
 // Horse Owner
 import MyHorsesPage from './pages/MyHorsesPage'
@@ -30,6 +31,10 @@ import TrainerProfilePage from './pages/TrainerProfilePage'
 import AdminUsersPage from './pages/AdminUsersPage'
 import AdminCreateRacePage from './pages/AdminCreateRacePage'
 import AdminEditRacePage from './pages/AdminEditRacePage'
+import AdminSetOddsPage from './pages/AdminSetOddsPage'
+import AdminWalletPage from './pages/AdminWalletPage'
+import AdminRaceListPage from './pages/AdminRaceListPage'
+import HorseOwnerRacePage from './pages/HorseOwnerRacePage'
 
 // Bet & Wallet
 import MyBetsPage from './pages/MyBetsPage'
@@ -46,7 +51,7 @@ import NotificationsPage from './pages/NotificationsPage'
 export default function App() {
   return (
     <Routes>
-      {/* Public — dùng Layout (header home + footer, không có sidebar) */}
+      {/* Public — uses Layout (home header + footer, no sidebar) */}
       <Route path="/" element={<Layout><HomePage /></Layout>} />
       <Route path="/login" element={<Layout><LoginPage /></Layout>} />
       <Route path="/register" element={<Layout><RegisterPage /></Layout>} />
@@ -54,8 +59,9 @@ export default function App() {
       <Route path="/jockeys" element={<Layout><JockeysPage /></Layout>} />
       <Route path="/races" element={<Layout><RacesPage /></Layout>} />
       <Route path="/races/:id" element={<Layout><RaceDetailPage /></Layout>} />
+      <Route path="/results" element={<Layout><RaceResultsPage /></Layout>} />
 
-      {/* Authenticated — dùng AppLayout (app header + sidebar + footer) */}
+      {/* Authenticated — uses AppLayout (app header + sidebar + footer) */}
 
       <Route
         path="/notifications"
@@ -86,6 +92,14 @@ export default function App() {
       />
 
       {/* Horse Owner */}
+      <Route
+        path="/horse-owner/register-race"
+        element={
+          <ProtectedRoute allowedRoles={['HORSE_OWNER']}>
+            <AppLayout><HorseOwnerRacePage /></AppLayout>
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/horse-owner/horses"
         element={
@@ -133,7 +147,7 @@ export default function App() {
       <Route
         path="/my-bets"
         element={
-          <ProtectedRoute allowedRoles={['USER']}>
+          <ProtectedRoute allowedRoles={['USER', 'SPECTATOR']}>
             <AppLayout><MyBetsPage /></AppLayout>
           </ProtectedRoute>
         }
@@ -141,7 +155,7 @@ export default function App() {
       <Route
         path="/my-wallet"
         element={
-          <ProtectedRoute allowedRoles={['USER', 'HORSE_OWNER', 'JOCKEY', 'REFEREE', 'TRAINER']}>
+          <ProtectedRoute allowedRoles={['USER', 'SPECTATOR', 'HORSE_OWNER', 'JOCKEY', 'REFEREE', 'TRAINER']}>
             <AppLayout><MyWalletPage /></AppLayout>
           </ProtectedRoute>
         }
@@ -185,6 +199,30 @@ export default function App() {
         element={
           <ProtectedRoute allowedRoles={['ADMIN']}>
             <AppLayout><AdminApproveHorsesPage /></AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/races"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <AppLayout><AdminRaceListPage /></AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/set-odds"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'STAFF']}>
+            <AppLayout><AdminSetOddsPage /></AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/wallet"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'STAFF']}>
+            <AppLayout><AdminWalletPage /></AppLayout>
           </ProtectedRoute>
         }
       />

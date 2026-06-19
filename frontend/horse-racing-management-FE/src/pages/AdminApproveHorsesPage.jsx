@@ -26,7 +26,7 @@ export default function AdminApproveHorsesPage() {
       const data = await getPendingHorses();
       setHorses(data ?? []);
     } catch {
-      setError('Không thể tải danh sách. Vui lòng thử lại.');
+      setError('Unable to load list. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -38,24 +38,24 @@ export default function AdminApproveHorsesPage() {
     setActionLoading(rh.id);
     try {
       await approveRaceHorse(rh.id);
-      addToast(`Đã duyệt ngựa "${rh.horseName}"`, 'success');
+      addToast(`Horse "${rh.horseName}" approved`, 'success');
       setHorses((prev) => prev.filter((h) => h.id !== rh.id));
     } catch (e) {
-      addToast(e?.response?.data?.message ?? 'Duyệt thất bại.', 'error');
+      addToast(e?.response?.data?.message ?? 'Approval failed.', 'error');
     } finally {
       setActionLoading(null);
     }
   };
 
   const handleReject = async (rh) => {
-    if (!window.confirm(`Từ chối ngựa "${rh.horseName}"?`)) return;
+    if (!window.confirm(`Reject horse "${rh.horseName}"?`)) return;
     setActionLoading(rh.id);
     try {
       await rejectRaceHorse(rh.id);
-      addToast(`Đã từ chối ngựa "${rh.horseName}"`, 'info');
+      addToast(`Horse "${rh.horseName}" rejected`, 'info');
       setHorses((prev) => prev.filter((h) => h.id !== rh.id));
     } catch (e) {
-      addToast(e?.response?.data?.message ?? 'Từ chối thất bại.', 'error');
+      addToast(e?.response?.data?.message ?? 'Rejection failed.', 'error');
     } finally {
       setActionLoading(null);
     }
@@ -66,7 +66,7 @@ export default function AdminApproveHorsesPage() {
 <div style={{ maxWidth: '960px', margin: '0 auto', padding: '32px 24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
-            {horses.length} yêu cầu đang chờ duyệt
+            {horses.length} pending request{horses.length !== 1 ? 's' : ''}
           </span>
         </div>
 
@@ -74,7 +74,7 @@ export default function AdminApproveHorsesPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', background: '#fee2e2', color: '#b91c1c', borderRadius: '8px', marginBottom: '20px', fontSize: '14px' }}>
             <AlertTriangle size={16} /> {error}
             <button onClick={fetchPending} style={{ marginLeft: 'auto', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', color: '#b91c1c', fontSize: '13px' }}>
-              Thử lại
+              Retry
             </button>
           </div>
         )}
@@ -83,14 +83,14 @@ export default function AdminApproveHorsesPage() {
           <LoadingSpinner />
         ) : horses.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '64px 0', color: 'var(--text-muted)', fontSize: '15px' }}>
-            Không có yêu cầu nào đang chờ duyệt.
+            No pending requests.
           </div>
         ) : (
           <div style={{ border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
               <thead>
                 <tr style={{ background: 'var(--black-5)', borderBottom: '1px solid var(--border)' }}>
-                  {['Ngựa', 'Jockey', 'Cuộc đua', 'Thời gian đăng ký', 'Thao tác'].map((h) => (
+                  {['Horse', 'Jockey', 'Race', 'Registered At', 'Actions'].map((h) => (
                     <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
                       {h}
                     </th>
@@ -121,14 +121,14 @@ export default function AdminApproveHorsesPage() {
                             disabled={busy}
                             style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 14px', border: 'none', borderRadius: '6px', background: '#16a34a', color: '#fff', fontSize: '12px', fontWeight: 600, cursor: busy ? 'not-allowed' : 'pointer', opacity: busy ? 0.6 : 1 }}
                           >
-                            <CheckCircle size={13} /> Duyệt
+                            <CheckCircle size={13} /> Approve
                           </button>
                           <button
                             onClick={() => handleReject(rh)}
                             disabled={busy}
                             style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 14px', border: '1px solid var(--border)', borderRadius: '6px', background: 'transparent', color: '#b91c1c', fontSize: '12px', fontWeight: 600, cursor: busy ? 'not-allowed' : 'pointer', opacity: busy ? 0.6 : 1 }}
                           >
-                            <XCircle size={13} /> Từ chối
+                            <XCircle size={13} /> Reject
                           </button>
                         </div>
                       </td>

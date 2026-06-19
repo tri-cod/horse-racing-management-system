@@ -21,7 +21,7 @@ function toISO(local) {
 }
 
 const EMPTY = {
-  raceName: '', startTime: '', endTime: '', registrationDeadline: '',
+  raceName: '', startTime: '', registrationDeadline: '',
   trackName: '', trackCondition: 'Dry', surfaceType: 'Turf',
   totalprizepool: '', distance: '', location: '', capacity: '',
   bannerImageurl: '', refereeId: '',
@@ -71,7 +71,6 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
     return {
       ...base,
       startTime: toLocalDatetime(base.startTime),
-      endTime: toLocalDatetime(base.endTime),
       registrationDeadline: toLocalDatetime(base.registrationDeadline),
       totalprizepool: base.totalprizepool ?? '',
       capacity: base.capacity ?? '',
@@ -146,9 +145,6 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
     }
     if (s === 2) {
       if (!form.startTime) errs.startTime = 'Start time is required.';
-      if (!form.endTime) errs.endTime = 'End time is required.';
-      if (form.startTime && form.endTime && new Date(form.startTime) >= new Date(form.endTime))
-        errs.endTime = 'End time must be after start time.';
       if (!form.trackName.trim()) errs.trackName = 'Track name is required.';
       if (!form.distance.trim()) errs.distance = 'Distance is required.';
     }
@@ -185,7 +181,6 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
     const payload = {
       raceName: form.raceName.trim(),
       startTime: toISO(form.startTime),
-      endTime: toISO(form.endTime),
       registrationDeadline: form.registrationDeadline ? toISO(form.registrationDeadline) : null,
       trackName: form.trackName.trim(),
       trackCondition: form.trackCondition,
@@ -245,9 +240,6 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
             <div className="race-form__grid-2">
               <Field id="rf-start" label="Start Time" required error={errors.startTime}>
                 {inp('rf-start', 'startTime', 'datetime-local')}
-              </Field>
-              <Field id="rf-end" label="End Time" required error={errors.endTime}>
-                {inp('rf-end', 'endTime', 'datetime-local')}
               </Field>
               <Field id="rf-reg-deadline" label="Registration Deadline" error={errors.registrationDeadline}
                 hint="Leave blank to auto-close 1 day before start time.">

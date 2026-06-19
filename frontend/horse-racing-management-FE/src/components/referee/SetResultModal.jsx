@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { getHorsesByRace, setRaceResult } from '../../api/refereeApi';
+import { assignLanes } from '../../utils/laneUtils';
 
 export default function SetResultModal({ race, onClose, onSuccess }) {
   const [horses, setHorses] = useState([]);
@@ -14,14 +15,14 @@ export default function SetResultModal({ race, onClose, onSuccess }) {
       setLoading(true);
       try {
         const data = await getHorsesByRace(race.id);
-        setHorses(data ?? []);
+        setHorses(assignLanes(data ?? []));
         const init = {};
         (data ?? []).forEach((rh) => {
           init[rh.id] = { rank: '', completionTime: '' };
         });
         setRanks(init);
       } catch {
-        setError('Không thể tải danh sách ngựa.');
+        setError('Unable to load horse list.');
       } finally {
         setLoading(false);
       }
@@ -37,10 +38,10 @@ export default function SetResultModal({ race, onClose, onSuccess }) {
 
   const validate = () => {
     const rankValues = horses.map((rh) => Number(ranks[rh.id]?.rank));
-    if (rankValues.some((r) => !r || r < 1)) return 'Vui lòng nhập rank cho tất cả các ngựa.';
+    if (rankValues.some((r) => !r || r < 1)) return 'Please enter a rank for every horse.';
     const unique = new Set(rankValues);
-    if (unique.size !== rankValues.length) return 'Rank không được trùng nhau.';
-    if (rankValues.some((r) => r > horses.length)) return `Rank phải từ 1 đến ${horses.length}.`;
+    if (unique.size !== rankValues.length) return 'Ranks must be unique.';
+    if (rankValues.some((r) => r > horses.length)) return `Rank must be between 1 and ${horses.length}.`;
     return null;
   };
 
@@ -58,7 +59,7 @@ export default function SetResultModal({ race, onClose, onSuccess }) {
       await setRaceResult({ raceId: race.id, results });
       onSuccess();
     } catch (e) {
-      setError(e?.response?.data?.message ?? 'Lưu kết quả thất bại. Thử lại.');
+      setError(e?.response?.data?.message ?? 'Failed to save results. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -83,19 +84,19 @@ export default function SetResultModal({ race, onClose, onSuccess }) {
 
         <div style={{ flex:1,overflowY:'auto',padding:'20px 24px' }}>
           {loading ? (
-            <div style={{ textAlign:'center',padding:'32px',color:'var(--text-muted)' }}>Đang tải danh sách ngựa...</div>
+            <div style={{ textAlign:'center',padding:'32px',color:'var(--text-muted)' }}>Loading horses...</div>
           ) : horses.length === 0 ? (
-            <div style={{ textAlign:'center',padding:'32px',color:'var(--text-muted)' }}>Race này chưa có ngựa nào đăng ký.</div>
+            <div style={{ textAlign:'center',padding:'32px',color:'var(--text-muted)' }}>No horses registered for this race.</div>
           ) : (
             <>
               <p style={{ fontSize:'13px',color:'var(--text-muted)',marginBottom:'16px' }}>
-                Nhập tỉ số (thứ hạng, 1 = nhất) và thời gian hoàn thành cho từng ngựa.
+                Enter rank (1 = 1st place) and completion time for each horse.
               </p>
               <div style={{ overflowX:'auto',border:'1px solid var(--border)',borderRadius:'8px' }}>
                 <table style={{ width:'100%',borderCollapse:'collapse',fontSize:'13px' }}>
                   <thead>
                     <tr style={{ background:'var(--black-5)',borderBottom:'1px solid var(--border)' }}>
-                      {['Lane','Ngựa','Jockey','Tỉ số *','Thời gian'].map((h) => (
+                      {['Lane', 'Horse', 'Jockey', 'Rank *', 'Time'].map((h) => (
                         <th key={h} style={{ textAlign:'left',padding:'8px 12px',fontSize:'11px',fontWeight:600,textTransform:'uppercase',color:'var(--text-muted)' }}>{h}</th>
                       ))}
                     </tr>
@@ -140,10 +141,10 @@ export default function SetResultModal({ race, onClose, onSuccess }) {
         {!loading && horses.length > 0 && (
           <div style={{ display:'flex',justifyContent:'flex-end',gap:'10px',padding:'16px 24px',borderTop:'1px solid var(--border)' }}>
             <button onClick={onClose} disabled={submitting} style={{ padding:'8px 20px',borderRadius:'8px',fontSize:'14px',fontWeight:500,cursor:'pointer',border:'1px solid var(--border)',background:'transparent',color:'var(--text-muted)' }}>
-              Hủy
+              Cancel
             </button>
             <button onClick={handleSubmit} disabled={submitting} style={{ padding:'8px 20px',borderRadius:'8px',fontSize:'14px',fontWeight:500,cursor:'pointer',border:'none',background:'var(--primary)',color:'#fff',opacity:submitting?0.6:1 }}>
-              {submitting ? 'Đang lưu...' : 'Lưu kết quả'}
+              {submitting ? 'Saving...' : 'Save Results'}
             </button>
           </div>
         )}

@@ -80,3 +80,24 @@
   opacity: 1;
   transform: translateX(0);
 }
+
+/* ---- Footer (logout) ---- */
+
+.sidebar__footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding: 8px 0;
+}
+
+.sidebar__item--logout {
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #b91c1c;
+}
+
+.sidebar__item--logout:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}

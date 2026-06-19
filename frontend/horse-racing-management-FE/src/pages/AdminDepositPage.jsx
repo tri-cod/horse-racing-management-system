@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { CheckCircle, XCircle, Clock, User, DollarSign } from 'lucide-react';
-import { getPendingDeposits, approveDeposit, rejectDeposit } from '../api/walletApi';
+import { CheckCircle, XCircle, Clock, User, DollarSign, Landmark } from 'lucide-react';
+import { getPendingDeposits, approveDeposit, rejectDeposit, getSystemBalance } from '../api/walletApi';
 import { useToast } from '../components/ui/ToastProvider';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import '../assets/css/admin/AdminDepositPage.css';
@@ -42,10 +42,11 @@ function ConfirmModal({ open, title, message, onConfirm, onCancel, loading, vari
 
 export default function AdminDepositPage() {
   const addToast = useToast();
-  const [deposits, setDeposits]   = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [error, setError]         = useState('');
+  const [deposits, setDeposits]         = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [systemBalance, setSystemBalance] = useState(null);
 
   const [confirmModal, setConfirmModal] = useState({ open: false, type: '', deposit: null });
 
@@ -61,7 +62,10 @@ export default function AdminDepositPage() {
     }
   }, []);
 
-  useEffect(() => { fetchDeposits(); }, [fetchDeposits]);
+  useEffect(() => {
+    fetchDeposits();
+    getSystemBalance().then(setSystemBalance).catch(() => {});
+  }, [fetchDeposits]);
 
   const openConfirm = (type, deposit) => setConfirmModal({ open: true, type, deposit });
   const closeConfirm = () => setConfirmModal({ open: false, type: '', deposit: null });
@@ -101,6 +105,15 @@ export default function AdminDepositPage() {
           <div className="adep-stat">
             <div className="adep-stat__icon adep-stat__icon--gold"><DollarSign size={20} /></div>
             <div><span className="adep-stat__val adep-stat__val--sm">{fmt(totalPending)}</span><span className="adep-stat__lbl">Total pending</span></div>
+          </div>
+          <div className="adep-stat">
+            <div className="adep-stat__icon adep-stat__icon--green"><Landmark size={20} /></div>
+            <div>
+              <span className="adep-stat__val adep-stat__val--sm">
+                {systemBalance != null ? fmt(systemBalance) : '—'}
+              </span>
+              <span className="adep-stat__lbl">System balance</span>
+            </div>
           </div>
         </div>
 
@@ -171,7 +184,7 @@ export default function AdminDepositPage() {
                           <CheckCircle size={13} /> Approve
                         </button>
                         <button
-                          className="ui-btn ui-btn--dark ui-btn--sm"
+                          className="ui-btn ui-btn--danger ui-btn--sm"
                           onClick={() => openConfirm('reject', dep)}
                         >
                           <XCircle size={13} /> Reject

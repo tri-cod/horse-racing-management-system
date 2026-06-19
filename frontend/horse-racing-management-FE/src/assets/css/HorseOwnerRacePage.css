@@ -1,0 +1,178 @@
+.ho-race-page { min-height: 100vh; background: var(--bg); }
+
+/* ── Header ── */
+.ho-race-page__header {
+  padding: var(--space-6) clamp(1rem,4vw,2rem) var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+.ho-race-page__title  { font-size: var(--fs-h2); font-weight: 700; margin: 0 0 var(--space-1); color: var(--text); }
+.ho-race-page__subtitle { font-size: var(--fs-small); color: var(--text-muted); margin: 0; }
+
+.ho-race-page__content {
+  max-width: 780px;
+  margin-inline: auto;
+  padding: var(--space-6) clamp(1rem,4vw,2rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* ── Race list ── */
+.ho-race-list { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.ho-race-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+.ho-race-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.ho-race-card__banner {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.ho-race-card__body { padding: var(--space-4) var(--space-5); }
+
+.ho-race-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+.ho-race-card__title { font-size: var(--fs-h3); font-weight: 700; color: var(--text); margin: 0; }
+.ho-race-card__arrow { color: var(--text-muted); flex-shrink: 0; }
+
+.ho-race-card__info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+}
+.ho-race-card__info-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+.ho-race-card__info-item--deadline { color: #b45309; font-weight: 600; }
+
+/* ── Empty ── */
+.ho-race-empty {
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-4);
+  padding: var(--space-12); text-align: center; color: var(--text-muted);
+}
+
+/* ── Back button ── */
+.ho-back-btn {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  background: none; border: none; cursor: pointer;
+  font-size: var(--fs-small); font-weight: 600; color: var(--primary);
+  padding: 0; margin-bottom: var(--space-2);
+}
+.ho-back-btn:hover { text-decoration: underline; }
+
+/* ── Register header ── */
+.ho-reg-header { margin-bottom: var(--space-2); }
+.ho-reg-header__title { font-size: var(--fs-h2); font-weight: 700; color: var(--text); margin: 0 0 var(--space-1); }
+.ho-reg-header__sub   { font-size: var(--fs-small); color: var(--text-muted); margin: 0; }
+
+/* ── Register form ── */
+.ho-reg-form { display: flex; flex-direction: column; gap: var(--space-6); }
+
+.ho-reg-section__title {
+  font-size: var(--fs-body); font-weight: 700; color: var(--text);
+  margin: 0 0 var(--space-3);
+}
+.ho-reg-empty { font-size: var(--fs-small); color: var(--text-muted); }
+
+/* Horse grid */
+.ho-reg-horse-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--space-3);
+}
+.ho-horse-card {
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-2);
+  padding: var(--space-3);
+  border: 2px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--surface); cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+  position: relative;
+}
+.ho-horse-card:hover:not(:disabled) { border-color: var(--primary); background: var(--ocean-50); }
+.ho-horse-card--selected { border-color: var(--primary); background: var(--ocean-50); }
+.ho-horse-card--disabled { opacity: 0.5; cursor: not-allowed; }
+.ho-horse-card__img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
+.ho-horse-card__fallback {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: var(--ocean-100); color: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: 700;
+}
+.ho-horse-card__name { font-size: var(--fs-small); font-weight: 600; color: var(--text); text-align: center; }
+.ho-horse-card__no-trainer { font-size: var(--fs-xs); color: var(--error); }
+.ho-horse-card__check { position: absolute; top: 6px; right: 6px; color: var(--primary); }
+
+/* Jockey list */
+.ho-jockey-list { display: flex; flex-direction: column; gap: var(--space-2); }
+.ho-jockey-item {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  cursor: pointer; transition: border-color var(--transition), background var(--transition);
+  background: var(--surface);
+}
+.ho-jockey-item input[type="radio"] { accent-color: var(--primary); }
+.ho-jockey-item:hover { border-color: var(--primary); background: var(--ocean-50); }
+.ho-jockey-item--selected { border-color: var(--primary); background: var(--ocean-50); }
+.ho-jockey-item__info { display: flex; flex-direction: column; gap: 2px; }
+.ho-jockey-item__name { font-size: var(--fs-small); font-weight: 600; color: var(--text); }
+.ho-jockey-item__meta { font-size: var(--fs-xs); color: var(--text-muted); }
+
+/* Error */
+.ho-reg-error { font-size: var(--fs-small); color: var(--error); background: var(--error-bg); padding: var(--space-3) var(--space-4); border-radius: var(--radius); margin: 0; }
+
+/* Actions */
+.ho-reg-actions { display: flex; gap: var(--space-3); justify-content: flex-end; }
+
+/* Buttons */
+.ho-btn {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-3) var(--space-6); border-radius: var(--radius-full);
+  font-size: var(--fs-small); font-weight: 600; cursor: pointer; border: none;
+  transition: filter 150ms ease;
+}
+.ho-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.ho-btn--primary { background: var(--primary); color: #fff; }
+.ho-btn--primary:hover:not(:disabled) { filter: brightness(1.1); }
+.ho-btn--outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
+.ho-btn--outline:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+
+/* ── Status screens ── */
+.ho-race-status {
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-4);
+  padding: var(--space-12) var(--space-6); text-align: center; max-width: 480px;
+  margin: var(--space-12) auto;
+}
+.ho-race-status h2 { font-size: var(--fs-h2); font-weight: 700; margin: 0; }
+.ho-race-status p  { font-size: var(--fs-body); color: var(--text-muted); margin: 0; }
+.ho-race-status__hint { font-size: var(--fs-small) !important; }
+
+.ho-race-status--success { color: #15803d; }
+.ho-race-status--success h2 { color: #15803d; }
+.ho-race-status--error { color: var(--error); }
+.ho-race-status--error h2 { color: var(--error); }
+.ho-race-status--pending { color: var(--text); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.ho-race-status__spin { animation: spin 2s linear infinite; color: var(--primary); }

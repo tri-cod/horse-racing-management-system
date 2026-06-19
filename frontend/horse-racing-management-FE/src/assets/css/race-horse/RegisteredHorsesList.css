@@ -10,8 +10,8 @@
 
 .reg-horses__table-wrap {
   overflow-x: auto;
-  border: 1px solid var(--border);
   border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
 }
 
 .reg-horses__table {

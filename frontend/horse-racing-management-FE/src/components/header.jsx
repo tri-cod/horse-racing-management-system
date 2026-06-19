@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, User, LogOut, LayoutDashboard, Ticket, Wallet, BadgeDollarSign, ClipboardCheck, Flag, Crown, ClipboardList } from 'lucide-react';
+import { Menu, X, User, LogOut, LayoutDashboard, Ticket, Wallet, BadgeDollarSign, ClipboardCheck, Flag, Crown, ClipboardList, TrendingUp, Landmark, PencilLine, FlagTriangleRight } from 'lucide-react';
 import '../assets/css/Header.css';
 import { AuthContext } from '../context/AuthContext';
 import Button from './ui/Button';
@@ -10,6 +10,7 @@ import NotificationBell from './NotificationBell';
 const NAV_ITEMS = [
   { label: 'Home', href: '/' },
   { label: 'Races', href: '/races' },
+  { label: 'Results', href: '/results' },
   { label: 'Jockeys', href: '/jockeys' },
 ];
 
@@ -38,8 +39,11 @@ function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const isHomepage = pathname === '/';
+  const isTransparent = isHomepage && !scrolled;
+
   return (
-    <header className={`header${scrolled ? ' header--scrolled' : ''}`}>
+    <header className={`header${scrolled ? ' header--scrolled' : ''}${isTransparent ? ' header--transparent' : ''}`}>
       <Container className="header__inner">
         <Link to="/" className="header__logo">
           <span className="header__logo-royal">Royal</span>
@@ -59,28 +63,6 @@ function Header() {
                 </Link>
               </li>
             ))}
-            {user?.role === 'REFEREE' && (
-              <li className="header__nav-item">
-                <Link
-                  to="/referee/races"
-                  className={pathname.startsWith('/referee') ? 'active' : ''}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Race Control
-                </Link>
-              </li>
-            )}
-            {user?.role === 'TRAINER' && (
-              <li className="header__nav-item">
-                <Link
-                  to="/trainer/profile"
-                  className={pathname === '/trainer/profile' ? 'active' : ''}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  My Profile
-                </Link>
-              </li>
-            )}
           </ul>
         </nav>
 
@@ -101,7 +83,7 @@ function Header() {
                 <div className="header__dropdown-inner">
                   <button type="button" className="header__dropdown-item" onClick={handleNavigateProfile}>
                     <User size={16} />
-                    <span>My Profile</span>
+                    <span>Account</span>
                   </button>
                   {user?.role === 'ADMIN' && (
                     <>
@@ -109,20 +91,40 @@ function Header() {
                         <LayoutDashboard size={16} />
                         <span>Admin Panel</span>
                       </button>
-                      <button type="button" className="header__dropdown-item" onClick={() => navigate('/admin/races/create')}>
-                        <Flag size={16} />
-                        <span>Create Race</span>
-                      </button>
                       <button type="button" className="header__dropdown-item" onClick={() => navigate('/admin/approve-horses')}>
                         <ClipboardCheck size={16} />
                         <span>Approve Horses</span>
                       </button>
+                      <button type="button" className="header__dropdown-item" onClick={() => navigate('/admin/races/create')}>
+                        <Flag size={16} />
+                        <span>Create Race</span>
+                      </button>
+                      <button type="button" className="header__dropdown-item" onClick={() => navigate('/admin/races')}>
+                        <PencilLine size={16} />
+                        <span>Edit Race</span>
+                      </button>
                     </>
                   )}
                   {(user?.role === 'ADMIN' || user?.role === 'STAFF') && (
-                    <button type="button" className="header__dropdown-item" onClick={() => navigate('/admin/deposits')}>
-                      <BadgeDollarSign size={16} />
-                      <span>Deposit Requests</span>
+                    <>
+                      <button type="button" className="header__dropdown-item" onClick={() => navigate('/admin/deposits')}>
+                        <BadgeDollarSign size={16} />
+                        <span>Deposit Requests</span>
+                      </button>
+                      <button type="button" className="header__dropdown-item" onClick={() => navigate('/admin/set-odds')}>
+                        <TrendingUp size={16} />
+                        <span>Set Odds</span>
+                      </button>
+                      <button type="button" className="header__dropdown-item" onClick={() => navigate('/admin/wallet')}>
+                        <Landmark size={16} />
+                        <span>System Wallet</span>
+                      </button>
+                    </>
+                  )}
+                  {user?.role === 'REFEREE' && (
+                    <button type="button" className="header__dropdown-item" onClick={() => navigate('/referee/races')}>
+                      <Flag size={16} />
+                      <span>Race Control</span>
                     </button>
                   )}
                   {user?.role === 'HORSE_OWNER' && (
@@ -134,6 +136,10 @@ function Header() {
                       <button type="button" className="header__dropdown-item" onClick={() => navigate('/horse-owner/race-registrations')}>
                         <ClipboardList size={16} />
                         <span>My Registrations</span>
+                      </button>
+                      <button type="button" className="header__dropdown-item" onClick={() => navigate('/horse-owner/register-race')}>
+                        <FlagTriangleRight size={16} />
+                        <span>Register to Race</span>
                       </button>
                     </>
                   )}

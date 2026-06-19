@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRaceSocket } from '../context/RaceSocketContext';
 
-// Subscribe real-time bet totals cho một race cụ thể (/topic/race/{raceId}/bets)
+// Subscribe to real-time bet totals for a specific race (/topic/race/{raceId}/bets)
 // Returns Map<raceHorseId (string), { raceHorseId, horseName, totalBetAmount, totalBetCount, odds }>
 export function useRaceBetUpdates(raceId) {
   const { clientRef, connected } = useRaceSocket();

@@ -3,9 +3,8 @@
   gap: 16px;
   align-items: center;
   background-color: var(--card);
-  border: 1px solid #000000;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-md);
   padding: 18px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;

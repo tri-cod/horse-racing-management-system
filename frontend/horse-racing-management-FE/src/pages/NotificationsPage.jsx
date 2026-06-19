@@ -125,7 +125,7 @@ export default function NotificationsPage() {
           <LoadingSpinner size="md" />
         ) : list.length === 0 ? (
           <EmptyState
-            icon={<Bell size={36} />}
+            icon={Bell}
             title={tab === 'unread' ? "You're all caught up!" : 'No notifications yet'}
             subtitle={
               tab === 'unread'

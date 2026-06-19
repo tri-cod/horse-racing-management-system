@@ -170,7 +170,7 @@ export default function RefereeRacesPage() {
                           )}
                           {normalizeStatus(race.status) === 'CLOSED_REGISTRATION' && (
                             <button className="ref-btn ref-btn--start" onClick={() => handleStart(race)} disabled={busy}>
-                              <Play size={13} /> {busy ? '…' : 'Bắt đầu'}
+                              <Play size={13} /> {busy ? '…' : 'Start'}
                             </button>
                           )}
                           {normalizeStatus(race.status) === 'ONGOING' && (
@@ -179,7 +179,7 @@ export default function RefereeRacesPage() {
                                 <Trophy size={13} /> Set result
                               </button>
                               <button className="ref-btn ref-btn--finish" onClick={() => handleFinish(race)} disabled={busy}>
-                                <CheckSquare size={13} /> {busy ? '…' : 'Kết thúc'}
+                                <CheckSquare size={13} /> {busy ? '…' : 'Finish'}
                               </button>
                             </>
                           )}

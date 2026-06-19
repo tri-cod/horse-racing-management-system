@@ -32,8 +32,9 @@
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.adep-stat__icon--blue { background: var(--ocean-50); color: var(--ocean-700); }
-.adep-stat__icon--gold { background: #fefce8; color: #ca8a04; }
+.adep-stat__icon--blue  { background: var(--ocean-50); color: var(--ocean-700); }
+.adep-stat__icon--gold  { background: #fefce8; color: #ca8a04; }
+.adep-stat__icon--green { background: #dcfce7; color: #15803d; }
 .adep-stat__val { display: block; font-size: var(--fs-h3); font-weight: 700; color: var(--text); line-height: 1.2; }
 .adep-stat__val--sm { font-size: 1rem; }
 .adep-stat__lbl { font-size: var(--fs-xs); color: var(--text-muted); }

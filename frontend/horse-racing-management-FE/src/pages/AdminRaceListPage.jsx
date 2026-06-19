@@ -6,7 +6,7 @@ import RaceFilterTabs from '../components/race/RaceFilterTabs';
 import Pagination from '../components/ui/Pagination';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmptyState from '../components/ui/EmptyState';
-import '../assets/css/RacesPage.css';
+import '../assets/css/AdminRaceListPage.css';
 
 const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const PAGE_SIZE = 9;
@@ -31,7 +31,7 @@ function formatWeekLabel(monday) {
   return `${fmt(monday)} – ${fmt(sunday)}, ${sunday.getFullYear()}`;
 }
 
-export default function RacesPage() {
+export default function AdminRaceListPage() {
   const [weekOffset, setWeekOffset]   = useState(0);
   const [selectedDay, setSelectedDay] = useState(null);
   const [activeTab, setActiveTab]     = useState('');
@@ -51,17 +51,6 @@ export default function RacesPage() {
       d.setDate(monday.getDate() + i);
       return d;
     }), [monday]);
-
-  const racesPerDay = useMemo(() => {
-    const map = {};
-    races.forEach((r) => {
-      if (r.startTime) {
-        const key = new Date(r.startTime).toISOString().slice(0, 10);
-        map[key] = (map[key] || 0) + 1;
-      }
-    });
-    return map;
-  }, [races]);
 
   const filtered = useMemo(() => {
     let list = [...races];
@@ -97,20 +86,14 @@ export default function RacesPage() {
     setPage(0);
   };
 
-  const handleTabChange = (val) => {
-    setActiveTab(val);
-    setPage(0);
-  };
-
   return (
-    <div className="races-page">
-      <div className="races-page__header">
-        <span className="eyebrow races-page__eyebrow">Royal Derby</span>
-        <h1 className="races-page__title">Race Schedule</h1>
-        <p className="races-page__subtitle">Follow every race from qualification to the final lap</p>
+    <div className="admin-race-list">
+      <div className="admin-race-list__header">
+        <h1 className="admin-race-list__title">Manage Races</h1>
+        <p className="admin-race-list__subtitle">Edit or delete existing races</p>
       </div>
 
-      <div className="races-page__content">
+      <div className="admin-race-list__content">
         {/* Week navigator */}
         <div className="races-week">
           <div className="races-week__nav">
@@ -122,22 +105,16 @@ export default function RacesPage() {
               <ChevronRight size={18} />
             </button>
           </div>
-
           <div className="races-week__days">
             {weekDays.map((d, i) => {
-              const dateStr  = toDateStr(d);
-              const isToday  = dateStr === todayStr;
-              const isSel    = selectedDay === dateStr;
-              const count    = racesPerDay[dateStr] || 0;
+              const dateStr = toDateStr(d);
+              const isToday = dateStr === todayStr;
+              const isSel   = selectedDay === dateStr;
               return (
                 <button
                   key={dateStr}
                   type="button"
-                  className={[
-                    'races-week__day',
-                    isSel   && 'races-week__day--selected',
-                    isToday && 'races-week__day--today',
-                  ].filter(Boolean).join(' ')}
+                  className={['races-week__day', isSel && 'races-week__day--selected', isToday && 'races-week__day--today'].filter(Boolean).join(' ')}
                   onClick={() => handleDayClick(dateStr)}
                 >
                   <span className="races-week__day-name">{DAY_NAMES[i]}</span>
@@ -149,8 +126,8 @@ export default function RacesPage() {
         </div>
 
         {/* Status filter */}
-        <div className="races-page__toolbar">
-          <RaceFilterTabs active={activeTab} onChange={handleTabChange} />
+        <div className="admin-race-list__toolbar">
+          <RaceFilterTabs active={activeTab} onChange={(v) => { setActiveTab(v); setPage(0); }} />
         </div>
 
         {error && (
@@ -171,7 +148,7 @@ export default function RacesPage() {
         ) : (
           <div className="races-page__grid">
             {paginated.map((r) => (
-              <RaceCard key={r.id} race={r} isAdmin={false} />
+              <RaceCard key={r.id} race={r} isAdmin={true} onRefetch={refetch} />
             ))}
           </div>
         )}

@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { Check, X } from 'lucide-react';
+import { Check, X, Users } from 'lucide-react';
 import { useHorsesByRace } from '../../hooks/useHorsesByRace';
 import { approveRaceHorse, rejectRaceHorse } from '../../api/raceHorseApi';
-import RaceHorseStatusBadge from './RaceHorseStatusBadge';
 import ConfirmDialog from '../ui/ConfirmDialog';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import EmptyState from '../ui/EmptyState';
-import { Users } from 'lucide-react';
+import { assignLanes } from '../../utils/laneUtils';
 import '../../assets/css/race-horse/RegisteredHorsesList.css';
 
 export default function RegisteredHorsesList({ raceId, isAdmin, onToast }) {
-  const { entries, loading, error, refetch } = useHorsesByRace(raceId);
+  const { entries: allEntries, loading, error, refetch } = useHorsesByRace(raceId);
+  const entries = assignLanes(allEntries.filter((e) => e.status?.toLowerCase() === 'approved'));
   const [confirm, setConfirm] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -49,7 +49,6 @@ export default function RegisteredHorsesList({ raceId, isAdmin, onToast }) {
               <th>Lane</th>
               <th>Horse</th>
               <th>Jockey</th>
-              <th>Status</th>
               {isAdmin && <th>Actions</th>}
             </tr>
           </thead>
@@ -59,7 +58,6 @@ export default function RegisteredHorsesList({ raceId, isAdmin, onToast }) {
                 <td className="reg-horses__lane">{e.laneNumber ?? '—'}</td>
                 <td className="reg-horses__horse">{e.horseName}</td>
                 <td className="reg-horses__jockey">{e.jockeyName || '—'}</td>
-                <td><RaceHorseStatusBadge status={e.status} /></td>
                 {isAdmin && (
                   <td>
                     {e.status === 'PENDING' && (

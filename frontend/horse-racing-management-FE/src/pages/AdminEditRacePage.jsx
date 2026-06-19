@@ -74,7 +74,7 @@ export default function AdminEditRacePage() {
         {canClose && (
           <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end' }}>
             <Button variant="outline" onClick={handleCloseRegistration} disabled={closing}>
-              {closing ? 'Đang xử lý...' : 'Close Registration'}
+              {closing ? 'Processing...' : 'Close Registration'}
             </Button>
           </div>
         )}
