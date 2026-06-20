@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class RaceResultItemRequest {
     private Long raceHorseId;
     private Long rank;
-    private String completionTime;
+    private Double completionTimeSeconds;
 }

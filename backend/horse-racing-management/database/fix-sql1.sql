@@ -40,3 +40,16 @@ CREATE TABLE bank_account (
                               bank_user_name  VARCHAR(150) NOT NULL,
                               bank_number     VARCHAR(150) NOT NULL
 );
+
+DROP TABLE IF EXISTS race_result CASCADE;
+
+CREATE TABLE race_result (
+                             id             BIGSERIAL PRIMARY KEY,
+                             race_id        BIGINT NOT NULL REFERENCES race(id),
+                             race_horse_id  BIGINT NOT NULL REFERENCES race_horse(id),
+                             rank           BIGINT,
+                             completiontime TIMESTAMP,
+                             rewards        BIGINT DEFAULT 0
+);
+
+ALTER TABLE race_result ADD COLUMN completion_time_seconds DOUBLE PRECISION;
