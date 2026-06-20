@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RaceHorseServiceImpl implements RaceHorseService {
 
+    private final UserRepository userRepository;
     private final RaceHorseRepository raceHorseRepository;
     private final RaceRepository raceRepository;
     private final HorseRepository horseRepository;
@@ -122,7 +123,13 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
         raceHorse.setStatus("Approved");
 
-        notificationService.sendToUser(raceHorse.getHorse().getOwnerId(),
+        HorseOwner ho = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
+                .orElseThrow(() -> new RuntimeException("User of owner not found"));
+
+        User user = userRepository.findById(ho.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("User of owner not found"));
+
+        notificationService.sendToUser(user.getId(),
                 "Registration Approved!",
                 String.format("Your horse '%s' has been approved!",
                         raceHorse.getHorse().getHorseName()),

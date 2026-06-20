@@ -15,12 +15,12 @@ import org.hibernate.annotations.ColumnDefault;
 @Table(name = "bank_account")
 public class BankAccount {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bank_account_id", nullable = false)
     private Long id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @ColumnDefault("nextval('bank_account_user_id_seq')")
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

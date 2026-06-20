@@ -24,9 +24,11 @@ public class BetController {
     private final BetService betService;
 
     @PostMapping
+
     // FIX: trước đây là @PreAuthorize("hasAuthority('SPECTATOR ')") — dấu cách thừa gây lỗi 403 cho tất cả user.
     // Thêm role 'USER' để hỗ trợ cả SPECTATOR (role chính) và USER (role test) đều đặt cược được.
     @PreAuthorize("hasAnyAuthority('SPECTATOR', 'USER')")
+
     public ResponseEntity<ApiResponse<BetResponse>> placeBet(
             @Valid @RequestBody CreateBetRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
