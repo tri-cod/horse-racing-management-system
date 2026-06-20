@@ -21,8 +21,8 @@ export const setRaceResult = (request) =>
 export const getRaceResults = (raceId) =>
   axiosInstance.get(`/race-results/race/${raceId}`).then((res) => res.data.data);
 
-// Dùng PUT /races/update/{id} với toàn bộ data race hiện tại,
-// chỉ đổi status thành CLOSED_REGISTRATION
+// Use PUT /races/update/{id} with full current race data,
+// only changing status to CLOSED_REGISTRATION
 export const closeRegistration = (race) => {
   const payload = {
     raceName: race.raceName,

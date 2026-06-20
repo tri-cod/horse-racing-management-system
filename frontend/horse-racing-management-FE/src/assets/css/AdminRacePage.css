@@ -45,8 +45,8 @@
   width: 88px;
   height: 88px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--primary) 10%, transparent);
-  color: var(--primary);
+  background: #dcfce7;
+  color: #16a34a;
   display: flex;
   align-items: center;
   justify-content: center;

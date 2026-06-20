@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Flag } from 'lucide-react';
 import { useMyRaceRegistrations } from '../hooks/useMyRaceRegistrations';
@@ -8,33 +8,17 @@ import EmptyState from '../components/ui/EmptyState';
 import Button from '../components/ui/Button';
 import '../assets/css/MyRaceRegistrationsPage.css';
 
-const STATUS_TABS = ['All', 'PENDING', 'APPROVED', 'REJECTED'];
-
 export default function MyRaceRegistrationsPage() {
   const { registrations, loading, error, refetch } = useMyRaceRegistrations();
-  const [activeTab, setActiveTab] = useState('All');
 
-  const filtered = useMemo(() => {
-    if (activeTab === 'All') return registrations;
-    return registrations.filter((r) => r.status === activeTab);
-  }, [registrations, activeTab]);
+  const pending = useMemo(
+    () => registrations.filter((r) => r.status?.toLowerCase() === 'pending'),
+    [registrations]
+  );
 
   return (
     <div className="my-reg-page">
-<div className="my-reg-page__content">
-        <div className="my-reg-page__tabs">
-          {STATUS_TABS.map((t) => (
-            <button
-              key={t}
-              type="button"
-              className={`my-reg-page__tab${activeTab === t ? ' my-reg-page__tab--active' : ''}`}
-              onClick={() => setActiveTab(t)}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
-
+      <div className="my-reg-page__content">
         {error && (
           <div className="my-reg-page__error">
             <span>{error}</span>
@@ -44,21 +28,19 @@ export default function MyRaceRegistrationsPage() {
 
         {loading ? (
           <LoadingSpinner />
-        ) : filtered.length === 0 ? (
+        ) : pending.length === 0 ? (
           <EmptyState
             icon={Flag}
-            title={activeTab === 'All' ? "No registrations yet" : `No ${activeTab.toLowerCase()} registrations`}
-            subtitle={activeTab === 'All' ? "Register your horses for upcoming races to get started." : undefined}
+            title="No pending registrations"
+            subtitle="You have no horse registrations awaiting approval."
             action={
-              activeTab === 'All' && (
-                <Link to="/races">
-                  <Button variant="primary">Browse Races</Button>
-                </Link>
-              )
+              <Link to="/races">
+                <Button variant="primary">Browse Races</Button>
+              </Link>
             }
           />
         ) : (
-          <MyRegistrationsTable registrations={filtered} />
+          <MyRegistrationsTable registrations={pending} />
         )}
       </div>
     </div>

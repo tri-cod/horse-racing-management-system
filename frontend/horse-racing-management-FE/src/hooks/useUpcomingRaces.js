@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getRaces } from '../api/raceApi';
 
-// Các trạng thái được coi là "chưa diễn ra" theo backend
+// Statuses considered "upcoming" by the backend
 const UPCOMING_STATUSES = new Set(['UPCOMING', 'OPEN_REGISTRATION', 'CLOSED_REGISTRATION']);
 
 export function useUpcomingRaces(limit = 3) {
@@ -15,8 +15,8 @@ export function useUpcomingRaces(limit = 3) {
     try {
       const data = await getRaces({ page: 0, size: 20 });
       const all = data.content ?? [];
-      // Dùng status thực từ backend thay vì tính theo thời gian,
-      // tránh trường hợp referee bắt đầu race sớm nhưng homepage vẫn hiển thị là Upcoming
+      // Use actual status from backend instead of computing from time,
+      // avoids the case where referee starts a race early but homepage still shows it as Upcoming
       const upcoming = all
         .filter((r) => UPCOMING_STATUSES.has(r.status?.toUpperCase()))
         .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))

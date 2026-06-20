@@ -1,41 +1,32 @@
-.races-page {
-  min-height: 100vh;
-}
+.races-page { min-height: 100vh; }
 
-.races-page__hero {
+/* ── Header ── */
+.races-page__header {
   background: var(--bg-dark);
-  padding-block: var(--space-12);
-}
-
-.races-page__hero-inner {
-  max-width: var(--container);
-  margin-inline: auto;
-  padding-inline: clamp(1rem, 4vw, 2rem);
+  padding: var(--space-10) clamp(1rem, 4vw, 2rem);
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-3);
+  max-width: 100%;
 }
 
-.races-page__eyebrow {
-  color: var(--accent) !important;
-}
+.races-page__eyebrow { color: var(--accent) !important; }
 
-.races-page__hero-title {
-  font-size: var(--fs-hero);
+.races-page__title {
+  font-size: var(--fs-h1);
   font-weight: 700;
   color: var(--white);
-  letter-spacing: -0.02em;
-  line-height: var(--lh-tight);
+  margin: 0;
+  letter-spacing: var(--tracking-tight);
 }
 
-.races-page__hero-subtitle {
-  font-size: 1.125rem;
+.races-page__subtitle {
+  font-size: var(--fs-body);
   color: var(--black-40);
-  max-width: 480px;
-  line-height: var(--lh-base);
   margin: 0;
 }
 
+/* ── Content ── */
 .races-page__content {
   max-width: var(--container);
   margin-inline: auto;
@@ -45,14 +36,146 @@
   gap: var(--space-6);
 }
 
-.races-page__toolbar {
+/* ── Week Navigator ── */
+.races-week {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.races-week__nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-soft);
+}
+
+.races-week__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.races-week__arrow:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--white);
+}
+
+.races-week__label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.races-week__days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.races-week__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-2) var(--space-1);
+  background: none;
+  border: none;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  transition: background var(--transition);
+  position: relative;
+}
+
+.races-week__day:last-child { border-right: none; }
+
+.races-week__day:hover { background: var(--bg-soft); }
+
+.races-week__day--today .races-week__day-num {
+  background: var(--primary);
+  color: var(--white);
+  border-radius: var(--radius-full);
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.races-week__day--selected {
+  background: var(--ocean-50);
+}
+
+.races-week__day--selected::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 2px 2px 0 0;
+}
+
+.races-week__day-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.races-week__day-num {
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--text);
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.races-week__day--selected .races-week__day-name,
+.races-week__day--selected .races-week__day-num {
+  color: var(--primary);
+}
+
+.races-week__day-badge {
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--primary);
+  color: var(--white);
+  border-radius: var(--radius-full);
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+/* ── Toolbar ── */
+.races-page__toolbar {
+  display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: var(--space-4);
 }
 
+/* ── Grid ── */
 .races-page__grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -65,8 +188,11 @@
 
 @media (max-width: 640px) {
   .races-page__grid { grid-template-columns: 1fr; }
+  .races-week__day-name { font-size: 9px; }
+  .races-week__day { padding: var(--space-3) var(--space-1); }
 }
 
+/* ── Error ── */
 .races-page__error {
   display: flex;
   align-items: center;
@@ -82,17 +208,11 @@
 
 .races-page__error button {
   background: var(--error);
-  border: 1px solid var(--error);
+  border: none;
   border-radius: var(--radius);
   padding: var(--space-1) var(--space-3);
   font-size: var(--fs-small);
   font-weight: 600;
   cursor: pointer;
   color: var(--white);
-  transition: background var(--transition);
-}
-
-.races-page__error button:hover {
-  background: #b91c1c;
-  border-color: #b91c1c;
 }

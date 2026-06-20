@@ -4,12 +4,50 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  transition: box-shadow var(--transition), border-color var(--transition);
+  transition: background-color 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
 .header--scrolled {
   border-color: var(--border);
   box-shadow: var(--shadow-sm);
+}
+
+.header--transparent {
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.header--transparent .header__logo-royal {
+  color: var(--white);
+}
+
+.header--transparent .header__nav-item a {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.header--transparent .header__nav-item a:hover {
+  color: var(--white);
+}
+
+.header--transparent .header__nav-item a.active {
+  color: var(--white);
+}
+
+.header--transparent .header__username {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.header--transparent .header__link-btn {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.header--transparent .header__link-btn:hover {
+  color: var(--white);
+}
+
+.header--transparent .header__hamburger {
+  color: var(--white);
 }
 
 .header__inner {

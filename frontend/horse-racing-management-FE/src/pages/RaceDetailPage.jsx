@@ -11,7 +11,6 @@ import RaceStatusBadge from '../components/race/RaceStatusBadge';
 import RaceMetaStrip from '../components/race/RaceMetaStrip';
 import RaceInfoSection from '../components/race/RaceInfoSection';
 import RegisteredHorsesList from '../components/race-horse/RegisteredHorsesList';
-import RegisterHorseToRaceModal from '../components/race-horse/RegisterHorseToRaceModal';
 import PlaceBetModal from '../components/bet/PlaceBetModal';
 import RaceResultSection from '../components/race/RaceResultSection';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
@@ -27,7 +26,6 @@ export default function RaceDetailPage() {
   const { race, loading, error, refetch } = useRaceDetail(id);
   const { entries: raceHorses } = useHorsesByRace(id);
 
-  const [showRegModal, setShowRegModal] = useState(false);
   const [showBetModal, setShowBetModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
@@ -104,13 +102,11 @@ export default function RaceDetailPage() {
   if (!race) return null;
 
   const isAdmin = user?.role === 'ADMIN';
-  const isOwner = user?.role === 'HORSE_OWNER';
   const isReferee = user?.role === 'REFEREE';
   const isUser = user?.role === 'USER';
   const computedStatus = computeRaceStatus(race);
-  // canBet dùng race.status từ API vì backend chỉ cho bet khi status = CLOSED_REGISTRATION
+  // canBet uses race.status from API since backend only allows betting when status = CLOSED_REGISTRATION
   const canBet = isUser && race.status === 'CLOSED_REGISTRATION';
-  const canRegister = isOwner && race.status === 'OPEN_REGISTRATION';
   const canCancel = isAdmin && (computedStatus === 'UPCOMING' || race.status === 'OPEN_REGISTRATION' || race.status === 'CLOSED_REGISTRATION');
   const canStart = (isAdmin || isReferee) && race.status === 'CLOSED_REGISTRATION';
   const canFinish = (isAdmin || isReferee) && race.status === 'ONGOING';
@@ -163,11 +159,6 @@ export default function RaceDetailPage() {
                 </Button>
               </>
             )}
-            {canRegister && (
-              <Button variant="primary" onClick={() => setShowRegModal(true)}>
-                <Plus size={16} /> Register My Horse
-              </Button>
-            )}
             {canBet && (
               <Button variant="primary" onClick={() => setShowBetModal(true)}>
                 <Target size={16} /> Place Bet
@@ -191,13 +182,6 @@ export default function RaceDetailPage() {
           <RaceResultSection raceId={id} />
         )}
       </div>
-
-      <RegisterHorseToRaceModal
-        open={showRegModal}
-        raceId={Number(id)}
-        onClose={() => setShowRegModal(false)}
-        onSuccess={(msg) => { addToast(msg, 'success'); }}
-      />
 
       <PlaceBetModal
         open={showBetModal}

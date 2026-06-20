@@ -14,3 +14,6 @@ export const approveDeposit = (id, note) =>
 
 export const rejectDeposit = (id, note) =>
   axiosInstance.put(`/wallet/deposit/${id}/reject`, null, { params: { note } }).then((res) => res.data);
+
+export const getSystemBalance = () =>
+  axiosInstance.get('/wallet/balance/system').then((res) => res.data.data);

@@ -17,3 +17,9 @@ export const approveRaceHorse = (id) =>
 
 export const rejectRaceHorse = (id) =>
   axiosInstance.put(`/race-horse/${id}/reject`).then((res) => res.data.data);
+
+export const setOdds = (payload) =>
+  axiosInstance.put('/race-horse/odds', payload).then((res) => res.data);
+
+export const setOddsForOne = (id, odds) =>
+  axiosInstance.put(`/race-horse/${id}/odds`, null, { params: { odds } }).then((res) => res.data.data);

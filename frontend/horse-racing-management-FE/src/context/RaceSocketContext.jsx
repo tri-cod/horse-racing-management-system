@@ -42,7 +42,7 @@ export function RaceSocketProvider({ children }) {
           }
         });
       },
-      onDisconnect: () => setConnected(false), // [WS] báo cho hook biết để cleanup sub
+      onDisconnect: () => setConnected(false), // [WS] notify hook to cleanup subscription
     });
 
     client.activate();
@@ -62,7 +62,7 @@ export function useRaceUpdates() {
   return useContext(RaceSocketContext).updates;
 }
 
-// [WS] Hook cho các hook khác cần subscribe topic riêng (vd: bet updates theo race)
+// [WS] Hook for other hooks that need to subscribe to their own topics (e.g. bet updates per race)
 export function useRaceSocket() {
   const { clientRef, connected } = useContext(RaceSocketContext);
   return { clientRef, connected };

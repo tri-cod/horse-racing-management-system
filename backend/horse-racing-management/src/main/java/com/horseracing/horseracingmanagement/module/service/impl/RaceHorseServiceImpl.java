@@ -164,9 +164,10 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         Race race = raceRepository.findById(request.getRaceId())
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
-        // Chỉ set odds khi race CLOSED_REGISTRATION
-        if (race.getStatus() != RaceStatus.CLOSED_REGISTRATION) {
-            throw new RuntimeException("Can only set odds when race is CLOSED_REGISTRATION");
+        // FIX: trước đây chỉ cho phép khi race ở trạng thái CLOSED_REGISTRATION,
+        // khiến admin không thể set odds ở các giai đoạn khác. Nay chỉ chặn FINISHED và CANCELLED.
+        if (race.getStatus() == RaceStatus.FINISHED || race.getStatus() == RaceStatus.CANCELLED) {
+            throw new RuntimeException("Cannot set odds for a finished or cancelled race");
         }
 
         request.getOddsList().forEach(item -> {
@@ -224,7 +225,8 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                 .registerAt(raceHorse.getRegisterAt())
                 .totalBetAmount(totalBet != null ? totalBet : BigDecimal.ZERO)
                 .totalBetCount(totalCount != null ? totalCount : 0L)
-                .odds(BigDecimal.valueOf(2.0))  // sau này tính động
+                // FIX: trước đây bị hardcode là BigDecimal.valueOf(2.0) — odds thực tế trong DB không bao giờ được trả về.
+                .odds(raceHorse.getOdds())
                 .build();
     }
 }
