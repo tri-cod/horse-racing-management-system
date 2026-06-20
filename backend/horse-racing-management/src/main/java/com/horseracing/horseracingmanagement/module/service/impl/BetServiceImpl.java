@@ -127,6 +127,9 @@ public class BetServiceImpl implements BetService {
         // ← tìm wallet admin để nhận tiền thua
         User adminUser = userRepository.findFirstByRole_Rolename(RoleName.ADMIN)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        System.out.print("adminUserId :========== " +  adminUser.getId());
+
         Wallet adminWallet = walletRepository.findByUser_Id(adminUser.getId())
                 .orElseThrow(() -> new RuntimeException("Admin wallet not found"));
 
