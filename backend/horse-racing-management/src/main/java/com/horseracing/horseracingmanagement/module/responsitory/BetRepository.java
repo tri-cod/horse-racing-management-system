@@ -7,7 +7,8 @@ import java.util.List;
 
 public interface BetRepository extends JpaRepository<Bet, Long> {
     List<Bet> findByUser_IdAndRace_Id(Long userId, Long raceId);  // ← thêm underscore
-    List<Bet> findByRaceIdAndStatus(Long raceId, String status);
-    List<Bet> findByUserId(Long userId);
+    List<Bet> findByRace_IdAndStatus(Long raceId, String status);  // ← thêm underscore
 
+    List<Bet> findByUserId(Long userId);
+    void deleteByRace_Id(Long raceId);
 }

@@ -1,13 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
-import {
-  getMyNotifications,
-  getUnreadNotificationCount,
-  markNotificationAsRead,
-} from '../api/notificationApi';
+import { useState, useEffect, useCallback } from 'react';
+import { getMyNotifications, markAsRead } from '../api/notificationApi';
 
-export function useNotifications({ pollInterval = 0 } = {}) {
+export function useNotifications() {
   const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -16,63 +11,34 @@ export function useNotifications({ pollInterval = 0 } = {}) {
     setError(null);
     try {
       const data = await getMyNotifications();
-      // normalize: backend trả về "read", map về "isRead" cho nhất quán
-      const normalized = (data || []).map((n) => ({
-        ...n,
-        isRead: n.isRead ?? n.read ?? false,
-      }));
-      setNotifications(normalized);
-      // tính unreadCount từ data luôn cho chính xác
-      setUnreadCount(normalized.filter((n) => !n.isRead).length);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Unable to load notifications. Please try again.');
+      setNotifications(data ?? []);
+    } catch {
+      setError('Failed to load notifications.');
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const fetchUnreadCount = useCallback(async () => {
-    try {
-      const count = await getUnreadNotificationCount();
-      setUnreadCount(count || 0);
-    } catch {
-      // silent
-    }
-  }, []);
+  useEffect(() => { fetchNotifications(); }, [fetchNotifications]);
 
-  const markAsRead = useCallback(async (id) => {
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  const handleMarkAsRead = useCallback(async (id) => {
     try {
-      await markNotificationAsRead(id);
+      await markAsRead(id);
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
       );
-      setUnreadCount((prev) => Math.max(0, prev - 1));
-    } catch (err) {
-      setError(err.response?.data?.message || 'Unable to update this notification.');
+    } catch {
+      // silent — UI already optimistic if needed
     }
   }, []);
 
-  const markAllAsRead = useCallback(async () => {
+  const handleMarkAllAsRead = useCallback(async () => {
     const unread = notifications.filter((n) => !n.isRead);
-    if (unread.length === 0) return;
-    try {
-      await Promise.all(unread.map((n) => markNotificationAsRead(n.id)));
-      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-      setUnreadCount(0);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Unable to update notifications.');
-    }
+    await Promise.allSettled(unread.map((n) => markAsRead(n.id)));
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
   }, [notifications]);
-
-  useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
-
-  useEffect(() => {
-    if (pollInterval <= 0) return undefined;
-    const id = setInterval(fetchUnreadCount, pollInterval);
-    return () => clearInterval(id);
-  }, [pollInterval, fetchUnreadCount]);
 
   return {
     notifications,
@@ -80,7 +46,7 @@ export function useNotifications({ pollInterval = 0 } = {}) {
     loading,
     error,
     refetch: fetchNotifications,
-    markAsRead,
-    markAllAsRead,
+    markAsRead: handleMarkAsRead,
+    markAllAsRead: handleMarkAllAsRead,
   };
 }

@@ -29,3 +29,14 @@ CREATE TABLE wallet (
 
 
 ALTER TABLE race_horse ADD COLUMN IF NOT EXISTS odds NUMERIC(10,2);
+
+ALTER TABLE race_result ALTER COLUMN penalty_id DROP NOT NULL;
+
+DROP TABLE IF EXISTS bank_account CASCADE;
+CREATE TABLE bank_account (
+                              bank_account_id BIGSERIAL PRIMARY KEY,
+                              user_id         BIGINT NOT NULL REFERENCES users(user_id),
+                              bank_name       VARCHAR(150) NOT NULL,
+                              bank_user_name  VARCHAR(150) NOT NULL,
+                              bank_number     VARCHAR(150) NOT NULL
+);

@@ -1,0 +1,291 @@
+/* ═══════════════════════════════════════════════════════════════ */
+/* RaceResultSection.css — Podium + full results table           */
+/* ═══════════════════════════════════════════════════════════════ */
+
+.race-results {
+  margin-top: var(--space-6);
+}
+
+.race-results__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.race-results__heading h2 {
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.race-results__heading-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--ocean-600), var(--ocean-800));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ═══ PODIUM ════════════════════════════════════════════════════ */
+.race-results__podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  padding: var(--space-6) var(--space-4);
+  background: linear-gradient(160deg, var(--ocean-950) 0%, var(--ocean-800) 100%);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+/* podium card */
+.race-results__podium-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  max-width: 200px;
+}
+
+/* medal circle */
+.race-results__medal {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.race-results__medal--gold   { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.race-results__medal--silver { background: linear-gradient(135deg, #94a3b8, #64748b); }
+.race-results__medal--bronze { background: linear-gradient(135deg, #c2825b, #92400e); }
+
+/* podium platform block */
+.race-results__platform {
+  width: 100%;
+  border-radius: var(--radius) var(--radius) 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-3) var(--space-2) var(--space-2);
+  position: relative;
+}
+
+.race-results__platform--1st {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  min-height: 160px;
+}
+
+.race-results__platform--2nd {
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  min-height: 130px;
+}
+
+.race-results__platform--3rd {
+  background: rgba(194, 130, 91, 0.12);
+  border: 1px solid rgba(194, 130, 91, 0.25);
+  min-height: 108px;
+}
+
+.race-results__platform-rank {
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: var(--space-2);
+}
+
+.race-results__platform--1st .race-results__platform-rank {
+  color: rgba(245, 158, 11, 0.8);
+}
+
+.race-results__platform-horse {
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  line-height: 1.25;
+  margin-bottom: 2px;
+  word-break: break-word;
+}
+
+.race-results__platform-jockey {
+  font-size: var(--fs-xs);
+  color: rgba(255,255,255,0.55);
+  text-align: center;
+  margin-bottom: var(--space-2);
+}
+
+.race-results__platform-time {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: rgba(255,255,255,0.75);
+  font-variant-numeric: tabular-nums;
+}
+
+.race-results__platform-reward {
+  margin-top: var(--space-2);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: #fbbf24;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(251, 191, 36, 0.15);
+}
+
+/* ═══ FULL TABLE ════════════════════════════════════════════════ */
+.race-results__table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+}
+
+.race-results__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-small);
+}
+
+.race-results__table thead {
+  background: var(--black-5);
+}
+
+.race-results__table th {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.race-results__table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.race-results__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.race-results__table tbody tr:hover td {
+  background-color: var(--black-5);
+}
+
+/* top-3 rows get subtle highlight */
+.race-results__table tbody tr:nth-child(1) td { background: #fffbeb; }
+.race-results__table tbody tr:nth-child(2) td { background: #f8fafc; }
+.race-results__table tbody tr:nth-child(3) td { background: #fdf6f0; }
+.race-results__table tbody tr:nth-child(1):hover td { background: #fef3c7; }
+.race-results__table tbody tr:nth-child(2):hover td { background: #f1f5f9; }
+.race-results__table tbody tr:nth-child(3):hover td { background: #fdeee0; }
+
+/* rank cell */
+.race-results__rank {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 700;
+  color: var(--text);
+}
+
+.race-results__rank-medal {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* horse cell */
+.race-results__horse-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.race-results__horse-breed {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* jockey cell */
+.race-results__jockey {
+  color: var(--text-muted);
+}
+
+/* time cell */
+.race-results__time {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* reward cell */
+.race-results__reward {
+  font-weight: 700;
+  color: var(--ocean-700);
+  white-space: nowrap;
+}
+
+/* ═══ LOADING / EMPTY ════════════════════════════════════════════ */
+.race-results__loading {
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+}
+
+.race-results__empty {
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-style: italic;
+}
+
+/* ═══ RESPONSIVE ════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .race-results__podium {
+    gap: var(--space-2);
+    padding: var(--space-5) var(--space-2);
+  }
+
+  .race-results__medal {
+    width: 38px;
+    height: 38px;
+    font-size: 1.15rem;
+  }
+
+  .race-results__platform-horse {
+    font-size: var(--fs-xs);
+  }
+
+  .race-results__platform-jockey,
+  .race-results__platform-time {
+    display: none;
+  }
+
+  .race-results__table th:nth-child(4),
+  .race-results__table td:nth-child(4) {
+    display: none;
+  }
+}

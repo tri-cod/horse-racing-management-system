@@ -1,90 +1,149 @@
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Bell } from 'lucide-react';
-import { useNotifications } from '../hooks/useNotifications';
-import NotificationItem from './NotificationItem';
-import LoadingSpinner from './ui/LoadingSpinner';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Bell, Trophy, Target, CheckCircle, Wallet, Info } from 'lucide-react';
+import { getMyNotifications, countUnread, markAsRead } from '../api/notificationApi';
 import '../assets/css/NotificationBell.css';
 
-const PREVIEW_LIMIT = 5;
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+}
+
+function NotifIcon({ type }) {
+  const t = type?.toUpperCase() ?? '';
+  if (t.includes('RACE') || t.includes('RESULT')) return <Trophy size={15} />;
+  if (t.includes('BET')) return <Target size={15} />;
+  if (t.includes('REGISTR')) return <CheckCircle size={15} />;
+  if (t.includes('WALLET') || t.includes('PAYMENT') || t.includes('DEPOSIT')) return <Wallet size={15} />;
+  return <Info size={15} />;
+}
 
 export default function NotificationBell() {
   const [open, setOpen] = useState(false);
-  const containerRef = useRef(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+  const [loadingList, setLoadingList] = useState(false);
   const navigate = useNavigate();
+  const hasFetched = useRef(false);
+  const closeTimer = useRef(null);
 
-  const { notifications, unreadCount, loading, markAsRead } = useNotifications({
-    pollInterval: 30000,
-  });
-
-  useEffect(() => {
-    function handleOutside(e) {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        setOpen(false);
-      }
+  // Poll unread count every 30s
+  const fetchCount = useCallback(async () => {
+    try {
+      const count = await countUnread();
+      setUnreadCount(count ?? 0);
+    } catch {
+      // silent — non-blocking background poll
     }
-    window.addEventListener('click', handleOutside);
-    return () => window.removeEventListener('click', handleOutside);
   }, []);
 
-  const toggleOpen = (e) => {
-    e.stopPropagation();
-    setOpen((prev) => !prev);
+  useEffect(() => {
+    fetchCount();
+    const id = setInterval(fetchCount, 30_000);
+    return () => clearInterval(id);
+  }, [fetchCount]);
+
+  // Lazy-load notification list on first hover
+  useEffect(() => {
+    if (!open || hasFetched.current) return;
+    hasFetched.current = true;
+    setLoadingList(true);
+    getMyNotifications()
+      .then((data) => setNotifications(data?.slice(0, 5) ?? []))
+      .catch(() => {})
+      .finally(() => setLoadingList(false));
+  }, [open]);
+
+  const handleMouseEnter = () => {
+    clearTimeout(closeTimer.current);
+    setOpen(true);
   };
 
-  const preview = notifications.slice(0, PREVIEW_LIMIT);
+  const handleMouseLeave = () => {
+    closeTimer.current = setTimeout(() => setOpen(false), 150);
+  };
+
+  const handleItemClick = async (notif) => {
+    if (!notif.isRead) {
+      markAsRead(notif.id).catch(() => {});
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notif.id ? { ...n, isRead: true } : n))
+      );
+      setUnreadCount((c) => Math.max(0, c - 1));
+    }
+    setOpen(false);
+    navigate(notif.referenceId ? `/races/${notif.referenceId}` : '/notifications');
+  };
 
   return (
-    <div className="notif-bell" ref={containerRef}>
+    <div className="notif-bell" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <button
         type="button"
-        className="notif-bell__trigger"
-        aria-haspopup="menu"
+        className={`notif-bell__btn${open ? ' notif-bell__btn--active' : ''}`}
+        aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
         aria-expanded={open}
-        onClick={toggleOpen}
-        title="Notifications"
       >
-        <Bell size={20} />
+        <Bell size={17} />
         {unreadCount > 0 && (
-          <span className="notif-bell__badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+          <span className="notif-bell__badge" aria-hidden="true">
+            {unreadCount > 99 ? '99+' : unreadCount}
+          </span>
         )}
       </button>
 
-      <div className={`notif-bell__dropdown${open ? ' open' : ''}`}>
-        <div className="notif-bell__header">
-          <span>Notifications</span>
-          {unreadCount > 0 && (
-            <span className="notif-bell__unread-count">{unreadCount} unread</span>
-          )}
+      <div className={`notif-bell__dropdown${open ? ' open' : ''}`} role="menu">
+        <div className="notif-bell__dropdown-header">
+          <span className="notif-bell__dropdown-title">Notifications</span>
+          <Link
+            to="/notifications"
+            className="notif-bell__view-all"
+              >
+            View all
+          </Link>
         </div>
 
         <div className="notif-bell__list">
-          {loading ? (
-            <div className="notif-bell__loading">
-              <LoadingSpinner size="sm" />
-            </div>
-          ) : preview.length === 0 ? (
-            <div className="notif-bell__empty">
-              <p>You're all caught up</p>
-              <span>New notifications will show up here</span>
-            </div>
+          {loadingList ? (
+            <div className="notif-bell__empty">Loading…</div>
+          ) : notifications.length === 0 ? (
+            <div className="notif-bell__empty">No notifications yet.</div>
           ) : (
-            preview.map((n) => (
-              <NotificationItem key={n.id} notification={n} onMarkAsRead={markAsRead} dense />
+            notifications.map((n) => (
+              <button
+                key={n.id}
+                type="button"
+                role="menuitem"
+                className={`notif-bell__item${!n.isRead ? ' notif-bell__item--unread' : ''}`}
+                onClick={() => handleItemClick(n)}
+              >
+                <span className="notif-bell__item-icon">
+                  <NotifIcon type={n.type} />
+                </span>
+                <span className="notif-bell__item-body">
+                  <span className="notif-bell__item-title">{n.title ?? 'Notification'}</span>
+                  <span className="notif-bell__item-content">{n.content}</span>
+                  <span className="notif-bell__item-time">{timeAgo(n.createdAt)}</span>
+                </span>
+                {!n.isRead && <span className="notif-bell__item-dot" aria-label="Unread" />}
+              </button>
             ))
           )}
         </div>
 
-        <button
-          type="button"
-          className="notif-bell__view-all"
-          onClick={() => {
-            setOpen(false);
-            navigate('/notifications');
-          }}
-        >
-          View all notifications
-        </button>
+        <div className="notif-bell__dropdown-footer">
+          <Link
+            to="/notifications"
+            className="notif-bell__footer-link"
+          >
+            See all notifications
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useContext } from 'react';
-import { Ticket, RefreshCw, TrendingUp, DollarSign, CheckCircle, ChevronDown, ChevronUp, Calendar, Trophy, Target } from 'lucide-react';
+import { Ticket, TrendingUp, DollarSign, CheckCircle, ChevronDown, ChevronUp, Calendar, Trophy, Target } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getMyBets } from '../api/betApi';
 import { AuthContext } from '../context/AuthContext';
@@ -151,10 +151,6 @@ export default function MyBetsPage() {
               );
             })}
           </div>
-          <button type="button" className="ui-btn ui-btn--outline ui-btn--sm" onClick={fetchBets} disabled={loading}>
-            <RefreshCw size={13} style={loading ? { animation: 'spin .7s linear infinite' } : {}} />
-            Refresh
-          </button>
         </div>
 
         {error && <div className="my-bets-page__error"><span>{error}</span><button type="button" onClick={fetchBets}>Retry</button></div>}

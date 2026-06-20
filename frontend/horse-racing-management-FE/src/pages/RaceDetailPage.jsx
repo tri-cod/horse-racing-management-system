@@ -13,6 +13,7 @@ import RaceInfoSection from '../components/race/RaceInfoSection';
 import RegisteredHorsesList from '../components/race-horse/RegisteredHorsesList';
 import RegisterHorseToRaceModal from '../components/race-horse/RegisterHorseToRaceModal';
 import PlaceBetModal from '../components/bet/PlaceBetModal';
+import RaceResultSection from '../components/race/RaceResultSection';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Button from '../components/ui/Button';
@@ -185,6 +186,10 @@ export default function RaceDetailPage() {
             onToast={(msg, type) => addToast(msg, type ?? 'success')}
           />
         </section>
+
+        {race.status === 'FINISHED' && (
+          <RaceResultSection raceId={id} />
+        )}
       </div>
 
       <RegisterHorseToRaceModal

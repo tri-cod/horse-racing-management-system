@@ -2,6 +2,7 @@ package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
+import com.horseracing.horseracingmanagement.module.dto.RaceDto.RaceStatusUpdate;
 import com.horseracing.horseracingmanagement.module.entity.Race;
 import com.horseracing.horseracingmanagement.module.responsitory.RaceRefereeRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.RaceRepository;
@@ -22,6 +23,7 @@ public class RaceSchedule {
     private final RaceRepository raceRepository;
     private final NotificationService notificationService;
     private final RaceRefereeRepository raceRefereeRepository;
+    private final WebSocketNotificationService wsService; // [WS] inject để push auto-close
 
     // Chạy mỗi phút
     @Scheduled(fixedRate = 60000)
@@ -37,6 +39,14 @@ public class RaceSchedule {
                 race.setStatus(RaceStatus.CLOSED_REGISTRATION);
                 raceRepository.save(race);
 
+                // [WS] Notify FE về auto-close — user đang xem list/detail thấy nút Bet xuất hiện ngay
+                wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
+                        .raceId(race.getId())
+                        .raceName(race.getRaceName())
+                        .status("CLOSED_REGISTRATION")
+                        .message("Registration automatically closed. Betting is now open!")
+                        .updatedAt(Instant.now())
+                        .build());
 
                 if (race.getReferee() != null && race.getReferee().getUser() != null) {
                     notificationService.sendToUser(

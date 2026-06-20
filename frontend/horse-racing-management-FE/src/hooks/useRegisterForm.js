@@ -33,23 +33,40 @@ const validate = (name, value, form) => {
   return '';
 };
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-export function useRegisterForm(apiRole) {
+export function useRegisterForm() {
   const navigate = useNavigate();
+
+  // step: 1 | 2 | 3 | 'success'
+  const [step, setStep]               = useState(1);
+  const [selectedRole, setSelectedRole] = useState(null); // { id, apiRole, roleLabel }
+
   const [form, setForm]         = useState(Object.fromEntries(FIELDS.map((f) => [f.name, ''])));
   const [errors, setErrors]     = useState({});
-  const [loading, setLoading]   = useState(false);
   const [apiError, setApiError] = useState('');
 
-  const [emailVerified, setEmailVerified]     = useState(false);
-  const [showVerifyCard, setShowVerifyCard]   = useState(false);
-  const [sendOtpLoading, setSendOtpLoading]   = useState(false);
-  const [otp, setOtp]                         = useState('');
-  const [otpError, setOtpError]               = useState('');
-  const [otpLoading, setOtpLoading]           = useState(false);
-  const [resendLoading, setResendLoading]     = useState(false);
-  const [resendSuccess, setResendSuccess]     = useState(false);
+  const [otp, setOtp]                       = useState('');
+  const [otpError, setOtpError]             = useState('');
+  const [otpLoading, setOtpLoading]         = useState(false);
+  const [sendOtpLoading, setSendOtpLoading] = useState(false);
+  const [resendLoading, setResendLoading]   = useState(false);
+  const [resendSuccess, setResendSuccess]   = useState(false);
+
+  const handleSelectRole = (roleId, apiRole, roleLabel) => {
+    setSelectedRole({ id: roleId, apiRole, roleLabel });
+    setStep(2);
+  };
+
+  const handleBack = () => {
+    if (step === 2) {
+      setStep(1);
+      setSelectedRole(null);
+    } else if (step === 3) {
+      setStep(2);
+      setOtp('');
+      setOtpError('');
+      setResendSuccess(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,8 +83,6 @@ export function useRegisterForm(apiRole) {
       }));
     }
     if (name === 'email') {
-      setEmailVerified(false);
-      setShowVerifyCard(false);
       setOtp('');
       setOtpError('');
       setResendSuccess(false);
@@ -79,22 +94,25 @@ export function useRegisterForm(apiRole) {
     setErrors((prev) => ({ ...prev, [name]: validate(name, value, form) }));
   };
 
-  const handleVerifyClick = async () => {
-    if (!form.email || !form.email.trim()) {
-      setErrors((prev) => ({ ...prev, email: 'Email is required' }));
+  // Validates all fields, sends OTP, then advances to step 3
+  const handleNextStep = async () => {
+    const newErrors = {};
+    FIELDS.forEach((f) => {
+      const err = validate(f.name, form[f.name], form);
+      if (err) newErrors[f.name] = err;
+    });
+    if (Object.keys(newErrors).length) {
+      setErrors(newErrors);
       return;
     }
-    if (!EMAIL_REGEX.test(form.email)) {
-      setErrors((prev) => ({ ...prev, email: 'Please enter a valid email address' }));
-      return;
-    }
+
     setSendOtpLoading(true);
     try {
       await sendVerificationOtp(form.email);
-      setShowVerifyCard(true);
       setOtp('');
       setOtpError('');
       setResendSuccess(false);
+      setStep(3);
     } catch (err) {
       setErrors((prev) => ({
         ...prev,
@@ -108,24 +126,6 @@ export function useRegisterForm(apiRole) {
   const handleOtpChange = (value) => {
     setOtp(value);
     setOtpError('');
-  };
-
-  const handleConfirmVerify = async () => {
-    if (otp.replace(/\s/g, '').length < 6) {
-      setOtpError('Please enter the complete 6-digit code');
-      return;
-    }
-    setOtpLoading(true);
-    try {
-      await verifyEmail(form.email, otp);
-      setEmailVerified(true);
-      setShowVerifyCard(false);
-      setErrors((prev) => ({ ...prev, email: '' }));
-    } catch (err) {
-      setOtpError(err.response?.data?.message || 'Invalid or expired code. Please try again.');
-    } finally {
-      setOtpLoading(false);
-    }
   };
 
   const handleResendOtp = async () => {
@@ -142,34 +142,43 @@ export function useRegisterForm(apiRole) {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const newErrors = {};
-    FIELDS.forEach((f) => {
-      const err = validate(f.name, form[f.name], form);
-      if (err) newErrors[f.name] = err;
-    });
-    if (!newErrors.email && !emailVerified) {
-      newErrors.email = 'Email has not been verified';
+  // Verifies OTP → registers → shows success screen
+  const handleVerify = async () => {
+    if (otp.replace(/\s/g, '').length < 6) {
+      setOtpError('Please enter the complete 6-digit code');
+      return;
     }
-    if (Object.keys(newErrors).length) { setErrors(newErrors); return; }
+    setOtpLoading(true);
 
-    setLoading(true);
+    // Step 1: verify OTP
+    try {
+      await verifyEmail(form.email, otp);
+    } catch (err) {
+      setOtpError(err.response?.data?.message || 'Invalid or expired code. Please try again.');
+      setOtpLoading(false);
+      return;
+    }
+
+    // Step 2: register (OTP was valid)
     try {
       const { confirmPassword, ...rest } = form;
-      await register({ ...rest, role: apiRole });
-      navigate('/login');
+      await register({ ...rest, role: selectedRole.apiRole });
+      setStep('success');
     } catch (err) {
       setApiError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
-      setLoading(false);
+      setOtpLoading(false);
     }
   };
 
+  const handleGoToLogin = () => navigate('/login');
+
   return {
-    form, errors, loading, apiError, handleChange, handleBlur, handleSubmit,
-    emailVerified, showVerifyCard, sendOtpLoading,
+    step, selectedRole,
+    form, errors, apiError, handleChange, handleBlur,
+    sendOtpLoading, handleNextStep, handleSelectRole, handleBack,
     otp, otpError, otpLoading, resendLoading, resendSuccess,
-    handleVerifyClick, handleOtpChange, handleConfirmVerify, handleResendOtp,
+    handleOtpChange, handleVerify, handleResendOtp,
+    handleGoToLogin,
   };
 }

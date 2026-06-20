@@ -3,7 +3,6 @@ import { Search, ChevronDown } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { useAdminUsers } from '../hooks/useAdminUsers';
 import { useToast } from '../components/ui/ToastProvider';
-import PageHero from '../components/ui/PageHero';
 import UsersTable from '../components/admin/UsersTable';
 import ChangeRoleModal from '../components/admin/ChangeRoleModal';
 import ChangeStatusModal from '../components/admin/ChangeStatusModal';
@@ -70,13 +69,7 @@ export default function AdminUsersPage() {
 
   return (
     <div className="admin-users-page">
-      <PageHero
-        eyebrow="ADMIN PANEL"
-        title="User Management"
-        subtitle="Manage roles, status and access for all platform users"
-      />
-
-      <div className="admin-users-page__content">
+<div className="admin-users-page__content">
         <div className="admin-users-page__toolbar">
           <div className="admin-users-page__search">
             <Search size={16} className="admin-users-page__search-icon" />

@@ -128,7 +128,7 @@
 }
 
 .horse-form__avatar-dropzone:hover:not(:disabled) {
-  border-color: #0f62fe;
+  border-color: #0A2E44;
   background-color: #eef4ff;
 }
 
@@ -142,7 +142,7 @@
 }
 
 .horse-form__avatar-dropzone-icon {
-  color: #0f62fe;
+  color: #0A2E44;
 }
 
 .horse-form__avatar-dropzone-title {
@@ -205,7 +205,7 @@
   gap: 6px;
   border: 1px solid var(--border);
   background-color: #ffffff;
-  color: #0f62fe;
+  color: #0A2E44;
   font-weight: 600;
   font-size: 12px;
   padding: 8px 14px;
@@ -236,7 +236,7 @@
 .horse-register__submit-btn {
   width: 100%;
   border: none;
-  background-color: #0f62fe;
+  background-color: #0A2E44;
   color: #ffffff;
   padding: 14px 18px;
   border-radius: 14px;
@@ -248,8 +248,8 @@
 
 .horse-register__submit-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(15, 98, 254, 0.28);
-  background-color: #0954d6;
+  box-shadow: 0 6px 18px rgba(10, 46, 68, 0.35);
+  background-color: #071f2f;
 }
 
 .horse-register__submit-btn:disabled {

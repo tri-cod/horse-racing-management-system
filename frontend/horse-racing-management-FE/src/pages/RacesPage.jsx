@@ -1,6 +1,5 @@
 import { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, Flag } from 'lucide-react';
+import { Flag } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { useRaces } from '../hooks/useRaces';
 import { useNow } from '../hooks/useNow';
@@ -10,7 +9,6 @@ import RaceFilterTabs from '../components/race/RaceFilterTabs';
 import Pagination from '../components/ui/Pagination';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmptyState from '../components/ui/EmptyState';
-import Button from '../components/ui/Button';
 import '../assets/css/RacesPage.css';
 
 export default function RacesPage() {
@@ -39,14 +37,6 @@ export default function RacesPage() {
           <p className="races-page__hero-subtitle">
             Follow every race from qualification to the final lap
           </p>
-          {user?.role === 'ADMIN' && (
-            <Link to="/admin/races/create">
-              <Button variant="primary" size="md">
-                <Plus size={16} />
-                Create Race
-              </Button>
-            </Link>
-          )}
         </div>
       </section>
 

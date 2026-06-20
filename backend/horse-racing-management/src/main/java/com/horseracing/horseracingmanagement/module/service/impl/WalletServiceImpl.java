@@ -2,11 +2,16 @@ package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RoleName;
+import com.horseracing.horseracingmanagement.module.dto.BankAccountDto.CreateBankAccountRequest;
+import com.horseracing.horseracingmanagement.module.dto.BankAccountDto.WithdrawRequest;
+import com.horseracing.horseracingmanagement.module.dto.BankAccountDto.WithdrawResponse;
 import com.horseracing.horseracingmanagement.module.dto.Deposit.DepositRequest;
 import com.horseracing.horseracingmanagement.module.dto.Deposit.DepositResponse;
+import com.horseracing.horseracingmanagement.module.entity.BankAccount;
 import com.horseracing.horseracingmanagement.module.entity.TransactionRequest;
 import com.horseracing.horseracingmanagement.module.entity.User;
 import com.horseracing.horseracingmanagement.module.entity.Wallet;
+import com.horseracing.horseracingmanagement.module.responsitory.BankAccountRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.TransactionRequestRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.UserRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.WalletRepository;
@@ -18,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,17 +34,15 @@ public class WalletServiceImpl implements WalletService {
     private final TransactionRequestRepository transactionRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final BankAccountRepository bankAccountRepository;
 
-    // User tạo đơn nạp tiền → sinh QR + mã ghi chú
+
     @Transactional
     public DepositResponse createDepositRequest(DepositRequest request, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Sinh mã ghi chú unique
         String referenceCode = "DEP" + userId + System.currentTimeMillis();
-
-        // Tạo QR URL (dùng VietQR hoặc bất kỳ QR service nào)
         String qrUrl = generateQrUrl(request.getAmount(), referenceCode);
 
         TransactionRequest transaction = TransactionRequest.builder()
@@ -73,20 +77,29 @@ public class WalletServiceImpl implements WalletService {
             throw new RuntimeException("Transaction already processed");
         }
 
-        // Cộng tiền vào wallet
-        Wallet wallet = walletRepository.findByUser_Id(transaction.getUser().getId())
-                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+        BigDecimal amount = BigDecimal.valueOf(transaction.getAmount());
 
+        // Ví user nhận tiền
+        Wallet userWallet = walletRepository.findByUser_Id(transaction.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("User wallet not found"));
 
-        Wallet adminWallet = walletRepository.findByUser_Id(Long.valueOf(15)).orElseThrow(() -> new RuntimeException("Wallet not found"));
+        // Ví admin/hệ thống — tìm đúng cách, không hardcode id
+        User adminUser = userRepository.findFirstByRole_Rolename(RoleName.ADMIN)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        Wallet adminWallet = walletRepository.findByUser_Id(adminUser.getId())
+                .orElseThrow(() -> new RuntimeException("Admin wallet not found"));
 
-        adminWallet.setBalance(wallet.getBalance()
-                .add(BigDecimal.valueOf(transaction.getAmount())));
+        // ← Check ví admin có đủ tiền để chi không
+        if (adminWallet.getBalance().compareTo(amount) < 0) {
+            throw new RuntimeException("System wallet has insufficient balance to approve this deposit");
+        }
+
+        // Trừ tiền ví admin, cộng tiền ví user
+        adminWallet.setBalance(adminWallet.getBalance().subtract(amount));
+        userWallet.setBalance(userWallet.getBalance().add(amount));
+
         walletRepository.save(adminWallet);
-
-        wallet.setBalance(wallet.getBalance()
-                .add(BigDecimal.valueOf(transaction.getAmount())));
-        walletRepository.save(wallet);
+        walletRepository.save(userWallet);
 
         // Cập nhật transaction
         transaction.setRequestStatus("APPROVED");
@@ -95,7 +108,6 @@ public class WalletServiceImpl implements WalletService {
         transaction.setProcessedat(Instant.now());
         transactionRepository.save(transaction);
 
-        // Gửi notification cho user
         notificationService.sendToUser(
                 transaction.getUser().getId(),
                 "Deposit Approved!",
@@ -128,10 +140,165 @@ public class WalletServiceImpl implements WalletService {
         );
     }
 
+
+
+    // ===================== BANK ACCOUNT =====================
+
+    @Override
+    public BankAccount addBankAccount(CreateBankAccountRequest request, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        BankAccount account = BankAccount.builder()
+                .user(user)
+                .bankName(request.getBankName())
+                .bankUserName(request.getBankUserName())
+                .bankNumber(request.getBankNumber())
+                .build();
+
+        return bankAccountRepository.save(account);
+    }
+
+    @Override
+    public List<BankAccount> getMyBankAccounts(Long userId) {
+        return bankAccountRepository.findByUser_Id(userId);
+    }
+
+
+    @Transactional
+    public WithdrawResponse createWithdrawRequest(WithdrawRequest request, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        BankAccount bankAccount = bankAccountRepository.findByIdAndUser_Id(
+                        request.getBankAccountId(), userId)
+                .orElseThrow(() -> new RuntimeException("Bank account not found or not yours"));
+
+        BigDecimal amount = BigDecimal.valueOf(request.getAmount());
+
+        Wallet userWallet = walletRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+
+        if (userWallet.getBalance().compareTo(amount) < 0) {
+            throw new RuntimeException("Insufficient balance");
+        }
+
+        // ← trừ tiền ngay để tránh user rút trùng/double-spend trong lúc chờ duyệt
+        userWallet.setBalance(userWallet.getBalance().subtract(amount));
+        walletRepository.save(userWallet);
+
+        String referenceCode = "WD" + userId + System.currentTimeMillis();
+
+        TransactionRequest transaction = TransactionRequest.builder()
+                .user(user)
+                .requestType("WITHDRAW")
+                .amount(request.getAmount())
+                .requestStatus("PENDING")
+                .paymentMethod("BANK_TRANSFER")
+                .referenceCode(referenceCode)
+                .verifyNote(String.format("Bank: %s - %s - %s",
+                        bankAccount.getBankName(),
+                        bankAccount.getBankUserName(),
+                        bankAccount.getBankNumber()))
+                .build();
+
+        transactionRepository.save(transaction);
+
+        // Notify admin có yêu cầu rút tiền mới
+        notificationService.sendToAllAdmins(
+                "New Withdraw Request",
+                String.format("User '%s' requested to withdraw %s", user.getUsername(), request.getAmount()),
+                NotificationType.SYSTEM,
+                transaction.getId()
+        );
+
+        return WithdrawResponse.builder()
+                .id(transaction.getId())
+                .amount(request.getAmount())
+                .referenceCode(referenceCode)
+                .bankName(bankAccount.getBankName())
+                .bankUserName(bankAccount.getBankUserName())
+                .bankNumber(bankAccount.getBankNumber())
+                .status("PENDING")
+                .createdAt(transaction.getCreatedAt())
+                .build();
+    }
+
+    @Transactional
+    public void approveWithdraw(Long transactionId, String staffUsername, String note) {
+        TransactionRequest transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+        if (!transaction.getRequestStatus().equals("PENDING")) {
+            throw new RuntimeException("Transaction already processed");
+        }
+        if (!transaction.getRequestType().equals("WITHDRAW")) {
+            throw new RuntimeException("Transaction is not a withdraw request");
+        }
+
+        // Tiền đã bị trừ khỏi user khi tạo request → giờ chỉ cần đánh dấu APPROVED
+        // Không cần động vào ví admin vì tiền này công ty CHUYỂN TIỀN THẬT ra ngoài (qua bank),
+        // không phải tiền nội bộ hệ thống — nên KHÔNG cộng vào wallet admin.
+
+        transaction.setRequestStatus("APPROVED");
+        transaction.setVerifyNote(note);
+        transaction.setProcessedby(staffUsername);
+        transaction.setProcessedat(Instant.now());
+        transactionRepository.save(transaction);
+
+        notificationService.sendToUser(
+                transaction.getUser().getId(),
+                "Withdraw Approved!",
+                String.format("Your withdrawal of %s has been processed and sent to your bank account!",
+                        transaction.getAmount()),
+                NotificationType.SYSTEM,
+                transactionId
+        );
+    }
+
+    @Transactional
+    public void rejectWithdraw(Long transactionId, String staffUsername, String note) {
+        TransactionRequest transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+        if (!transaction.getRequestStatus().equals("PENDING")) {
+            throw new RuntimeException("Transaction already processed");
+        }
+        if (!transaction.getRequestType().equals("WITHDRAW")) {
+            throw new RuntimeException("Transaction is not a withdraw request");
+        }
+
+        // ← hoàn lại tiền cho user vì lúc tạo request đã trừ trước
+        Wallet userWallet = walletRepository.findByUser_Id(transaction.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("User wallet not found"));
+        userWallet.setBalance(userWallet.getBalance().add(BigDecimal.valueOf(transaction.getAmount())));
+        walletRepository.save(userWallet);
+
+        transaction.setRequestStatus("REJECTED");
+        transaction.setVerifyNote(note);
+        transaction.setProcessedby(staffUsername);
+        transaction.setProcessedat(Instant.now());
+        transactionRepository.save(transaction);
+
+        notificationService.sendToUser(
+                transaction.getUser().getId(),
+                "Withdraw Rejected",
+                String.format("Your withdrawal of %s was rejected and refunded. Reason: %s",
+                        transaction.getAmount(), note),
+                NotificationType.SYSTEM,
+                transactionId
+        );
+    }
+
+
+
+    // ===================== COMMON =====================
+
+
     // Sinh QR URL dùng VietQR
     public String generateQrUrl(Long amount, String referenceCode) {
-        String bankId = "TPB";        // ← đổi thành bank của bạn
-        String accountNo = "39363636999";  // ← số tài khoản
+        String bankId = "MB";        // ← đổi thành bank của bạn
+        String accountNo = "0937385989";  // ← số tài khoản
         return String.format(
                 "https://img.vietqr.io/image/%s-%s-compact.png?amount=%s&addInfo=%s",
                 bankId, accountNo, amount, referenceCode
@@ -140,16 +307,15 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public BigDecimal getAdminWallet() {
-       Optional<User> user = userRepository.findFirstByRole_Rolename(RoleName.ADMIN);
-       return walletRepository.findByUser_Id(user.get().getId())
-               .map(Wallet::getBalance)
-               .orElse(BigDecimal.ZERO);
-    }
-
-
-    public BigDecimal getBalance(Long userId) {
-        return walletRepository.findByUser_Id(userId)
+        Optional<User> user = userRepository.findFirstByRole_Rolename(RoleName.ADMIN);
+        return walletRepository.findByUser_Id(user.get().getId())
                 .map(Wallet::getBalance)
                 .orElse(BigDecimal.ZERO);
     }
-}
+
+        public BigDecimal getBalance (Long userId){
+            return walletRepository.findByUser_Id(userId)
+                    .map(Wallet::getBalance)
+                    .orElse(BigDecimal.ZERO);
+        }
+    }

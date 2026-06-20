@@ -12,6 +12,7 @@ import java.util.List;
 public interface BetItemRepository extends JpaRepository<BetItem, Long> {
     List<BetItem> findByBet_Id(Long betId);
     List<BetItem> findByRaceHorse_Id(Long raceHorseId);
+    void deleteByBet_Race_Id(Long raceId);
 
     @Query("SELECT SUM(bi.betAmount) FROM BetItem bi WHERE bi.raceHorse.id = :raceHorseId AND bi.resultStatus = 'PENDING'")
     BigDecimal getTotalBetAmountByRaceHorse(@Param("raceHorseId") Long raceHorseId);

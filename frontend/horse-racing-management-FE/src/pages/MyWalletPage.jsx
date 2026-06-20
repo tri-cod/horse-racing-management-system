@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Wallet, Plus, RefreshCw, TrendingUp } from 'lucide-react';
+import { Wallet, Plus, TrendingUp } from 'lucide-react';
 import { getBalance } from '../api/walletApi';
 import DepositModal from '../components/wallet/DepositModal';
 import '../assets/css/wallet/MyWalletPage.css';
@@ -53,15 +53,6 @@ export default function MyWalletPage() {
             )}
           </div>
           <div className="wallet-card__actions">
-            <button
-              type="button"
-              className="ui-btn ui-btn--outline ui-btn--sm"
-              onClick={fetchBalance}
-              disabled={loading}
-            >
-              <RefreshCw size={13} style={loading ? { animation: 'spin .7s linear infinite' } : {}} />
-              Refresh
-            </button>
             <button
               type="button"
               className="ui-btn ui-btn--primary ui-btn--sm"

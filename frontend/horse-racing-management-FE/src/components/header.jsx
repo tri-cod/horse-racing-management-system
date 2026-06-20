@@ -1,6 +1,6 @@
-import { useState, useContext, useRef, useEffect } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, User, LogOut, LayoutDashboard, Ticket, Wallet, BadgeDollarSign } from 'lucide-react';
+import { Menu, X, User, LogOut, LayoutDashboard, Ticket, Wallet, BadgeDollarSign, ClipboardCheck, Flag, Crown, ClipboardList } from 'lucide-react';
 import '../assets/css/Header.css';
 import { AuthContext } from '../context/AuthContext';
 import Button from './ui/Button';
@@ -15,39 +15,19 @@ const NAV_ITEMS = [
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useContext(AuthContext);
-  const dropdownRef = useRef(null);
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
-  const handleNavigateProfile = () => {
-    navigate('/profile');
-    setDropdownOpen(false);
-  };
+  const handleNavigateProfile = () => navigate('/profile');
 
   const handleLogout = async () => {
     await logout();
     navigate('/');
   };
-
-  const toggleDropdown = (event) => {
-    event.stopPropagation();
-    setDropdownOpen((prev) => !prev);
-  };
-
-  useEffect(() => {
-    function handleOutside(e) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setDropdownOpen(false);
-      }
-    }
-    window.addEventListener('click', handleOutside);
-    return () => window.removeEventListener('click', handleOutside);
-  }, []);
 
   useEffect(() => {
     function handleScroll() {
@@ -79,28 +59,6 @@ function Header() {
                 </Link>
               </li>
             ))}
-            {user?.role === 'HORSE_OWNER' && (
-              <>
-                <li className="header__nav-item">
-                  <Link
-                    to="/horse-owner/horses"
-                    className={pathname.startsWith('/horse-owner/horses') ? 'active' : ''}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    My Horses
-                  </Link>
-                </li>
-                <li className="header__nav-item">
-                  <Link
-                    to="/horse-owner/race-registrations"
-                    className={pathname === '/horse-owner/race-registrations' ? 'active' : ''}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    My Registrations
-                  </Link>
-                </li>
-              </>
-            )}
             {user?.role === 'REFEREE' && (
               <li className="header__nav-item">
                 <Link
@@ -127,77 +85,75 @@ function Header() {
         </nav>
 
         <div className={`header__actions${menuOpen ? ' open' : ''}`}>
-          {user && (
-            <NotificationBell />
-          )}
+          {user && <NotificationBell />}
           {user ? (
-            <div className="header__user" ref={dropdownRef}>
-              <span className="header__welcome">Hello</span>
+            <div className="header__user">
               <span className="header__username">{user.username}</span>
               <button
                 type="button"
                 className="header__avatar"
-                aria-haspopup="menu"
-                aria-expanded={dropdownOpen}
-                onClick={toggleDropdown}
                 title="Account"
               >
                 {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
               </button>
 
-              <div className={`header__dropdown${dropdownOpen ? ' open' : ''}`}>
-                <button type="button" className="header__dropdown-item" onClick={handleNavigateProfile}>
-                  <User size={16} />
-                  <span>My Profile</span>
-                </button>
-                {user?.role === 'ADMIN' && (
-                  <>
-                    <button
-                      type="button"
-                      className="header__dropdown-item"
-                      onClick={() => { navigate('/admin/users'); setDropdownOpen(false); }}
-                    >
-                      <LayoutDashboard size={16} />
-                      <span>Admin Panel</span>
-                    </button>
-                  </>
-                )}
-                {(user?.role === 'ADMIN' || user?.role === 'STAFF') && (
-                  <button
-                    type="button"
-                    className="header__dropdown-item"
-                    onClick={() => { navigate('/admin/deposits'); setDropdownOpen(false); }}
-                  >
-                    <BadgeDollarSign size={16} />
-                    <span>Deposit Requests</span>
+              <div className="header__dropdown">
+                <div className="header__dropdown-inner">
+                  <button type="button" className="header__dropdown-item" onClick={handleNavigateProfile}>
+                    <User size={16} />
+                    <span>My Profile</span>
                   </button>
-                )}
-                {user?.role === 'USER' && (
-                  <>
-                    <button
-                      type="button"
-                      className="header__dropdown-item"
-                      onClick={() => { navigate('/my-bets'); setDropdownOpen(false); }}
-                    >
+                  {user?.role === 'ADMIN' && (
+                    <>
+                      <button type="button" className="header__dropdown-item" onClick={() => navigate('/admin/users')}>
+                        <LayoutDashboard size={16} />
+                        <span>Admin Panel</span>
+                      </button>
+                      <button type="button" className="header__dropdown-item" onClick={() => navigate('/admin/races/create')}>
+                        <Flag size={16} />
+                        <span>Create Race</span>
+                      </button>
+                      <button type="button" className="header__dropdown-item" onClick={() => navigate('/admin/approve-horses')}>
+                        <ClipboardCheck size={16} />
+                        <span>Approve Horses</span>
+                      </button>
+                    </>
+                  )}
+                  {(user?.role === 'ADMIN' || user?.role === 'STAFF') && (
+                    <button type="button" className="header__dropdown-item" onClick={() => navigate('/admin/deposits')}>
+                      <BadgeDollarSign size={16} />
+                      <span>Deposit Requests</span>
+                    </button>
+                  )}
+                  {user?.role === 'HORSE_OWNER' && (
+                    <>
+                      <button type="button" className="header__dropdown-item" onClick={() => navigate('/horse-owner/horses')}>
+                        <Crown size={16} />
+                        <span>My Horses</span>
+                      </button>
+                      <button type="button" className="header__dropdown-item" onClick={() => navigate('/horse-owner/race-registrations')}>
+                        <ClipboardList size={16} />
+                        <span>My Registrations</span>
+                      </button>
+                    </>
+                  )}
+                  {user?.role === 'USER' && (
+                    <button type="button" className="header__dropdown-item" onClick={() => navigate('/my-bets')}>
                       <Ticket size={16} />
                       <span>My Bets</span>
                     </button>
-                  </>
-                )}
-                {user?.role !== 'ADMIN' && user?.role !== 'STAFF' && (
-                  <button
-                    type="button"
-                    className="header__dropdown-item"
-                    onClick={() => { navigate('/my-wallet'); setDropdownOpen(false); }}
-                  >
-                    <Wallet size={16} />
-                    <span>My Wallet</span>
+                  )}
+                  {user?.role !== 'ADMIN' && user?.role !== 'STAFF' && (
+                    <button type="button" className="header__dropdown-item" onClick={() => navigate('/my-wallet')}>
+                      <Wallet size={16} />
+                      <span>My Wallet</span>
+                    </button>
+                  )}
+                  <button type="button" className="header__dropdown-item header__dropdown-item--danger" onClick={handleLogout}>
+                    <LogOut size={16} />
+                    <span>Log Out</span>
                   </button>
-                )}
-                <button type="button" className="header__dropdown-item header__dropdown-item--danger" onClick={handleLogout}>
-                  <LogOut size={16} />
-                  <span>Log Out</span>
-                </button>
+                </div>
               </div>
             </div>
           ) : (

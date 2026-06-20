@@ -60,7 +60,7 @@ export default function RaceCard({ race, isAdmin, onRefetch }) {
   return (
     <div style={{ position: 'relative' }}>
       <Link
-        to={status === 'COMPLETED' ? `/races/${race.id}/result` : `/races/${race.id}`}
+        to={`/races/${race.id}`}
         className="race-card"
       >
         <div className="race-card__banner">

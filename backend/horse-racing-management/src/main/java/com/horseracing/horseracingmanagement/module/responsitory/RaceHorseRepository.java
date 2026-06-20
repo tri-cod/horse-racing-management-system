@@ -20,4 +20,8 @@ public interface RaceHorseRepository extends JpaRepository<RaceHorse, Long> {
     // Lấy danh sách race của 1 owner
     List<RaceHorse> findByHorse_OwnerId(Long ownerId);
     boolean existsByRace_IdAndJockey_Id(Long raceId, Long jockeyId);
+    void deleteByRace_Id(Long raceId);
+
+    // Lấy danh sách tất cả horse theo status (dùng cho admin duyệt)
+    List<RaceHorse> findByStatus(String status);
 }

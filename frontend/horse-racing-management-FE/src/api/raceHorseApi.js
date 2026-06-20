@@ -9,6 +9,9 @@ export const getHorsesByRace = (raceId) =>
 export const getMyRaceRegistrations = () =>
   axiosInstance.get('/race-horse/my-races').then((res) => res.data.data);
 
+export const getPendingHorses = () =>
+  axiosInstance.get('/race-horse/pending').then((res) => res.data.data);
+
 export const approveRaceHorse = (id) =>
   axiosInstance.put(`/race-horse/${id}/approve`).then((res) => res.data.data);
 

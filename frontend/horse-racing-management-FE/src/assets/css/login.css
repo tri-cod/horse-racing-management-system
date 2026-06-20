@@ -1,6 +1,6 @@
 /* ── Page wrapper ── */
 .login-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 76px);
   background: var(--white);
   display: flex;
   align-items: center;
@@ -13,7 +13,7 @@
   grid-template-columns: 1fr 1fr;
   width: 100%;
   max-width: 100%;
-  min-height: 100vh;
+  min-height: calc(100vh - 76px);
   overflow: hidden;
 }
 

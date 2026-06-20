@@ -115,7 +115,6 @@ public class BetServiceImpl implements BetService {
         return mapToResponse(savedBet, betItems);
     }
 
-    // System tự tính sau khi referee confirm kết quả
     @Transactional
     public void calculateBetResults(Long raceId) {
         RaceResult winner = raceResultRepository.findByRace_IdOrderByRankAsc(raceId)
@@ -123,11 +122,14 @@ public class BetServiceImpl implements BetService {
                 .orElseThrow(() -> new RuntimeException("Race result not found"));
 
         Long winnerRaceHorseId = winner.getRaceHorse().getId();
-        List<Bet> bets = betRepository.findByRaceIdAndStatus(raceId, "PENDING");
+        List<Bet> bets = betRepository.findByRace_IdAndStatus(raceId, "PENDING");
 
         // ← tìm wallet admin để nhận tiền thua
         User adminUser = userRepository.findFirstByRole_Rolename(RoleName.ADMIN)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        System.out.print("adminUserId :========== " +  adminUser.getId());
+
         Wallet adminWallet = walletRepository.findByUser_Id(adminUser.getId())
                 .orElseThrow(() -> new RuntimeException("Admin wallet not found"));
 
