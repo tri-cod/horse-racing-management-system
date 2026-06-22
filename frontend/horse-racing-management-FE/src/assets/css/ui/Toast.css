@@ -30,8 +30,9 @@
 }
 
 .toast--success {
-  background: var(--ocean-700);
+  background: var(--primary);
   color: var(--white);
+  border-left: 3px solid var(--brass-400);
 }
 
 .toast--error {
@@ -40,9 +41,10 @@
 }
 
 .toast--warning {
-  background: var(--black-5);
-  color: var(--black-90);
+  background: var(--white);
+  color: var(--text);
   border: 1px solid var(--border);
+  border-left: 3px solid var(--brass-400);
 }
 
 .toast__icon {

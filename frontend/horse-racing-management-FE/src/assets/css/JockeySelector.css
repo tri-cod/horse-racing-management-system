@@ -6,12 +6,19 @@
 
 .jockey-selector__select {
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius);
   padding: 10px 14px;
-  font-size: 14px;
-  color: #0f172a;
-  background-color: var(--card);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  color: var(--text);
+  background-color: var(--white);
   cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.jockey-selector__select:focus {
+  border-color: var(--primary);
 }
 
 .jockey-selector__select:disabled {
@@ -21,10 +28,10 @@
 
 .jockey-selector__hint {
   margin: 0;
-  font-size: 13px;
-  color: #64748b;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
 }
 
 .jockey-selector__hint--error {
-  color: #b91c1c;
+  color: var(--error);
 }

@@ -17,18 +17,19 @@
 }
 
 .confirm-dialog__icon--danger {
-  background: var(--black-5);
-  color: var(--black-90);
+  background: #fef2f2;
+  color: #b91c1c;
 }
 
 .confirm-dialog__icon--warning {
-  background: var(--ocean-50);
-  color: var(--ocean-700);
+  background: var(--brass-50);
+  color: var(--brass-600);
 }
 
 .confirm-dialog__title {
+  font-family: var(--font-serif);
   font-size: 1.125rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text);
 }
 

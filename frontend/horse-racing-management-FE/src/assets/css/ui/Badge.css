@@ -3,16 +3,18 @@
   align-items: center;
   padding: 0.25rem 0.625rem;
   border-radius: var(--radius-full);
-  font-family: var(--font-sans);
+  font-family: var(--font-data);
   font-size: var(--fs-xs);
   font-weight: 600;
   line-height: 1;
   white-space: nowrap;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .ui-badge--ocean {
-  background-color: var(--ocean-50);
-  color: var(--ocean-700);
+  background-color: #EDF1F4;
+  color: var(--primary);
 }
 
 .ui-badge--ocean-solid {
@@ -22,17 +24,23 @@
 
 .ui-badge--neutral {
   background-color: var(--black-5);
-  color: var(--black-90);
+  color: var(--text);
 }
 
 .ui-badge--dark {
-  background-color: var(--black-90);
+  background-color: var(--primary);
   color: var(--white);
 }
 
 .ui-badge--danger {
   background-color: #dc2626;
   color: var(--white);
+}
+
+.ui-badge--brass {
+  background-color: var(--brass-50);
+  color: var(--brass-600);
+  border: 1px solid var(--brass-200);
 }
 
 .ui-badge--sm {
@@ -44,7 +52,7 @@
   padding: 0.5rem 1rem;
   font-size: 0.9375rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.06em;
 }
 
 /* Pulse dot used inside RaceStatusBadge for ONGOING status */

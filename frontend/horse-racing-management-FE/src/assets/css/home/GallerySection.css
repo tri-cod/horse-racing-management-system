@@ -1,5 +1,6 @@
 .home-gallery {
   padding: var(--space-12) 0;
+  background: var(--bg-soft);
 }
 
 .home-gallery__grid {
@@ -34,7 +35,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(10, 10, 10, 0);
+  background: rgba(11, 42, 74, 0);
   color: var(--white);
   opacity: 0;
   transition: opacity var(--transition), background-color var(--transition);
@@ -42,7 +43,7 @@
 
 .home-gallery__item:hover .home-gallery__overlay {
   opacity: 1;
-  background: rgba(10, 10, 10, 0.45);
+  background: rgba(11, 42, 74, 0.5);
 }
 
 .home-gallery__item:hover img {

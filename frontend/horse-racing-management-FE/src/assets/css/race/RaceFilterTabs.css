@@ -10,8 +10,11 @@
   border: 1.5px solid var(--border);
   background: var(--white);
   color: var(--text-muted);
+  font-family: var(--font-data);
   font-size: var(--fs-small);
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   cursor: pointer;
   transition: background var(--transition), color var(--transition), border-color var(--transition);
 }

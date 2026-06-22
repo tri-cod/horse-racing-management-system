@@ -1,78 +1,170 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import { Calendar, MapPin, Trophy, Clock, ArrowRight, Flag } from 'lucide-react';
 import Button from '../ui/Button';
+import Container from '../ui/Container';
+import { useUpcomingRaces } from '../../hooks/useUpcomingRaces';
 import '../../assets/css/home/HeroSection.css';
 
-import heroImg1 from '../../assets/img/ee63a717-b5ff-41b1-ad51-860da474eb55.jpg';
-import heroImg2 from '../../assets/img/174b40b7b0643c6cdafe82f318879afd.webp';
-import heroImg3 from '../../assets/img/venue-santaanita.webp';
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
 
-const SLIDES = [heroImg1, heroImg2, heroImg3];
-const AUTOPLAY_MS = 5000;
+function fmtTime(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
 
-export default function HeroSection() {
-  const [current, setCurrent] = useState(0);
+function calcCountdown(iso) {
+  if (!iso) return null;
+  const diff = new Date(iso) - new Date();
+  if (diff <= 0) return null;
+  return {
+    d: Math.floor(diff / 86_400_000),
+    h: Math.floor((diff % 86_400_000) / 3_600_000),
+    m: Math.floor((diff % 3_600_000) / 60_000),
+    s: Math.floor((diff % 60_000) / 1_000),
+  };
+}
 
-  const prev = useCallback(
-    () => setCurrent((c) => (c - 1 + SLIDES.length) % SLIDES.length),
-    []
-  );
-  const next = useCallback(
-    () => setCurrent((c) => (c + 1) % SLIDES.length),
-    []
-  );
+/* Real-time countdown hook — updates every second */
+function useCountdown(iso) {
+  const [cd, setCd] = useState(() => calcCountdown(iso));
 
   useEffect(() => {
-    const timer = setInterval(next, AUTOPLAY_MS);
+    setCd(calcCountdown(iso));
+    const timer = setInterval(() => setCd(calcCountdown(iso)), 1000);
     return () => clearInterval(timer);
-  }, [next]);
+  }, [iso]);
+
+  return cd;
+}
+
+function RacecardBoard({ race }) {
+  const cd = useCountdown(race?.startTime);
+
+  if (!race) return (
+    <div className="hero-racecard hero-racecard--empty">
+      <Flag size={32} strokeWidth={1.5} />
+      <p>No upcoming races scheduled yet.</p>
+      <Link to="/races" className="hero-racecard__link">View all races <ArrowRight size={14} /></Link>
+    </div>
+  );
+
+  return (
+    <div className="hero-racecard">
+      <div className="hero-racecard__header">
+        <span className="hero-racecard__label">Next Race</span>
+        <span className="hero-racecard__status">Upcoming</span>
+      </div>
+
+      <h3 className="hero-racecard__name">{race.raceName}</h3>
+
+      {cd && (
+        <div className="hero-racecard__countdown">
+          <div className="hero-racecard__count-cell">
+            <span className="hero-racecard__count-num tnum">{String(cd.d).padStart(2, '0')}</span>
+            <span className="hero-racecard__count-unit">Days</span>
+          </div>
+          <span className="hero-racecard__count-sep">:</span>
+          <div className="hero-racecard__count-cell">
+            <span className="hero-racecard__count-num tnum">{String(cd.h).padStart(2, '0')}</span>
+            <span className="hero-racecard__count-unit">Hrs</span>
+          </div>
+          <span className="hero-racecard__count-sep">:</span>
+          <div className="hero-racecard__count-cell">
+            <span className="hero-racecard__count-num tnum">{String(cd.m).padStart(2, '0')}</span>
+            <span className="hero-racecard__count-unit">Min</span>
+          </div>
+          <span className="hero-racecard__count-sep">:</span>
+          <div className="hero-racecard__count-cell">
+            <span className="hero-racecard__count-num tnum">{String(cd.s ?? 0).padStart(2, '0')}</span>
+            <span className="hero-racecard__count-unit">Sec</span>
+          </div>
+        </div>
+      )}
+
+      <div className="hero-racecard__divider" />
+
+      <div className="hero-racecard__meta">
+        {race.location && (
+          <div className="hero-racecard__meta-item">
+            <MapPin size={13} />
+            <span>{race.location}</span>
+          </div>
+        )}
+        {race.startTime && (
+          <div className="hero-racecard__meta-item">
+            <Calendar size={13} />
+            <span>{fmtDate(race.startTime)}</span>
+          </div>
+        )}
+        {race.startTime && (
+          <div className="hero-racecard__meta-item">
+            <Clock size={13} />
+            <span>{fmtTime(race.startTime)}</span>
+          </div>
+        )}
+        {race.totalprizepool != null && (
+          <div className="hero-racecard__meta-item">
+            <Trophy size={13} />
+            <span>Prize: ${Number(race.totalprizepool).toLocaleString()}</span>
+          </div>
+        )}
+      </div>
+
+      <Link to={`/races/${race.id}`} className="hero-racecard__cta">
+        View Race Details <ArrowRight size={14} />
+      </Link>
+    </div>
+  );
+}
+
+export default function HeroSection() {
+  const { races } = useUpcomingRaces(1);
+  const nextRace = races[0] ?? null;
 
   return (
     <section className="home-hero">
-      {SLIDES.map((src, i) => (
-        <div key={i} className={`home-hero__slide${i === current ? ' active' : ''}`}>
-          <img src={src} alt="Royal Derby racing" className="home-hero__img" />
+      {/* faint diagonal silk motif */}
+      <div className="home-hero__silk-motif" aria-hidden="true" />
+
+      <Container>
+        <div className="home-hero__grid">
+          {/* Left — editorial copy */}
+          <div className="home-hero__content">
+            <div className="home-hero__eyebrow-row">
+              <span className="home-hero__eyebrow-rule" />
+              <p className="eyebrow home-hero__eyebrow">Royal Derby 2026</p>
+            </div>
+
+            <h1 className="home-hero__title">
+              Glory On<br />
+              <em className="home-hero__title-em">The Racetrack</em>
+            </h1>
+
+            <p className="home-hero__subtitle">
+              Where the proudest steeds and the most talented jockeys come together
+              to compete in Royal Derby — a world-class horse racing tournament.
+            </p>
+
+            <div className="home-hero__actions">
+              <Button as={Link} to="/races" variant="dark" size="lg">
+                View Schedule
+              </Button>
+              <Button as={Link} to="/register" variant="ghost" size="lg" className="home-hero__ghost-btn">
+                Join Now <ArrowRight size={16} />
+              </Button>
+            </div>
+          </div>
+
+          {/* Right — racecard board */}
+          <div className="home-hero__racecard-wrap">
+            <RacecardBoard race={nextRace} />
+          </div>
         </div>
-      ))}
-      <div className="home-hero__overlay" />
-
-      <div className="home-hero__content">
-        <p className="eyebrow home-hero__eyebrow">Royal Derby 2026</p>
-        <h1 className="home-hero__title">Glory On The Racetrack</h1>
-        <p className="home-hero__subtitle">
-          Where the proudest steeds and the most talented jockeys come together
-          to compete in Royal Derby — a world-class horse racing tournament.
-        </p>
-        <div className="home-hero__actions">
-          <Button as={Link} to="/races" variant="primary" size="lg">View Race Schedule</Button>
-          <Button as={Link} to="/register" variant="outline" size="lg" className="home-hero__btn-outline">
-            Join Now
-          </Button>
-        </div>
-      </div>
-
-      <button className="home-hero__arrow home-hero__arrow--left" onClick={prev} aria-label="Previous slide">
-        <ChevronLeft size={22} />
-      </button>
-      <button className="home-hero__arrow home-hero__arrow--right" onClick={next} aria-label="Next slide">
-        <ChevronRight size={22} />
-      </button>
-
-      <div className="home-hero__dots">
-        {SLIDES.map((_, i) => (
-          <button
-            key={i}
-            className={`home-hero__dot${i === current ? ' active' : ''}`}
-            onClick={() => setCurrent(i)}
-            aria-label={`Slide ${i + 1}`}
-          />
-        ))}
-      </div>
-
-      <div className="home-hero__scroll">
-        <ChevronDown size={24} />
-      </div>
+      </Container>
     </section>
   );
 }

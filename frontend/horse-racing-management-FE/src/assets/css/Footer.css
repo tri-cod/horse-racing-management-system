@@ -1,6 +1,6 @@
 .footer {
-  background-color: var(--black);
-  color: var(--white-90);
+  background-color: var(--primary);
+  color: rgba(255, 255, 255, 0.75);
   padding-top: var(--space-12);
   margin-top: auto;
 }
@@ -23,21 +23,21 @@
 
 .footer__brand-royal {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--white);
 }
 
 .footer__brand-derby {
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
   font-style: italic;
-  color: var(--ocean-400);
+  color: var(--brass-400);
   margin-left: var(--space-2);
 }
 
 .footer__brand-desc {
   font-size: var(--fs-small);
-  color: var(--black-40);
+  color: rgba(255, 255, 255, 0.55);
   line-height: var(--lh-base);
   max-width: 320px;
   margin: 0 0 var(--space-5);
@@ -57,20 +57,20 @@
   align-items: flex-start;
   gap: var(--space-3);
   font-size: var(--fs-small);
-  color: var(--black-40);
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .footer__contact li svg {
   flex-shrink: 0;
   margin-top: 2px;
-  color: var(--ocean-400);
+  color: var(--brass-400);
 }
 
 /* Columns */
 .footer__col-title {
   font-family: var(--font-serif);
   font-size: var(--fs-h3);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--white);
   margin-bottom: var(--space-5);
 }
@@ -87,12 +87,12 @@
 .footer__col-list li a {
   text-decoration: none;
   font-size: var(--fs-small);
-  color: var(--black-40);
+  color: rgba(255, 255, 255, 0.55);
   transition: color var(--transition);
 }
 
 .footer__col-list li a:hover {
-  color: var(--ocean-300);
+  color: var(--brass-200);
 }
 
 .footer__socials {
@@ -107,21 +107,21 @@
   width: 40px;
   height: 40px;
   border-radius: var(--radius-full);
-  border: 1px solid var(--black-80);
-  color: var(--white-90);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.75);
   transition: background-color var(--transition), border-color var(--transition), color var(--transition);
 }
 
 .footer__social-icon:hover {
-  background-color: var(--ocean-700);
-  border-color: var(--ocean-700);
-  color: var(--white);
+  background-color: var(--brass-400);
+  border-color: var(--brass-400);
+  color: var(--primary);
 }
 
 /* Divider */
 .footer__divider {
   border: none;
-  border-top: 1px solid var(--black-80);
+  border-top: 1px solid var(--brass-800);
   margin: 0;
 }
 
@@ -137,7 +137,7 @@
 
 .footer__bottom p {
   font-size: var(--fs-xs);
-  color: var(--black-40);
+  color: rgba(255, 255, 255, 0.4);
   margin: 0;
 }
 
@@ -148,7 +148,7 @@
 
 .footer__legal a {
   font-size: var(--fs-xs);
-  color: var(--black-40);
+  color: rgba(255, 255, 255, 0.4);
   text-decoration: none;
   transition: color var(--transition);
 }

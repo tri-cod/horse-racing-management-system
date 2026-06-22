@@ -24,7 +24,7 @@
 
 .change-role-modal__option:hover {
   border-color: var(--primary);
-  background: var(--ocean-50);
+  background: var(--bg-soft);
 }
 
 .change-role-modal__option input[type='radio'] {
