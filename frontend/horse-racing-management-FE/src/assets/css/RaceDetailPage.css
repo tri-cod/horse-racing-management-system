@@ -18,7 +18,7 @@
 .race-detail-page__banner-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--ocean-900), var(--black));
+  background: linear-gradient(135deg, var(--primary), #0F3D6B);
 }
 
 .race-detail-page__banner-overlay {
@@ -40,8 +40,9 @@
 }
 
 .race-detail-page__title {
+  font-family: var(--font-serif);
   font-size: var(--fs-h1);
-  font-weight: 700;
+  font-weight: 800;
   color: var(--white);
   letter-spacing: -0.02em;
 }

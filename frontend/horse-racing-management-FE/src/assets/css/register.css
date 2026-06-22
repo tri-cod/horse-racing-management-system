@@ -145,9 +145,9 @@
 }
 
 .rg-wizard__hero-title {
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-size: clamp(1.875rem, 4vw, 2.75rem);
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: var(--tracking-tight);
   line-height: var(--lh-tight);
   color: var(--text);
@@ -192,9 +192,9 @@
 }
 
 .rg-step-header__title {
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-size: clamp(1.5rem, 3vw, 2.25rem);
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: var(--tracking-tight);
   line-height: var(--lh-tight);
   color: var(--text);
@@ -280,7 +280,7 @@
   height: 52px;
   flex-shrink: 0;
   border-radius: var(--radius-full);
-  background: var(--ocean-100);
+  background: var(--bg-soft);
   color: var(--primary);
   display: flex;
   align-items: center;
@@ -420,7 +420,7 @@
 
 .rg-form__input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--ocean-100);
+  box-shadow: 0 0 0 3px var(--bg-soft);
 }
 
 .rg-form__input::placeholder {
@@ -467,7 +467,7 @@
 
 .rg-form__submit {
   padding: var(--space-3) var(--space-8);
-  background: var(--ocean-700);
+  background: var(--primary);
   color: var(--white);
   border: none;
   border-radius: var(--radius-full);
@@ -482,7 +482,7 @@
 }
 
 .rg-form__submit:hover:not(:disabled) {
-  background: var(--ocean-800);
+  background: var(--primary-hover);
   box-shadow: var(--shadow-md);
 }
 
@@ -535,7 +535,7 @@
 }
 
 .rg-otp-step__resend-ok {
-  color: var(--ocean-700);
+  color: var(--primary);
   font-weight: 700;
 }
 
@@ -587,7 +587,7 @@
 
 .rg-otp__input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--ocean-100);
+  box-shadow: 0 0 0 3px var(--bg-soft);
 }
 
 .rg-otp__input--error {
@@ -617,8 +617,8 @@
   width: 84px;
   height: 84px;
   border-radius: var(--radius-full);
-  background: var(--ocean-50);
-  border: 2px solid var(--ocean-200);
+  background: var(--bg-soft);
+  border: 2px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -626,9 +626,9 @@
 }
 
 .rg-success__title {
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-size: var(--fs-h2);
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: var(--tracking-tight);
   color: var(--text);
   margin: 0;

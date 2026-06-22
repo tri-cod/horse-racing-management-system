@@ -1,24 +1,127 @@
+/* ─── Spinner wrapper ───────────────────────────────────── */
 .spinner {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: var(--space-4);
   padding: var(--space-8);
 }
 
-.spinner--sm { padding: var(--space-4); }
+.spinner--sm { padding: var(--space-4); gap: var(--space-2); }
 .spinner--lg { padding: var(--space-12); }
 
-.spinner__circle {
-  border-radius: 50%;
-  border: 3px solid var(--ocean-100);
-  border-top-color: var(--primary);
-  animation: spin 0.7s linear infinite;
+/* Full-page centred overlay */
+.spinner--fullpage {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 42, 74, 0.06);
+  backdrop-filter: blur(2px);
+  z-index: 900;
+  padding: 0;
 }
 
-.spinner--sm .spinner__circle { width: 24px; height: 24px; }
-.spinner--md .spinner__circle { width: 40px; height: 40px; }
-.spinner--lg .spinner__circle { width: 56px; height: 56px; }
+/* ─── Ring container ────────────────────────────────────── */
+.spinner__track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-@keyframes spin {
+/* Sizes via the parent */
+.spinner--sm .spinner__track  { width: 32px;  height: 32px; }
+.spinner--md .spinner__track  { width: 52px;  height: 52px; }
+.spinner--lg .spinner__track  { width: 72px;  height: 72px; }
+
+/* ─── Rings ─────────────────────────────────────────────── */
+.spinner__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+
+/* Outer ring — navy, clockwise */
+.spinner__ring--outer {
+  border-top-color: var(--primary);
+  border-right-color: var(--primary);
+  animation: rd-spin-cw 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Inner ring — brass, counter-clockwise, slightly smaller */
+.spinner__ring--inner {
+  inset: 8px;
+  border-bottom-color: var(--brass-400);
+  border-left-color: var(--brass-400);
+  animation: rd-spin-ccw 0.75s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* sm — thinner rings */
+.spinner--sm .spinner__ring        { border-width: 2px; }
+.spinner--sm .spinner__ring--inner { inset: 6px; }
+
+/* lg — thicker rings */
+.spinner--lg .spinner__ring        { border-width: 4px; }
+.spinner--lg .spinner__ring--inner { inset: 12px; }
+
+/* ─── Centre dot ────────────────────────────────────────── */
+.spinner__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brass-400);
+  animation: rd-pulse 1s ease-in-out infinite;
+}
+
+.spinner--sm .spinner__dot { width: 4px; height: 4px; }
+.spinner--lg .spinner__dot { width: 8px; height: 8px; }
+
+/* ─── Label ─────────────────────────────────────────────── */
+.spinner__label {
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  margin: 0;
+  animation: rd-fade 1.2s ease-in-out infinite;
+}
+
+/* ─── Keyframes ─────────────────────────────────────────── */
+@keyframes rd-spin-cw {
   to { transform: rotate(360deg); }
+}
+
+@keyframes rd-spin-ccw {
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes rd-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+@keyframes rd-fade {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+/* ─── Global skeleton shimmer ───────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-soft) 25%,
+    #e8edf1 50%,
+    var(--bg-soft) 75%
+  );
+  background-size: 600px 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+  border-radius: var(--radius);
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
 }

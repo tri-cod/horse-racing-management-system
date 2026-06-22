@@ -1,13 +1,12 @@
 .home-newsletter {
-  background-color: var(--ocean-900);
+  background: var(--navy-deep);
   padding: var(--space-12) 0;
   text-align: center;
   color: var(--white);
+  border-top: 3px solid var(--brass-400);
 }
 
-.home-newsletter__eyebrow {
-  color: var(--ocean-200);
-}
+.home-newsletter__eyebrow { color: var(--brass-200); }
 
 .home-newsletter__title {
   color: var(--white);
@@ -16,8 +15,8 @@
 }
 
 .home-newsletter__subtitle {
-  color: var(--ocean-100);
-  max-width: 560px;
+  color: rgba(255,255,255,.6);
+  max-width: 520px;
   margin: 0 auto var(--space-8);
 }
 
@@ -31,40 +30,37 @@
 .home-newsletter__input {
   flex: 1;
   min-width: 240px;
-  max-width: 360px;
+  max-width: 340px;
   padding: var(--space-3) var(--space-5);
   border-radius: var(--radius-full);
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  background-color: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255,255,255,.2);
+  background: rgba(255,255,255,.07);
   color: var(--white);
   font-family: var(--font-sans);
   font-size: var(--fs-body);
   outline: none;
-  transition: border-color var(--transition), background-color var(--transition);
+  transition: border-color var(--transition), background var(--transition);
 }
-
-.home-newsletter__input::placeholder {
-  color: var(--ocean-200);
-}
-
+.home-newsletter__input::placeholder { color: rgba(255,255,255,.4); }
 .home-newsletter__input:focus {
-  border-color: var(--white);
-  background-color: rgba(255, 255, 255, 0.14);
+  border-color: var(--brass-400);
+  background: rgba(255,255,255,.11);
 }
 
 .home-newsletter__submit.ui-btn {
-  background-color: var(--white);
-  border-color: var(--white);
-  color: var(--ocean-900);
+  background: var(--brass-400);
+  border-color: var(--brass-400);
+  color: var(--primary);
+  font-weight: 700;
 }
-
 .home-newsletter__submit.ui-btn:hover {
-  background-color: var(--ocean-100);
-  border-color: var(--ocean-100);
+  background: var(--brass-600);
+  border-color: var(--brass-600);
+  color: var(--white);
 }
 
 .home-newsletter__success {
   margin-top: var(--space-4);
-  color: var(--ocean-200);
+  color: var(--brass-200);
   font-size: var(--fs-small);
 }

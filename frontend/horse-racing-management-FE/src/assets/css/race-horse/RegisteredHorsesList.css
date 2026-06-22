@@ -21,15 +21,16 @@
 }
 
 .reg-horses__table th {
-  background: var(--black-5);
+  background: var(--primary);
   padding: var(--space-3) var(--space-4);
   text-align: left;
+  font-family: var(--font-data);
   font-size: var(--fs-xs);
   font-weight: 600;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.75);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid #08203A;
 }
 
 .reg-horses__row {
@@ -42,7 +43,7 @@
 }
 
 .reg-horses__row:hover {
-  background: var(--ocean-50);
+  background: var(--bg-soft);
 }
 
 .reg-horses__row td {
@@ -86,7 +87,7 @@
 }
 
 .reg-horses__btn--approve:hover {
-  background: var(--ocean-50);
+  background: var(--bg-soft);
   border-color: var(--primary);
 }
 

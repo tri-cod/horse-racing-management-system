@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Landmark, RefreshCw, ShieldCheck } from 'lucide-react';
+import { Landmark, RefreshCw, ShieldCheck, TrendingDown } from 'lucide-react';
 import { getSystemBalance } from '../api/walletApi';
+import DashboardPageHeader from '../components/rd/DashboardPageHeader';
+import StatCard from '../components/rd/StatCard';
+import Seo from '../components/seo/Seo';
 import '../assets/css/wallet/MyWalletPage.css';
+import '../assets/css/rd/workspace.css';
 
 const fmt = (n) =>
-  n != null
-    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n)
-    : '—';
+  n != null ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n) : '—';
 
 export default function AdminWalletPage() {
   const [balance, setBalance] = useState(null);
@@ -16,8 +18,7 @@ export default function AdminWalletPage() {
   const fetchBalance = useCallback(async () => {
     try {
       setLoading(true); setError('');
-      const data = await getSystemBalance();
-      setBalance(data);
+      setBalance(await getSystemBalance());
     } catch (e) {
       setError(e?.response?.data?.message || 'Unable to load system balance.');
     } finally {
@@ -28,50 +29,40 @@ export default function AdminWalletPage() {
   useEffect(() => { fetchBalance(); }, [fetchBalance]);
 
   return (
-    <div className="my-wallet-page">
-      <section className="my-wallet-page__hero">
-        <div className="my-wallet-page__hero-inner">
-          <span className="eyebrow my-wallet-page__eyebrow">System</span>
-          <h1 className="my-wallet-page__hero-title">System Wallet</h1>
-          <p className="my-wallet-page__hero-sub">Balance accumulated from losing bets across the system.</p>
-        </div>
-      </section>
+    <div className="ws-page">
+      <Seo title="System Wallet" description="View the Royal Derby system wallet balance." />
+      <DashboardPageHeader
+        eyebrow="Admin"
+        title="System Wallet"
+        subtitle="Balance accumulated from losing bets across the system"
+        action={
+          <button type="button" className="ui-btn ui-btn--outline ui-btn--sm" onClick={fetchBalance} disabled={loading}>
+            <RefreshCw size={14} /> Refresh
+          </button>
+        }
+      />
 
-      <div className="my-wallet-page__body">
-        <div className="wallet-card">
-          <div className="wallet-card__icon">
-            <Landmark size={28} />
-          </div>
-          <div className="wallet-card__content">
-            <span className="wallet-card__label">System Balance</span>
-            {loading ? (
-              <div className="wallet-card__skeleton" />
-            ) : error ? (
-              <span className="wallet-card__error">{error}</span>
-            ) : (
-              <span className="wallet-card__balance">{fmt(balance)}</span>
-            )}
-          </div>
-          <div className="wallet-card__actions">
-            <button
-              type="button"
-              className="ui-btn ui-btn--outline ui-btn--sm"
-              onClick={fetchBalance}
-              disabled={loading}
-            >
-              <RefreshCw size={14} /> Refresh
-            </button>
-          </div>
+      <div className="ws-body ws-body--narrow">
+        <div className="ws-stat-row">
+          <StatCard icon={Landmark} label="System Balance" value={loading ? '…' : error ? 'Error' : fmt(balance)} tileVariant="brass" />
+          <StatCard icon={TrendingDown} label="Source" value="Lost Bets" tileVariant="default" />
         </div>
 
-        <div className="wallet-info">
-          <div className="wallet-info__item">
-            <ShieldCheck size={16} />
-            <div>
-              <span className="wallet-info__title">What is the system balance?</span>
-              <p className="wallet-info__desc">
-                This is the total amount from losing bets transferred into the system wallet after each race ends. Only Admins and Staff can view this balance.
-              </p>
+        <div className="ws-panel">
+          <div className="ws-panel__header">
+            <h2 className="ws-panel__title">About System Wallet</h2>
+          </div>
+          <div className="ws-panel__body">
+            <div className="wallet-info" style={{ border: 'none', borderRadius: 0, background: 'none', padding: 0 }}>
+              <div className="wallet-info__item">
+                <ShieldCheck size={16} />
+                <div>
+                  <span className="wallet-info__title">What is the system balance?</span>
+                  <p className="wallet-info__desc">
+                    This is the total amount from losing bets transferred into the system wallet after each race ends. Only Admins and Staff can view this balance.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

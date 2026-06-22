@@ -1,5 +1,6 @@
 import '../assets/css/register.css';
 import RegisterForm from '../components/form/RegisterForm';
+import Seo from '../components/seo/Seo';
 
 /* ---- Icons ---- */
 const EyeIcon = () => (
@@ -70,6 +71,7 @@ const ROLE_CONFIG = {
 export default function RegisterPage() {
   return (
     <div className="rg-page">
+      <Seo title="Create Account" description="Register a new Royal Derby account as a jockey, trainer, horse owner or spectator." />
       <div className="rg-page__main">
         <RegisterForm roles={ROLES} roleConfig={ROLE_CONFIG} />
       </div>

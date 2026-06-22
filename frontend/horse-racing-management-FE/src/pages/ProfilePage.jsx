@@ -2,15 +2,14 @@ import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { User, Mail, Phone, IdCard, Shield, CheckCircle, LogOut } from 'lucide-react'
 import { AuthContext } from '../context/AuthContext'
+import DashboardPageHeader from '../components/rd/DashboardPageHeader'
+import Seo from '../components/seo/Seo'
 import '../assets/css/ProfilePage.css'
+import '../assets/css/rd/workspace.css'
 
 const ROLE_CLASS = {
-  ADMIN: 'profile__badge--admin',
-  STAFF: 'profile__badge--staff',
-  HORSE_OWNER: 'profile__badge--owner',
-  JOCKEY: 'profile__badge--jockey',
-  REFEREE: 'profile__badge--referee',
-  USER: 'profile__badge--user',
+  ADMIN: 'profile__badge--admin', STAFF: 'profile__badge--staff', HORSE_OWNER: 'profile__badge--owner',
+  JOCKEY: 'profile__badge--jockey', REFEREE: 'profile__badge--referee', USER: 'profile__badge--user',
 }
 
 const getValue = (value) => (value ? value : '—')
@@ -25,44 +24,28 @@ export default function ProfilePage() {
 
   const handleRefresh = async () => {
     setError(null)
-    try {
-      await refreshUser()
-    } catch (err) {
-      setError(err.response?.data?.message || 'Unable to refresh your information. Please try again.')
-    }
+    try { await refreshUser() }
+    catch (err) { setError(err.response?.data?.message || 'Unable to refresh. Please try again.') }
   }
 
   const handleLogout = async () => {
     const confirmed = window.confirm('Are you sure you want to log out?')
-    if (!confirmed) {
-      return
-    }
-
+    if (!confirmed) return
     await logout()
     navigate('/')
   }
 
   if (!user) {
     return (
-      <div className="profile-page">
-        <div className="profile-page__container">
-          <div className="profile__card">
+      <div className="ws-page">
+        <div className="ws-body ws-body--narrow">
+          <div className="ws-panel">
             <div className="profile__identity">
               <div className="profile__hero-avatar profile__skeleton" />
               <div className="profile__hero-info">
                 <div className="profile__skeleton profile__skeleton-line" style={{ width: '70%' }} />
                 <div className="profile__skeleton profile__skeleton-line" style={{ width: '45%' }} />
-                <div className="profile__hero-badges">
-                  <div className="profile__skeleton" style={{ width: '110px', height: '34px' }} />
-                  <div className="profile__skeleton" style={{ width: '90px', height: '34px' }} />
-                </div>
               </div>
-            </div>
-
-            <div className="profile__grid">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="profile__field profile__skeleton profile__skeleton-box" />
-              ))}
             </div>
           </div>
         </div>
@@ -71,24 +54,33 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="profile-page">
-      <div className="profile-page__container">
-        <div className="profile__card">
-          <div className="profile__identity">
+    <div className="ws-page">
+      <Seo title="My Profile" description="View and manage your Royal Derby account." />
+      <DashboardPageHeader
+        eyebrow="My Account"
+        title={getValue(user?.fullName || user?.username)}
+        subtitle={`${user?.role} · ${user?.status}`}
+      />
+
+      <div className="ws-body ws-body--narrow">
+        {error && (
+          <div className="ws-error">
+            <span>{error}</span>
+            <button type="button" className="profile__retry-btn" onClick={handleRefresh}>Retry</button>
+          </div>
+        )}
+
+        <div className="ws-panel">
+          {/* Avatar + badges */}
+          <div className="profile__identity" style={{ padding: 'var(--space-6)' }}>
             <div className="profile__hero-avatar">
               {user?.avatar ? (
-                <img
-                  src={user.avatar}
-                  alt={user.fullName || user.username}
-                  className="profile__hero-image"
-                />
+                <img src={user.avatar} alt={user.fullName || user.username} className="profile__hero-image" />
               ) : (
                 <div className="profile__hero-fallback">{avatarInitial}</div>
               )}
             </div>
-
             <div className="profile__hero-info">
-              <p className="profile__hero-subtitle">Your Profile</p>
               <h1 className="profile__hero-title">{getValue(user?.fullName || user?.username)}</h1>
               <div className="profile__hero-badges">
                 <span className={`profile__badge ${roleClass}`}>{getValue(user?.role)}</span>
@@ -97,69 +89,32 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {error && (
-            <div className="profile__error-banner">
-              <span>{error}</span>
-              <button type="button" className="profile__retry-btn" onClick={handleRefresh}>
-                Try Again
-              </button>
-            </div>
-          )}
-
-          <div className="profile__grid">
-            <div className="profile__field">
-              <div className="profile__field-icon"><User size={18} /></div>
-              <div>
-                <p className="profile__field-label">Username</p>
-                <p className="profile__field-value">{getValue(user?.username)}</p>
-              </div>
-            </div>
-
-            <div className="profile__field">
-              <div className="profile__field-icon"><Mail size={18} /></div>
-              <div>
-                <p className="profile__field-label">Email</p>
-                <p className="profile__field-value">{getValue(user?.email)}</p>
-              </div>
+          {/* Details grid */}
+          <div style={{ borderTop: '1px solid var(--border)', padding: 'var(--space-6)' }}>
+            <div className="profile__grid">
+              {[
+                { icon: User,         label: 'Username',     value: user?.username },
+                { icon: Mail,         label: 'Email',        value: user?.email },
+                { icon: Phone,        label: 'Phone Number', value: user?.phoneNumber },
+                { icon: IdCard,       label: 'Full Name',    value: user?.fullName },
+                { icon: Shield,       label: 'Role',         value: user?.role },
+                { icon: CheckCircle,  label: 'Status',       value: user?.status },
+              ].map(({ icon: Icon, label, value }) => (
+                <div key={label} className="profile__field">
+                  <div className="profile__field-icon"><Icon size={17} /></div>
+                  <div>
+                    <p className="profile__field-label">{label}</p>
+                    <p className="profile__field-value">{getValue(value)}</p>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <div className="profile__field">
-              <div className="profile__field-icon"><Phone size={18} /></div>
-              <div>
-                <p className="profile__field-label">Phone Number</p>
-                <p className="profile__field-value">{getValue(user?.phoneNumber)}</p>
-              </div>
-            </div>
-
-            <div className="profile__field">
-              <div className="profile__field-icon"><IdCard size={18} /></div>
-              <div>
-                <p className="profile__field-label">Full Name</p>
-                <p className="profile__field-value">{getValue(user?.fullName)}</p>
-              </div>
-            </div>
-
-            <div className="profile__field">
-              <div className="profile__field-icon"><Shield size={18} /></div>
-              <div>
-                <p className="profile__field-label">Role</p>
-                <p className="profile__field-value">{getValue(user?.role)}</p>
-              </div>
-            </div>
-
-            <div className="profile__field">
-              <div className="profile__field-icon"><CheckCircle size={18} /></div>
-              <div>
-                <p className="profile__field-label">Status</p>
-                <p className="profile__field-value">{getValue(user?.status)}</p>
-              </div>
-            </div>
+            <button className="profile__logout-btn" type="button" onClick={handleLogout} style={{ marginTop: 'var(--space-6)' }}>
+              <LogOut size={17} />
+              <span>Log Out</span>
+            </button>
           </div>
-
-          <button className="profile__logout-btn" type="button" onClick={handleLogout}>
-            <LogOut size={18} />
-            <span>Log Out</span>
-          </button>
         </div>
       </div>
     </div>

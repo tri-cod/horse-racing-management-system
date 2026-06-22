@@ -32,8 +32,9 @@
 }
 
 .trainer-profile-page__name {
+  font-family: var(--font-serif);
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text);
 }
 
@@ -42,10 +43,13 @@
   align-items: center;
   padding: 0.25rem 0.75rem;
   border-radius: var(--radius-full);
-  background: var(--ocean-50);
-  color: var(--ocean-700);
+  background: var(--bg-soft);
+  color: var(--primary);
+  font-family: var(--font-data);
   font-size: var(--fs-xs);
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .trainer-profile-page__main {

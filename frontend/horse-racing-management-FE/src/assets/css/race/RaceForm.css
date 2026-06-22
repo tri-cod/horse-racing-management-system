@@ -160,7 +160,7 @@
 }
 
 .race-form__required {
-  color: var(--ocean-600);
+  color: var(--error);
 }
 
 .race-form__optional {
@@ -264,8 +264,8 @@ select.race-form__input {
 
 .rf-dropzone:hover,
 .rf-dropzone--drag {
-  border-color: var(--accent);
-  background: rgba(14, 165, 233, 0.04);
+  border-color: var(--primary);
+  background: rgba(11, 42, 74, 0.04);
 }
 
 .rf-dropzone__inner {
@@ -279,7 +279,7 @@ select.race-form__input {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba(14, 165, 233, 0.08);
+  background: var(--bg-soft);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -293,7 +293,7 @@ select.race-form__input {
   width: 36px;
   height: 36px;
   border: 3px solid var(--border);
-  border-top-color: var(--accent);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }

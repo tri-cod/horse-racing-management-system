@@ -6,6 +6,7 @@ import { useToast } from '../components/ui/ToastProvider';
 import RaceForm from '../components/race/RaceForm';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Button from '../components/ui/Button';
+import Seo from '../components/seo/Seo';
 import '../assets/css/AdminRacePage.css';
 
 export default function AdminEditRacePage() {
@@ -70,7 +71,11 @@ export default function AdminEditRacePage() {
 
   return (
     <div className="admin-race-page">
+      <Seo title={race?.raceName ? `Edit — ${race.raceName}` : 'Edit Race'} description="Edit race details on Royal Derby." />
 <div className="admin-race-page__content">
+        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--fs-h2)', fontWeight: 800, color: 'var(--text)', marginBottom: 'var(--space-4)' }}>
+          {race?.raceName ? `Edit: ${race.raceName}` : 'Edit Race'}
+        </h1>
         {canClose && (
           <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end' }}>
             <Button variant="outline" onClick={handleCloseRegistration} disabled={closing}>

@@ -2,6 +2,14 @@
   min-height: 100vh;
 }
 
+.my-reg-page__section-title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-h2);
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: var(--space-5);
+}
+
 .my-reg-page__content {
   max-width: var(--container);
   margin-inline: auto;
