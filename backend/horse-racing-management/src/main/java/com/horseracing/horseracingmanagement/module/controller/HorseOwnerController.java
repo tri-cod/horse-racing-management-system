@@ -98,4 +98,11 @@ public class HorseOwnerController {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 horseOwnerService.getHorseList(userId)));
     }
+
+    @GetMapping("/horses/available")
+    public ResponseEntity<ApiResponse<List<SignHorseResponse>>> getAvailableHorses(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getAvailableHorseList(userDetails.getId())));
+    }
 }

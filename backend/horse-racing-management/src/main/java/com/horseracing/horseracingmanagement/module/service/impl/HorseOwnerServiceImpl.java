@@ -5,10 +5,7 @@ import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseR
 import com.horseracing.horseracingmanagement.module.entity.Horse;
 import com.horseracing.horseracingmanagement.module.entity.HorseOwner;
 import com.horseracing.horseracingmanagement.module.entity.Trainer;
-import com.horseracing.horseracingmanagement.module.responsitory.HorseOwnerRepository;
-import com.horseracing.horseracingmanagement.module.responsitory.HorseRepository;
-import com.horseracing.horseracingmanagement.module.responsitory.TrainerRepository;
-import com.horseracing.horseracingmanagement.module.responsitory.UserRepository;
+import com.horseracing.horseracingmanagement.module.responsitory.*;
 import com.horseracing.horseracingmanagement.module.service.HorseOwnerService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +22,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
     private final HorseOwnerRepository horseOwnerRepository;
     private final TrainerRepository trainerRepository;
     private final UserRepository userRepository;
+    private final RaceHorseRepository raceHorseRepository;
 
 
     @Override
@@ -105,6 +103,28 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<SignHorseResponse> getAvailableHorseList(Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
+
+        List<Horse> ownerHorses = horseRepository.findByOwnerId(owner.getId());
+
+        // Lấy danh sách horseId đã đăng ký vào bất kỳ race nào (Pending/Approved)
+        List<Long> horsesInRace = raceHorseRepository.findHorseIdsAlreadyInAnyRace();
+
+        // Lọc ra horse chưa đăng ký race nào
+        return ownerHorses.stream()
+                .filter(horse -> !horsesInRace.contains(horse.getId()))
+                .map(horse -> {
+                    String trainerName = horse.getTrainerId() != null
+                            ? trainerRepository.findById(horse.getTrainerId())
+                            .map(t -> t.getUser().getFullName()).orElse(null)
+                            : null;
+                    return mapToResponse(horse, owner.getName(), horse.getTrainerId(), trainerName);
+                })
+                .collect(Collectors.toList());
+    }
 
 
 

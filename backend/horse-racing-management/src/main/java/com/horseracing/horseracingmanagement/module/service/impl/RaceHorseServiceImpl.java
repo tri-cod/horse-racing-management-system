@@ -2,6 +2,7 @@ package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
+import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RegisterRaceHorseRequest;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetAllOddsRequest;
@@ -189,6 +190,28 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         return raceHorseRepository.findByStatus("Pending")
                 .stream()
                 .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<JockeyResponse> getAvaiableJockeyList(Long raceId) {
+        List<Jockey> activeJockeys = jockeyRepository.findByStatus("Active");
+
+        // Lấy danh sách jockey đã được assign trong race này
+        List<Long> assignedJockeyIds = raceHorseRepository.findJockeyIdsByRaceId(raceId);
+
+        // Lọc bỏ jockey đã có trong race này
+        return activeJockeys.stream()
+                .filter(jockey -> !assignedJockeyIds.contains(jockey.getId()))
+                .map(j -> JockeyResponse.builder()
+                        .id(j.getId())
+                        .name(j.getUser().getFullName() != null
+                                ? j.getUser().getFullName()
+                                : j.getUser().getUsername())
+                        .age(j.getAge())
+                        .experienceYear(j.getExperienceYear())
+                        .status(j.getStatus())
+                        .build())
                 .collect(Collectors.toList());
     }
 

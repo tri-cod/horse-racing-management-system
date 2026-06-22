@@ -128,8 +128,6 @@ public class BetServiceImpl implements BetService {
         User adminUser = userRepository.findFirstByRole_Rolename(RoleName.ADMIN)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
-        System.out.print("adminUserId :========== " +  adminUser.getId());
-
         Wallet adminWallet = walletRepository.findByUser_Id(adminUser.getId())
                 .orElseThrow(() -> new RuntimeException("Admin wallet not found"));
 
@@ -161,6 +159,7 @@ public class BetServiceImpl implements BetService {
                 Wallet wallet = walletRepository.findByUser_Id(bet.getUser().getId()).orElseThrow();
                 wallet.setBalance(wallet.getBalance().add(totalPayout));
                 walletRepository.save(wallet);
+                adminWallet.setBalance(adminWallet.getBalance().subtract(totalPayout));
 
                 notificationService.sendToUser(
                         bet.getUser().getId(),

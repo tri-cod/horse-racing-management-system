@@ -12,4 +12,5 @@ public interface HorseOwnerService {
     SignHorseResponse assignTrainer(Long horseId, Long trainerId, Long userId);
     SignHorseResponse getHorse(Long horseId);
     List<SignHorseResponse> getHorseList(Long userId);
+    List<SignHorseResponse> getAvailableHorseList(Long userId);
 }

@@ -26,6 +26,6 @@ public class Wallet {
     @JoinColumn(name = "user_id", nullable = false, unique = true)  // ← bỏ @MapsId
     private User user;
 
-    @Column(name = "balance", precision = 10, scale = 2)
+    @Column(name = "balance", precision = 19, scale = 2)
     private BigDecimal balance = BigDecimal.ZERO;
 }

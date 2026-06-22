@@ -4,11 +4,13 @@ import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyResponse;
 import com.horseracing.horseracingmanagement.module.entity.Jockey;
 import com.horseracing.horseracingmanagement.module.responsitory.JockeyRepository;
+import com.horseracing.horseracingmanagement.module.service.RaceHorseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class JockeyController {
 
     private final JockeyRepository jockeyRepository;
+    private final RaceHorseService raceHorseService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<JockeyResponse>>> getJockeyList() {
@@ -37,5 +40,12 @@ public class JockeyController {
                         .build())
                 .collect(Collectors.toList());
         return ResponseEntity.ok(ApiResponse.success("Success", response));
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<ApiResponse<List<JockeyResponse>>> getAvailableJockeys(
+            @RequestParam Long raceId) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                raceHorseService.getAvaiableJockeyList(raceId)));
     }
 }

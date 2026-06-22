@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS wallet CASCADE;
 CREATE TABLE wallet (
                         id      BIGSERIAL PRIMARY KEY,
                         user_id BIGINT NOT NULL UNIQUE REFERENCES users(user_id),
-                        balance NUMERIC(10,2) DEFAULT 0
+                        balance NUMERIC(19,2) DEFAULT 0
 );
 
 

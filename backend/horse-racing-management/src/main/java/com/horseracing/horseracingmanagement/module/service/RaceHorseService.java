@@ -1,9 +1,11 @@
 package com.horseracing.horseracingmanagement.module.service;
 
+import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RegisterRaceHorseRequest;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetAllOddsRequest;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetOddsRequest;
+import com.horseracing.horseracingmanagement.module.entity.Jockey;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,4 +20,5 @@ public interface RaceHorseService {
     void setOdds(SetAllOddsRequest request);        // set odds cho tất cả horse
     RaceHorseResponse setOddsForOne(SetOddsRequest request);
     List<RaceHorseResponse> getPendingHorses(); // Admin lấy danh sách chờ duyệt
+    List<JockeyResponse> getAvaiableJockeyList(Long raceId);
 }
