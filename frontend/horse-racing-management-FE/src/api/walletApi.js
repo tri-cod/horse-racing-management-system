@@ -17,3 +17,21 @@ export const rejectDeposit = (id, note) =>
 
 export const getSystemBalance = () =>
   axiosInstance.get('/wallet/balance/system').then((res) => res.data.data);
+
+export const getMyBankAccounts = () =>
+  axiosInstance.get('/wallet/bank-accounts').then((res) => res.data.data);
+ 
+export const addBankAccount = (payload) =>
+  axiosInstance.post('/wallet/bank-accounts', payload).then((res) => res.data.data);
+
+export const createWithdraw = (payload) =>
+  axiosInstance.post('/wallet/withdraw', payload).then((res) => res.data.data);
+ 
+export const getPendingWithdraws = () =>
+  axiosInstance.get('/wallet/withdraw/pending').then((res) => res.data.data);
+ 
+export const approveWithdraw = (id, note) =>
+  axiosInstance.put(`/wallet/withdraw/${id}/approve`, null, { params: { note } }).then((res) => res.data);
+ 
+export const rejectWithdraw = (id, note) =>
+  axiosInstance.put(`/wallet/withdraw/${id}/reject`, null, { params: { note } }).then((res) => res.data);

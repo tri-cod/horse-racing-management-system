@@ -127,3 +127,110 @@
 .adep-badge--pending { background: var(--brass-50); color: var(--brass-600); border: 1px solid var(--brass-200); }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Tabs ────────────────────────────────────────────── */
+.adep-tabs {
+  display: flex;
+  gap: 0;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--white);
+  width: fit-content;
+}
+
+.adep-tabs__btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
+  border: none;
+  background: transparent;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+  border-right: 1.5px solid var(--border);
+}
+
+.adep-tabs__btn:last-child {
+  border-right: none;
+}
+
+.adep-tabs__btn:hover {
+  background: var(--bg-soft);
+  color: var(--text);
+}
+
+.adep-tabs__btn.active {
+  background: var(--primary);
+  color: var(--text-invert);
+}
+
+/* ── Bank info cell ──────────────────────────────────── */
+.adep-bank-info {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.adep-bank-info__icon {
+  color: var(--text-muted);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.adep-bank-info__name {
+  display: block;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.adep-bank-info__holder {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.adep-bank-info__number {
+  display: block;
+  font-size: var(--fs-xs);
+  font-family: monospace;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+/* ── Workspace shared ────────────────────────────────── */
+.ws-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--error-bg);
+  border: 1px solid #fecaca;
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  color: var(--error);
+  font-size: var(--fs-small);
+}
+
+.ws-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-12) var(--space-5);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.ws-empty__icon { margin-bottom: var(--space-4); }
+
+.ws-empty__title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+  color: var(--text);
+}

@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bell, Trophy, Target, CheckCircle, Wallet, Info } from 'lucide-react';
 import { getMyNotifications, countUnread, markAsRead } from '../api/notificationApi';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 import '../assets/css/NotificationBell.css';
 
 function timeAgo(dateStr) {
@@ -20,8 +22,32 @@ function NotifIcon({ type }) {
   if (t.includes('RACE') || t.includes('RESULT')) return <Trophy size={15} />;
   if (t.includes('BET')) return <Target size={15} />;
   if (t.includes('REGISTR')) return <CheckCircle size={15} />;
-  if (t.includes('WALLET') || t.includes('PAYMENT') || t.includes('DEPOSIT')) return <Wallet size={15} />;
+  if (t.includes('WALLET') || t.includes('PAYMENT') || t.includes('DEPOSIT') || t.includes('WITHDRAW')) return <Wallet size={15} />;
   return <Info size={15} />;
+}
+
+function getNotifRoute(notif, userRole) {
+  const title = (notif.title ?? '').toLowerCase();
+  const type  = (notif.type  ?? '').toLowerCase();
+  const isAdmin = ['ADMIN', 'STAFF'].includes(userRole);
+
+  // Admin nhận request mới → trang quản lý
+  if (isAdmin && title.includes('withdraw')) {
+    return '/admin/deposits?tab=withdraw';
+  }
+  if (isAdmin && title.includes('deposit')) {
+    return '/admin/deposits?tab=deposit';
+  }
+  // User nhận kết quả withdraw/deposit → trang wallet
+  if (!isAdmin && (title.includes('withdraw') || title.includes('deposit'))) {
+    return '/my-wallet';
+  }
+  // Race result, bet → trang race cụ thể
+  if (notif.referenceId && (title.includes('race') || title.includes('bet') || title.includes('result') || type.includes('race'))) {
+    return `/races/${notif.referenceId}`;
+  }
+  // Mặc định → trang notifications
+  return '/notifications';
 }
 
 export default function NotificationBell() {
@@ -30,6 +56,7 @@ export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
   const [loadingList, setLoadingList] = useState(false);
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
   const hasFetched = useRef(false);
   const closeTimer = useRef(null);
 
@@ -78,7 +105,7 @@ export default function NotificationBell() {
       setUnreadCount((c) => Math.max(0, c - 1));
     }
     setOpen(false);
-    navigate(notif.referenceId ? `/races/${notif.referenceId}` : '/notifications');
+    navigate(getNotifRoute(notif, user?.role));
   };
 
   return (

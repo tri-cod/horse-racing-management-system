@@ -1,0 +1,867 @@
+/* ── Withdraw Modal ───────────────────────────────────── */
+.withdraw-modal__header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* ── Steps ───────────────────────────────────────────── */
+.withdraw-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.withdraw-step__label {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.withdraw-step__hint {
+  font-size: var(--fs-small);
+  color: var(--accent);
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+}
+
+.withdraw-step__loading {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  padding: var(--space-6) 0;
+}
+
+.withdraw-step__actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  margin-top: var(--space-2);
+}
+
+/* ── Balance display ─────────────────────────────────── */
+.withdraw-balance-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+}
+
+.withdraw-balance-display__label {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.withdraw-balance-display__value {
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* ── Account list ────────────────────────────────────── */
+.withdraw-account-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.withdraw-account-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color var(--transition), background var(--transition);
+  width: 100%;
+}
+
+.withdraw-account-item:hover {
+  border-color: var(--accent);
+  background: var(--bg-soft);
+}
+
+.withdraw-account-item.selected {
+  border-color: var(--primary);
+  background: var(--brass-50);
+}
+
+.withdraw-account-item__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius);
+  background: var(--brass-50);
+  color: var(--brass-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.withdraw-account-item.selected .withdraw-account-item__icon {
+  background: var(--primary);
+  color: var(--text-invert);
+}
+
+.withdraw-account-item__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.withdraw-account-item__bank {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.withdraw-account-item__name {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.withdraw-account-item__number {
+  font-size: var(--fs-small);
+  font-family: monospace;
+  color: var(--text-muted);
+}
+
+.withdraw-account-item__check {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.withdraw-account-add {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  width: 100%;
+  transition: all var(--transition);
+}
+
+.withdraw-account-add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-soft);
+}
+
+/* ── Add Bank Form ───────────────────────────────────── */
+.withdraw-bank-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.withdraw-bank-form__hint {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.withdraw-bank-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.withdraw-bank-form__label {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.withdraw-bank-form__input {
+  padding: var(--space-3);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: var(--fs-body);
+  font-family: var(--font-sans);
+  transition: border-color var(--transition);
+  width: 100%;
+}
+
+.withdraw-bank-form__input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.withdraw-bank-form__actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  margin-top: var(--space-2);
+}
+
+/* ── Error ───────────────────────────────────────────── */
+.withdraw-form__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--error);
+  background: var(--error-bg);
+  border: 1px solid #fecaca;
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-small);
+}
+
+/* ── Confirm ─────────────────────────────────────────── */
+.withdraw-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.withdraw-confirm__amount {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-5);
+  background: var(--bg-soft);
+  border-radius: var(--radius-lg);
+  gap: var(--space-1);
+}
+
+.withdraw-confirm__amount-label {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.withdraw-confirm__amount-value {
+  font-size: var(--fs-h2);
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.withdraw-confirm__to {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.withdraw-confirm__to-label {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.withdraw-confirm__account {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  color: var(--text-muted);
+}
+
+.withdraw-confirm__bank {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.withdraw-confirm__holder {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.withdraw-confirm__number {
+  font-size: var(--fs-small);
+  font-family: monospace;
+  color: var(--text-muted);
+}
+
+.withdraw-confirm__warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--fs-small);
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  line-height: 1.5;
+}
+
+.withdraw-confirm__warning strong {
+  font-weight: 600;
+}
+
+/* ── Done ────────────────────────────────────────────── */
+.withdraw-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  text-align: center;
+}
+
+.withdraw-done__icon {
+  color: #16a34a;
+}
+
+.withdraw-done__title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.withdraw-done__desc {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.6;
+  max-width: 380px;
+}
+
+.withdraw-done__ref {
+  background: var(--bg-soft);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.withdraw-done__ref-code {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  font-family: monospace;
+  color: var(--primary);
+}
+
+.withdraw-done__close {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ── Disabled quick btn ──────────────────────────────── */
+.deposit-form__quick-btn.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── Bank Combobox ───────────────────────────────────── */
+.bank-combo {
+  position: relative;
+  width: 100%;
+}
+
+.bank-combo__input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.bank-combo__input-logo {
+  position: absolute;
+  left: 10px;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.bank-combo__input {
+  width: 100%;
+  padding: var(--space-3) var(--space-3) var(--space-3) 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: var(--fs-body);
+  font-family: var(--font-sans);
+  transition: border-color var(--transition);
+  background: var(--white);
+  color: var(--text);
+}
+
+.bank-combo__input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.bank-combo__input-wrap.open .bank-combo__input {
+  border-color: var(--accent);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.bank-combo__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border: 1.5px solid var(--accent);
+  border-top: none;
+  border-bottom-left-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
+  box-shadow: 0 8px 20px rgba(11,42,74,0.1);
+  z-index: 200;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.bank-combo__option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 8px var(--space-3);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  text-align: left;
+  transition: background var(--transition);
+}
+
+.bank-combo__option:last-child { border-bottom: none; }
+.bank-combo__option:hover,.bank-combo__option.highlighted { background: var(--bg-soft); cursor: pointer; }
+.bank-combo__option.active { background: var(--brass-50); }
+
+.bank-combo__option-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+}
+
+.bank-combo__option-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.bank-combo__option-fallback {
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.bank-combo__option-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.bank-combo__option-name {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text);
+}
+
+.bank-combo__option-code {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+/* ── Bank logo trong danh sách accounts ──────────────── */
+.withdraw-account-item__logo {
+  border-radius: 8px;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  background: var(--white);
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.withdraw-account-item__icon-fallback {
+  border-radius: 8px;
+  background: var(--brass-50);
+  color: var(--brass-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Form sub-text ───────────────────────────────────── */
+.withdraw-bank-form__sub {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-1);
+  display: block;
+}
+
+.withdraw-bank-form__input--mono {
+  font-family: monospace;
+  letter-spacing: 0.05em;
+}
+
+/* ── Disabled quick btn ──────────────────────────────── */
+.deposit-form__quick-btn.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── Step 2 redesign ─────────────────────────────────── */
+.wd-balance-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  color: var(--text-invert);
+}
+
+.wd-balance-chip__left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wd-balance-chip__label {
+  font-size: var(--fs-xs);
+  opacity: 0.7;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.wd-balance-chip__value {
+  font-size: var(--fs-h3);
+  font-weight: 700;
+}
+
+.wd-balance-chip__all {
+  padding: var(--space-2) var(--space-4);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-invert);
+  font-size: var(--fs-small);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.wd-balance-chip__all:hover,
+.wd-balance-chip__all.active {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.7);
+}
+
+/* Amount field */
+.wd-amount-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.wd-amount-field__inner {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color var(--transition);
+  background: var(--white);
+}
+
+.wd-amount-field__inner:focus-within {
+  border-color: var(--accent);
+}
+
+.wd-amount-field__currency {
+  padding: 0 var(--space-4);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--text-muted);
+  border-right: 2px solid var(--border);
+  background: var(--bg-soft);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.wd-amount-field__input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  font-family: var(--font-sans);
+  padding: 0 var(--space-4);
+  height: 64px;
+  color: var(--text);
+  background: transparent;
+  min-width: 0;
+}
+
+.wd-amount-field__input::placeholder {
+  color: var(--border-strong);
+  font-weight: 400;
+}
+
+.wd-amount-field__error {
+  font-size: var(--fs-xs);
+  color: var(--error);
+  display: block;
+  padding-left: var(--space-1);
+}
+
+.wd-amount-field__preview {
+  font-size: var(--fs-small);
+  color: var(--accent);
+  padding-left: var(--space-1);
+}
+
+/* Quick amounts */
+.wd-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  align-items: center;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  width: fit-content;
+}
+
+.wd-quick__btn {
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  border-right: 1.5px solid var(--border);
+  background: var(--white);
+  font-size: var(--fs-small);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all var(--transition);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.wd-quick__btn:last-child {
+  border-right: none;
+}
+
+.wd-quick__btn:hover {
+  background: var(--bg-soft);
+  color: var(--primary);
+}
+
+.wd-quick__btn.active {
+  background: var(--primary);
+  color: var(--text-invert);
+}
+
+/* Info note */
+.wd-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  padding: var(--space-2) 0;
+  flex-shrink: 0;
+}
+
+/* ── Step 3 redesign ─────────────────────────────────── */
+.wd-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.wd-confirm__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-6) var(--space-4);
+  background: var(--bg-soft);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.wd-confirm__hero-label {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.wd-confirm__hero-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1.1;
+}
+
+.wd-confirm__hero-remain {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  margin-top: var(--space-1);
+}
+
+.wd-confirm__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.wd-confirm__row-label {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.wd-confirm__bank-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+}
+
+.wd-confirm__bank-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wd-confirm__bank-name {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.wd-confirm__bank-holder {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.wd-confirm__bank-number {
+  font-size: var(--fs-small);
+  font-family: monospace;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.wd-confirm__warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--fs-xs);
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  line-height: 1.5;
+}
+
+/* ── Step 4 redesign ─────────────────────────────────── */
+.wd-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  text-align: center;
+}
+
+.wd-done__icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #f0fdf4;
+  border: 2px solid #bbf7d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #16a34a;
+}
+
+.wd-done__amount {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.wd-done__title {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+.wd-done__desc {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 340px;
+}
+
+.wd-done__ref {
+  width: 100%;
+  background: var(--bg-soft);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.wd-done__ref-label {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.wd-done__ref-code {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--primary);
+  font-family: monospace;
+  letter-spacing: 0.05em;
+}
+
+.wd-done__close {
+  width: 100%;
+  justify-content: center;
+}
