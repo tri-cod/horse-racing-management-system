@@ -34,4 +34,8 @@ public interface RaceHorseRepository extends JpaRepository<RaceHorse, Long> {
     // Lấy danh sách horseId đã đăng ký vào BẤT KỲ race nào (chưa kết thúc)
     @Query("SELECT rh.horse.id FROM RaceHorse rh WHERE rh.status IN ('Pending', 'Approved')")
     List<Long> findHorseIdsAlreadyInAnyRace();
+
+    List<RaceHorse> findByHorse_Id(Long horseId);
+
+    List<Long> findHorseIdsByRaceId(Long raceId);
 }

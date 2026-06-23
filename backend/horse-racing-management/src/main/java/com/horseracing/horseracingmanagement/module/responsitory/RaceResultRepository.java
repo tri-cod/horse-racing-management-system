@@ -24,4 +24,5 @@ public interface RaceResultRepository extends JpaRepository<RaceResult, Long> {
 
     Optional<RaceResult> findByRaceHorse_Id(Long raceHorseId);
     void deleteByRace_Id(Long raceId);
+
 }
