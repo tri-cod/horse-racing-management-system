@@ -13,13 +13,13 @@ const ROLE_ITEMS = {
     { icon: LayoutDashboard, label: 'Admin Panel',      href: '/admin/users' },
     { icon: ClipboardCheck,  label: 'Approve Horses',   href: '/admin/approve-horses' },
     { icon: Plus,            label: 'Create Race',       href: '/admin/races/create' },
-    { icon: BadgeDollarSign, label: 'Deposit Requests',  href: '/admin/deposits' },
+    { icon: BadgeDollarSign, label: 'Transaction Requests',  href: '/admin/deposits' },
     { icon: PencilLine,      label: 'Edit Race',         href: '/admin/races' },
     { icon: TrendingUp,      label: 'Set Odds',          href: '/admin/set-odds' },
     { icon: Landmark,        label: 'System Wallet',     href: '/admin/wallet' },
   ],
   STAFF: [
-    { icon: BadgeDollarSign, label: 'Deposit Requests',  href: '/admin/deposits' },
+    { icon: BadgeDollarSign, label: 'Transaction Requests',  href: '/admin/deposits' },
     { icon: TrendingUp,      label: 'Set Odds',          href: '/admin/set-odds' },
     { icon: Landmark,        label: 'System Wallet',     href: '/admin/wallet' },
   ],
@@ -49,6 +49,12 @@ const ROLE_ITEMS = {
   ],
 };
 
+const ROLE_LABEL = {
+  ADMIN: 'Administrator', STAFF: 'Staff', REFEREE: 'Referee',
+  HORSE_OWNER: 'Horse Owner', TRAINER: 'Trainer', USER: 'Member',
+  SPECTATOR: 'Spectator', JOCKEY: 'Jockey',
+};
+
 export default function Sidebar() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -57,6 +63,9 @@ export default function Sidebar() {
   const items = ROLE_ITEMS[user.role] ?? [];
   if (items.length === 0) return null;
 
+  const initial = user.username?.charAt(0)?.toUpperCase() || 'U';
+  const roleLabel = ROLE_LABEL[user.role] || user.role;
+
   const handleLogout = async () => {
     await logout();
     navigate('/');
@@ -64,7 +73,23 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar">
-      <nav className="sidebar__nav">
+      {/* Brand mark */}
+      <a href="/" className="sidebar__brand">
+        <span className="sidebar__brand-name">Royal<em>Derby</em></span>
+      </a>
+
+      {/* Account block */}
+      <div className="sidebar__account">
+        <div className="sidebar__account-avatar">{initial}</div>
+        <div className="sidebar__account-info">
+          <span className="sidebar__account-name">{user.username}</span>
+          <span className="sidebar__account-role">{roleLabel}</span>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="sidebar__nav" aria-label="Sidebar">
+        <span className="sidebar__section-label">Navigation</span>
         {items.map(({ icon: Icon, label, href }) => (
           <NavLink
             key={href}
@@ -73,25 +98,26 @@ export default function Sidebar() {
               `sidebar__item${isActive ? ' sidebar__item--active' : ''}`
             }
           >
-            <span className="sidebar__icon"><Icon size={19} /></span>
+            <span className="sidebar__icon"><Icon size={18} strokeWidth={1.8} /></span>
             <span className="sidebar__label">{label}</span>
           </NavLink>
         ))}
+      </nav>
 
+      {/* Footer */}
+      <div className="sidebar__footer">
         <NavLink
           to="/profile"
           className={({ isActive }) =>
             `sidebar__item${isActive ? ' sidebar__item--active' : ''}`
           }
         >
-          <span className="sidebar__icon"><User size={19} /></span>
+          <span className="sidebar__icon"><User size={18} strokeWidth={1.8} /></span>
           <span className="sidebar__label">Account</span>
         </NavLink>
-      </nav>
 
-      <div className="sidebar__footer">
         <button className="sidebar__item sidebar__item--logout" onClick={handleLogout}>
-          <span className="sidebar__icon"><LogOut size={19} /></span>
+          <span className="sidebar__icon"><LogOut size={18} strokeWidth={1.8} /></span>
           <span className="sidebar__label">Log Out</span>
         </button>
       </div>

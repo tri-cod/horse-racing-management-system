@@ -4,7 +4,11 @@ import { Link } from 'react-router-dom';
 import { getMyBets } from '../api/betApi';
 import { AuthContext } from '../context/AuthContext';
 import BetStatusBadge from '../components/bet/BetStatusBadge';
+import DashboardPageHeader from '../components/rd/DashboardPageHeader';
+import StatCard from '../components/rd/StatCard';
+import Seo from '../components/seo/Seo';
 import '../assets/css/bet/MyBetsPage.css';
+import '../assets/css/rd/workspace.css';
 
 const fmt = (n) =>
   n != null
@@ -12,9 +16,7 @@ const fmt = (n) =>
     : '—';
 
 const fmtDate = (iso) =>
-  iso
-    ? new Date(iso).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-    : '—';
+  iso ? new Date(iso).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
 
 const RESULT_CLS = { WON: 'result-pill--won', LOST: 'result-pill--lost', PENDING: 'result-pill--pending', PENDING_FINISHED: 'result-pill--pending' };
 
@@ -22,17 +24,17 @@ function BetItemsDetail({ items = [] }) {
   if (!items.length) return <p className="bet-items-empty">No details available.</p>;
   return (
     <div className="bet-items-wrap">
-      <table className="bet-items-table">
+      <table className="ws-table">
         <thead>
-          <tr><th>Horse</th><th className="ta-r">Stake</th><th className="ta-r">Odds</th><th className="ta-r">Payout</th><th>Result</th></tr>
+          <tr><th>Horse</th><th>Stake</th><th>Odds</th><th>Payout</th><th>Result</th></tr>
         </thead>
         <tbody>
           {items.map((it) => (
-            <tr key={it.id} className="bet-items-table__row">
+            <tr key={it.id}>
               <td className="bet-items-table__horse">{it.horseName ?? '—'}</td>
-              <td className="ta-r">{fmt(it.betAmount)}</td>
-              <td className="ta-r bet-items-table__odds">{it.odds != null ? `×${parseFloat(it.odds).toFixed(2)}` : '—'}</td>
-              <td className="ta-r">{it.payout != null ? <strong>{fmt(it.payout)}</strong> : '—'}</td>
+              <td className="tnum">{fmt(it.betAmount)}</td>
+              <td className="tnum bet-items-table__odds">{it.odds != null ? `×${parseFloat(it.odds).toFixed(2)}` : '—'}</td>
+              <td className="tnum">{it.payout != null ? <strong>{fmt(it.payout)}</strong> : '—'}</td>
               <td>
                 <span className={`result-pill ${RESULT_CLS[it.resultStatus] ?? ''}`}>
                   {it.resultStatus ?? '—'}
@@ -53,14 +55,14 @@ function BetRow({ bet }) {
       <button type="button" className="bet-row__trigger" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
         <div className="bet-row__col bet-row__col--race">
           <span className="bet-row__race-name">{bet.raceName ?? `Race #${bet.raceId}`}</span>
-          <span className="bet-row__date"><Calendar size={11} />{fmtDate(bet.createdAt)}</span>
+          <span className="bet-row__date"><Calendar size={11} /><span className="tnum">{fmtDate(bet.createdAt)}</span></span>
         </div>
         <div className="bet-row__col bet-row__col--horses">
           <Target size={13} />
           <span>{bet.betItems?.length ?? 0} horse{(bet.betItems?.length ?? 0) !== 1 ? 's' : ''}</span>
         </div>
         <div className="bet-row__col bet-row__col--amount">
-          <span className="bet-row__amount">{fmt(bet.totalAmount)}</span>
+          <span className="bet-row__amount tnum">{fmt(bet.totalAmount)}</span>
           <span className="bet-row__amount-label">Total stake</span>
         </div>
         <div className="bet-row__col bet-row__col--status"><BetStatusBadge status={bet.status} /></div>
@@ -79,11 +81,11 @@ function BetRow({ bet }) {
 }
 
 const TABS = [
-  { key: 'ALL',              label: 'All' },
-  { key: 'PENDING',          label: 'Pending' },
+  { key: 'ALL', label: 'All' },
+  { key: 'PENDING', label: 'Pending' },
   { key: 'PENDING_FINISHED', label: 'Pending Result' },
-  { key: 'WON',              label: 'Won' },
-  { key: 'LOST',             label: 'Lost' },
+  { key: 'WON', label: 'Won' },
+  { key: 'LOST', label: 'Lost' },
 ];
 
 export default function MyBetsPage() {
@@ -114,30 +116,20 @@ export default function MyBetsPage() {
   const filtered     = activeTab === 'ALL' ? bets : bets.filter((b) => b.status === activeTab);
 
   return (
-    <div className="my-bets-page">
-      <section className="my-bets-page__hero">
-        <div className="my-bets-page__hero-inner">
-          <span className="eyebrow my-bets-page__eyebrow">My Account</span>
-          <h1 className="my-bets-page__hero-title">Betting History</h1>
-          <p className="my-bets-page__hero-sub">Track every wager, review results and monitor your win rate.</p>
-        </div>
-      </section>
+    <div className="ws-page">
+      <Seo title="Betting History" description="Track your Royal Derby race bets." />
+      <DashboardPageHeader eyebrow="My Account" title="Betting History" subtitle="Track every wager, review results and monitor your win rate." />
 
-      <div className="my-bets-page__body">
-        <div className="my-bets-page__stats">
-          <div className="bstat-card"><div className="bstat-card__icon bstat-card__icon--blue"><Ticket size={20} /></div><div className="bstat-card__body"><span className="bstat-card__val">{bets.length}</span><span className="bstat-card__lbl">Total bets</span></div></div>
-          <div className="bstat-card"><div className="bstat-card__icon bstat-card__icon--dark"><DollarSign size={20} /></div><div className="bstat-card__body"><span className="bstat-card__val bstat-card__val--sm">{fmt(totalWagered)}</span><span className="bstat-card__lbl">Total wagered</span></div></div>
-          <div className="bstat-card"><div className="bstat-card__icon bstat-card__icon--green"><CheckCircle size={20} /></div><div className="bstat-card__body"><span className="bstat-card__val">{wonBets.length}</span><span className="bstat-card__lbl">Wins</span></div></div>
-          <div className="bstat-card"><div className="bstat-card__icon bstat-card__icon--gold"><TrendingUp size={20} /></div><div className="bstat-card__body"><span className="bstat-card__val bstat-card__val--sm">{fmt(totalPayout)}</span><span className="bstat-card__lbl">Total winnings</span></div></div>
+      <div className="ws-body ws-body--narrow">
+        {/* Stats */}
+        <div className="ws-stat-row">
+          <StatCard icon={Ticket}      label="Total Bets"    value={bets.length} tileVariant="default" />
+          <StatCard icon={DollarSign}  label="Total Wagered" value={fmt(totalWagered)} tileVariant="default" />
+          <StatCard icon={CheckCircle} label="Wins"          value={wonBets.length}  tileVariant="ok" />
+          <StatCard icon={TrendingUp}  label="Win Rate"      value={`${winRate}%`}   tileVariant="brass" />
         </div>
 
-        {!loading && bets.length > 0 && (
-          <div className="my-bets-page__winrate">
-            <Trophy size={18} />
-            <span>Your win rate: <strong>{winRate}%</strong>{winRate >= 50 ? ' — Great form! 🔥' : ' — Keep going! 💪'}</span>
-          </div>
-        )}
-
+        {/* Tabs */}
         <div className="my-bets-page__toolbar">
           <div className="my-bets-page__tabs" role="tablist">
             {TABS.map((tab) => {
@@ -153,15 +145,17 @@ export default function MyBetsPage() {
           </div>
         </div>
 
-        {error && <div className="my-bets-page__error"><span>{error}</span><button type="button" onClick={fetchBets}>Retry</button></div>}
+        {error && <div className="ws-error"><span>{error}</span><button type="button" onClick={fetchBets}>Retry</button></div>}
         {loading && !error && <div className="my-bets-page__skeletons">{[1,2,3].map((i) => <div key={i} className="bet-skeleton" />)}</div>}
         {!loading && !error && (
           filtered.length === 0 ? (
-            <div className="my-bets-page__empty">
-              <Ticket size={42} className="my-bets-page__empty-icon" />
-              <h3>{activeTab === 'ALL' ? "You haven't placed any bets yet" : 'No bets in this category'}</h3>
-              <p>{activeTab === 'ALL' ? 'Head to a live race and try your luck!' : 'Try a different filter.'}</p>
-              {activeTab === 'ALL' && <Link to="/races" className="ui-btn ui-btn--primary ui-btn--md" style={{ marginTop: '1rem' }}>Browse races</Link>}
+            <div className="ws-panel">
+              <div className="ws-empty">
+                <Ticket size={40} className="ws-empty__icon" />
+                <p className="ws-empty__title">{activeTab === 'ALL' ? "No bets placed yet" : 'No bets in this category'}</p>
+                <p>{activeTab === 'ALL' ? 'Head to a live race and try your luck!' : 'Try a different filter.'}</p>
+                {activeTab === 'ALL' && <Link to="/races" className="ui-btn ui-btn--primary ui-btn--md" style={{ marginTop: '1rem' }}>Browse races</Link>}
+              </div>
             </div>
           ) : (
             <div className="my-bets-page__list">{filtered.map((bet) => <BetRow key={bet.id} bet={bet} />)}</div>

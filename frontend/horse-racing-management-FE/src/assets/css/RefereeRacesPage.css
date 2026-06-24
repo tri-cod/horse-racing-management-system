@@ -9,10 +9,10 @@
 .ref-page__content {
   max-width: var(--container, 1100px);
   margin-inline: auto;
-  padding: var(--space-8, 2rem) clamp(1rem, 4vw, 2rem);
+  padding: var(--space-8) clamp(1rem, 4vw, 2rem);
   display: flex;
   flex-direction: column;
-  gap: var(--space-6, 1.5rem);
+  gap: var(--space-6);
 }
 
 /* ═══ TOOLBAR ══════════════════════════════════════════════════ */
@@ -23,10 +23,20 @@
   gap: 1rem;
 }
 
+.ref-page__title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-h2);
+  font-weight: 800;
+  color: var(--text);
+}
+
 .ref-page__count {
-  font-size: 0.875rem;
-  color: #888;
+  font-family: var(--font-data);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 /* ═══ ALERT ═════════════════════════════════════════════════════ */
@@ -34,15 +44,15 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.875rem 1rem;
-  border-radius: 8px;
-  font-size: 0.875rem;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  font-size: var(--fs-small);
 }
 
 .ref-alert--error {
-  background: #fff5f5;
-  border: 1px solid #fed7d7;
-  color: #c53030;
+  background: var(--error-bg);
+  border: 1px solid #fecaca;
+  color: var(--error);
 }
 
 .ref-alert button {
@@ -51,8 +61,8 @@
   border: 1px solid currentColor;
   background: transparent;
   color: inherit;
-  border-radius: 4px;
-  font-size: 0.8rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-xs);
   cursor: pointer;
 }
 
@@ -60,46 +70,47 @@
 .ref-empty {
   text-align: center;
   padding: 3rem 1rem;
-  color: #aaa;
-  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
 }
 
 /* ═══ TABLE ═════════════════════════════════════════════════════ */
 .ref-table-wrap {
-  background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
   overflow-x: auto;
 }
 
 .ref-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.875rem;
+  font-size: var(--fs-small);
 }
 
 .ref-table thead {
-  background: #f8f9fa;
+  background: var(--primary);
 }
 
 .ref-table th {
-  padding: 0.875rem 1rem;
+  padding: var(--space-3) var(--space-4);
   text-align: left;
+  font-family: var(--font-data);
   font-weight: 600;
-  color: #555;
-  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: var(--fs-xs);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  border-bottom: 1px solid #e8e8e8;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid #08203A;
   white-space: nowrap;
 }
 
 .ref-table td {
-  padding: 0.875rem 1rem;
-  border-bottom: 1px solid #f0f0f0;
-  color: #333;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
   vertical-align: middle;
 }
 
@@ -108,39 +119,47 @@
 }
 
 .ref-row:hover td {
-  background: #fafafa;
+  background: var(--bg-soft);
 }
 
 /* ═══ RACE NAME ═════════════════════════════════════════════════ */
 .ref-race-name {
-  font-weight: 600;
-  color: #222;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--text);
   margin-bottom: 0.2rem;
 }
 
 .ref-race-track {
-  font-size: 0.78rem;
-  color: #999;
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* ═══ STATUS BADGE ══════════════════════════════════════════════ */
 .ref-badge {
-  display: inline-block;
-  padding: 0.25rem 0.65rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
   font-weight: 600;
   white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .ref-badge--upcoming {
-  background: #e8f4fd;
-  color: #2980b9;
+  background: var(--bg-soft);
+  color: var(--primary);
 }
 
 .ref-badge--closed {
-  background: #fef9e7;
-  color: #d68910;
+  background: var(--brass-50);
+  color: var(--brass-600);
 }
 
 .ref-badge--ongoing {
@@ -149,8 +168,8 @@
 }
 
 .ref-badge--finished {
-  background: #f4f4f4;
-  color: #777;
+  background: var(--black-5);
+  color: var(--text-muted);
 }
 
 .ref-badge--cancelled {
@@ -173,8 +192,9 @@
   gap: 0.3rem;
   padding: 0.35rem 0.75rem;
   border: none;
-  border-radius: 6px;
-  font-size: 0.8rem;
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -188,42 +208,44 @@
 
 .ref-btn--ghost {
   background: transparent;
-  border: 1px solid #d0d0d0;
-  color: #555;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
 }
 
 .ref-btn--ghost:hover:not(:disabled) {
-  background: #f5f5f5;
-  border-color: #aaa;
+  background: var(--bg-soft);
+  border-color: var(--border-strong);
+  color: var(--text);
 }
 
 .ref-btn--start {
-  background: linear-gradient(135deg, #27ae60, #1e8449);
-  color: white;
+  background: #16a34a;
+  color: var(--white);
 }
 
 .ref-btn--start:hover:not(:disabled) {
-  background: linear-gradient(135deg, #1e8449, #196f3d);
+  background: #15803d;
   transform: translateY(-1px);
 }
 
 .ref-btn--finish {
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
-  color: white;
+  background: var(--error);
+  color: var(--white);
 }
 
 .ref-btn--finish:hover:not(:disabled) {
-  background: linear-gradient(135deg, #c0392b, #a93226);
+  background: #b91c1c;
   transform: translateY(-1px);
 }
 
 .ref-btn--result {
-  background: linear-gradient(135deg, #f39c12, #d68910);
-  color: white;
+  background: var(--brass-400);
+  color: var(--primary);
 }
 
 .ref-btn--result:hover:not(:disabled) {
-  background: linear-gradient(135deg, #d68910, #b7770d);
+  background: var(--brass-600);
+  color: var(--white);
   transform: translateY(-1px);
 }
 

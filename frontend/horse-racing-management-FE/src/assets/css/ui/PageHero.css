@@ -5,7 +5,7 @@
 }
 
 .page-hero--dark {
-  background: var(--bg-dark);
+  background: var(--primary);
   border-bottom: none;
 }
 
@@ -20,12 +20,12 @@
 }
 
 .page-hero--dark .page-hero__eyebrow {
-  color: var(--accent);
+  color: var(--brass-200);
 }
 
 .page-hero__title {
   font-size: var(--fs-h1);
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--text);
   margin-bottom: var(--space-4);
@@ -44,7 +44,7 @@
 }
 
 .page-hero--dark .page-hero__subtitle {
-  color: var(--black-40);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .page-hero__actions {

@@ -14,6 +14,7 @@
 }
 
 .race-results__heading h2 {
+  font-family: var(--font-serif);
   font-size: var(--fs-h3);
   font-weight: 700;
   color: var(--text);
@@ -24,8 +25,8 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--ocean-600), var(--ocean-800));
-  color: #fff;
+  background: var(--brass-400);
+  color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,7 +41,7 @@
   gap: var(--space-3);
   margin-bottom: var(--space-6);
   padding: var(--space-6) var(--space-4);
-  background: linear-gradient(160deg, var(--ocean-950) 0%, var(--ocean-800) 100%);
+  background: linear-gradient(160deg, var(--primary) 0%, #0F3D6B 100%);
   border-radius: var(--radius-xl);
   overflow: hidden;
 }
@@ -67,7 +68,7 @@
   box-shadow: 0 4px 16px rgba(0,0,0,0.3);
 }
 
-.race-results__medal--gold   { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.race-results__medal--gold   { background: linear-gradient(135deg, var(--brass-400), var(--brass-600)); }
 .race-results__medal--silver { background: linear-gradient(135deg, #94a3b8, #64748b); }
 .race-results__medal--bronze { background: linear-gradient(135deg, #c2825b, #92400e); }
 
@@ -83,8 +84,8 @@
 }
 
 .race-results__platform--1st {
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: rgba(198, 161, 75, 0.15);
+  border: 1px solid rgba(198, 161, 75, 0.35);
   min-height: 160px;
 }
 
@@ -101,8 +102,9 @@
 }
 
 .race-results__platform-rank {
+  font-family: var(--font-data);
   font-size: var(--fs-xs);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   color: rgba(255,255,255,0.5);
@@ -110,10 +112,11 @@
 }
 
 .race-results__platform--1st .race-results__platform-rank {
-  color: rgba(245, 158, 11, 0.8);
+  color: var(--brass-200);
 }
 
 .race-results__platform-horse {
+  font-family: var(--font-serif);
   font-size: var(--fs-small);
   font-weight: 700;
   color: #fff;
@@ -131,6 +134,7 @@
 }
 
 .race-results__platform-time {
+  font-family: var(--font-data);
   font-size: var(--fs-xs);
   font-weight: 600;
   color: rgba(255,255,255,0.75);
@@ -139,12 +143,13 @@
 
 .race-results__platform-reward {
   margin-top: var(--space-2);
+  font-family: var(--font-data);
   font-size: var(--fs-xs);
   font-weight: 700;
-  color: #fbbf24;
+  color: var(--brass-200);
   padding: 2px 8px;
   border-radius: var(--radius-full);
-  background: rgba(251, 191, 36, 0.15);
+  background: rgba(198, 161, 75, 0.18);
 }
 
 /* ═══ FULL TABLE ════════════════════════════════════════════════ */
@@ -163,18 +168,19 @@
 }
 
 .race-results__table thead {
-  background: var(--black-5);
+  background: var(--primary);
 }
 
 .race-results__table th {
   padding: var(--space-3) var(--space-4);
   text-align: left;
+  font-family: var(--font-data);
   font-size: var(--fs-xs);
-  font-weight: 700;
-  letter-spacing: var(--tracking-wide);
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border);
+  color: rgba(255, 255, 255, 0.75);
+  border-bottom: 1px solid #08203A;
   white-space: nowrap;
 }
 
@@ -189,14 +195,14 @@
 }
 
 .race-results__table tbody tr:hover td {
-  background-color: var(--black-5);
+  background-color: var(--bg-soft);
 }
 
 /* top-3 rows get subtle highlight */
-.race-results__table tbody tr:nth-child(1) td { background: #fffbeb; }
+.race-results__table tbody tr:nth-child(1) td { background: var(--brass-50); }
 .race-results__table tbody tr:nth-child(2) td { background: #f8fafc; }
 .race-results__table tbody tr:nth-child(3) td { background: #fdf6f0; }
-.race-results__table tbody tr:nth-child(1):hover td { background: #fef3c7; }
+.race-results__table tbody tr:nth-child(1):hover td { background: var(--brass-200); }
 .race-results__table tbody tr:nth-child(2):hover td { background: #f1f5f9; }
 .race-results__table tbody tr:nth-child(3):hover td { background: #fdeee0; }
 
@@ -205,8 +211,10 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  font-family: var(--font-data);
   font-weight: 700;
   color: var(--text);
+  font-variant-numeric: tabular-nums;
 }
 
 .race-results__rank-medal {
@@ -216,7 +224,8 @@
 
 /* horse cell */
 .race-results__horse-name {
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-weight: 700;
   color: var(--text);
 }
 
@@ -233,16 +242,18 @@
 
 /* time cell */
 .race-results__time {
+  font-family: var(--font-data);
   font-variant-numeric: tabular-nums;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text);
   white-space: nowrap;
 }
 
 /* reward cell */
 .race-results__reward {
+  font-family: var(--font-data);
   font-weight: 700;
-  color: var(--ocean-700);
+  color: var(--brass-600);
   white-space: nowrap;
 }
 

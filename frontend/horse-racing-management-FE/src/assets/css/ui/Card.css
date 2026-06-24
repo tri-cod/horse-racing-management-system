@@ -9,5 +9,5 @@
 .ui-card--hoverable:hover {
   box-shadow: var(--shadow-md);
   border-color: var(--border-strong);
-  transform: translateY(-4px);
+  transform: translateY(-3px);
 }

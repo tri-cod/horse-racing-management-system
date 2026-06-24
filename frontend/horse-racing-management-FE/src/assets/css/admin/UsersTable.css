@@ -1,7 +1,7 @@
 .users-table-wrap {
   overflow-x: auto;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
 }
 
 .users-table {
@@ -11,16 +11,17 @@
 }
 
 .users-table__th {
-  background: var(--black-5);
+  background: var(--primary);
   padding: var(--space-3) var(--space-4);
   text-align: left;
+  font-family: var(--font-data);
   font-weight: 600;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.75);
   font-size: var(--fs-xs);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   white-space: nowrap;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid #08203A;
 }
 
 .users-table__row {
@@ -33,7 +34,7 @@
 }
 
 .users-table__row:hover {
-  background: var(--ocean-50);
+  background: var(--bg-soft);
 }
 
 .users-table__td {
@@ -43,6 +44,9 @@
 
 .users-table__td--muted {
   color: var(--text-muted);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
 }
 
 .users-table__user-cell {
@@ -83,7 +87,7 @@
 }
 
 .users-table__action-btn:hover {
-  background: var(--ocean-50);
+  background: var(--bg-soft);
   color: var(--primary);
   border-color: var(--primary);
 }
@@ -121,10 +125,12 @@
 
   .users-table__td::before {
     content: attr(data-label);
+    font-family: var(--font-data);
     font-size: var(--fs-xs);
     font-weight: 600;
     color: var(--text-muted);
     text-transform: uppercase;
+    letter-spacing: 0.06em;
     min-width: 72px;
   }
 }

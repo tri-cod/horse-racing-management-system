@@ -17,7 +17,7 @@
 }
 
 .trainer-form__required {
-  color: var(--ocean-600);
+  color: var(--error);
 }
 
 .trainer-form__input,

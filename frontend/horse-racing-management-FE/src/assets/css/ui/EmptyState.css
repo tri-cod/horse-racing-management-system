@@ -9,12 +9,13 @@
 }
 
 .empty-state__icon {
-  color: var(--black-20);
+  color: var(--border-strong);
 }
 
 .empty-state__title {
+  font-family: var(--font-serif);
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text);
 }
 

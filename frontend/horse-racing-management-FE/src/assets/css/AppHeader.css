@@ -1,48 +1,35 @@
+/* ─── Shell layout ─────────────────────────────────────── */
+.app-shell {
+  margin-left: 252px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-workspace {
+  flex: 1;
+  background: var(--bg-soft);
+}
+
+/* ─── App header ────────────────────────────────────────── */
 .app-header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  height: 64px;
+  height: 60px;
   background: var(--white);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 0 24px;
-}
-
-/* ---- Logo ---- */
-
-.app-header__logo {
-  display: flex;
-  align-items: baseline;
-  gap: 0;
-  text-decoration: none;
-  flex-shrink: 0;
-  font-family: var(--font-serif);
-}
-
-.app-header__logo-royal {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: var(--tracking-tight);
-}
-
-.app-header__logo-derby {
-  font-size: 1.25rem;
-  font-weight: 600;
-  font-style: italic;
-  color: var(--primary);
-  margin-left: 6px;
+  gap: 16px;
+  padding: 0 var(--space-6);
 }
 
 /* ---- Search ---- */
-
 .app-header__search {
   flex: 1;
-  max-width: 480px;
+  max-width: 400px;
   position: relative;
   display: flex;
   align-items: center;
@@ -57,16 +44,16 @@
 
 .app-header__search-input {
   width: 100%;
-  height: 36px;
-  padding: 0 16px 0 36px;
+  height: 34px;
+  padding: 0 14px 0 36px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-full);
   font-family: var(--font-sans);
   font-size: 13px;
   color: var(--text);
-  background: var(--black-5);
+  background: var(--bg-soft);
   outline: none;
-  transition: border-color 180ms ease, background 180ms ease;
+  transition: border-color 160ms ease, background 160ms ease;
 }
 
 .app-header__search-input:focus {
@@ -74,16 +61,13 @@
   background: var(--white);
 }
 
-.app-header__search-input::placeholder {
-  color: var(--black-40);
-}
+.app-header__search-input::placeholder { color: var(--text-muted); }
 
 /* ---- Right actions ---- */
-
 .app-header__actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin-left: auto;
   flex-shrink: 0;
 }
@@ -92,21 +76,43 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--radius-full);
   color: var(--text-muted);
   text-decoration: none;
-  transition: background 150ms ease, color 150ms ease;
+  transition: background 140ms ease, color 140ms ease;
 }
-
 .app-header__icon-btn:hover {
-  background: var(--black-5);
+  background: var(--bg-soft);
   color: var(--text);
 }
 
-/* ---- User ---- */
+/* Wallet pill */
+.app-header__wallet {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--primary);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color var(--transition), background var(--transition);
+  white-space: nowrap;
+}
+.app-header__wallet:hover {
+  border-color: var(--brass-400);
+  background: var(--brass-50);
+  color: var(--brass-600);
+}
+.app-header__wallet-icon { color: var(--brass-400); }
 
+/* ---- User ---- */
 .app-header__user {
   position: relative;
   display: flex;
@@ -129,21 +135,17 @@
   color: var(--white);
   border: none;
   cursor: pointer;
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 150ms ease;
+  transition: opacity 140ms ease;
 }
-
-.app-header__avatar:hover {
-  opacity: 0.85;
-}
+.app-header__avatar:hover { opacity: 0.85; }
 
 /* ---- Dropdown ---- */
-
 .app-header__dropdown {
   position: absolute;
   top: 100%;
@@ -157,7 +159,6 @@
   pointer-events: none;
   transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
 }
-
 .app-header__dropdown-inner {
   background: var(--white);
   border: 1px solid var(--border);
@@ -165,14 +166,12 @@
   box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
-
 .app-header__user:hover .app-header__dropdown {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
   pointer-events: auto;
 }
-
 .app-header__dropdown-item {
   display: flex;
   align-items: center;
@@ -188,17 +187,6 @@
   font-size: var(--fs-small);
   transition: background-color var(--transition);
 }
-
-.app-header__dropdown-item:hover {
-  background-color: var(--bg-soft);
-}
-
-.app-header__dropdown-item--danger {
-  color: var(--black-90);
-  border-top: 1px solid var(--border);
-}
-
-.app-header__dropdown-divider {
-  height: 1px;
-  background: var(--border);
-}
+.app-header__dropdown-item:hover { background-color: var(--bg-soft); }
+.app-header__dropdown-item--danger { color: var(--text); border-top: 1px solid var(--border); }
+.app-header__dropdown-divider { height: 1px; background: var(--border); }

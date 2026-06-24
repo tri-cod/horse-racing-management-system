@@ -39,7 +39,7 @@
   font-size: 2.4rem;
   font-weight: 700;
   color: var(--white);
-  background: linear-gradient(135deg, var(--ocean-700), var(--ocean-500));
+  background: linear-gradient(135deg, var(--primary), #0F3D6B);
 }
 
 .profile__hero-info {
@@ -87,13 +87,13 @@
 .profile__badge--jockey,
 .profile__badge--referee,
 .profile__badge--user {
-  background-color: var(--ocean-700);
+  background-color: var(--primary);
 }
 
 .profile__badge--status {
-  background-color: var(--black-5);
-  color: var(--ocean-800);
-  border: 1px solid var(--ocean-200);
+  background-color: var(--bg-soft);
+  color: var(--primary);
+  border: 1px solid var(--border);
 }
 
 .profile__card {
@@ -156,7 +156,7 @@
   width: 38px;
   height: 38px;
   border-radius: var(--radius);
-  background-color: var(--ocean-100);
+  background-color: var(--bg-soft);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -204,7 +204,7 @@
 
 .profile__skeleton {
   border-radius: var(--radius);
-  background-color: var(--ocean-50);
+  background-color: var(--bg-soft);
   position: relative;
   overflow: hidden;
 }

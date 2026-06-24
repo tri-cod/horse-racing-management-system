@@ -6,8 +6,9 @@
 }
 
 .admin-race-list__title {
+  font-family: var(--font-serif);
   font-size: var(--fs-h2);
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text);
   margin: 0 0 var(--space-1) 0;
 }

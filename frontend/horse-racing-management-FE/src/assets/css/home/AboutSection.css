@@ -1,5 +1,6 @@
 .home-about {
   padding: var(--space-12) 0;
+  background: var(--white);
 }
 
 .home-about__grid {
@@ -10,7 +11,9 @@
 }
 
 .home-about__title {
+  font-family: var(--font-serif);
   font-size: var(--fs-h2);
+  font-weight: 800;
   margin: var(--space-3) 0 var(--space-5);
 }
 
@@ -31,7 +34,7 @@
 }
 
 .home-about__link:hover {
-  text-decoration-color: currentColor;
+  text-decoration-color: var(--brass-400);
   color: var(--primary-hover);
 }
 

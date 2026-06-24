@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useHorseForm } from '../hooks/useHorseForm';
 import HorseForm from '../components/horse-owner/HorseForm';
+import Seo from '../components/seo/Seo';
 import '../assets/css/HorseRegisterPage.css';
 
 export default function HorseRegisterPage() {
@@ -22,6 +23,7 @@ export default function HorseRegisterPage() {
 
   return (
     <div className="horse-register-page">
+      <Seo title="Register Horse" description="Register a new racehorse on Royal Derby — add details, breed and trainer." />
       <div className="horse-register-page__container">
         <button type="button" className="horse-register__back-btn" onClick={() => navigate('/horse-owner/horses')}>
           <ArrowLeft size={18} />

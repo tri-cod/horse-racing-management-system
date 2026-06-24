@@ -15,65 +15,69 @@
   flex: 1;
   min-width: 180px;
   padding: 0.5rem 0.75rem;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 6px;
-  background: #fff;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  color: #0f172a;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  color: var(--text);
   outline: none;
   transition: border-color 0.15s;
   cursor: pointer;
 }
 
 .assign-trainer__select:focus {
-  border-color: #0A2E44;
-  box-shadow: 0 0 0 3px rgba(10, 46, 68, 0.15);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(11, 42, 74, 0.1);
 }
 
 .assign-trainer__select:disabled {
-  background: #f1f5f9;
-  color: #94a3b8;
+  background: var(--bg-soft);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 
 .assign-trainer__btn {
   padding: 0.5rem 1.125rem;
-  background: #0A2E44;
-  color: #fff;
+  background: var(--primary);
+  color: var(--white);
   border: none;
-  border-radius: 6px;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
   font-weight: 700;
   cursor: pointer;
+  transition: background var(--transition);
   white-space: nowrap;
 }
 
+.assign-trainer__btn:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
 .assign-trainer__btn:disabled {
-  background: #7dd3fc;
+  background: var(--border-strong);
   cursor: not-allowed;
 }
 
 /* Cancel — red-tinted to signal destructive intent */
 .assign-trainer__cancel-btn {
   padding: 0.5rem 0.875rem;
-  background: #fff1f2;
-  color: #be123c;
-  border: 1.5px solid #fda4af;
-  border-radius: 6px;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
+  background: var(--error-bg);
+  color: var(--error);
+  border: 1.5px solid #fecaca;
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .assign-trainer__cancel-btn:hover:not(:disabled) {
-  background: #ffe4e6;
-  border-color: #fb7185;
-  color: #9f1239;
+  background: #fee2e2;
+  border-color: #fca5a5;
 }
 
 .assign-trainer__cancel-btn:disabled {
@@ -87,18 +91,24 @@
   gap: 0.375rem;
   padding: 0.48rem 0.95rem;
   background: transparent;
-  color: #0f172a;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 6px;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
   font-weight: 600;
   cursor: pointer;
   align-self: flex-start;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+.assign-trainer__change-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .assign-trainer__error {
-  font-size: 0.8rem;
-  color: #dc2626;
+  font-size: var(--fs-xs);
+  color: var(--error);
   margin: 0;
 }
