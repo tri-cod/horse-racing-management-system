@@ -6,7 +6,10 @@ import MyRegistrationsTable from '../components/race-horse/MyRegistrationsTable'
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmptyState from '../components/ui/EmptyState';
 import Button from '../components/ui/Button';
+import DashboardPageHeader from '../components/rd/DashboardPageHeader';
+import Seo from '../components/seo/Seo';
 import '../assets/css/MyRaceRegistrationsPage.css';
+import '../assets/css/rd/workspace.css';
 
 export default function MyRaceRegistrationsPage() {
   const { registrations, loading, error, refetch } = useMyRaceRegistrations();
@@ -17,10 +20,17 @@ export default function MyRaceRegistrationsPage() {
   );
 
   return (
-    <div className="my-reg-page">
-      <div className="my-reg-page__content">
+    <div className="ws-page">
+      <Seo title="Race Registrations" description="Track your horse race registration requests." />
+      <DashboardPageHeader
+        eyebrow="Horse Owner"
+        title="Race Registrations"
+        subtitle={`${pending.length} pending approval`}
+      />
+
+      <div className="ws-body">
         {error && (
-          <div className="my-reg-page__error">
+          <div className="ws-error">
             <span>{error}</span>
             <button type="button" onClick={refetch}>Try again</button>
           </div>
@@ -28,19 +38,21 @@ export default function MyRaceRegistrationsPage() {
 
         {loading ? (
           <LoadingSpinner />
-        ) : pending.length === 0 ? (
-          <EmptyState
-            icon={Flag}
-            title="No pending registrations"
-            subtitle="You have no horse registrations awaiting approval."
-            action={
-              <Link to="/races">
-                <Button variant="primary">Browse Races</Button>
-              </Link>
-            }
-          />
+        ) : registrations.length === 0 ? (
+          <div className="ws-panel">
+            <EmptyState
+              icon={Flag}
+              title="No registrations yet"
+              subtitle="You have not registered any horses for a race."
+              action={<Link to="/races"><Button variant="primary">Browse Races</Button></Link>}
+            />
+          </div>
         ) : (
-          <MyRegistrationsTable registrations={pending} />
+          <div className="ws-panel">
+            <div className="ws-panel__body ws-panel__body--flush">
+              <MyRegistrationsTable registrations={registrations} />
+            </div>
+          </div>
         )}
       </div>
     </div>

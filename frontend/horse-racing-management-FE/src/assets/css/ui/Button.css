@@ -18,6 +18,11 @@
   transform: translateY(1px);
 }
 
+.ui-btn:focus-visible {
+  outline: 2px solid var(--brass-400);
+  outline-offset: 2px;
+}
+
 /* Sizes */
 .ui-btn--sm  { padding: var(--space-2) var(--space-4); font-size: var(--fs-small); }
 .ui-btn--md  { padding: var(--space-3) var(--space-6); font-size: var(--fs-body); }
@@ -36,7 +41,7 @@
 
 .ui-btn--outline {
   background-color: transparent;
-  border-color: currentColor;
+  border-color: var(--primary);
   color: var(--primary);
 }
 .ui-btn--outline:hover {
@@ -58,13 +63,14 @@
 }
 
 .ui-btn--dark {
-  background-color: var(--black);
-  border-color: var(--black);
-  color: var(--text-invert);
+  background-color: var(--brass-400);
+  border-color: var(--brass-400);
+  color: var(--primary);
 }
 .ui-btn--dark:hover {
-  background-color: var(--black-90);
-  border-color: var(--black-90);
+  background-color: var(--brass-600);
+  border-color: var(--brass-600);
+  color: var(--white);
 }
 
 .ui-btn--danger {

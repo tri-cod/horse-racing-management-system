@@ -6,6 +6,14 @@
   min-height: 100vh;
 }
 
+.notif-page__heading {
+  font-size: var(--fs-h2);
+  font-family: var(--font-serif);
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: var(--space-5);
+}
+
 .notif-page__content {
   max-width: 760px;
   margin-inline: auto;
@@ -28,7 +36,7 @@
 .notif-page__tabs {
   display: flex;
   gap: 0.25rem;
-  background: var(--black-5);
+  background: var(--bg-soft);
   border-radius: var(--radius);
   padding: 3px;
 }
@@ -74,7 +82,7 @@
 }
 
 .notif-page__tab--active .notif-page__tab-count {
-  background: var(--ocean-100);
+  background: var(--brass-200);
   color: var(--primary);
 }
 
@@ -135,15 +143,15 @@
 }
 
 .notif-item--unread {
-  background-color: var(--ocean-50);
+  background-color: var(--bg-soft);
 }
 
 .notif-item:hover {
-  background-color: var(--black-5);
+  background-color: var(--bg-soft);
 }
 
 .notif-item--unread:hover {
-  background-color: var(--ocean-100);
+  background-color: #E1E8ED;
 }
 
 /* ── Icon ───────────────────────────────────────────────────── */
@@ -160,8 +168,8 @@
 }
 
 .notif-item--unread .notif-item__icon {
-  background: var(--ocean-100);
-  color: var(--primary);
+  background: var(--brass-50);
+  color: var(--brass-600);
 }
 
 /* ── Body ───────────────────────────────────────────────────── */

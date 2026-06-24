@@ -25,6 +25,14 @@ export const getMyHorses = () =>
   axiosInstance.get('/horse-owner/horses').then((res) => res.data.data);
 
 /**
+ * Get the current horse owner's horses that are NOT yet registered in any
+ * race (pending or approved). Use this (instead of getMyHorses) when the
+ * user is picking a horse to register for a race, so horses already racing
+ * elsewhere don't show up as selectable.
+ */
+export const getAvailableHorses = () =>
+  axiosInstance.get('/horse-owner/horses/available').then((res) => res.data.data);
+/**
  * Get a single horse's detail by id
  */
 export const getHorseById = (horseId) =>

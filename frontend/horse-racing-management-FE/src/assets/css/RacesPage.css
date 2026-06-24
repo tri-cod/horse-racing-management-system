@@ -1,31 +1,5 @@
 .races-page { min-height: 100vh; }
 
-/* ── Header ── */
-.races-page__header {
-  background: var(--bg-dark);
-  padding: var(--space-10) clamp(1rem, 4vw, 2rem);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  max-width: 100%;
-}
-
-.races-page__eyebrow { color: var(--accent) !important; }
-
-.races-page__title {
-  font-size: var(--fs-h1);
-  font-weight: 700;
-  color: var(--white);
-  margin: 0;
-  letter-spacing: var(--tracking-tight);
-}
-
-.races-page__subtitle {
-  font-size: var(--fs-body);
-  color: var(--black-40);
-  margin: 0;
-}
-
 /* ── Content ── */
 .races-page__content {
   max-width: var(--container);
@@ -115,7 +89,7 @@
 }
 
 .races-week__day--selected {
-  background: var(--ocean-50);
+  background: var(--bg-soft);
 }
 
 .races-week__day--selected::after {

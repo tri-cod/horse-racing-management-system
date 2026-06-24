@@ -6,7 +6,9 @@ export default function Layout({ children }) {
   return (
     <div className="App">
       <Header />
-      <PageTransition>{children}</PageTransition>
+      <main id="main-content">
+        <PageTransition>{children}</PageTransition>
+      </main>
       <Footer />
     </div>
   );

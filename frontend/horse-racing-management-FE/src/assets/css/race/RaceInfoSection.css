@@ -25,18 +25,21 @@
   padding: var(--space-4);
   background: var(--bg-soft);
   border-radius: var(--radius);
+  border: 1px solid var(--border);
 }
 
 .race-info-section__label {
+  font-family: var(--font-data);
   font-size: var(--fs-xs);
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .race-info-section__value {
   font-size: var(--fs-body);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text);
+  font-variant-numeric: tabular-nums;
 }

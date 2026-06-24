@@ -1,6 +1,6 @@
 .my-horses-page {
   min-height: calc(100vh - 64px);
-  background-color: var(--bg);
+  background-color: var(--bg-soft);
   padding: 24px 16px 40px;
 }
 
@@ -18,16 +18,19 @@
 }
 
 .my-horses__subtitle {
-  font-size: 14px;
-  color: #64748b;
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   margin: 0 0 6px;
 }
 
 .my-horses__title {
+  font-family: var(--font-serif);
   font-size: 32px;
-  color: #0f172a;
+  font-weight: 800;
+  color: var(--text);
   margin: 0;
 }
 
@@ -36,19 +39,21 @@
   align-items: center;
   gap: 8px;
   border: none;
-  background: linear-gradient(135deg, #126285, #0A2E44);
-  color: #ffffff;
+  background: var(--primary);
+  color: var(--white);
   padding: 12px 20px;
-  border-radius: 12px;
-  font-weight: 700;
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-small);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .my-horses__add-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(10, 46, 68, 0.35);
-  background: linear-gradient(135deg, #0A2E44, #071f2f);
+  box-shadow: var(--shadow-md);
+  background: var(--primary-hover);
 }
 
 .my-horses__error-banner {
@@ -56,25 +61,26 @@
   justify-content: space-between;
   align-items: center;
   gap: 14px;
-  background-color: #fee2e2;
-  color: #991b1b;
+  background-color: var(--error-bg);
+  color: var(--error);
   padding: 14px 18px;
-  border-radius: 14px;
+  border-radius: var(--radius);
   margin-bottom: 18px;
+  border: 1px solid #fecaca;
 }
 
 .my-horses__retry-btn {
   border: none;
-  background-color: #991b1b;
-  color: #ffffff;
-  border-radius: 12px;
+  background-color: var(--error);
+  color: var(--white);
+  border-radius: var(--radius);
   padding: 10px 16px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .my-horses__retry-btn:hover {
-  background-color: #7f1d1d;
+  background-color: #b91c1c;
 }
 
 .my-horses__grid {
@@ -90,23 +96,25 @@
   justify-content: center;
   gap: 14px;
   text-align: center;
-  background-color: var(--card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 64px 24px;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 .my-horses__empty-title {
+  font-family: var(--font-serif);
   font-size: 18px;
-  font-weight: 600;
-  color: #0f172a;
+  font-weight: 700;
+  color: var(--text);
   margin: 0;
 }
 
 .my-horses__skeleton {
-  border-radius: 16px;
-  background-color: #e2effa;
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-soft);
   position: relative;
   overflow: hidden;
 }
@@ -131,12 +139,8 @@
 }
 
 @keyframes my-horses__shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 @media (max-width: 1024px) {

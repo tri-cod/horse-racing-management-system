@@ -1,23 +1,5 @@
 .rr-page { min-height: 100vh; }
 
-/* ── Hero ── */
-.rr-page__hero {
-  background: var(--white);
-  padding-block: var(--space-8);
-  border-bottom: 1px solid var(--border);
-}
-.rr-page__hero-inner {
-  max-width: var(--container);
-  margin-inline: auto;
-  padding-inline: clamp(1rem, 4vw, 2rem);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-.rr-page__eyebrow  { color: var(--primary) !important; }
-.rr-page__title    { font-size: var(--fs-h1); font-weight: 700; color: var(--text); margin: 0; letter-spacing: var(--tracking-tight); }
-.rr-page__subtitle { font-size: var(--fs-body); color: var(--text-muted); margin: 0; }
-
 /* ── Content ── */
 .rr-page__content {
   max-width: var(--container-narrow);

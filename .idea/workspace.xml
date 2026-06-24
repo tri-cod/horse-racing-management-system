@@ -5,38 +5,119 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="71f9b656-b1d0-485a-abcc-d8d204940871" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/controller/BetController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/controller/BetController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/service/impl/RaceHorseServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/service/impl/RaceHorseServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/App.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/api/betApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/api/betApi.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/api/raceHorseApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/api/raceHorseApi.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/api/refereeApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/api/refereeApi.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/api/walletApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/api/walletApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/public/logopage.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/AdminRaceListPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/AdminRaceListPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/AdminRacePage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/AdminRacePage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/AdminUsersPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/AdminUsersPage.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/AppHeader.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/AppHeader.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/Footer.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/Footer.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/Header.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/Header.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/HorseCard.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/HorseCard.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/HorseDetailPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/HorseDetailPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/HorseOwnerRacePage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/HorseOwnerRacePage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/HorseRegisterPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/HorseRegisterPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/JockeyCard.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/JockeyCard.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/JockeyDetailModal.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/JockeyDetailModal.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/JockeySelector.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/JockeySelector.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/JockeysPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/JockeysPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/MyHorsesPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/MyHorsesPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/MyRaceRegistrationsPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/MyRaceRegistrationsPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/NotificationBell.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/NotificationBell.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/NotificationsPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/NotificationsPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ProfilePage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ProfilePage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/RaceDetailPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/RaceDetailPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/RaceResultsPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/RaceResultsPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/RacesPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/RacesPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/RefereeRacesPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/RefereeRacesPage.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/Register.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/Register.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/Sidebar.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/Sidebar.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/TrainerProfilePage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/TrainerProfilePage.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/admin/AdminDepositPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/admin/AdminDepositPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/admin/AdminSetOddsPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/admin/AdminSetOddsPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/admin/ChangeRoleModal.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/admin/ChangeRoleModal.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/admin/ChangeStatusModal.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/admin/ChangeStatusModal.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/admin/UserAvatar.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/admin/UserAvatar.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/admin/UsersTable.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/admin/UsersTable.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/bet/BetStatusBadge.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/bet/BetStatusBadge.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/bet/MyBetsPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/bet/MyBetsPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/bet/PlaceBetModal.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/bet/PlaceBetModal.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/forgotPassword.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/forgotPassword.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/AboutSection.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/AboutSection.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/GallerySection.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/GallerySection.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/HeroSection.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/HeroSection.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/HorsesSection.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/HorsesSection.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/JockeysSection.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/JockeysSection.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/NewsSection.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/NewsSection.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/NewsletterSection.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/NewsletterSection.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/RacesSection.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/RacesSection.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/StatsSection.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/home/StatsSection.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/horse-owner/AssignTrainerCard.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/horse-owner/AssignTrainerCard.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/login.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race-horse/MyRegistrationsTable.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race-horse/MyRegistrationsTable.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race-horse/RegisterHorseToRaceModal.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race-horse/RegisterHorseToRaceModal.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race-horse/RegisteredHorsesList.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race-horse/RegisteredHorsesList.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race/RaceCard.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race/RaceCard.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race/RaceFilterTabs.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race/RaceFilterTabs.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race/RaceForm.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race/RaceForm.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race/RaceInfoSection.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race/RaceInfoSection.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race/RaceMetaStrip.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race/RaceMetaStrip.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race/RaceResultSection.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/race/RaceResultSection.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/theme.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/theme.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/trainer/AvatarPreview.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/trainer/AvatarPreview.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/trainer/TrainerProfileForm.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/trainer/TrainerProfileForm.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/Badge.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/Badge.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/Button.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/Button.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/Card.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/Card.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/ConfirmDialog.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/ConfirmDialog.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/EmptyState.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/EmptyState.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/ImagePicker.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/ImagePicker.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/LoadingSpinner.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/LoadingSpinner.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/Modal.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/Modal.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/PageHero.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/PageHero.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/Pagination.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/Pagination.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/SectionHeader.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/SectionHeader.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/Toast.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/ui/Toast.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/wallet/MyWalletPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/assets/css/wallet/MyWalletPage.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/AppHeader.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/AppHeader.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/AppLayout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/AppLayout.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/Layout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/Layout.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/Sidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/Sidebar.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/header.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/header.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/race-horse/RegisteredHorsesList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/race-horse/RegisteredHorsesList.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/race/RaceCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/race/RaceCard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/race/RaceStatusBadge.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/race/RaceStatusBadge.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/referee/SetResultModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/referee/SetResultModal.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/context/RaceSocketContext.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/context/RaceSocketContext.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/hooks/useRaceBetUpdates.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/hooks/useRaceBetUpdates.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/hooks/useUpcomingRaces.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/hooks/useUpcomingRaces.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/home/HeroSection.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/home/HeroSection.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/home/JockeysSection.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/home/JockeysSection.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/home/RacesSection.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/home/RacesSection.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/home/StatsSection.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/components/home/StatsSection.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/index.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminApproveHorsesPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminApproveHorsesPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminCreateRacePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminCreateRacePage.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminDepositPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminDepositPage.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminEditRacePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminEditRacePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminRaceListPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminRaceListPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminSetOddsPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminSetOddsPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminUsersPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminUsersPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminWalletPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/AdminWalletPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/ForgotPasswordPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/ForgotPasswordPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/HomePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/HomePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/HorseDetailPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/HorseDetailPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/HorseOwnerRacePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/HorseOwnerRacePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/HorseRegisterPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/HorseRegisterPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/JockeysPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/JockeysPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/LoginPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/LoginPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/MyBetsPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/MyBetsPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/MyHorsesPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/MyHorsesPage.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/MyRaceRegistrationsPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/MyRaceRegistrationsPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/MyWalletPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/MyWalletPage.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/NotificationsPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/NotificationsPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/ProfilePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/ProfilePage.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/RaceDetailPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/RaceDetailPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/RaceResultsPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/RaceResultsPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/RacesPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/RacesPage.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/RefereeRacesPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/RefereeRacesPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/RegisterPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/RegisterPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/TrainerProfilePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/horse-racing-management-FE/src/pages/TrainerProfilePage.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,39 +147,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Spring Boot.HorseRacingManagementApplication.executor&quot;: &quot;Run&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;fix/noti__and__race__result&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/SWP/horse-racing-management-system&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.HorseRacingManagementApplication.executor": "Run",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "fix/UI",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/SWP/horse-racing-management-system",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="HorseRacingManagementApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
