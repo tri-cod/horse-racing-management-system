@@ -5,10 +5,12 @@ import PageTransition from './PageTransition';
 export default function AppLayout({ children }) {
   return (
     <div className="App">
-      <AppHeader />
       <Sidebar />
-      <div style={{ marginLeft: '60px' }}>
-        <PageTransition>{children}</PageTransition>
+      <div className="app-shell">
+        <AppHeader />
+        <main id="main-content" className="app-workspace">
+          <PageTransition>{children}</PageTransition>
+        </main>
       </div>
     </div>
   );

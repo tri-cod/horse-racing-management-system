@@ -1,8 +1,9 @@
 /* ── Hero ── */
 .my-bets-page__hero {
-  background: linear-gradient(135deg, var(--ocean-900) 0%, var(--ocean-700) 100%);
+  background: var(--primary);
   color: var(--text-invert);
   padding: var(--space-12) var(--space-6) var(--space-10);
+  border-bottom: 3px solid var(--brass-400);
 }
 .my-bets-page__hero-inner { max-width: var(--container-narrow); margin: 0 auto; }
 .my-bets-page__eyebrow { opacity: .75; }
@@ -39,10 +40,10 @@
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.bstat-card__icon--blue  { background: var(--ocean-50);  color: var(--ocean-700); }
-.bstat-card__icon--dark  { background: var(--black-5);   color: var(--black-60); }
+.bstat-card__icon--blue  { background: var(--bg-soft);   color: var(--primary); }
+.bstat-card__icon--dark  { background: var(--black-5);   color: var(--text-muted); }
 .bstat-card__icon--green { background: #f0fdf4;          color: #16a34a; }
-.bstat-card__icon--gold  { background: #fefce8;          color: #ca8a04; }
+.bstat-card__icon--gold  { background: var(--brass-50);  color: var(--brass-600); }
 .bstat-card__body { display: flex; flex-direction: column; }
 .bstat-card__val { font-size: var(--fs-h3); font-weight: 700; color: var(--text); line-height: 1.2; }
 .bstat-card__val--sm { font-size: 1rem; }
@@ -53,13 +54,13 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  background: #fefce8;
-  border: 1px solid #fde68a;
+  background: var(--brass-50);
+  border: 1px solid var(--brass-200);
   border-radius: var(--radius);
   padding: var(--space-3) var(--space-4);
   font-size: var(--fs-small);
   margin-bottom: var(--space-5);
-  color: #854d0e;
+  color: var(--brass-600);
 }
 
 /* ── Toolbar ── */
@@ -179,15 +180,16 @@
 .bet-items-table th {
   text-align: left;
   padding: var(--space-2) var(--space-3);
+  font-family: var(--font-data);
   font-size: var(--fs-xs);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
+  letter-spacing: 0.1em;
   color: var(--text-muted);
   border-bottom: 1px solid var(--border);
 }
 .bet-items-table__row td { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border); color: var(--text); }
 .bet-items-table__horse { font-weight: 500; }
-.bet-items-table__odds  { color: var(--primary); font-weight: 600; }
+.bet-items-table__odds  { font-family: var(--font-data); color: var(--brass-600); font-weight: 700; font-variant-numeric: tabular-nums; }
 .ta-r { text-align: right; }
 
 .result-pill {

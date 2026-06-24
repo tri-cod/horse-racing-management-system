@@ -1,24 +1,8 @@
-import { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Container from '../ui/Container';
 import '../../assets/css/home/AboutSection.css';
 
-import aboutImg1 from '../../assets/img/venue-santaanita.webp';
-import aboutImg2 from '../../assets/img/8adf38de12946d77086ff9a58cc5b2f1.jpg';
-import aboutImg3 from '../../assets/img/174b40b7b0643c6cdafe82f318879afd.webp';
-
-const SLIDES = [aboutImg1, aboutImg2, aboutImg3];
-
 export default function AboutSection() {
-  const [current, setCurrent] = useState(0);
-
-  const next = useCallback(() => setCurrent((c) => (c + 1) % SLIDES.length), []);
-
-  useEffect(() => {
-    const timer = setInterval(next, 4500);
-    return () => clearInterval(timer);
-  }, [next]);
-
   return (
     <section className="home-about">
       <Container>
@@ -41,14 +25,14 @@ export default function AboutSection() {
           </div>
 
           <div className="home-about__media">
-            {SLIDES.map((src, i) => (
-              <img
-                key={i}
-                src={src}
-                alt="A moment from Royal Derby"
-                className={`home-about__img${i === current ? ' active' : ''}`}
-              />
-            ))}
+            <video
+              className="home-about__video"
+              src="https://res.cloudinary.com/dxg3w2joa/video/upload/v1782286249/about_jbzsjt.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
           </div>
         </div>
       </Container>

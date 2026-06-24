@@ -6,13 +6,16 @@ import TrainerProfileForm from '../components/trainer/TrainerProfileForm';
 import TrainerProfileView from '../components/trainer/TrainerProfileView';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Button from '../components/ui/Button';
+import DashboardPageHeader from '../components/rd/DashboardPageHeader';
+import Seo from '../components/seo/Seo';
 import '../assets/css/TrainerProfilePage.css';
+import '../assets/css/rd/workspace.css';
 
 export default function TrainerProfilePage() {
   const { profile, loading, error, refetch, save } = useTrainerProfile();
   const addToast = useToast();
   const [editing, setEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [saving, setSaving]   = useState(false);
 
   const isNew = !profile || (profile.age == null && profile.experienceYears == null);
 
@@ -32,40 +35,51 @@ export default function TrainerProfilePage() {
   if (loading) return <LoadingSpinner size="lg" />;
 
   if (error) return (
-    <div className="trainer-profile-page">
-      <div className="trainer-profile-page__error">
-        <p>{error}</p>
-        <Button variant="outline" onClick={refetch}>Try Again</Button>
+    <div className="ws-page">
+      <div className="ws-body ws-body--narrow">
+        <div className="ws-error">
+          <span>{error}</span>
+          <Button variant="outline" onClick={refetch}>Try Again</Button>
+        </div>
       </div>
     </div>
   );
 
   return (
-    <div className="trainer-profile-page">
-<div className="trainer-profile-page__content">
-        <div className="trainer-profile-page__sidebar">
-          <AvatarPreview url={profile?.avatarUrl} name={profile?.name} />
-          <h2 className="trainer-profile-page__name">{profile?.name || 'Trainer'}</h2>
-        </div>
+    <div className="ws-page">
+      <Seo title="Trainer Profile" description="Manage your Royal Derby trainer profile." />
+      <DashboardPageHeader
+        eyebrow="Trainer"
+        title={profile?.name || 'My Profile'}
+        subtitle="Manage your trainer profile and details"
+        action={
+          !editing && !isNew ? (
+            <Button variant="outline" size="sm" onClick={() => setEditing(true)}>Edit Profile</Button>
+          ) : undefined
+        }
+      />
 
-        <div className="trainer-profile-page__main">
-          {!editing && !isNew && (
-            <div className="trainer-profile-page__toolbar">
-              <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
-                Edit Profile
-              </Button>
+      <div className="ws-body">
+        <div className="trainer-profile-page__content" style={{ gridTemplateColumns: '240px 1fr', display: 'grid', gap: 'var(--space-8)', alignItems: 'start' }}>
+          <div className="trainer-profile-page__sidebar">
+            <AvatarPreview url={profile?.avatarUrl} name={profile?.name} />
+            <h1 className="trainer-profile-page__name">{profile?.name || 'Trainer'}</h1>
+            {profile && (
+              <span className="trainer-profile-page__status">
+                {profile.experienceYears != null ? `${profile.experienceYears} yrs exp.` : 'New Trainer'}
+              </span>
+            )}
+          </div>
+
+          <div className="ws-panel">
+            <div className="ws-panel__body">
+              {(editing || isNew) ? (
+                <TrainerProfileForm initialValues={profile ?? {}} onSubmit={handleSave} loading={saving} />
+              ) : (
+                <TrainerProfileView profile={profile} />
+              )}
             </div>
-          )}
-
-          {(editing || isNew) ? (
-            <TrainerProfileForm
-              initialValues={profile ?? {}}
-              onSubmit={handleSave}
-              loading={saving}
-            />
-          ) : (
-            <TrainerProfileView profile={profile} />
-          )}
+          </div>
         </div>
       </div>
     </div>

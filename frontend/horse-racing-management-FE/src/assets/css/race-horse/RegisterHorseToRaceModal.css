@@ -11,11 +11,12 @@
 }
 
 .reg-modal__section-title {
+  font-family: var(--font-data);
   font-size: var(--fs-small);
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.1em;
   padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--border);
 }
@@ -47,12 +48,12 @@
 
 .reg-modal__horse-card:hover {
   border-color: var(--primary);
-  background: var(--ocean-50);
+  background: var(--bg-soft);
 }
 
 .reg-modal__horse-card--selected {
   border-color: var(--primary);
-  background: var(--ocean-50);
+  background: var(--bg-soft);
 }
 
 .reg-modal__horse-img {
@@ -114,7 +115,7 @@
 
 .reg-modal__jockey-option:hover {
   border-color: var(--primary);
-  background: var(--ocean-50);
+  background: var(--bg-soft);
 }
 
 .reg-modal__jockey-option input[type='radio'] {

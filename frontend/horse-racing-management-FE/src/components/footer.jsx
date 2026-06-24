@@ -30,8 +30,7 @@ function Footer() {
         <div className="footer__main">
           <div className="footer__brand">
             <a href="/" className="footer__brand-logo">
-              <span className="footer__brand-royal">Royal</span>
-              <span className="footer__brand-derby">Derby</span>
+              <img src="/logopage.png" alt="Royal Derby" className="footer__brand-logo-img" />
             </a>
             <p className="footer__brand-desc">
               An international-class horse racing arena — where champion jockeys, mighty

@@ -20,22 +20,25 @@
 }
 
 .race-meta-strip__icon {
-  color: var(--primary);
+  color: var(--accent);
   flex-shrink: 0;
   margin-top: 2px;
 }
 
 .race-meta-strip__label {
+  font-family: var(--font-data);
   font-size: var(--fs-xs);
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   margin-bottom: var(--space-1);
 }
 
 .race-meta-strip__value {
+  font-family: var(--font-data);
   font-size: var(--fs-body);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text);
+  font-variant-numeric: tabular-nums;
 }

@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* Fonts loaded via <link> in index.html for faster delivery (no @import blocking) */
 
 :root {
-  /* === OCEAN BLUE === (replaces Vinpearl's green) */
+  /* === OCEAN BLUE === */
   --ocean-50:  #f0f9ff;
   --ocean-100: #e0f2fe;
   --ocean-200: #bae6fd;
@@ -29,41 +29,70 @@
   --white-95:  #fafafa;
   --white-90:  #f5f5f5;
 
-  /* === SEMANTIC === */
-  --bg:           var(--white);
-  --bg-soft:      var(--ocean-50);
-  --bg-dark:      var(--black);
-  --surface:      var(--white);
-  --text:         var(--black-90);
-  --text-muted:   var(--black-60);
-  --text-invert:  var(--white);
-  --primary:      var(--ocean-700);
-  --primary-hover: var(--ocean-800);
-  --accent:       var(--ocean-500);
-  --border:       var(--black-10);
-  --border-strong: var(--black-20);
-  --shadow-sm:    0 2px 8px rgba(10, 10, 10, 0.04);
-  --shadow-md:    0 8px 24px rgba(10, 10, 10, 0.08);
-  --shadow-lg:    0 20px 50px rgba(10, 10, 10, 0.12);
+  /* === BRASS / PRESTIGE ACCENT === */
+  --brass-50:  #FAF4E4;
+  --brass-200: #E6D49B;
+  --brass-400: #C6A14B;
+  --brass-600: #A8842F;
+  --brass-800: #6E5417;
 
-  /* === ERROR (semantic only, for inline error states) === */
-  --error:        #b91c1c;
-  --error-bg:     #fef2f2;
+  /* === NAVY RAMP === */
+  --navy-deep: #08203A;
+  --navy-mid:  #0F3D6B;
+
+  /* === SEMANTIC === */
+  --bg:           #ffffff;
+  --bg-soft:      #EDF1F4;
+  --bg-dark:      #0B2A4A;
+  --surface:      #ffffff;
+  --text:         #0C1B2A;
+  --text-muted:   #56697B;
+  --text-faint:   #8A98A6;
+  --text-invert:  #ffffff;
+
+  --primary:       #0B2A4A;
+  --primary-hover: #08203A;
+  --accent:        #1E6FB8;
+  --accent-300:    #5FA0DC;
+
+  --border:        #E1E8ED;
+  --border-strong: #C8D4DC;
+
+  --ok:        #0F6E56;
+  --ok-bg:     #E1F5EE;
+  --warn-bg:   #F1EFE8;
+  --danger:    #A32D2D;
+  --danger-bg: #FCEBEB;
+
+  --shadow-sm:  0 2px 8px rgba(11, 42, 74, 0.05);
+  --shadow-md:  0 14px 30px -18px rgba(11, 42, 74, 0.40);
+  --shadow-lg:  0 20px 50px rgba(11, 42, 74, 0.14);
+
+  /* === BRASS SEMANTIC ALIASES === */
+  --brass:        var(--brass-400);
+  --brass-strong: var(--brass-600);
+  --brass-soft:   var(--brass-50);
+
+  /* === ERROR (legacy alias) === */
+  --error:    #b91c1c;
+  --error-bg: #fef2f2;
 
   /* === TYPOGRAPHY === */
   --font-sans:  'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-data:  'Oswald', 'Inter', sans-serif;
 
-  --fs-hero:   clamp(2.5rem, 5vw, 4.5rem);
-  --fs-h1:     clamp(2rem, 3.5vw, 3rem);
-  --fs-h2:     clamp(1.5rem, 2.5vw, 2.25rem);
-  --fs-h3:     1.5rem;
-  --fs-body:   1rem;
-  --fs-small:  0.875rem;
-  --fs-xs:     0.75rem;
+  --fs-hero:  clamp(2.5rem, 5vw, 3.75rem);
+  --fs-h1:    clamp(1.625rem, 3.5vw, 2.125rem);
+  --fs-h2:    clamp(1.375rem, 2.5vw, 1.75rem);
+  --fs-h3:    1.1875rem;
+  --fs-body:  1rem;
+  --fs-small: 0.875rem;
+  --fs-xs:    0.75rem;
 
-  --lh-tight:  1.15;
-  --lh-base:   1.6;
-  --lh-loose:  1.8;
+  --lh-tight: 1.15;
+  --lh-base:  1.6;
+  --lh-loose: 1.8;
 
   --tracking-tight:  -0.02em;
   --tracking-normal: 0;
@@ -76,52 +105,78 @@
   --space-8: 3rem;     --space-10: 4rem;    --space-12: 6rem;
   --space-16: 8rem;
 
-  --radius-sm: 4px;
-  --radius:    8px;
+  --radius-sm: 6px;
+  --radius:    10px;
   --radius-lg: 16px;
   --radius-xl: 24px;
   --radius-full: 9999px;
 
-  --container: 1280px;
+  --container: 1440px;
   --container-narrow: 960px;
 
-  --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition: 240ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ─── Base ─────────────────────────────────────────────── */
 body {
   font-family: var(--font-sans);
   color: var(--text);
   background: var(--bg);
+  font-size: var(--fs-body);
+  line-height: var(--lh-base);
 }
 
 h1, h2, h3, h4 {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  letter-spacing: var(--tracking-tight);
+  font-family: var(--font-serif);
+  font-weight: 800;
+  letter-spacing: -0.01em;
   color: var(--text);
   line-height: var(--lh-tight);
   margin: 0;
 }
+h3, h4 { letter-spacing: 0; }
 
-h3, h4 {
-  letter-spacing: 0;
-}
+p { line-height: var(--lh-base); color: var(--text-muted); }
+a { color: inherit; }
 
-p {
-  line-height: var(--lh-base);
-  color: var(--text-muted);
-}
-
-a {
-  color: inherit;
-}
-
+/* ─── Typography utilities ──────────────────────────────── */
 .eyebrow {
   display: inline-block;
-  font-family: var(--font-sans);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
-  font-size: var(--fs-xs);
+  font-family: var(--font-data);
   font-weight: 600;
-  color: var(--primary);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: var(--fs-xs);
+  color: var(--brass-strong);
+}
+
+/* tabular-nums for data/Oswald */
+.tnum {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Jockey racing-silk swatches ───────────────────────── */
+.silk {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  display: inline-block;
+  flex: none;
+  vertical-align: middle;
+}
+.silk--1 { background: repeating-linear-gradient(45deg, var(--brass) 0 7px, var(--primary) 7px 14px); }
+.silk--2 { background: linear-gradient(180deg, var(--accent) 50%, #fff 50%); }
+.silk--3 { background: repeating-conic-gradient(var(--primary) 0% 25%, #fff 0% 50%) 0 0 / 14px 14px; }
+.silk--4 { background: linear-gradient(90deg, var(--accent) 50%, var(--brass) 50%); }
+.silk--5 { background: repeating-linear-gradient(0deg, var(--primary) 0 7px, #fff 7px 14px); }
+.silk--6 { background: radial-gradient(circle at 50% 50%, var(--brass) 36%, var(--accent) 38%); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

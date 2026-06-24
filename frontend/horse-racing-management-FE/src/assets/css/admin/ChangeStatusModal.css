@@ -24,7 +24,7 @@
 
 .change-status-modal__option:hover {
   border-color: var(--primary);
-  background: var(--ocean-50);
+  background: var(--bg-soft);
 }
 
 .change-status-modal__option input[type='radio'] {
@@ -33,9 +33,9 @@
 
 .change-status-modal__warning {
   font-size: var(--fs-small);
-  color: var(--black-60);
+  color: var(--text-muted);
   padding: var(--space-3);
-  background: var(--black-5);
+  background: var(--bg-soft);
   border-radius: var(--radius);
   margin-bottom: var(--space-3);
   line-height: var(--lh-base);

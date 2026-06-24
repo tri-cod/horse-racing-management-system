@@ -20,8 +20,9 @@
   flex-shrink: 0;
 }
 .admin-odds-page__title {
+  font-family: var(--font-serif);
   font-size: var(--fs-h2);
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text);
   margin: 0 0 var(--space-1) 0;
 }
@@ -111,13 +112,14 @@
 .admin-odds-table th {
   text-align: left;
   padding: var(--space-3) var(--space-4);
+  font-family: var(--font-data);
   font-size: var(--fs-xs);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-soft);
-  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.75);
+  border-bottom: 1px solid #08203A;
+  background: var(--primary);
+  font-weight: 600;
 }
 .admin-odds-table__row td {
   padding: var(--space-3) var(--space-4);
@@ -134,10 +136,12 @@
   justify-content: center;
   width: 32px; height: 32px;
   border-radius: var(--radius);
-  background: var(--ocean-50);
-  color: var(--ocean-700);
+  background: var(--bg-soft);
+  color: var(--primary);
+  font-family: var(--font-data);
   font-size: var(--fs-xs);
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 .admin-odds-horse-name { font-weight: 600; }
 .admin-odds-jockey     { color: var(--text-muted); }

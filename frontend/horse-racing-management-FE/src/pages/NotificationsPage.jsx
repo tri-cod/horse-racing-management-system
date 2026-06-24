@@ -3,7 +3,10 @@ import { Bell, Trophy, Target, CheckCircle, Wallet, Info, CheckCheck } from 'luc
 import { useNotifications } from '../hooks/useNotifications';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmptyState from '../components/ui/EmptyState';
+import DashboardPageHeader from '../components/rd/DashboardPageHeader';
+import Seo from '../components/seo/Seo';
 import '../assets/css/NotificationsPage.css';
+import '../assets/css/rd/workspace.css';
 
 function timeAgo(dateStr) {
   if (!dateStr) return '';
@@ -33,21 +36,14 @@ function NotificationItem({ notif, onMarkRead }) {
       <div className="notif-item__icon">
         <NotifIcon type={notif.type} />
       </div>
-
       <div className="notif-item__body">
         <p className="notif-item__title">{notif.title ?? 'Notification'}</p>
         <p className="notif-item__content">{notif.content}</p>
-        <span className="notif-item__time">{timeAgo(notif.createdAt)}</span>
+        <span className="notif-item__time tnum">{timeAgo(notif.createdAt)}</span>
       </div>
-
       <div className="notif-item__actions">
         {!notif.isRead ? (
-          <button
-            type="button"
-            className="notif-item__mark-btn"
-            title="Mark as read"
-            onClick={() => onMarkRead(notif.id)}
-          >
+          <button type="button" className="notif-item__mark-btn" title="Mark as read" onClick={() => onMarkRead(notif.id)}>
             <CheckCheck size={14} />
           </button>
         ) : (
@@ -60,86 +56,59 @@ function NotificationItem({ notif, onMarkRead }) {
 
 export default function NotificationsPage() {
   const [tab, setTab] = useState('all');
-  const {
-    notifications,
-    unreadCount,
-    loading,
-    error,
-    markAsRead,
-    markAllAsRead,
-  } = useNotifications();
-
-  const list = tab === 'unread'
-    ? notifications.filter((n) => !n.isRead)
-    : notifications;
+  const { notifications, unreadCount, loading, error, markAsRead, markAllAsRead } = useNotifications();
+  const list = tab === 'unread' ? notifications.filter((n) => !n.isRead) : notifications;
 
   return (
-    <div className="notif-page">
-<div className="notif-page__content">
-        {/* Toolbar */}
-        <div className="notif-page__toolbar">
-          <div className="notif-page__tabs" role="tablist">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === 'all'}
-              className={`notif-page__tab${tab === 'all' ? ' notif-page__tab--active' : ''}`}
-              onClick={() => setTab('all')}
-            >
-              All
-              {notifications.length > 0 && (
-                <span className="notif-page__tab-count">{notifications.length}</span>
-              )}
+    <div className="ws-page">
+      <Seo title="Notifications" description="Your Royal Derby notifications." />
+      <DashboardPageHeader
+        eyebrow="My Account"
+        title="Notifications"
+        subtitle={unreadCount > 0 ? `${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}` : 'All caught up'}
+        action={
+          unreadCount > 0 ? (
+            <button type="button" className="notif-page__mark-all" onClick={markAllAsRead}>
+              <CheckCheck size={14} /> Mark all read
             </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === 'unread'}
-              className={`notif-page__tab${tab === 'unread' ? ' notif-page__tab--active' : ''}`}
-              onClick={() => setTab('unread')}
-            >
-              Unread
-              {unreadCount > 0 && (
-                <span className="notif-page__tab-count">{unreadCount}</span>
-              )}
-            </button>
-          </div>
+          ) : undefined
+        }
+      />
 
-          {unreadCount > 0 && (
-            <button
-              type="button"
-              className="notif-page__mark-all"
-              onClick={markAllAsRead}
-            >
-              <CheckCheck size={14} />
-              Mark all as read
-            </button>
-          )}
+      <div className="ws-body ws-body--narrow">
+        {/* Tabs */}
+        <div className="notif-page__tabs" role="tablist">
+          <button type="button" role="tab" aria-selected={tab === 'all'}
+            className={`notif-page__tab${tab === 'all' ? ' notif-page__tab--active' : ''}`}
+            onClick={() => setTab('all')}>
+            All {notifications.length > 0 && <span className="notif-page__tab-count">{notifications.length}</span>}
+          </button>
+          <button type="button" role="tab" aria-selected={tab === 'unread'}
+            className={`notif-page__tab${tab === 'unread' ? ' notif-page__tab--active' : ''}`}
+            onClick={() => setTab('unread')}>
+            Unread {unreadCount > 0 && <span className="notif-page__tab-count">{unreadCount}</span>}
+          </button>
         </div>
 
-        {/* Error */}
-        {error && <div className="notif-page__error">{error}</div>}
+        {error && <div className="ws-error">{error}</div>}
 
-        {/* Content */}
-        {loading ? (
-          <LoadingSpinner size="md" />
-        ) : list.length === 0 ? (
-          <EmptyState
-            icon={Bell}
-            title={tab === 'unread' ? "You're all caught up!" : 'No notifications yet'}
-            subtitle={
-              tab === 'unread'
-                ? 'No unread notifications at the moment.'
-                : 'Notifications about races, results, and your account will appear here.'
-            }
-          />
-        ) : (
-          <div className="notif-page__list" role="list">
-            {list.map((n) => (
-              <NotificationItem key={n.id} notif={n} onMarkRead={markAsRead} />
-            ))}
-          </div>
-        )}
+        <div className="ws-panel">
+          {loading ? (
+            <LoadingSpinner size="md" />
+          ) : list.length === 0 ? (
+            <EmptyState
+              icon={Bell}
+              title={tab === 'unread' ? "You're all caught up!" : 'No notifications yet'}
+              subtitle={tab === 'unread' ? 'No unread notifications.' : 'Race alerts and results will appear here.'}
+            />
+          ) : (
+            <div className="notif-page__list" role="list">
+              {list.map((n) => (
+                <NotificationItem key={n.id} notif={n} onMarkRead={markAsRead} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

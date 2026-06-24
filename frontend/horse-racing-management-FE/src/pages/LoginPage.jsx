@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { Link } from 'react-router-dom';
 import "../assets/css/login.css";
-import logoLogin from "../assets/img/logoLogin.jpg"
 import { Eye, EyeOff } from "lucide-react";
 import { useLogin } from "../hooks/useLogin";
+import Seo from "../components/seo/Seo";
 
 export default function LoginPage() {
     const { loading, error, success, handleLogin } = useLogin();
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [remember, setRemember] = useState(false);
+    const [username, setUsername]         = useState("");
+    const [password, setPassword]         = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e) => {
@@ -19,14 +18,31 @@ export default function LoginPage() {
 
     return (
         <div className="login-page">
-            <div className="login-card">
-                {/* Left Panel */}
-                <div className="login-form-panel">
-                    <h1 className="login-title">Welcome Back</h1>
-                    {success && <div className="login-success">{success}</div>}
-                    {error && <div className="login-error">{error}</div>}
+            <Seo title="Sign In" description="Sign in to your Royal Derby account." />
 
-                    <div className="login-form">
+            {/* ── Top header with logo ── */}
+            <div className="login-topbar">
+                <Link to="/" className="login-topbar__logo">
+                    <span>Royal</span><em>Derby</em>
+                </Link>
+            </div>
+
+            {/* ── Tab bar ── */}
+            <div className="login-tabs">
+                <span className="login-tab login-tab--active">Sign in</span>
+                <Link to="/register" className="login-tab">Register</Link>
+            </div>
+
+            {/* ── Form area ── */}
+            <div className="login-form-area">
+                <div className="login-form-container">
+                    <h1 className="login-heading">SIGN IN</h1>
+                    <hr className="login-heading-divider" />
+
+                    {success && <div className="login-success">{success}</div>}
+                    {error   && <div className="login-error">{error}</div>}
+
+                    <form onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label className="form-label">Username</label>
                             <input
@@ -48,58 +64,37 @@ export default function LoginPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
-
-                                <span
-                                    className="toggle-password"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                >
+                                <span className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </span>
                             </div>
                         </div>
 
-                        <div className="form-remember-row">
-                            <div className="form-remember">
-                                <input
-                                    type="checkbox"
-                                    id="remember"
-                                    checked={remember}
-                                    onChange={(e) => setRemember(e.target.checked)}
-                                />
-                                <label htmlFor="remember">Remember for 30 days</label>
-                            </div>
-                            <Link to="/forgot-password" className="forgot-link">
-                               Forgot password?
-                            </Link>
+                        <div className="login-forgot-row">
+                            <Link to="/forgot-password" className="forgot-link">Forgotten password?</Link>
                         </div>
 
-                        <button
-                            className={`btn-signin ${loading ? "loading" : ""}`}
-                            onClick={handleSubmit}
-                            disabled={loading}
-                        >
-                            {loading ? <span className="spinner" /> : "Sign In"}
+                        <button type="submit" className="btn-signin" disabled={loading}>
+                            {loading ? <span className="spinner" /> : "SIGN IN"}
                         </button>
 
-                        <div className="divider">
-                            <span>or</span>
-                        </div>
-
                         <p className="signup-link">
-                            Don't have an account?{" "}
-                            <Link to="/register" className="signup-btn">
-                                Sign up
-                            </Link>
+                            Don't have an account yet?{" "}
+                            <Link to="/register" className="signup-btn">Register with Royal Derby</Link>
                         </p>
-                    </div>
+                    </form>
                 </div>
+            </div>
 
-                {/* Right Panel - Image */}
-                <div className="login-image-panel" style={{ backgroundImage: `url(${logoLogin})` }}>
-                    <div className="image-overlay" />
-                    <blockquote className="login-image-quote">
-                        "Where champions are born."
-                    </blockquote>
+            {/* ── Footer ── */}
+            <div className="login-footer">
+                <Link to="/" className="login-footer__logo">
+                    <span>Royal</span><em>Derby</em>
+                </Link>
+                <div className="login-footer__links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Use</a>
+                    <a href="#">Contact</a>
                 </div>
             </div>
         </div>

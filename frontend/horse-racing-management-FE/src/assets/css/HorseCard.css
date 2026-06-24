@@ -2,17 +2,19 @@
   display: flex;
   gap: 16px;
   align-items: center;
-  background-color: var(--card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 18px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .horse-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 28px rgba(14, 165, 233, 0.16);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
 }
 
 .horse-card__avatar {
@@ -30,10 +32,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: var(--font-serif);
   font-size: 28px;
   font-weight: 700;
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--primary-700), var(--primary-500));
+  color: var(--white);
+  background: linear-gradient(135deg, var(--primary), #0F3D6B);
 }
 
 .horse-card__body {
@@ -53,8 +56,10 @@
 
 .horse-card__name {
   margin: 0;
+  font-family: var(--font-serif);
   font-size: 18px;
-  color: #0f172a;
+  font-weight: 700;
+  color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -70,8 +75,10 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  font-family: var(--font-data);
   font-size: 13px;
-  color: #64748b;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .horse-card__trainer {
@@ -79,32 +86,35 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: var(--primary-700);
+  color: var(--primary);
   font-weight: 600;
 }
 
 .horse-status-badge {
   display: inline-flex;
   align-items: center;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-data);
+  font-size: 11px;
+  font-weight: 600;
   white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .horse-status-badge--active {
-  background-color: rgba(22, 163, 74, 0.14);
+  background-color: rgba(22, 163, 74, 0.12);
   color: #15803d;
 }
 
 .horse-status-badge--inactive {
-  background-color: rgba(100, 116, 139, 0.16);
-  color: #475569;
+  background-color: var(--bg-soft);
+  color: var(--text-muted);
 }
 
 .horse-status-badge--retire {
-  background-color: rgba(249, 115, 22, 0.16);
+  background-color: rgba(249, 115, 22, 0.12);
   color: #c2410c;
 }
 
