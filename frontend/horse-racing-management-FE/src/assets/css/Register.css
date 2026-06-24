@@ -1,0 +1,606 @@
+/* ============================================================
+   REGISTER PAGE
+============================================================ */
+
+.rg-page {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ============================================================
+   LEFT PANEL
+============================================================ */
+
+.rg-left {
+  width: 42%;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.rg-left__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(8, 47, 73, 0.92) 0%, rgba(10, 10, 10, 0.7) 100%);
+}
+
+.rg-left__content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-10);
+}
+
+.rg-back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  color: var(--white);
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity var(--transition);
+}
+
+.rg-back-home:hover {
+  opacity: 1;
+}
+
+.rg-left__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.rg-left__headline {
+  font-family: var(--font-serif);
+  font-size: clamp(2.25rem, 4vw, 3.25rem);
+  font-weight: 700;
+  color: var(--white);
+  line-height: var(--lh-tight);
+  margin: 0 0 var(--space-5);
+}
+
+.rg-left__headline span {
+  color: var(--ocean-300);
+  font-style: italic;
+}
+
+.rg-left__tagline {
+  font-size: var(--fs-body);
+  color: var(--ocean-100);
+  line-height: var(--lh-loose);
+  margin: 0;
+  max-width: 320px;
+}
+
+.rg-left__footer {
+  font-size: var(--fs-xs);
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ============================================================
+   RIGHT PANEL
+============================================================ */
+
+.rg-right {
+  flex: 1;
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-8);
+}
+
+.rg-right__inner {
+  width: 100%;
+  max-width: 480px;
+}
+
+/* ============================================================
+   STEP HEADER
+============================================================ */
+
+.rg-step-header {
+  margin-bottom: var(--space-8);
+}
+
+.rg-step-header__label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wider);
+  color: var(--primary);
+  text-transform: uppercase;
+  margin: 0 0 var(--space-3);
+}
+
+.rg-step-header__title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-h1);
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1;
+  margin: 0 0 var(--space-3);
+}
+
+.rg-step-header__sub {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wider);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* ============================================================
+   ROLE CARDS
+============================================================ */
+
+.rg-roles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
+}
+
+.rg-role-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: var(--white);
+  text-align: left;
+  width: 100%;
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+
+.rg-role-card:hover {
+  border-color: var(--ocean-500);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.rg-role-card__icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rg-role-card__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.rg-role-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.rg-role-card__label {
+  font-size: var(--fs-small);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  color: var(--text);
+}
+
+.rg-role-card__desc {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  line-height: var(--lh-base);
+}
+
+.rg-role-card__arrow {
+  color: var(--black-20);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: color var(--transition), transform var(--transition);
+}
+
+.rg-role-card:hover .rg-role-card__arrow {
+  color: var(--primary);
+  transform: translateX(3px);
+}
+
+/* ============================================================
+   BACK BUTTON
+============================================================ */
+
+.rg-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  color: var(--text-muted);
+  padding: 0;
+  margin-bottom: var(--space-6);
+  transition: color var(--transition);
+  text-transform: uppercase;
+}
+
+.rg-back:hover {
+  color: var(--text);
+}
+
+/* ============================================================
+   ROLE BADGE
+============================================================ */
+
+.rg-badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border: 1.5px solid var(--primary);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: var(--space-4);
+}
+
+/* ============================================================
+   FORM
+============================================================ */
+
+.rg-form {
+  margin-bottom: var(--space-6);
+}
+
+.rg-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.rg-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rg-form__group--full {
+  grid-column: 1 / -1;
+}
+
+.rg-form__label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.rg-form__input {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--transition);
+  background: var(--white);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.rg-form__input:focus {
+  border-color: var(--ocean-500);
+}
+
+.rg-form__input::placeholder {
+  color: var(--black-20);
+}
+
+.rg-form__input--error {
+  border-color: var(--error);
+}
+
+.rg-form__input--error:focus {
+  border-color: var(--error);
+}
+
+.rg-form__error {
+  font-size: var(--fs-xs);
+  color: var(--error);
+  font-weight: 600;
+  margin-top: var(--space-1);
+}
+
+.rg-form__api-error {
+  font-size: var(--fs-small);
+  color: var(--error);
+  background: var(--error-bg);
+  border: 1.5px solid var(--error);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  font-weight: 500;
+}
+
+.rg-form__submit:disabled {
+  background: var(--black-40);
+  cursor: not-allowed;
+}
+
+.rg-form__submit {
+  margin-top: var(--space-5);
+  width: 100%;
+  padding: var(--space-4);
+  background: var(--ocean-700);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+.rg-form__submit:hover {
+  background: var(--ocean-800);
+}
+
+/* ============================================================
+   LOGIN LINK
+============================================================ */
+
+.rg-login {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  text-align: center;
+  margin: 0;
+}
+
+.rg-login a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.rg-login a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   EMAIL INLINE VERIFY BUTTON
+============================================================ */
+
+.rg-form__input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.rg-form__input-wrap .rg-form__input {
+  padding-right: 88px;
+}
+
+.rg-form__verify-btn {
+  position: absolute;
+  right: 6px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--ocean-700);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--transition);
+  white-space: nowrap;
+}
+
+.rg-form__verify-btn:hover {
+  background: var(--ocean-800);
+}
+
+.rg-form__verify-btn:disabled {
+  background: var(--black-40);
+  cursor: not-allowed;
+}
+
+.rg-form__verified-badge {
+  position: absolute;
+  right: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--ocean-700);
+}
+
+/* ============================================================
+   VERIFY CARD (OTP)
+============================================================ */
+
+.rg-verify-card {
+  background: var(--ocean-50);
+  border: 1.5px solid var(--ocean-200);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.rg-verify-card__msg {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--ocean-800);
+  text-align: center;
+  line-height: var(--lh-base);
+}
+
+.rg-otp {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+.rg-otp__input {
+  width: 44px;
+  height: 52px;
+  border: 1.5px solid var(--ocean-200);
+  border-radius: var(--radius-sm);
+  font-size: 1.375rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text);
+  outline: none;
+  background: var(--white);
+  caret-color: transparent;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.rg-otp__input:focus {
+  border-color: var(--ocean-500);
+  box-shadow: 0 0 0 3px var(--ocean-100);
+}
+
+.rg-otp__input--error {
+  border-color: var(--error);
+}
+
+.rg-otp__input--error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.rg-verify-card__otp-error {
+  text-align: center;
+  display: block;
+}
+
+.rg-verify-card__resend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.rg-verify-card__resend-ok {
+  color: var(--ocean-700);
+  font-weight: 700;
+}
+
+.rg-verify-card__resend-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--primary);
+  padding: 0;
+  text-decoration: underline;
+}
+
+.rg-verify-card__resend-btn:hover {
+  color: var(--primary-hover);
+}
+
+.rg-verify-card__resend-btn:disabled {
+  color: var(--black-40);
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.rg-verify-card__confirm {
+  width: 100%;
+  padding: var(--space-3);
+  background: var(--ocean-700);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+.rg-verify-card__confirm:hover {
+  background: var(--ocean-800);
+}
+
+.rg-verify-card__confirm:disabled {
+  background: var(--black-40);
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 900px) {
+  .rg-page {
+    flex-direction: column;
+  }
+
+  .rg-left {
+    width: 100%;
+    height: 200px;
+    position: relative;
+  }
+
+  .rg-left__body,
+  .rg-left__footer {
+    display: none;
+  }
+
+  .rg-left__content {
+    padding: var(--space-6);
+  }
+
+  .rg-right {
+    padding: var(--space-8) var(--space-5) var(--space-12);
+    align-items: flex-start;
+  }
+
+  .rg-step-header__title {
+    font-size: 2rem;
+  }
+
+  .rg-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rg-form__group--full {
+    grid-column: 1;
+  }
+}
