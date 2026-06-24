@@ -29,21 +29,28 @@ export default function MyRaceRegistrationsPage() {
       />
 
       <div className="ws-body">
-        {error && <div className="ws-error"><span>{error}</span><button type="button" onClick={refetch}>Try again</button></div>}
+        {error && (
+          <div className="ws-error">
+            <span>{error}</span>
+            <button type="button" onClick={refetch}>Try again</button>
+          </div>
+        )}
 
-        {loading ? <LoadingSpinner /> : pending.length === 0 ? (
+        {loading ? (
+          <LoadingSpinner />
+        ) : registrations.length === 0 ? (
           <div className="ws-panel">
             <EmptyState
               icon={Flag}
-              title="No pending registrations"
-              subtitle="You have no horse registrations awaiting approval."
+              title="No registrations yet"
+              subtitle="You have not registered any horses for a race."
               action={<Link to="/races"><Button variant="primary">Browse Races</Button></Link>}
             />
           </div>
         ) : (
           <div className="ws-panel">
             <div className="ws-panel__body ws-panel__body--flush">
-              <MyRegistrationsTable registrations={pending} />
+              <MyRegistrationsTable registrations={registrations} />
             </div>
           </div>
         )}

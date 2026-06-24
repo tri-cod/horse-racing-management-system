@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import { getMyHorses } from '../../api/horseOwnerApi';
-import { getJockeyList } from '../../api/jockeyApi';
+import { getAvailableHorses } from '../../api/horseOwnerApi';
+import { getAvailableJockeys } from '../../api/jockeyApi';
 import { registerHorseToRace } from '../../api/raceHorseApi';
 import '../../assets/css/race-horse/RegisterHorseToRaceModal.css';
 
@@ -17,16 +17,18 @@ export default function RegisterHorseToRaceModal({ open, raceId, onClose, onSucc
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || !raceId) return;
     setLoadingData(true);
     setSelectedHorse(null);
     setSelectedJockey(null);
     setError(null);
-    Promise.all([getMyHorses(), getJockeyList()])
+    Promise.all([getAvailableHorses(), getAvailableJockeys(raceId)])
       .then(([h, j]) => { setHorses(h ?? []); setJockeys(j ?? []); })
       .catch(() => setError('Failed to load horses or jockeys.'))
       .finally(() => setLoadingData(false));
-  }, [open]);
+  }, [open, raceId]);
+
+  // ... phần JSX bên dưới giữ nguyên không đổi
 
   const handleSubmit = async () => {
     if (!selectedHorse || !selectedJockey) {

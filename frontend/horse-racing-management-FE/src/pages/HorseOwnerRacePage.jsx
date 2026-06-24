@@ -4,8 +4,8 @@ import {
   XCircle, Clock, ArrowLeft, ChevronRight,
 } from 'lucide-react';
 import { getRaces } from '../api/raceApi';
-import { getMyHorses } from '../api/horseOwnerApi';
-import { getJockeyList } from '../api/jockeyApi';
+import { getAvailableHorses } from '../api/horseOwnerApi';
+import { getAvailableJockeys } from '../api/jockeyApi';
 import { registerHorseToRace, getMyRaceRegistrations } from '../api/raceHorseApi';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Seo from '../components/seo/Seo';
@@ -41,15 +41,15 @@ export default function HorseOwnerRacePage() {
       .finally(() => setLoadingRaces(false));
   }, []);
 
-  // Load horses + jockeys when entering register view
-  useEffect(() => {
-    if (view !== 'register') return;
-    setLoadingForm(true);
-    Promise.all([getMyHorses(), getJockeyList()])
-      .then(([h, j]) => { setHorses(h ?? []); setJockeys(j ?? []); })
-      .catch(() => setError('Failed to load horses or jockeys.'))
-      .finally(() => setLoadingForm(false));
-  }, [view]);
+// Load horses + jockeys when entering register view (re-runs if the race changes)
+useEffect(() => {
+  if (view !== 'register' || !selectedRace) return;
+  setLoadingForm(true);
+  Promise.all([getAvailableHorses(), getAvailableJockeys(selectedRace.id)])
+    .then(([h, j]) => { setHorses(h ?? []); setJockeys(j ?? []); })
+    .catch(() => setError('Failed to load horses or jockeys.'))
+    .finally(() => setLoadingForm(false));
+}, [view, selectedRace]);
 
   // Poll status when pending
   const pollStatus = useCallback(async () => {
