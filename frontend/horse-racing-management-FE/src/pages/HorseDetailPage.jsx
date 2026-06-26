@@ -3,6 +3,7 @@ import { ArrowLeft, Cake, VenetianMask, Weight, TrendingUp, History, Calendar, U
 import { useHorseDetail } from '../hooks/useHorseDetail';
 import HorseStatusBadge from '../components/horse-owner/HorseStatusBadge';
 import AssignTrainerCard from '../components/horse-owner/AssignTrainerCard';
+import Seo from '../components/seo/Seo';
 import '../assets/css/HorseDetailPage.css';
 
 const getValue = (value) => (value || value === 0 ? value : '—');
@@ -63,6 +64,10 @@ export default function HorseDetailPage() {
 
   return (
     <div className="horse-detail-page">
+      <Seo
+        title={horse.horseName}
+        description={`${horse.horseName} — ${horse.breed ?? 'Racehorse'} on Royal Derby. Speed rating: ${horse.speedRating ?? 'N/A'}.`}
+      />
       <div className="horse-detail-page__container">
         <button type="button" className="horse-detail__back-btn" onClick={() => navigate('/horse-owner/horses')}>
           <ArrowLeft size={18} />

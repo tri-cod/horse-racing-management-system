@@ -3,7 +3,7 @@ import "../assets/css/forgotPassword.css";
 import { Eye, EyeOff } from "lucide-react";
 import { forgotPassword, verifyResetOtp, resetPassword } from "../api/authApi";
 import { useNavigate } from "react-router-dom";
-import logoLogin from "../assets/img/logoLogin.jpg";
+import Seo from "../components/seo/Seo";
 
 export default function ForgotPasswordPage() {
     const navigate = useNavigate();
@@ -61,7 +61,8 @@ export default function ForgotPasswordPage() {
     const stepLabels = ["Enter Email", "Verify OTP", "New Password"];
 
     return (
-        <div className="fp-page">
+        <main className="fp-page">
+            <Seo title="Reset Password" description="Reset your Royal Derby account password securely." />
             <div className="fp-card">
             <div className="fp-box">
 
@@ -179,13 +180,13 @@ export default function ForgotPasswordPage() {
 
             </div>
 
-            <div className="fp-image-panel" style={{ backgroundImage: `url(${logoLogin})` }}>
+            <div className="fp-image-panel">
                 <div className="fp-image-overlay" />
                 <blockquote className="fp-image-quote">
                     "Every great journey begins with a single steady stride."
                 </blockquote>
             </div>
             </div>
-        </div>
+        </main>
     );
 }

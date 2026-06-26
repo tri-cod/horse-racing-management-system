@@ -8,6 +8,7 @@ import { getMyHorses } from '../api/horseOwnerApi';
 import { getJockeyList } from '../api/jockeyApi';
 import { registerHorseToRace, getMyRaceRegistrations } from '../api/raceHorseApi';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import Seo from '../components/seo/Seo';
 import '../assets/css/HorseOwnerRacePage.css';
 
 const fmt = (n) =>
@@ -230,6 +231,7 @@ export default function HorseOwnerRacePage() {
   /* ── LIST VIEW ── */
   return (
     <div className="ho-race-page">
+      <Seo title="Register for Race" description="Browse open races and register your horse to compete on Royal Derby." />
       <div className="ho-race-page__header">
         <h1 className="ho-race-page__title">Open Races</h1>
         <p className="ho-race-page__subtitle">Select a race to register your horse</p>

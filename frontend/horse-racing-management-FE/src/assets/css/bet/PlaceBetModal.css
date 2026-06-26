@@ -31,10 +31,11 @@
   margin-bottom: var(--space-3);
 }
 .bet-place-form__item-num {
+  font-family: var(--font-data);
   font-size: var(--fs-xs);
   font-weight: 700;
   color: var(--primary);
-  background: var(--ocean-50);
+  background: var(--bg-soft);
   padding: 2px var(--space-2);
   border-radius: var(--radius-full);
 }
@@ -131,7 +132,7 @@
   margin-top: var(--space-1);
   transition: all var(--transition);
 }
-.bet-place-form__add-btn:hover { background: var(--ocean-50); border-color: var(--primary); }
+.bet-place-form__add-btn:hover { background: var(--bg-soft); border-color: var(--primary); }
 
 .bet-place-form__error {
   display: flex;

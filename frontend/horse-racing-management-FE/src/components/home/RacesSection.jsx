@@ -1,37 +1,43 @@
 import { Link } from 'react-router-dom';
-import { Calendar, MapPin, Trophy, ArrowRight } from 'lucide-react';
+import { Calendar, MapPin, Trophy, ArrowRight, Users } from 'lucide-react';
 import Container from '../ui/Container';
 import SectionHeader from '../ui/SectionHeader';
+import Silk from '../rd/Silk';
 import { useUpcomingRaces } from '../../hooks/useUpcomingRaces';
 
-import fallback1 from '../../assets/img/ee63a717-b5ff-41b1-ad51-860da474eb55.jpg';
-import fallback2 from '../../assets/img/174b40b7b0643c6cdafe82f318879afd.webp';
-import fallback3 from '../../assets/img/venue-santaanita.webp';
 import '../../assets/css/home/RacesSection.css';
 
-const FALLBACKS = [fallback1, fallback2, fallback3];
+const STATUS_VARIANT = {
+  UPCOMING: 'info', OPEN_REGISTRATION: 'ok', CLOSED_REGISTRATION: 'warn', ONGOING: 'danger',
+};
 
 function formatRaceDate(iso) {
   if (!iso) return '—';
-  return new Date(iso).toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric',
-  });
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 function daysUntil(iso) {
   if (!iso) return null;
-  const days = Math.ceil((new Date(iso) - new Date()) / 86_400_000);
-  return days > 0 ? days : null;
+  const d = Math.ceil((new Date(iso) - new Date()) / 86_400_000);
+  return d > 0 ? d : null;
+}
+
+function StatusLabel({ status }) {
+  const map = {
+    UPCOMING: 'Upcoming', OPEN_REGISTRATION: 'Open', CLOSED_REGISTRATION: 'Entries Closed',
+    ONGOING: 'Live', FINISHED: 'Finished', CANCELLED: 'Cancelled',
+  };
+  return <span className="race-card-rd__chip">{map[status] || status}</span>;
 }
 
 function SkeletonCard() {
   return (
-    <div className="home-races__card home-races__card--skeleton" aria-hidden="true">
-      <div className="home-races__image-wrap home-races__skel-img" />
-      <div className="home-races__body">
-        <div className="home-races__skel-line home-races__skel-line--title" />
-        <div className="home-races__skel-line" />
-        <div className="home-races__skel-line home-races__skel-line--short" />
+    <div className="race-card-rd race-card-rd--skeleton" aria-hidden="true">
+      <div className="race-card-rd__top race-card-rd__skel-top" />
+      <div className="race-card-rd__body">
+        <div className="race-card-rd__skel-line" style={{ width: '40%', height: 12 }} />
+        <div className="race-card-rd__skel-line" style={{ width: '75%', height: 20 }} />
+        <div className="race-card-rd__skel-line" style={{ width: '55%', height: 12 }} />
       </div>
     </div>
   );
@@ -60,43 +66,51 @@ export default function RacesSection() {
             </div>
           ) : (
             races.map((race, idx) => {
-              const img = race.bannerImageurl || FALLBACKS[idx % FALLBACKS.length];
+              const img = race.bannerImageurl || null;
               const days = daysUntil(race.startTime);
+              const silkVariant = (idx % 6) + 1;
               return (
-                <article key={race.id} className="home-races__card">
-                  <div className="home-races__image-wrap">
-                    <img src={img} alt={race.raceName} className="home-races__image" />
-                    <div className="home-races__overlay" />
-                    <span className="home-races__badge">Upcoming</span>
+                <article key={race.id} className="race-card-rd">
+                  {/* Navy top band */}
+                  <div className="race-card-rd__top">
+                    <div className="race-card-rd__top-silk">
+                      <Silk variant={silkVariant} size={22} />
+                    </div>
+                    <span className="race-card-rd__round">Race {String(idx + 1).padStart(2, '0')}</span>
+                    <StatusLabel status={race.status} />
+                  </div>
+
+                  {/* Image */}
+                  <div className="race-card-rd__img-wrap">
+                    <img src={img} alt={race.raceName} className="race-card-rd__img" loading="lazy" />
+                    <div className="race-card-rd__img-overlay" />
                     {days != null && (
-                      <span className="home-races__countdown">{days}d away</span>
+                      <span className="race-card-rd__countdown tnum">{days}d away</span>
                     )}
                   </div>
 
-                  <div className="home-races__body">
-                    <h3 className="home-races__name">{race.raceName}</h3>
+                  {/* Body */}
+                  <div className="race-card-rd__body">
+                    <h3 className="race-card-rd__name">{race.raceName}</h3>
 
-                    <ul className="home-races__meta">
+                    <ul className="race-card-rd__meta">
                       <li>
-                        <Calendar size={14} />
-                        {formatRaceDate(race.startTime)}
+                        <Calendar size={13} />
+                        <span className="tnum">{formatRaceDate(race.startTime)}</span>
                       </li>
                       {race.location && (
-                        <li>
-                          <MapPin size={14} />
-                          {race.location}
-                        </li>
+                        <li><MapPin size={13} /><span>{race.location}</span></li>
                       )}
                       {race.totalprizepool != null && (
                         <li>
-                          <Trophy size={14} />
-                          Prize pool: ${Number(race.totalprizepool).toLocaleString()}
+                          <Trophy size={13} />
+                          <span className="tnum">${Number(race.totalprizepool).toLocaleString()}</span>
                         </li>
                       )}
                     </ul>
 
-                    <Link to={`/races/${race.id}`} className="home-races__cta">
-                      View Details <ArrowRight size={14} />
+                    <Link to={`/races/${race.id}`} className="race-card-rd__cta">
+                      Race Details <ArrowRight size={13} />
                     </Link>
                   </div>
                 </article>
@@ -108,7 +122,7 @@ export default function RacesSection() {
         {!loading && races.length > 0 && (
           <div className="home-races__footer">
             <Link to="/races" className="home-races__view-all">
-              See all races <ArrowRight size={15} />
+              View Full Schedule <ArrowRight size={14} />
             </Link>
           </div>
         )}

@@ -10,4 +10,4 @@
 .bet-badge--won              { background: #d1fae5; color: #065f46; }
 .bet-badge--lost             { background: #fee2e2; color: #991b1b; }
 .bet-badge--pending          { background: #fef9c3; color: #854d0e; }
-.bet-badge--pending-finished { background: var(--ocean-100); color: var(--ocean-800); }
+.bet-badge--pending-finished { background: var(--bg-soft); color: var(--primary); }

@@ -6,7 +6,10 @@ import RaceFilterTabs from '../components/race/RaceFilterTabs';
 import Pagination from '../components/ui/Pagination';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmptyState from '../components/ui/EmptyState';
+import DashboardPageHeader from '../components/rd/DashboardPageHeader';
+import Seo from '../components/seo/Seo';
 import '../assets/css/AdminRaceListPage.css';
+import '../assets/css/rd/workspace.css';
 
 const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const PAGE_SIZE = 9;
@@ -20,9 +23,7 @@ function getMonday(date) {
   return d;
 }
 
-function toDateStr(date) {
-  return date.toISOString().slice(0, 10);
-}
+function toDateStr(date) { return date.toISOString().slice(0, 10); }
 
 function formatWeekLabel(monday) {
   const sunday = new Date(monday);
@@ -55,9 +56,7 @@ export default function AdminRaceListPage() {
   const filtered = useMemo(() => {
     let list = [...races];
     if (selectedDay) {
-      list = list.filter((r) =>
-        r.startTime && new Date(r.startTime).toISOString().slice(0, 10) === selectedDay
-      );
+      list = list.filter((r) => r.startTime && new Date(r.startTime).toISOString().slice(0, 10) === selectedDay);
     } else {
       const weekStart = toDateStr(weekDays[0]);
       const weekEnd   = toDateStr(weekDays[6]);
@@ -87,20 +86,18 @@ export default function AdminRaceListPage() {
   };
 
   return (
-    <div className="admin-race-list">
-      <div className="admin-race-list__header">
-        <h1 className="admin-race-list__title">Manage Races</h1>
-        <p className="admin-race-list__subtitle">Edit or delete existing races</p>
-      </div>
+    <div className="ws-page">
+      <Seo title="Manage Races" description="View and manage all horse races." />
+      <DashboardPageHeader eyebrow="Admin" title="Manage Races" subtitle="Edit or delete existing races" />
 
-      <div className="admin-race-list__content">
+      <div className="ws-body">
         {/* Week navigator */}
         <div className="races-week">
           <div className="races-week__nav">
             <button type="button" className="races-week__arrow" onClick={() => handleWeekChange(-1)}>
               <ChevronLeft size={18} />
             </button>
-            <span className="races-week__label">{formatWeekLabel(monday)}</span>
+            <span className="races-week__label tnum">{formatWeekLabel(monday)}</span>
             <button type="button" className="races-week__arrow" onClick={() => handleWeekChange(1)}>
               <ChevronRight size={18} />
             </button>
@@ -111,45 +108,28 @@ export default function AdminRaceListPage() {
               const isToday = dateStr === todayStr;
               const isSel   = selectedDay === dateStr;
               return (
-                <button
-                  key={dateStr}
-                  type="button"
+                <button key={dateStr} type="button"
                   className={['races-week__day', isSel && 'races-week__day--selected', isToday && 'races-week__day--today'].filter(Boolean).join(' ')}
-                  onClick={() => handleDayClick(dateStr)}
-                >
+                  onClick={() => handleDayClick(dateStr)}>
                   <span className="races-week__day-name">{DAY_NAMES[i]}</span>
-                  <span className="races-week__day-num">{d.getDate()}</span>
+                  <span className="races-week__day-num tnum">{d.getDate()}</span>
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Status filter */}
         <div className="admin-race-list__toolbar">
           <RaceFilterTabs active={activeTab} onChange={(v) => { setActiveTab(v); setPage(0); }} />
         </div>
 
-        {error && (
-          <div className="races-page__error">
-            <span>{error}</span>
-            <button type="button" onClick={refetch}>Try again</button>
-          </div>
-        )}
+        {error && <div className="ws-error"><span>{error}</span><button type="button" onClick={refetch}>Try again</button></div>}
 
-        {loading ? (
-          <LoadingSpinner size="lg" />
-        ) : paginated.length === 0 ? (
-          <EmptyState
-            icon={Flag}
-            title={selectedDay ? 'No races on this day' : 'No races this week'}
-            subtitle="Try another day or adjust the status filter."
-          />
+        {loading ? <LoadingSpinner size="lg" /> : paginated.length === 0 ? (
+          <EmptyState icon={Flag} title="No races" subtitle="Try another day or filter." />
         ) : (
           <div className="races-page__grid">
-            {paginated.map((r) => (
-              <RaceCard key={r.id} race={r} isAdmin={true} onRefetch={refetch} />
-            ))}
+            {paginated.map((r) => <RaceCard key={r.id} race={r} isAdmin={true} onRefetch={refetch} />)}
           </div>
         )}
 

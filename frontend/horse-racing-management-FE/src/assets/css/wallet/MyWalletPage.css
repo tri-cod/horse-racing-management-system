@@ -1,8 +1,9 @@
 /* ── Hero ── */
 .my-wallet-page__hero {
-  background: linear-gradient(135deg, var(--black-90) 0%, var(--ocean-900) 100%);
+  background: var(--primary);
   color: var(--text-invert);
   padding: var(--space-12) var(--space-6) var(--space-10);
+  border-bottom: 3px solid var(--brass-400);
 }
 .my-wallet-page__hero-inner { max-width: var(--container-narrow); margin: 0 auto; }
 .my-wallet-page__eyebrow  { opacity: .75; }
@@ -33,8 +34,8 @@
 .wallet-card__icon {
   width: 56px; height: 56px;
   border-radius: var(--radius-lg);
-  background: var(--ocean-50);
-  color: var(--primary);
+  background: var(--brass-50);
+  color: var(--brass-600);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
@@ -53,14 +54,14 @@
 
 /* ── Info ── */
 .wallet-info {
-  background: var(--ocean-50);
-  border: 1px solid var(--ocean-200);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--space-4) var(--space-5);
 }
-.wallet-info__item { display: flex; gap: var(--space-3); align-items: flex-start; color: var(--ocean-700); }
+.wallet-info__item { display: flex; gap: var(--space-3); align-items: flex-start; color: var(--primary); }
 .wallet-info__title { display: block; font-weight: 600; font-size: var(--fs-body); margin-bottom: var(--space-1); }
-.wallet-info__desc  { font-size: var(--fs-small); color: var(--ocean-700); line-height: var(--lh-base); margin: 0; }
+.wallet-info__desc  { font-size: var(--fs-small); color: var(--text-muted); line-height: var(--lh-base); margin: 0; }
 
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 @keyframes spin    { to { transform: rotate(360deg); } }

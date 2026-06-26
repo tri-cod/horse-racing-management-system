@@ -7,25 +7,25 @@
   display: flex;
   flex-direction: column;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   text-decoration: none;
   color: inherit;
   background: var(--white);
-  box-shadow: var(--shadow-md);
-  transition: box-shadow var(--transition), transform var(--transition);
+  transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
 }
 
 .race-card:hover {
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
   transform: translateY(-3px);
+  border-color: var(--border-strong);
 }
 
 .race-card__banner {
   position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  background: var(--black-5);
+  background: var(--bg-soft);
 }
 
 .race-card__banner-img {
@@ -42,7 +42,7 @@
 .race-card__banner-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--ocean-100), var(--ocean-50));
+  background: linear-gradient(135deg, var(--primary), #0F3D6B);
 }
 
 .race-card__status {
@@ -60,8 +60,9 @@
 }
 
 .race-card__title {
+  font-family: var(--font-serif);
   font-size: 1.0625rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text);
   line-height: 1.35;
   display: -webkit-box;
@@ -81,20 +82,26 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  font-family: var(--font-data);
   font-size: var(--fs-small);
   color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .race-card__prize {
   margin-top: auto;
+  font-family: var(--font-data);
   font-size: var(--fs-small);
   font-weight: 600;
-  color: var(--primary);
+  color: var(--brass-600);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
+
 .race-card__result-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,.6);
+  background: rgba(11, 42, 74, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -104,6 +111,7 @@
 
 .race-card__result-overlay span {
   color: white;
+  font-family: var(--font-serif);
   font-size: 20px;
   font-weight: 700;
 }
@@ -116,8 +124,8 @@
 .race-card__admin-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.52);
-  border-radius: var(--radius);
+  background: rgba(11, 42, 74, 0.55);
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -159,7 +167,7 @@
 .race-card__admin-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .race-card__admin-btn--edit {
-  background: #0ea5e9;
+  background: var(--accent);
   color: #fff;
 }
 
@@ -169,6 +177,6 @@
 }
 
 .race-card__admin-btn--close {
-  background: #d97706;
-  color: #fff;
+  background: var(--brass-400);
+  color: var(--primary);
 }

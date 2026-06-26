@@ -109,13 +109,13 @@
   transition: border-color var(--transition), background var(--transition);
   position: relative;
 }
-.ho-horse-card:hover:not(:disabled) { border-color: var(--primary); background: var(--ocean-50); }
-.ho-horse-card--selected { border-color: var(--primary); background: var(--ocean-50); }
+.ho-horse-card:hover:not(:disabled) { border-color: var(--primary); background: var(--bg-soft); }
+.ho-horse-card--selected { border-color: var(--primary); background: var(--bg-soft); }
 .ho-horse-card--disabled { opacity: 0.5; cursor: not-allowed; }
 .ho-horse-card__img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
 .ho-horse-card__fallback {
   width: 60px; height: 60px; border-radius: 50%;
-  background: var(--ocean-100); color: var(--primary);
+  background: var(--bg-soft); color: var(--primary);
   display: flex; align-items: center; justify-content: center;
   font-size: 1.5rem; font-weight: 700;
 }
@@ -133,8 +133,8 @@
   background: var(--surface);
 }
 .ho-jockey-item input[type="radio"] { accent-color: var(--primary); }
-.ho-jockey-item:hover { border-color: var(--primary); background: var(--ocean-50); }
-.ho-jockey-item--selected { border-color: var(--primary); background: var(--ocean-50); }
+.ho-jockey-item:hover { border-color: var(--primary); background: var(--bg-soft); }
+.ho-jockey-item--selected { border-color: var(--primary); background: var(--bg-soft); }
 .ho-jockey-item__info { display: flex; flex-direction: column; gap: 2px; }
 .ho-jockey-item__name { font-size: var(--fs-small); font-weight: 600; color: var(--text); }
 .ho-jockey-item__meta { font-size: var(--fs-xs); color: var(--text-muted); }

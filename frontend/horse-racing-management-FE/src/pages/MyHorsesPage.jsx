@@ -2,71 +2,62 @@ import { useNavigate } from 'react-router-dom';
 import { PlusCircle, Rabbit } from 'lucide-react';
 import { useMyHorses } from '../hooks/useMyHorses';
 import HorseCard from '../components/horse-owner/HorseCard';
+import DashboardPageHeader from '../components/rd/DashboardPageHeader';
+import Seo from '../components/seo/Seo';
 import '../assets/css/MyHorsesPage.css';
+import '../assets/css/rd/workspace.css';
 
 export default function MyHorsesPage() {
   const navigate = useNavigate();
   const { horses, loading, error, refetch } = useMyHorses();
 
   return (
-    <div className="my-horses-page">
-      <div className="my-horses-page__container">
-        <div className="my-horses__header">
-          <div>
-            <p className="my-horses__subtitle">Manage Your Racehorses</p>
-            <h1 className="my-horses__title">My Horses</h1>
-          </div>
-          <button
-            type="button"
-            className="my-horses__add-btn"
-            onClick={() => navigate('/horse-owner/horses/new')}
-          >
-            <PlusCircle size={18} />
-            <span>Register New Horse</span>
+    <div className="ws-page">
+      <Seo title="My Horses" description="View and manage your registered racehorses." />
+      <DashboardPageHeader
+        eyebrow="Horse Owner"
+        title="My Horses"
+        subtitle={horses.length > 0 ? `${horses.length} registered horse${horses.length !== 1 ? 's' : ''}` : 'Manage your stable'}
+        action={
+          <button type="button" className="ui-btn ui-btn--dark ui-btn--sm" onClick={() => navigate('/horse-owner/horses/new')}>
+            <PlusCircle size={15} /> Register New Horse
           </button>
-        </div>
+        }
+      />
 
+      <div className="ws-body">
         {error && (
-          <div className="my-horses__error-banner">
+          <div className="ws-error">
             <span>{error}</span>
-            <button type="button" className="my-horses__retry-btn" onClick={refetch}>
-              Try Again
-            </button>
+            <button type="button" onClick={refetch}>Try Again</button>
           </div>
         )}
 
         {loading ? (
           <div className="my-horses__grid">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="horse-card horse-card--skeleton">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="horse-card horse-card--skeleton">
                 <div className="my-horses__skeleton my-horses__skeleton-avatar" />
                 <div className="my-horses__skeleton my-horses__skeleton-line" style={{ width: '70%' }} />
                 <div className="my-horses__skeleton my-horses__skeleton-line" style={{ width: '50%' }} />
-                <div className="my-horses__skeleton my-horses__skeleton-line" style={{ width: '40%' }} />
               </div>
             ))}
           </div>
         ) : horses.length === 0 ? (
-          <div className="my-horses__empty">
-            <Rabbit size={48} />
-            <p className="my-horses__empty-title">You haven't registered any horses yet</p>
-            <button
-              type="button"
-              className="my-horses__add-btn"
-              onClick={() => navigate('/horse-owner/horses/new')}
-            >
-              <PlusCircle size={18} />
-              <span>Register New Horse</span>
-            </button>
+          <div className="ws-panel">
+            <div className="ws-empty">
+              <Rabbit size={40} className="ws-empty__icon" />
+              <p className="ws-empty__title">No horses registered yet</p>
+              <p>Register your first horse to start competing.</p>
+              <button type="button" className="ui-btn ui-btn--primary ui-btn--md" onClick={() => navigate('/horse-owner/horses/new')}>
+                <PlusCircle size={15} /> Register Horse
+              </button>
+            </div>
           </div>
         ) : (
           <div className="my-horses__grid">
             {horses.map((horse) => (
-              <HorseCard
-                key={horse.id}
-                horse={horse}
-                onClick={() => navigate(`/horse-owner/horses/${horse.id}`)}
-              />
+              <HorseCard key={horse.id} horse={horse} onClick={() => navigate(`/horse-owner/horses/${horse.id}`)} />
             ))}
           </div>
         )}

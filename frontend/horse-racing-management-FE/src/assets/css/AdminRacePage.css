@@ -53,8 +53,9 @@
 }
 
 .race-create-success__title {
+  font-family: var(--font-serif);
   font-size: var(--fs-h2);
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text);
   margin: 0;
 }

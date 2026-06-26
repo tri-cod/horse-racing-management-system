@@ -72,20 +72,15 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  // Async logout: call server API then always clear local storage/state
-  const logout = useCallback(async () => {
-    try {
-      await logoutApi();
-    } catch (error) {
-      // Don't block the UX if the logout API fails, still clear local state
-      console.error('Logout API failed', error);
-    } finally {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('tokenType');
-      localStorage.removeItem('user');
-      setToken(null);
-      setUser(null);
-    }
+  const logout = useCallback(() => {
+    // Clear local session immediately — don't wait for the server
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('tokenType');
+    localStorage.removeItem('user');
+    setToken(null);
+    setUser(null);
+    // Notify server in the background (best-effort, non-blocking)
+    logoutApi().catch(() => {});
   }, []);
 
   // Refresh user data on demand
