@@ -1,8 +1,13 @@
 package com.horseracing.horseracingmanagement.module.service;
 
+import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseCurrentStatusResponse;
+import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseRaceHistoryResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseRequest;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.UpdateHorse;
+import com.horseracing.horseracingmanagement.module.entity.Horse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +18,16 @@ public interface HorseOwnerService {
     SignHorseResponse assignTrainer(Long horseId, Long trainerId, Long userId);
     SignHorseResponse getHorse(Long horseId);
     List<SignHorseResponse> getHorseList(Long userId);
+    List<SignHorseResponse> getAvailableHorseList(Long userId);
+
+    Page<SignHorseResponse> getHorseListWithFilter(String keyword, String status, Pageable pageable);
+    List<SignHorseResponse> getAvailableHorseList(Long userId, Long raceId);
+    List<HorseRaceHistoryResponse> getHorseRaceHistory(Long horseId);
+    HorseRaceHistoryResponse getCurrentRace(Long horseId);
+
+    List<HorseCurrentStatusResponse> getAllHorsesWithCurrentRace();
+    List<HorseCurrentStatusResponse> getHorsesByRaceId(Long raceId);
+    HorseCurrentStatusResponse mapToCurrentStatusResponse(Horse horse);
     SignHorseResponse updateHorse(Long horseId, UpdateHorse request, Long userId);
     void deleteHorse(Long horseId, Long userId);
 }

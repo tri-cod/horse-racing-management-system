@@ -119,4 +119,24 @@ public class HorseOwnerController {
         horseOwnerService.deleteHorse(horseId, userId);
         return ResponseEntity.ok(ApiResponse.success("Horse deleted successfully", null));
     }
+    @PatchMapping("/horses/{horseId}")
+    public ResponseEntity<ApiResponse<SignHorseResponse>> updateHorse(
+            @PathVariable Long horseId,
+            @RequestBody UpdateHorse request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getId();
+        return ResponseEntity.ok(ApiResponse.success("Horse updated successfully",
+                horseOwnerService.updateHorse(horseId, request, userId)));
+    }
+
+    @DeleteMapping("/horses/{horseId}")
+    public ResponseEntity<ApiResponse<Void>> deleteHorse(
+            @PathVariable Long horseId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getId();
+        horseOwnerService.deleteHorse(horseId, userId);
+        return ResponseEntity.ok(ApiResponse.success("Horse deleted successfully", null));
+    }
 }
