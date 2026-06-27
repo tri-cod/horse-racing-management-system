@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import Container from '../ui/Container';
 import SectionHeader from '../ui/SectionHeader';
-import Silk from '../rd/Silk';
+import Silk from '../shared/Silk';
 import '../../assets/css/home/JockeysSection.css';
 
 const JOCKEYS = [

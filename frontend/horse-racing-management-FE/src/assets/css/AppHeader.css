@@ -17,7 +17,7 @@
   top: 0;
   z-index: 1000;
   height: 60px;
-  background: var(--white);
+  background: var(--surface-bg);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
   display: flex;
@@ -58,7 +58,7 @@
 
 .app-header__search-input:focus {
   border-color: var(--primary);
-  background: var(--white);
+  background: var(--surface-bg);
 }
 
 .app-header__search-input::placeholder { color: var(--text-muted); }
@@ -96,7 +96,7 @@
   padding: 5px 12px;
   border-radius: var(--radius-full);
   border: 1.5px solid var(--border);
-  background: var(--white);
+  background: var(--surface-bg);
   color: var(--primary);
   font-family: var(--font-data);
   font-size: var(--fs-xs);
@@ -160,7 +160,7 @@
   transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
 }
 .app-header__dropdown-inner {
-  background: var(--white);
+  background: var(--surface-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);

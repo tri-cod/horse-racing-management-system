@@ -13,7 +13,7 @@
   position: relative;
   width: 100%;
   max-width: 480px;
-  background-color: var(--white);
+  background-color: var(--surface-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);

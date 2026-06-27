@@ -4,62 +4,57 @@ import PageTransition from './components/PageTransition'
 import Layout from './components/Layout'
 import AppLayout from './components/AppLayout'
 import { ProtectedRoute } from './router/ProtectedRoute'
+import ErrorBoundary from './components/ErrorBoundary'
 
-// Public / auth pages
-import HomePage from './pages/HomePage'
-import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
-import ForgotPasswordPage from './pages/ForgotPasswordPage'
-import ProfilePage from './pages/ProfilePage'
-import JockeysPage from './pages/JockeysPage'
+// Public pages
+import HomePage from './pages/public/HomePage'
+import LoginPage from './pages/public/LoginPage'
+import RegisterPage from './pages/public/RegisterPage'
+import ForgotPasswordPage from './pages/public/ForgotPasswordPage'
+import JockeysPage from './pages/public/JockeysPage'
+import RacesPage from './pages/public/RacesPage'
+import RaceResultsPage from './pages/public/RaceResultsPage'
 
-// Race pages
-import RacesPage from './pages/RacesPage'
-import RaceDetailPage from './pages/RaceDetailPage'
-import RaceResultsPage from './pages/RaceResultsPage'
+// User pages
+import ProfilePage from './pages/user/ProfilePage'
+import NotificationsPage from './pages/user/NotificationsPage'
+import MyBetsPage from './pages/user/MyBetsPage'
+import MyWalletPage from './pages/user/MyWalletPage'
 
-// Horse Owner
-import MyHorsesPage from './pages/MyHorsesPage'
-import HorseRegisterPage from './pages/HorseRegisterPage'
-import HorseDetailPage from './pages/HorseDetailPage'
-import MyRaceRegistrationsPage from './pages/MyRaceRegistrationsPage'
+// Horse Owner pages
+import MyHorsesPage from './pages/horse-owner/MyHorsesPage'
+import HorseRegisterPage from './pages/horse-owner/HorseRegisterPage'
+import HorseDetailPage from './pages/horse-owner/HorseDetailPage'
+import MyRaceRegistrationsPage from './pages/horse-owner/MyRaceRegistrationsPage'
+import HorseOwnerRacePage from './pages/horse-owner/HorseOwnerRacePage'
 
-// Trainer
-import TrainerProfilePage from './pages/TrainerProfilePage'
+// Trainer pages
+import TrainerProfilePage from './pages/trainer/TrainerProfilePage'
 
-// Admin
-import AdminUsersPage from './pages/AdminUsersPage'
-import AdminCreateRacePage from './pages/AdminCreateRacePage'
-import AdminEditRacePage from './pages/AdminEditRacePage'
-import AdminSetOddsPage from './pages/AdminSetOddsPage'
-import AdminWalletPage from './pages/AdminWalletPage'
-import AdminRaceListPage from './pages/AdminRaceListPage'
-import HorseOwnerRacePage from './pages/HorseOwnerRacePage'
+// Referee pages
+import RefereeRacesPage from './pages/referee/RefereeRacesPage'
 
-// Bet & Wallet
-import MyBetsPage from './pages/MyBetsPage'
-import MyWalletPage from './pages/MyWalletPage'
-import AdminDepositPage from './pages/AdminDepositPage'
-import AdminApproveHorsesPage from './pages/AdminApproveHorsesPage'
-
-// Referee
-import RefereeRacesPage from './pages/RefereeRacesPage'
-
-// Notifications
-import NotificationsPage from './pages/NotificationsPage'
+// Admin pages
+import AdminUsersPage from './pages/admin/AdminUsersPage'
+import AdminCreateRacePage from './pages/admin/AdminCreateRacePage'
+import AdminEditRacePage from './pages/admin/AdminEditRacePage'
+import AdminSetOddsPage from './pages/admin/AdminSetOddsPage'
+import AdminWalletPage from './pages/admin/AdminWalletPage'
+import AdminRaceListPage from './pages/admin/AdminRaceListPage'
+import AdminDepositPage from './pages/admin/AdminDepositPage'
+import AdminApproveHorsesPage from './pages/admin/AdminApproveHorsesPage'
 
 export default function App() {
   return (
     <Routes>
       {/* Public — uses Layout (home header + footer, no sidebar) */}
-      <Route path="/" element={<Layout><HomePage /></Layout>} />
-      <Route path="/login" element={<Layout><LoginPage /></Layout>} />
-      <Route path="/register" element={<Layout><RegisterPage /></Layout>} />
-      <Route path="/forgot-password" element={<PageTransition><ForgotPasswordPage /></PageTransition>} />
-      <Route path="/jockeys" element={<Layout><JockeysPage /></Layout>} />
-      <Route path="/races" element={<Layout><RacesPage /></Layout>} />
-      <Route path="/races/:id" element={<Layout><RaceDetailPage /></Layout>} />
-      <Route path="/results" element={<Layout><RaceResultsPage /></Layout>} />
+      <Route path="/" element={<ErrorBoundary><Layout><HomePage /></Layout></ErrorBoundary>} />
+      <Route path="/login" element={<ErrorBoundary><Layout><LoginPage /></Layout></ErrorBoundary>} />
+      <Route path="/register" element={<ErrorBoundary><Layout><RegisterPage /></Layout></ErrorBoundary>} />
+      <Route path="/forgot-password" element={<ErrorBoundary><PageTransition><ForgotPasswordPage /></PageTransition></ErrorBoundary>} />
+      <Route path="/jockeys" element={<ErrorBoundary><Layout><JockeysPage /></Layout></ErrorBoundary>} />
+      <Route path="/races" element={<ErrorBoundary><Layout><RacesPage /></Layout></ErrorBoundary>} />
+      <Route path="/results" element={<ErrorBoundary><Layout><RaceResultsPage /></Layout></ErrorBoundary>} />
 
       {/* Authenticated — uses AppLayout (app header + sidebar + footer) */}
 

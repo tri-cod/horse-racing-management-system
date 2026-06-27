@@ -76,7 +76,7 @@
 
 /* ═══ TABLE ═════════════════════════════════════════════════════ */
 .ref-table-wrap {
-  background: var(--white);
+  background: var(--surface-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;

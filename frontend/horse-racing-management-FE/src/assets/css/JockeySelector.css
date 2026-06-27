@@ -11,7 +11,7 @@
   font-family: var(--font-sans);
   font-size: var(--fs-small);
   color: var(--text);
-  background-color: var(--white);
+  background-color: var(--surface-bg);
   cursor: pointer;
   outline: none;
   transition: border-color var(--transition);

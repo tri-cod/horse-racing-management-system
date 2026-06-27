@@ -14,7 +14,7 @@
   align-items: center;
   gap: 8px;
   border: none;
-  background-color: var(--white);
+  background-color: var(--surface-bg);
   color: var(--text);
   font-family: var(--font-sans);
   font-weight: 600;
@@ -33,7 +33,7 @@
 }
 
 .horse-register__card {
-  background-color: var(--white);
+  background-color: var(--surface-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
@@ -95,7 +95,7 @@
   padding: 12px 16px;
   font-family: var(--font-sans);
   font-size: var(--fs-small);
-  background-color: var(--white);
+  background-color: var(--surface-bg);
   color: var(--text);
   transition: border-color var(--transition);
   outline: none;
@@ -216,7 +216,7 @@
   align-items: center;
   gap: 6px;
   border: 1px solid var(--border);
-  background-color: var(--white);
+  background-color: var(--surface-bg);
   color: var(--primary);
   font-family: var(--font-sans);
   font-weight: 600;

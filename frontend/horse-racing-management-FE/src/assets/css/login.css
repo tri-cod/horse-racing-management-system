@@ -112,7 +112,7 @@
   font-family: var(--font-sans);
   font-size: var(--fs-body);
   color: #111;
-  background: var(--white);
+  background: var(--surface-bg);
   outline: none;
   transition: border-color var(--transition), box-shadow var(--transition);
   box-sizing: border-box;

@@ -45,6 +45,7 @@
   --bg-soft:      #EDF1F4;
   --bg-dark:      #0B2A4A;
   --surface:      #ffffff;
+  --surface-bg:   #ffffff;
   --text:         #0C1B2A;
   --text-muted:   #56697B;
   --text-faint:   #8A98A6;
@@ -116,6 +117,7 @@
 
   --transition: 240ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 
 /* ─── Base ─────────────────────────────────────────────── */
 body {

@@ -69,7 +69,7 @@
   border-radius: var(--radius);
   font-size: var(--fs-body);
   font-family: var(--font-sans);
-  background: var(--white);
+  background: var(--surface-bg);
   color: var(--text);
   transition: border-color var(--transition);
 }
@@ -100,7 +100,7 @@
   padding: var(--space-1) var(--space-3);
   border: 1.5px solid var(--border);
   border-radius: var(--radius-full);
-  background: var(--white);
+  background: var(--surface-bg);
   font-size: var(--fs-xs);
   font-family: var(--font-sans);
   cursor: pointer;

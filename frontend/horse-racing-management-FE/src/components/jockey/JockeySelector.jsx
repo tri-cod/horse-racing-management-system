@@ -1,4 +1,4 @@
-import { useJockeys } from '../../hooks/useJockeys';
+﻿import { useJockeys } from '../../hooks/queries/useJockeys';
 import '../../assets/css/JockeySelector.css';
 
 export default function JockeySelector({ value, onChange, placeholder, disabled }) {

@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { Calendar, MapPin, Trophy, ArrowRight, Users } from 'lucide-react';
 import Container from '../ui/Container';
 import SectionHeader from '../ui/SectionHeader';
-import Silk from '../rd/Silk';
-import { useUpcomingRaces } from '../../hooks/useUpcomingRaces';
+import Silk from '../shared/Silk';
+import { useUpcomingRaces } from '../../hooks/queries/useUpcomingRaces';
 
 import '../../assets/css/home/RacesSection.css';
 

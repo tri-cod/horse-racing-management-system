@@ -29,7 +29,7 @@
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-full);
   border: 1.5px solid var(--border);
-  background: var(--white);
+  background: var(--surface-bg);
   color: var(--text-muted);
   font-size: var(--fs-small);
   font-weight: 600;

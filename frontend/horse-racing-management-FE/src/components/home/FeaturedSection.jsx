@@ -1,7 +1,7 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { ChevronDown, User } from 'lucide-react';
 import Container from '../ui/Container';
-import Silk from '../rd/Silk';
+import Silk from '../shared/Silk';
 import '../../assets/css/home/FeaturedSection.css';
 
 const HORSES = [

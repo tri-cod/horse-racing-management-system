@@ -40,7 +40,7 @@
   padding: var(--space-3);
   border: 2px solid var(--border);
   border-radius: var(--radius);
-  background: var(--white);
+  background: var(--surface-bg);
   cursor: pointer;
   transition: border-color var(--transition), background var(--transition);
   text-align: center;

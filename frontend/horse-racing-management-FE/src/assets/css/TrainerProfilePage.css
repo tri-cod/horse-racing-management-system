@@ -53,7 +53,7 @@
 }
 
 .trainer-profile-page__main {
-  background: var(--white);
+  background: var(--surface-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);

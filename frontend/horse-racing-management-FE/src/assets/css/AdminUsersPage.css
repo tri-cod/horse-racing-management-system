@@ -33,7 +33,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: var(--space-2) var(--space-3);
-  background: var(--white);
+  background: var(--surface-bg);
   flex: 1;
   min-width: 200px;
   transition: border-color var(--transition);
@@ -73,7 +73,7 @@
   font-family: var(--font-sans);
   font-size: var(--fs-small);
   color: var(--text);
-  background: var(--white);
+  background: var(--surface-bg);
   cursor: pointer;
   outline: none;
   transition: border-color var(--transition);
