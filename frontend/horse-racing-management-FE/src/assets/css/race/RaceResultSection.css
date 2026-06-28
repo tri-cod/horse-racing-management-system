@@ -157,7 +157,7 @@
   overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background: var(--white);
+  background: var(--surface-bg);
   box-shadow: var(--shadow-sm);
 }
 

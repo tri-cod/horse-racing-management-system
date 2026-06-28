@@ -19,7 +19,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  background: var(--white);
+  background: var(--surface-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
@@ -79,7 +79,7 @@
 .admin-deposit-page__empty h3 { font-family: var(--font-serif); font-size: var(--fs-h3); margin-bottom: var(--space-2); color: var(--text); }
 
 /* Table */
-.adep-table-wrap { overflow-x: auto; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+.adep-table-wrap { overflow-x: auto; background: var(--surface-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
 .adep-table { width: 100%; border-collapse: collapse; font-size: var(--fs-small); }
 .adep-table th {
   text-align: left;

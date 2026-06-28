@@ -14,7 +14,7 @@
 .home-gallery__item {
   position: relative;
   overflow: hidden;
-  border-radius: var(--radius);
+  border-radius: 0;
   cursor: pointer;
 }
 

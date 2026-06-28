@@ -1,6 +1,6 @@
 .home-jockeys {
   padding: var(--space-12) 0;
-  background: var(--white);
+  background: var(--surface-bg);
 }
 
 .home-jockeys__grid {
@@ -48,7 +48,7 @@
   position: absolute;
   bottom: 2px;
   right: 2px;
-  background: var(--white);
+  background: var(--surface-bg);
   border-radius: var(--radius);
   padding: 2px;
   box-shadow: 0 2px 8px rgba(0,0,0,.15);

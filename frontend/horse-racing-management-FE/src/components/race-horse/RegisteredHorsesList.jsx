@@ -1,6 +1,6 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Check, X, Users } from 'lucide-react';
-import { useHorsesByRace } from '../../hooks/useHorsesByRace';
+import { useHorsesByRace } from '../../hooks/queries/useHorsesByRace';
 import { approveRaceHorse, rejectRaceHorse } from '../../api/raceHorseApi';
 import ConfirmDialog from '../ui/ConfirmDialog';
 import LoadingSpinner from '../ui/LoadingSpinner';

@@ -12,9 +12,9 @@
 
 /* ── Race card ────────────────────────────────────────── */
 .race-card-rd {
-  background: var(--white);
+  background: var(--surface-bg);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;

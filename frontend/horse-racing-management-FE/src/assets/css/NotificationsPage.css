@@ -63,7 +63,7 @@
 }
 
 .notif-page__tab--active {
-  background: var(--white);
+  background: var(--surface-bg);
   color: var(--primary);
   font-weight: 600;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -121,7 +121,7 @@
 
 /* ═══ LIST ══════════════════════════════════════════════════════ */
 .notif-page__list {
-  background: var(--white);
+  background: var(--surface-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;

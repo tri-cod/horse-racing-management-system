@@ -83,7 +83,7 @@
   text-decoration: none;
   width: 100%;
   transition: background var(--transition);
-  border-radius: var(--radius);
+  border-radius: 0;
 }
 .home-quicklinks__link:hover {
   background: rgba(255, 255, 255, 0.05);

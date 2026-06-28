@@ -3,7 +3,7 @@
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-4);
   padding: var(--space-6) clamp(1rem, 4vw, 2rem);
-  background: var(--white);
+  background: var(--surface-bg);
   border-bottom: 1px solid var(--border);
   max-width: var(--container);
   margin-inline: auto;

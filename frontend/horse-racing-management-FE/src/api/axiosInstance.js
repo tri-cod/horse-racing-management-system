@@ -1,9 +1,15 @@
 import axios from 'axios';
 
-const getAuthHeader = () => {
-  const token = localStorage.getItem('accessToken');
-  const tokenType = localStorage.getItem('tokenType') || 'Bearer';
-  return token ? `${tokenType} ${token}` : null;
+const PUBLIC_PATHS = ['/', '/login', '/register', '/forgot-password', '/races', '/jockeys'];
+const AUTH_ENDPOINTS = ['/auth/login', '/auth/register', '/auth/refresh'];
+
+const isPublicPath = (path) =>
+  PUBLIC_PATHS.includes(path) || path.startsWith('/races/') || path.startsWith('/jockeys/');
+
+const clearSession = () => {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('tokenType');
+  localStorage.removeItem('user');
 };
 
 const axiosInstance = axios.create({
@@ -13,31 +19,47 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const authHeader = getAuthHeader();
-    if (authHeader && config.headers) {
-      config.headers.Authorization = authHeader;
+    const token = localStorage.getItem('accessToken');
+    const tokenType = localStorage.getItem('tokenType') || 'Bearer';
+    if (token && config.headers) {
+      config.headers.Authorization = `${tokenType} ${token}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Handle response errors globally
+// Flag to prevent multiple simultaneous logout redirects
+let isRedirectingToLogin = false;
+
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('tokenType');
-      localStorage.removeItem('user');
-      const path = window.location.pathname;
-      const isPublicPath =
-        ['/', '/login', '/register', '/forgot-password', '/races', '/jockeys'].includes(path) ||
-        path.startsWith('/races/');
-      if (!isPublicPath) {
+  async (error) => {
+    const status = error.response?.status;
+    const requestUrl = error.config?.url || '';
+
+    // Skip auth endpoints to avoid redirect loops
+    const isAuthEndpoint = AUTH_ENDPOINTS.some((ep) => requestUrl.includes(ep));
+
+    if (status === 401 && !isAuthEndpoint && !isRedirectingToLogin) {
+      // NOTE: When backend adds /auth/refresh endpoint, replace clearSession()
+      // with a token refresh call here before falling back to logout.
+      // Example:
+      //   const refreshToken = localStorage.getItem('refreshToken');
+      //   const { data } = await axios.post('/auth/refresh', { refreshToken });
+      //   localStorage.setItem('accessToken', data.accessToken);
+      //   return axiosInstance(error.config); // retry original request
+
+      clearSession();
+
+      if (!isPublicPath(window.location.pathname)) {
+        isRedirectingToLogin = true;
         window.location.href = '/login';
+        // Reset flag after navigation completes
+        setTimeout(() => { isRedirectingToLogin = false; }, 1000);
       }
     }
+
     return Promise.reject(error);
   }
 );

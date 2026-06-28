@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, MapPin, Trophy, Clock, ArrowRight, Flag } from 'lucide-react';
 import Button from '../ui/Button';
 import Container from '../ui/Container';
-import { useUpcomingRaces } from '../../hooks/useUpcomingRaces';
+import { useUpcomingRaces } from '../../hooks/queries/useUpcomingRaces';
 import '../../assets/css/home/HeroSection.css';
 
 function fmtDate(iso) {

@@ -1,15 +1,14 @@
-import { useRef } from 'react';
+﻿import { useRef } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
-import { FIELDS } from '../../hooks/useHorseForm';
+import { FIELDS } from '../../hooks/forms/useHorseForm';
 
 export default function HorseForm({
-  form,
+  register,
+  validationRules,
   errors,
   loading,
   avatarPreview,
   avatarFileName,
-  handleChange,
-  handleBlur,
   handleAvatarChange,
   handleAvatarRemove,
 }) {
@@ -33,12 +32,9 @@ export default function HorseForm({
           {field.type === 'select' ? (
             <select
               id={field.name}
-              name={field.name}
               className={`horse-form__input${errors[field.name] ? ' horse-form__input--error' : ''}`}
-              value={form[field.name]}
-              onChange={handleChange}
-              onBlur={handleBlur}
               disabled={loading}
+              {...register(field.name, validationRules[field.name])}
             >
               {field.options.map((opt) => (
                 <option key={opt} value={opt}>
@@ -51,7 +47,6 @@ export default function HorseForm({
               <input
                 ref={avatarInputRef}
                 id={field.name}
-                name={field.name}
                 type="file"
                 accept="image/*"
                 className="horse-form__file-input"
@@ -105,18 +100,17 @@ export default function HorseForm({
           ) : (
             <input
               id={field.name}
-              name={field.name}
               type={field.type}
               placeholder={field.placeholder}
               className={`horse-form__input${errors[field.name] ? ' horse-form__input--error' : ''}`}
-              value={form[field.name]}
-              onChange={handleChange}
-              onBlur={handleBlur}
               disabled={loading}
+              {...register(field.name, validationRules[field.name])}
             />
           )}
 
-          {errors[field.name] && <span className="horse-form__error">{errors[field.name]}</span>}
+          {errors[field.name] && (
+            <span className="horse-form__error">{errors[field.name].message}</span>
+          )}
         </div>
       ))}
     </div>

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FIELDS, useRegisterForm } from '../../hooks/useRegisterForm';
+import { FIELDS, validationRules, useRegisterForm } from '../../hooks/forms/useRegisterForm';
 import OtpBoxes from './OtpBoxes';
 
 /* ---- Icons ---- */
@@ -39,7 +39,7 @@ function StepDots({ step }) {
 export default function RegisterForm({ roles, roleConfig }) {
   const {
     step, selectedRole,
-    form, errors, apiError, handleChange, handleBlur,
+    register, getValues, errors, apiError,
     sendOtpLoading, handleNextStep, handleSelectRole, handleBack,
     otp, otpError, otpLoading, resendLoading, resendSuccess,
     handleOtpChange, handleVerify, handleResendOtp,
@@ -158,15 +158,15 @@ export default function RegisterForm({ roles, roleConfig }) {
                     <label className="rg-form__label" htmlFor={`${prefix}-${f.name}`}>{f.label}</label>
                     <input
                       id={`${prefix}-${f.name}`}
-                      name={f.name}
                       type={f.type}
                       placeholder={f.placeholder}
-                      value={form[f.name]}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
                       className={`rg-form__input${errors[f.name] ? ' rg-form__input--error' : ''}`}
+                      {...register(f.name, typeof validationRules[f.name] === 'function'
+                        ? validationRules[f.name](getValues)
+                        : validationRules[f.name]
+                      )}
                     />
-                    {errors[f.name] && <span className="rg-form__error">{errors[f.name]}</span>}
+                    {errors[f.name] && <span className="rg-form__error">{errors[f.name].message}</span>}
                   </div>
                 ))}
               </div>
@@ -206,7 +206,7 @@ export default function RegisterForm({ roles, roleConfig }) {
 
             <p className="rg-otp-step__hint">
               We sent a verification code to{' '}
-              <strong>{form.email}</strong>
+              <strong>{getValues('email')}</strong>
             </p>
 
             <OtpBoxes value={otp} onChange={handleOtpChange} hasError={!!otpError} />

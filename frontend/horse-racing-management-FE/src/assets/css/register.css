@@ -6,7 +6,7 @@
   min-height: calc(100vh - 76px);
   display: flex;
   flex-direction: column;
-  background: var(--white);
+  background: var(--surface-bg);
   overflow-x: hidden;
 }
 

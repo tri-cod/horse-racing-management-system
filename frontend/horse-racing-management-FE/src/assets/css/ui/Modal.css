@@ -10,7 +10,7 @@
 }
 
 .modal-dialog {
-  background: var(--white);
+  background: var(--surface-bg);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   display: flex;

@@ -34,7 +34,7 @@
 /* ── Unread badge ───────────────────────────────────────────── */
 .notif-bell__badge {
   position: absolute;
-  top: -5px;
+  top: 0px;
   right: -5px;
   min-width: 18px;
   height: 18px;
@@ -65,7 +65,7 @@
   top: calc(100% + 10px);
   width: 360px;
   max-width: calc(100vw - 2rem);
-  background: var(--white);
+  background: var(--surface-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);

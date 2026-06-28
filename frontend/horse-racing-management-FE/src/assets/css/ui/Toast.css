@@ -41,7 +41,7 @@
 }
 
 .toast--warning {
-  background: var(--white);
+  background: var(--surface-bg);
   color: var(--text);
   border: 1px solid var(--border);
   border-left: 3px solid var(--brass-400);

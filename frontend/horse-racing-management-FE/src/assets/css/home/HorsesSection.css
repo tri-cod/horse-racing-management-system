@@ -1,6 +1,6 @@
 .home-horses {
   padding: var(--space-12) 0;
-  background: var(--white);
+  background: var(--surface-bg);
 }
 
 .home-horses__grid {

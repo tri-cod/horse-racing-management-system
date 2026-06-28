@@ -61,7 +61,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font-size: var(--fs-small);
-  background: var(--white);
+  background: var(--surface-bg);
   color: var(--text);
   appearance: none;
   cursor: pointer;
@@ -175,7 +175,7 @@
   border-radius: var(--radius);
   font-size: var(--fs-small);
   color: var(--text);
-  background: var(--white);
+  background: var(--surface-bg);
 }
 .admin-odds-input:focus {
   outline: none;

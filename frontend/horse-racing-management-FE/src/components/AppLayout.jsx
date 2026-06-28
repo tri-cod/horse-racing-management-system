@@ -1,6 +1,7 @@
 import AppHeader from './AppHeader';
 import Sidebar from './Sidebar';
 import PageTransition from './PageTransition';
+import ErrorBoundary from './ErrorBoundary';
 
 export default function AppLayout({ children }) {
   return (
@@ -9,7 +10,9 @@ export default function AppLayout({ children }) {
       <div className="app-shell">
         <AppHeader />
         <main id="main-content" className="app-workspace">
-          <PageTransition>{children}</PageTransition>
+          <ErrorBoundary>
+            <PageTransition>{children}</PageTransition>
+          </ErrorBoundary>
         </main>
       </div>
     </div>

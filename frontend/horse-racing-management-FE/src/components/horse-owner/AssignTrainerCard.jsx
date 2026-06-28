@@ -1,7 +1,7 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { UserPlus } from 'lucide-react';
 import { assignTrainer } from '../../api/horseOwnerApi';
-import { useTrainers } from '../../hooks/useTrainers';
+import { useTrainers } from '../../hooks/queries/useTrainers';
 import '../../assets/css/horse-owner/AssignTrainerCard.css';
 
 export default function AssignTrainerCard({ horseId, currentTrainerId, onAssigned }) {
