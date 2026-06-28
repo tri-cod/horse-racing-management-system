@@ -270,7 +270,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
 
 
 
-    private SignHorseResponse mapToResponse(Horse horse,        // ← phải là Horse
+    private SignHorseResponse mapToResponse(Horse horse,
                                             String ownerName,
                                             Long trainerId,
                                             String trainerName) {

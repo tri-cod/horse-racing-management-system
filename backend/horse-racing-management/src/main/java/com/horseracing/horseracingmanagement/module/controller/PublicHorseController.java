@@ -2,6 +2,7 @@ package com.horseracing.horseracingmanagement.module.controller;
 
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseCurrentStatusResponse;
+import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseResponse;
 import com.horseracing.horseracingmanagement.module.service.HorseOwnerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -32,4 +33,6 @@ public class PublicHorseController {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 horseOwnerService.getHorsesByRaceId(raceId)));
     }
+
+
 }

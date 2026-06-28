@@ -16,6 +16,6 @@ public interface HorseOwnerRepository extends JpaRepository<HorseOwner, Long> {
 
     Optional<HorseOwner> findById(Long id);
 
-    List<HorseCurrentStatusResponse> getAllHorsesWithCurrentRace();
-    List<HorseCurrentStatusResponse> getHorsesByRaceId(Long raceId);
+    //List<HorseCurrentStatusResponse> getAllHorsesWithCurrentRace();
+   // List<HorseCurrentStatusResponse> getHorsesByRaceId(Long raceId);
 }
