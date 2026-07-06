@@ -1,18 +1,210 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN SYSTEM — Royal Derby
+   Palette  : Ivory · British Racing Green · Antique Brass
+   Fonts    : Inter (sans) · Cormorant Garamond (serif) · Oswald (numbers)
+   Direction: Heritage British racing-club aesthetic — Royal Ascot / Jockey Club
+
+   Cấu trúc 2 lớp:
+     :root   → nguồn gốc (raw values, đặt tên theo palette)
+     @theme  → Tailwind tokens (ánh xạ :root → utility classes)
+
+   Quy ước đặt tên trong :root:
+     --c-*      màu sắc
+     --ds-font-* font families (prefix ds- tránh circular với @theme --font-*)
+     --shadow-*  shadows
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. SOURCE OF TRUTH — CSS Custom Properties ─────────────────────────── */
+:root {
+
+  /* ── Surfaces (warm ivory) ─────────────────── */
+  --c-surface:         #F7F2E5;   /* trang ivory ấm       */
+  --c-surface-raised:  #FCF9F1;   /* card, panel          */
+  --c-surface-overlay: #EDE5CF;   /* modal, dropdown      */
+  --c-surface-input:   #EEE7D6;   /* input background     */
+
+  /* ── Borders (brass-tinted warm) ───────────── */
+  --c-border:          #D5C8A5;   /* default border       */
+  --c-border-strong:   #B8A37A;   /* hover/elevated       */
+
+  /* ── Text hierarchy (deep green-earthy) ────── */
+  --c-text:            #131C15;   /* headings, labels     */
+  --c-text-muted:      #384A39;   /* body text            */
+  --c-text-faint:      #637462;   /* subtitles            */
+  --c-text-xfaint:     #98AA96;   /* captions, hints      */
+  --c-text-invert:     #F5EDD8;   /* text on dark bg (ivory, not pure white) */
+
+  /* ── Racing Green (primary dark) ───────────── */
+  --c-navy:            #0D2918;   /* British racing green */
+  --c-navy-deep:       #071610;   /* deeper forest green  */
+
+  /* ── Emerald (action color) ─────────────────── */
+  --c-blue:            #236842;   /* mid racing green, action */
+  --c-blue-hi:         #1B5234;   /* hover state          */
+
+  /* ── Antique Brass (prestige accent) ────────── */
+  --c-gold:            #A8843B;   /* antique brass        */
+  --c-gold-hi:         #876930;   /* hover / stronger     */
+
+  /* ── Semantic feedback ──────────────────────── */
+  --c-ok:              #236842;
+  --c-ok-subtle:       #DFF0E5;
+  --c-fail:            #892B2B;
+  --c-fail-subtle:     #F2E5E2;
+  --c-warn:            #876930;
+  --c-warn-subtle:     #EEE3D5;
+
+  /* ── Typography ─────────────────────────────── */
+  --ds-font-sans:  'Inter', system-ui, -apple-system, sans-serif;
+  --ds-font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --ds-font-data:  'Oswald', 'Inter', sans-serif;
+
+  --fs-body: 1rem;
+  --fs-xs:   0.75rem;
+  --lh-tight: 1.12;
+  --lh-base:  1.65;
+
+  /* ── Shadows (green-tinted depth) ───────────── */
+  --shadow-sm: 0 2px 8px rgba(13, 41, 24, 0.06);
+  --shadow-md: 0 14px 30px -18px rgba(13, 41, 24, 0.38);
+  --shadow-lg: 0 20px 50px rgba(13, 41, 24, 0.12);
+
+  /* ── Animation ───────────────────────────────── */
+  --transition: 240ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-body {
-  font-family: 'Inter', system-ui, 'Segoe UI', sans-serif;
-  background-color: var(--bg, #ffffff);
-  color: var(--text, #0C1B2A);
+/* ── 2. TAILWIND DESIGN TOKENS — map :root → utility classes ────────────── */
+@theme {
+
+  /* bg-surface / bg-surface-raised / bg-surface-overlay / bg-surface-input */
+  --color-surface:         var(--c-surface);
+  --color-surface-raised:  var(--c-surface-raised);
+  --color-surface-overlay: var(--c-surface-overlay);
+  --color-surface-input:   var(--c-surface-input);
+
+  /* border-rim / border-rim-hi */
+  --color-rim:    var(--c-border);
+  --color-rim-hi: var(--c-border-strong);
+
+  /* text-ink / text-ink-2 / text-ink-3 / text-ink-4 */
+  --color-ink:   var(--c-text);
+  --color-ink-2: var(--c-text-muted);
+  --color-ink-3: var(--c-text-faint);
+  --color-ink-4: var(--c-text-xfaint);
+
+  /* bg-navy / text-navy / bg-navy-hi / bg-navy-deep / text-on-blue */
+  --color-navy:      var(--c-navy);
+  --color-navy-hi:   var(--c-navy-deep);
+  --color-navy-deep: var(--c-navy-deep);
+  --color-on-blue:   var(--c-text-invert);
+
+  /* bg-blue / text-blue / bg-blue-hi */
+  --color-blue:    var(--c-blue);
+  --color-blue-hi: var(--c-blue-hi);
+
+  /* bg-gold / text-gold / bg-gold-hi / text-on-gold */
+  --color-gold:    var(--c-gold);
+  --color-gold-hi: var(--c-gold-hi);
+  --color-on-gold: var(--c-text-invert);
+
+  /* text-ok / bg-ok-subtle / text-fail / bg-fail-subtle / text-warn / bg-warn-subtle */
+  --color-ok:          var(--c-ok);
+  --color-ok-subtle:   var(--c-ok-subtle);
+  --color-fail:        var(--c-fail);
+  --color-fail-subtle: var(--c-fail-subtle);
+  --color-warn:        var(--c-warn);
+  --color-warn-subtle: var(--c-warn-subtle);
+
+  /* font-sans / font-serif / font-data */
+  --font-sans:  var(--ds-font-sans);
+  --font-serif: var(--ds-font-serif);
+  --font-data:  var(--ds-font-data);
+
+  /* shadow-card / shadow-modal / shadow-hero */
+  --shadow-card:  var(--shadow-sm);
+  --shadow-modal: var(--shadow-md);
+  --shadow-hero:  var(--shadow-lg);
 }
 
-#root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  
+/* ── 3. UTILITY CLASSES ─────────────────────────────────────────────────── */
+
+/* Eyebrow: Oswald uppercase label (gold) */
+.eyebrow {
+  display: inline-block;
+  font-family: var(--ds-font-data);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: var(--fs-xs);
+  color: var(--c-gold-hi);
+}
+
+/* Tabular numbers with Oswald */
+.tnum {
+  font-family: var(--ds-font-data);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Jockey silk swatches */
+.silk {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  display: inline-block; flex: none; vertical-align: middle;
+}
+.silk--1 { background: repeating-linear-gradient(45deg, var(--c-gold) 0 7px, var(--c-navy) 7px 14px); }
+.silk--2 { background: linear-gradient(180deg, var(--c-blue) 50%, #fff 50%); }
+.silk--3 { background: repeating-conic-gradient(var(--c-navy) 0% 25%, #fff 0% 50%) 0 0 / 14px 14px; }
+.silk--4 { background: linear-gradient(90deg, var(--c-blue) 50%, var(--c-gold) 50%); }
+.silk--5 { background: repeating-linear-gradient(0deg, var(--c-navy) 0 7px, #fff 7px 14px); }
+.silk--6 { background: radial-gradient(circle at 50% 50%, var(--c-gold) 36%, var(--c-blue) 38%); }
+
+/* ── 4. BASE STYLES ─────────────────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: var(--ds-font-sans);
+    background-color: var(--c-surface);
+    color: var(--c-text);
+    font-size: var(--fs-body);
+    line-height: var(--lh-base);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--ds-font-serif);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--c-text);
+    line-height: var(--lh-tight);
+    margin: 0;
+  }
+  h3, h4 { letter-spacing: -0.01em; }
+
+  p { line-height: var(--lh-base); }
+  a { color: inherit; }
+  #root { min-height: 100vh; }
+
+  /* Remove number input spinners globally */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
