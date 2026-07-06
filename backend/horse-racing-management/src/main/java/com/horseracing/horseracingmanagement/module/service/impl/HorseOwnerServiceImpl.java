@@ -43,6 +43,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .age(request.getAge())
                 .gender(request.getGender())
                 .speedRating(request.getSpeedRating())
+                .description(request.getDescription())
                 .historyRank(request.getHistory_rank())
                 .avatarUrl(request.getAvatar_url())
                 .weight(request.getWeight())

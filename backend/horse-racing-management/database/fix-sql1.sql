@@ -52,4 +52,8 @@ CREATE TABLE race_result (
                              rewards        BIGINT DEFAULT 0
 );
 
+
+ALTER TABLE horse
+    ADD COLUMN description TEXT;
+
 ALTER TABLE race_result ADD COLUMN completion_time_seconds DOUBLE PRECISION;

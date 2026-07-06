@@ -24,4 +24,6 @@ public interface AuthService {
     boolean isEmailVerified(String email);
 
     AuthMeResponse resetPassword(ResetPasswordRequest request);
+
+    AuthMeResponse updateProfile(UpdateProfileRequest request, Long id);
 }

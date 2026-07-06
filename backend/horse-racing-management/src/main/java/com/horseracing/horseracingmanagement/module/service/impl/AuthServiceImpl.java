@@ -226,6 +226,26 @@ public class AuthServiceImpl  implements AuthService {
     }
 
     @Override
+    public AuthMeResponse updateProfile(UpdateProfileRequest request, Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (request.getFullName() != null) {
+            user.setFullName(request.getFullName());
+        }
+        if (request.getPhoneNumber() != null) {
+            user.setPhonenumber(request.getPhoneNumber());
+        }
+        if (request.getAvatar_url() != null) {
+            user.setAvatarUrl(request.getAvatar_url());
+        }
+
+        User saved = userRepository.save(user);
+
+        return buildCurrentUser(saved.getId());
+    }
+
+
+    @Override
     public AuthMeResponse getMe(CustomUserDetails userDetails) {
         return buildCurrentUser(userDetails.getId());
     }

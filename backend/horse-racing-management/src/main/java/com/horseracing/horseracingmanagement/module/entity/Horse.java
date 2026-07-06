@@ -55,6 +55,10 @@ public class Horse {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+
     @Column(name = "gender")
     private String gender;
 

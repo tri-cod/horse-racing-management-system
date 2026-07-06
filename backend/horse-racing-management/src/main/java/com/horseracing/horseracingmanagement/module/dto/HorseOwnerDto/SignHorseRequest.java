@@ -19,6 +19,7 @@ public class SignHorseRequest
     public int speedRating;
     public String history_rank;
     public String avatar_url;
+    public String description;
     public Long weight;
     public HorseStatus status;
 }

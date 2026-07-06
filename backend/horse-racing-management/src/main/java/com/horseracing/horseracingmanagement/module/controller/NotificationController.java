@@ -20,7 +20,6 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    // Xem notification của mình
     @GetMapping
     public ResponseEntity<ApiResponse<List<NotificationResponse>>> getMyNotifications(
             @AuthenticationPrincipal CustomUserDetails userDetails) {

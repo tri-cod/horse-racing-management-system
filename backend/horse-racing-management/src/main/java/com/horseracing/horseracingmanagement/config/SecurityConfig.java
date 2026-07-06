@@ -46,7 +46,7 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui.html",
             "/ws/**",
-            "/api/horses/**",       // ← thêm — public, ai cũng xem được
+            "/api/horses/**",
             "/api/races/**"
     };
 

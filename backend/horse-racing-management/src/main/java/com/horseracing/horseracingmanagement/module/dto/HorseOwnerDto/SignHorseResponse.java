@@ -24,6 +24,7 @@ public class SignHorseResponse {
     private String historyRank;
     private String avatarUrl;
     private Long weight;
+    private String description;
     private HorseStatus status;
 
     private String trainerName;

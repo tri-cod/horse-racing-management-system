@@ -1,9 +1,7 @@
 package com.horseracing.horseracingmanagement.module.controller;
 
-import com.horseracing.horseracingmanagement.common.exception.AppException;
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.module.dto.AuthDto.*;
-import com.horseracing.horseracingmanagement.module.entity.User;
 import com.horseracing.horseracingmanagement.module.responsitory.UserRepository;
 import com.horseracing.horseracingmanagement.module.service.AuthService;
 import com.horseracing.horseracingmanagement.security.CustomUserDetails;
@@ -107,8 +105,12 @@ public class AuthController {
     }
 
 
-
-
-
+    @PutMapping("/me")
+    public ResponseEntity<ApiResponse<AuthMeResponse>> updateProfile(
+            @Valid @RequestBody UpdateProfileRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Profile updated successfully",
+                authService.updateProfile(request, userDetails.getId())));
+    }
 
 }
