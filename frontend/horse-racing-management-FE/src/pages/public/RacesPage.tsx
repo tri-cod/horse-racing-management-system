@@ -217,7 +217,7 @@ function RaceDetailPanel({ raceId }: { raceId: number }) {
 
   const entries = useMemo(() =>
     assignLanes(raw.filter(e =>
-      e.status?.toLowerCase() === 'approved' && e.odds != null
+      e.status?.toLowerCase() === 'approved'
     ) as Parameters<typeof assignLanes>[0])
       .sort((a, b) => (a.odds ?? Infinity) - (b.odds ?? Infinity)),
     [raw]
@@ -284,7 +284,7 @@ function RaceDetailPanel({ raceId }: { raceId: number }) {
       {/* Entries table */}
       {entries.length === 0 ? (
         <div className="bg-surface-raised px-5 py-12 text-center">
-          <p className="text-sm text-ink-3">No approved entries with odds yet.</p>
+          <p className="text-sm text-ink-3">No approved entries yet.</p>
         </div>
       ) : (
         <table className="w-full">

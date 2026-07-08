@@ -124,11 +124,13 @@ export default function RaceDetailPage() {
 
   const entries = useMemo(() =>
     assignLanes(raw.filter((e) =>
-      e.status?.toLowerCase() === 'approved' && e.odds != null
+      e.status?.toLowerCase() === 'approved' 
     ) as Parameters<typeof assignLanes>[0])
       .sort((a, b) => (a.odds ?? Infinity) - (b.odds ?? Infinity)),
     [raw]
   );
+const bettableEntries = useMemo(() => entries.filter((e) => e.odds != null), [entries]);
+
 
   const canBet = user?.role === 'USER';
   const bettable = !!race && !NON_BETTABLE.has(race.status);
@@ -242,7 +244,7 @@ export default function RaceDetailPage() {
             <div className="flex justify-center bg-surface-raised py-12"><LoadingSpinner /></div>
           ) : entries.length === 0 ? (
             <div className="bg-surface-raised px-5 py-12 text-center">
-              <p className="text-sm text-ink-3">No approved entries with odds yet.</p>
+             <p className="text-sm text-ink-3">No approved entries yet.</p>
             </div>
           ) : (
             <table className="w-full">
@@ -294,7 +296,7 @@ export default function RaceDetailPage() {
           open={showBet}
           onClose={() => setShowBet(false)}
           race={race}
-          raceHorses={entries}
+          raceHorses={bettableEntries}
           onSuccess={() => addToast('Bet placed successfully!', 'success')}
         />
       )}

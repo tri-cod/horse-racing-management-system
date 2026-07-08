@@ -13,9 +13,9 @@ import { getJockeyList } from '@/api/jockeyApi';
 import type { Race, Jockey, UserRole } from '@/types';
 
 const DASHBOARD_ROUTE: Partial<Record<UserRole, string>> = {
- ADMIN: '/admin/users', REFEREE: '/referee/races',
- HORSE_OWNER: '/horse-owner/horses', TRAINER: '/trainer/profile',
- USER: '/my-bets', JOCKEY: '/my-wallet',
+  ADMIN: '/admin/dashboard', REFEREE: '/referee/dashboard',
+  HORSE_OWNER: '/horse-owner/dashboard', TRAINER: '/trainer/dashboard',
+  USER: '/dashboard', JOCKEY: '/my-wallet',
 };
 
 const WALLET_ROLES = new Set<UserRole>(['USER', 'HORSE_OWNER', 'JOCKEY', 'REFEREE', 'TRAINER']);
