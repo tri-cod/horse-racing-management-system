@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance';
-import type { ApiResponse, Wallet, PendingTransaction, BankAccount } from '@/types';
+import type { ApiResponse, Wallet, PendingTransaction, BankAccount, Deposit, Withdraw } from '@/types';
 
 export interface CreateDepositPayload {
   amount: number;

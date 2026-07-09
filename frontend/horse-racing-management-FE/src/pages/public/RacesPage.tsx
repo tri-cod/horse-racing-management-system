@@ -20,7 +20,7 @@ function toDateStr(d: Date) { return d.toISOString().slice(0, 10); }
 
 function fmtPrize(n?: number) {
   if (!n) return null;
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n);
 }
 
 /* ── Lane post-position colors (traditional racing) ─────────────────── */
@@ -125,19 +125,6 @@ function MiniCalendar({ raceDates, selected, onSelect }: CalendarProps) {
     </div>
   );
 }
-
-/* ── Helpers (results) ──────────────────────────────────────────────── */
-function fmtPrizeVnd(n?: number) {
-  if (!n) return null;
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n);
-}
-
-const ordinal = (n: number) => {
-  if (n === 1) return '1ST';
-  if (n === 2) return '2ND';
-  if (n === 3) return '3RD';
-  return `${n}TH`;
-};
 
 /* ── Position badge — matches home page Leaderboard ─────────────────── */
 function PosBadge({ pos }: { pos: number }) {

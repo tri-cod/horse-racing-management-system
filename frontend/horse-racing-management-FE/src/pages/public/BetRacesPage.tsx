@@ -57,12 +57,11 @@ function fmtTime(iso?: string) {
   if (!iso) return '—';
   return new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 }
-function fmtPrize(n?: number) {
-  if (!n) return null;
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
-}
 function fmtVnd(n: number) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n);
+}
+function fmtPrize(n?: number) {
+  return n ? fmtVnd(n) : null;
 }
 function fmtBalance(n: number | null) {
   return n != null ? fmtVnd(n) : '—';

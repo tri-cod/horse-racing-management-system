@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { useMyHorses } from '@/hooks/useMyHorses';
 import HorseCard from '@/components/features/horse-owner/HorseCard';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Button from '@/components/ui/Button';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
