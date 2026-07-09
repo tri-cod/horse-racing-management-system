@@ -2,11 +2,11 @@ import { useEffect, useState, useCallback } from 'react';
 import { ChevronDown, Calendar, MapPin, TrendingUp, Lock } from 'lucide-react';
 import { useToast } from '@/components/ui/ToastProvider';
 import { getRaces } from '@/api/raceApi';
-import { getHorsesByRace, setOddsForOne } from '@/api/raceHorseApi';
+import { getHorsesByRace, setOddsForOne, setOdds } from '@/api/raceHorseApi';
 import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
-import type { Race, RaceHorse } from '@/types';
+import type { Race, RaceHorse, SetOddsPayload } from '@/types';
 
 const fmtDate = (iso?: string) => {
   if (!iso) return '—';
@@ -60,6 +60,7 @@ export default function AdminSetOddsPage() {
   const [loadingHorsesFor, setLoadingHorsesFor] = useState<number | null>(null);
   const [oddsMap, setOddsMap] = useState<Record<string, string>>({});
   const [savingId, setSavingId] = useState<number | null>(null);
+  const [savingAllRaceId, setSavingAllRaceId] = useState<number | null>(null);
 
   useEffect(() => {
     getRaces({ size: 50 })
@@ -104,6 +105,47 @@ export default function AdminSetOddsPage() {
       const err = e as { response?: { data?: { message?: string } } };
       addToast(err?.response?.data?.message ?? 'Failed to save odds.', 'error');
     } finally { setSavingId(null); }
+  };
+
+  const handleSaveAllOdds = async (raceId: number) => {
+    const horses = horsesCache[raceId] ?? [];
+    const oddsList: SetOddsPayload[] = [];
+
+    for (const rh of horses) {
+      const key = `${raceId}-${rh.id}`;
+      const raw = oddsMap[key];
+      if (raw == null || raw.trim() === '') continue; // bỏ qua ô trống
+
+      const odds = parseFloat(raw);
+      if (isNaN(odds) || odds <= 1) {
+        addToast(`Invalid odds for ${rh.horseName ?? 'this horse'}: must be greater than 1.`, 'error');
+        return; // dừng lại, không gửi request
+      }
+      oddsList.push({ raceHorseId: rh.id, odds });
+    }
+
+    if (oddsList.length === 0) {
+      addToast('No odds entered to save.', 'error');
+      return;
+    }
+
+    setSavingAllRaceId(raceId);
+    try {
+      await setOdds(raceId, oddsList);
+      setHorsesCache((prev) => ({
+        ...prev,
+        [raceId]: (prev[raceId] ?? []).map((h) => {
+          const match = oddsList.find((o) => o.raceHorseId === h.id);
+          return match ? { ...h, odds: match.odds } : h;
+        }),
+      }));
+      addToast(`Saved odds for ${oddsList.length} horses`, 'success');
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      addToast(err?.response?.data?.message ?? 'Failed to save all odds.', 'error');
+    } finally {
+      setSavingAllRaceId(null);
+    }
   };
 
   return (
@@ -257,8 +299,16 @@ export default function AdminSetOddsPage() {
                         </div>
 
                         {/* Footer hint */}
-                        <div className="border-t border-rim px-5 py-2.5">
+                        <div className="flex items-center justify-between border-t border-rim px-5 py-2.5">
                           <p className="text-[11px] text-ink-4">Press Enter in the input field to save quickly.</p>
+                          <button
+                            type="button"
+                            disabled={savingAllRaceId === race.id}
+                            onClick={() => handleSaveAllOdds(race.id)}
+                            className="border border-gold/30 bg-gold/10 px-3 py-1.5 text-xs font-semibold text-gold transition-colors hover:bg-gold/20 disabled:opacity-50"
+                          >
+                            {savingAllRaceId === race.id ? 'Saving…' : 'Save All Odds'}
+                          </button>
                         </div>
                       </>
                     )}
