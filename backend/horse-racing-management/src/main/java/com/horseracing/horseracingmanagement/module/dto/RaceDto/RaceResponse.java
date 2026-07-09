@@ -7,7 +7,7 @@ import java.time.Instant;
 
 @Data
 @Builder
-public class RaceResponse {
+public class    RaceResponse {
     private Long id;
     private String raceName;
     private Instant startTime;
