@@ -34,7 +34,7 @@ function laneClr(n?: number) {
 
 function fmtPrize(n?: number) {
   if (!n) return null;
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n);
 }
 
 function PosBadge({ pos }: { pos: number }) {
