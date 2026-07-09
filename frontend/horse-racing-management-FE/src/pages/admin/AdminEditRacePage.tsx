@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { ArrowLeft, Eye } from 'lucide-react';
 import { updateRace } from '@/api/raceApi';
 import { useRaceDetail } from '@/hooks/useRaceDetail';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -71,13 +71,23 @@ export default function AdminEditRacePage() {
         subtitle={race?.raceName ?? 'Loading…'}
       />
 
-      <button
-        type="button"
-        onClick={() => navigate(-1)}
-        className="mb-6 flex items-center gap-1.5 text-sm font-medium text-ink-3 transition-colors hover:text-ink"
-      >
-        <ArrowLeft size={15} /> Back to Races
-      </button>
+      <div className="mb-6 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1.5 text-sm font-medium text-ink-3 transition-colors hover:text-ink"
+        >
+          <ArrowLeft size={15} /> Back to Races
+        </button>
+        {id && (
+          <Link
+            to={`/admin/races/${id}`}
+            className="flex items-center gap-1.5 text-sm font-medium text-navy transition-colors hover:text-navy-hi"
+          >
+            <Eye size={15} /> View Race Detail
+          </Link>
+        )}
+      </div>
 
       {error && (
         <div className="mb-5 flex items-center justify-between rounded border border-fail/20 bg-fail-subtle px-4 py-3 text-sm text-fail">

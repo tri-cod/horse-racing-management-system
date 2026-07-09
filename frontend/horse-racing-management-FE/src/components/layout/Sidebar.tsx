@@ -11,24 +11,35 @@ interface NavItem { icon: LucideIcon; label: string; href: string; end?: boolean
 
 const ROLE_ITEMS: Partial<Record<UserRole, NavItem[]>> = {
  ADMIN: [
- { icon: LayoutDashboard, label: 'Admin Panel', href: '/admin/users' },
+ { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
+ { icon: UserCog, label: 'Manage Users', href: '/admin/users' },
  { icon: ClipboardCheck, label: 'Approve Horses', href: '/admin/approve-horses' },
  { icon: Plus, label: 'Create Race', href: '/admin/races/create' },
  { icon: BadgeDollarSign, label: 'Deposit Requests', href: '/admin/deposits' },
- { icon: PencilLine, label: 'Edit Race', href: '/admin/races', end: true },
+ { icon: PencilLine, label: 'Manage Races', href: '/admin/races', end: true },
  { icon: TrendingUp, label: 'Set Odds', href: '/admin/set-odds' },
  { icon: Landmark, label: 'System Wallet', href: '/admin/wallet' },
  ],
- REFEREE: [{ icon: Flag, label: 'Race Control', href: '/referee/races' }],
+ REFEREE: [
+     { icon: LayoutDashboard, label: 'Dashboard', href: '/referee/dashboard' },
+     { icon: Flag, label: 'Race Control', href: '/referee/races' }],
  HORSE_OWNER: [
+     { icon: LayoutDashboard, label: 'Dashboard', href: '/horse-owner/dashboard' },
  { icon: Shield, label: 'My Horses', href: '/horse-owner/horses' },
  { icon: ClipboardList, label: 'My Registrations', href: '/horse-owner/race-registrations' },
  { icon: Wallet, label: 'My Wallet', href: '/my-wallet' },
  { icon: FlagTriangleRight, label: 'Register to Race', href: '/horse-owner/register-race' },
  ],
- TRAINER: [{ icon: UserCog, label: 'My Profile', href: '/trainer/profile' }, { icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
- USER: [{ icon: Ticket, label: 'My Bets', href: '/my-bets' }, { icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
- JOCKEY: [{ icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
+ TRAINER: [
+    { icon: LayoutDashboard, label: 'Dashboard', href: '/trainer/dashboard' },
+    { icon: UserCog, label: 'My Profile', href: '/trainer/profile' }, 
+    { icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
+ USER: [
+    { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
+    { icon: Ticket, label: 'My Bets', href: '/my-bets' }, 
+    { icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
+    JOCKEY: [
+        { icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
 };
 
 const ROLE_LABEL: Partial<Record<UserRole, string>> = {

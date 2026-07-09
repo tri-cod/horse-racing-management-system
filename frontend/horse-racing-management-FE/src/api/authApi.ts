@@ -37,4 +37,4 @@ export const resetPassword = (otp: string, email: string, newPassWord: string) =
  .then((r) => r.data);
 
 export const updateInfo = (payload: UpdateInfoPayload) =>
- axiosInstance.put<ApiResponse<User>>('/auth/update-info', payload).then((r) => r.data.data);
+  axiosInstance.put<ApiResponse<User>>('/auth/me', payload).then((r) => r.data.data);

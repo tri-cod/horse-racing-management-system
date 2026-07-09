@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, MapPin, Pencil, Lock, Trash2, Trophy } from 'lucide-react';
+import { Calendar, MapPin, Pencil, Lock, Trash2, Trophy, Eye } from 'lucide-react';
 import RaceStatusBadge from './RaceStatusBadge';
 import { updateRace, deleteRace } from '@/api/raceApi';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -62,7 +62,7 @@ export default function RaceCard({ race, isAdmin, onRefetch }: RaceCardProps) {
       {/* Gold top accent */}
       <div className="absolute inset-x-0 top-0 z-10 h-0.5 origin-left scale-x-0 bg-gold transition-transform duration-300 group-hover:scale-x-100" />
 
-      <Link to={`/races/${race.id}`} className="block">
+      <Link to={isAdmin ? `/admin/races/${race.id}` : `/races/${race.id}`} className="block">
         {/* Banner */}
         <div className="relative h-40 overflow-hidden bg-navy">
           {race.bannerImageurl ? (
@@ -112,6 +112,13 @@ export default function RaceCard({ race, isAdmin, onRefetch }: RaceCardProps) {
       {/* Admin actions */}
       {isAdmin && (
         <div className="flex items-center gap-0.5 border-t border-rim px-3 py-2">
+          <Link
+            to={`/admin/races/${race.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-ink-3 transition-colors hover:bg-surface-overlay hover:text-navy"
+          >
+            <Eye size={12} />View
+          </Link>
           {CLOSEABLE.has(race.status) && (
             <button
               type="button"
