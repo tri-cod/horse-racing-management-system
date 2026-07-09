@@ -11,6 +11,7 @@ import LoginPage from '@/pages/public/LoginPage';
 import RegisterPage from '@/pages/public/RegisterPage';
 import ForgotPasswordPage from '@/pages/public/ForgotPasswordPage';
 import JockeysPage from '@/pages/public/JockeysPage';
+import HorsesPage from '@/pages/public/HorsesPage';
 import RacesPage from '@/pages/public/RacesPage';
 import RaceDetailPage from '@/pages/public/RaceDetailPage';
 import RaceResultsPage from '@/pages/public/RaceResultsPage';
@@ -66,6 +67,7 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/jockeys" element={<Layout><JockeysPage /></Layout>} />
+        <Route path="/horses" element={<Layout><HorsesPage /></Layout>} />
         <Route path="/races" element={<Layout><RacesPage /></Layout>} />
         <Route path="/races/:id" element={<Layout><RaceDetailPage /></Layout>} />
         <Route path="/bet" element={<Layout><BetHomePage /></Layout>} />
