@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
  Menu, X, User, LogOut, LayoutDashboard, ChevronDown,
- MapPin, Trophy, Users, Flag, ArrowRight, Wallet, Plus,
+ MapPin, Trophy, Users, Flag, ArrowRight, Wallet, Plus, Rabbit,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useWalletBalance } from '@/hooks/useWalletBalance';
@@ -10,7 +10,8 @@ import Container from '@/components/ui/Container';
 import NotificationBell from '@/components/NotificationBell';
 import { getRaces } from '@/api/raceApi';
 import { getJockeyList } from '@/api/jockeyApi';
-import type { Race, Jockey, UserRole } from '@/types';
+import { getAllHorses } from '@/api/horseApi';
+import type { Race, Jockey, UserRole, HorseCurrentStatusResponse } from '@/types';
 
 const DASHBOARD_ROUTE: Partial<Record<UserRole, string>> = {
  ADMIN: '/admin/users', REFEREE: '/referee/races',
@@ -59,6 +60,7 @@ export default function Header() {
  const [activeNav, setActiveNav] = useState<string | null>(null);
  const [allRaces, setAllRaces] = useState<Race[]>([]);
  const [allJockeys, setAllJockeys] = useState<Jockey[]>([]);
+ const [allHorses, setAllHorses] = useState<HorseCurrentStatusResponse[]>([]);
  const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
  const userMenuTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
  const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -77,6 +79,10 @@ export default function Header() {
  if (!user) { setAllJockeys([]); return; }
  getJockeyList().then((d) => setAllJockeys(Array.isArray(d) ? d : [])).catch(() => {});
  }, [user]);
+
+ useEffect(() => {
+ getAllHorses().then((d) => setAllHorses(Array.isArray(d) ? d : [])).catch(() => {});
+ }, []);
 
  useEffect(() => {
  const onScroll = () => setScrolled(window.scrollY > 12);
@@ -199,7 +205,28 @@ export default function Header() {
  </div>
  )}
  {key === 'horses' && (
- <p className="text-sm text-on-blue/40">No horses available yet.</p>
+ <div className="w-[760px]">
+ {allHorses.length === 0 ? <p className="text-sm text-on-blue/40">No horses available.</p> : (
+ <div className="grid grid-cols-3 gap-x-10 gap-y-3">
+ {allHorses.slice(0, 16).map((h) => {
+ const initial = (h.horseName ?? 'H').charAt(0).toUpperCase();
+ const colors = ['bg-gold','bg-purple-600','bg-emerald-600','bg-on-blue/30','bg-red-600','bg-teal-600'];
+ const color = colors[h.horseId % colors.length];
+ return (
+ <Link key={h.horseId} to="/horses" className="flex items-center gap-3 py-2.5 transition hover:bg-on-blue/10">
+ <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-on-gold ${color}`}>{initial}</div>
+ <span className="text-sm font-medium text-on-blue/85">{h.horseName}</span>
+ </Link>
+ );
+ })}
+ </div>
+ )}
+ <div className="mt-4 border-t border-gold/20 pt-3">
+ <Link to="/horses" className="inline-flex items-center gap-1.5 text-xs font-medium text-gold hover:text-gold-hi transition-colors">
+ <Rabbit size={13} /> View all horses
+ </Link>
+ </div>
+ </div>
  )}
  </Container>
  </div>
@@ -293,7 +320,7 @@ export default function Header() {
  {navTrigger('/races', 'Schedule', 'races')}
  {navTrigger('/results', 'Results', 'results')}
  {navTrigger('/jockeys', 'Jockeys', 'jockeys')}
- {navTrigger('/horse-owner/horses', 'Horses', 'horses')}
+ {navTrigger('/horses', 'Horses', 'horses')}
  <li>
  <Link to="/bet" className={`flex items-center gap-1 px-1 py-1 text-sm font-medium tracking-wide transition-colors ${pathname.startsWith('/bet') ? 'text-on-blue' : 'text-on-blue/75 hover:text-on-blue'}`}>
  <span className={`pb-1 border-b-2 ${pathname.startsWith('/bet') ? 'border-gold' : 'border-transparent'}`}>Bet</span>
@@ -330,7 +357,8 @@ export default function Header() {
  <div className="border-t border-on-blue/20 bg-navy lg:hidden">
  <nav className="flex flex-col divide-y divide-on-blue/10">
  {[{ label: 'Schedule', href: '/races' }, { label: 'Results', href: '/results' },
- { label: 'Bet', href: '/bet' }, { label: 'Jockeys', href: '/jockeys' }].map((item) => (
+ { label: 'Bet', href: '/bet' }, { label: 'Jockeys', href: '/jockeys' },
+ { label: 'Horses', href: '/horses' }].map((item) => (
  <Link key={item.label} to={item.href}
  className={`px-6 py-4 text-sm font-medium transition-colors ${pathname === item.href ? 'text-on-blue' : 'text-on-blue/80 hover:bg-on-blue/10 hover:text-on-blue'}`}
  onClick={() => setMenuOpen(false)}>
