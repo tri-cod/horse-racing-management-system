@@ -20,5 +20,4 @@ public interface RaceHorseService {
     void setOdds(SetAllOddsRequest request);        // set odds cho tất cả horse
     RaceHorseResponse setOddsForOne(SetOddsRequest request);
     List<RaceHorseResponse> getPendingHorses(); // Admin lấy danh sách chờ duyệt
-    List<JockeyResponse> getAvaiableJockeyList(Long raceId);
-}
+    List<JockeyResponse> getAvaiableJockeyList(Long raceId);}

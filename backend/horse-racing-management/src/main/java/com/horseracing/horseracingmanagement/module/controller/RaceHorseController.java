@@ -67,6 +67,7 @@ public class RaceHorseController {
     @PutMapping("/{id}/approve")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse<RaceHorseResponse>> approveHorse(@PathVariable Long id) {
+
         return ResponseEntity.ok(ApiResponse.success("Horse approved",
                 raceHorseService.approveHorse(id)));
     }

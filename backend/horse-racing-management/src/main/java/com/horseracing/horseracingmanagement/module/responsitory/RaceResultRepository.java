@@ -25,4 +25,15 @@ public interface RaceResultRepository extends JpaRepository<RaceResult, Long> {
     Optional<RaceResult> findByRaceHorse_Id(Long raceHorseId);
     void deleteByRace_Id(Long raceId);
 
+    // Lịch sử đua của 1 horse, sort theo thời gian race mới nhất
+    @Query("""
+        SELECT rr FROM RaceResult rr
+        WHERE rr.raceHorse.horse.id = :horseId
+        ORDER BY rr.race.startTime DESC
+        """)
+    List<RaceResult> findByHorseIdOrderByRaceDesc(@Param("horseId") Long horseId);
+
+    // Đếm số ngựa tham gia trong 1 race (dùng để tính tổng participant)
+    long countByRace_Id(Long raceId);
+
 }

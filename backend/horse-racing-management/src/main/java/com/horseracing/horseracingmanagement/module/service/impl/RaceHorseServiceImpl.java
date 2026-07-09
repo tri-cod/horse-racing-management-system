@@ -41,9 +41,16 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         Race race = raceRepository.findById(request.getRaceId())
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
+        Long countHorseInRace = raceHorseRepository.countByRace_IdAndStatus(request.getRaceId(),"Approve");
+
         if (race.getStatus() != RaceStatus.UPCOMING && race.getStatus() != RaceStatus.OPEN_REGISTRATION) {
             throw new RuntimeException("Race is not open for registration");
         }
+
+        if(countHorseInRace>=race.getCapacity()){
+            throw new RuntimeException("Race capacity exceeded");
+        }
+
 
         Horse horse = horseRepository.findById(request.getHorseId())
                 .orElseThrow(() -> new RuntimeException("Horse not found"));
@@ -96,6 +103,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
 
         return mapToResponse(raceHorseRepository.save(raceHorse));
     }
+
 
     @Override
     public List<RaceHorseResponse> getRaceHorseList(Long raceId) {
@@ -214,6 +222,8 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                         .build())
                 .collect(Collectors.toList());
     }
+    
+
 
     @Override
     public RaceHorseResponse setOddsForOne(SetOddsRequest request) {

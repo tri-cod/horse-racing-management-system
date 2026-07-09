@@ -57,3 +57,15 @@ ALTER TABLE horse
     ADD COLUMN description TEXT;
 
 ALTER TABLE race_result ADD COLUMN completion_time_seconds DOUBLE PRECISION;
+
+
+DROP TABLE IF EXISTS race_result CASCADE;
+
+CREATE TABLE race_result (
+                             id                      BIGSERIAL PRIMARY KEY,
+                             race_horse_id           BIGINT NOT NULL REFERENCES race_horse(id),
+                             race_id                 BIGINT NOT NULL REFERENCES race(id),
+                             rank                    BIGINT,
+                             completion_time_seconds DOUBLE PRECISION,
+                             rewards                 BIGINT DEFAULT 0
+);
