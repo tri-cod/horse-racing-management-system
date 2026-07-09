@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Trophy, ArrowRight } from 'lucide-react';
+import { Trophy, ArrowRight, Crown } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import SectionHeader from '@/components/ui/SectionHeader';
 import Reveal from '@/components/ui/Reveal';
@@ -9,26 +9,43 @@ import { useRaceResults, type NormalizedRaceResult } from '@/hooks/useRaceResult
 // Display order left-to-right: 2nd, 1st, 3rd — classic podium arrangement.
 const PODIUM_ORDER = [2, 1, 3];
 
-const PODIUM_STYLES: Record<number, { badge: string; lift: string; label: string }> = {
-  1: { badge: 'bg-gold text-on-gold', lift: 'sm:-translate-y-6', label: '1st' },
-  2: { badge: 'bg-on-blue/25 text-on-blue', lift: 'sm:translate-y-0', label: '2nd' },
-  3: { badge: 'bg-[#8a5a2b] text-white', lift: 'sm:translate-y-3', label: '3rd' },
+const PODIUM_STYLES: Record<number, { riser: string; riserHeight: string; numberCls: string; label: string; glow: string }> = {
+  1: { riser: 'bg-gradient-to-b from-gold to-gold-hi', riserHeight: 'h-28', numberCls: 'text-on-gold', label: '1st', glow: 'shadow-[0_0_50px_-5px_rgba(198,161,75,0.5)]' },
+  2: { riser: 'bg-gradient-to-b from-on-blue/35 to-on-blue/15', riserHeight: 'h-20', numberCls: 'text-on-blue', label: '2nd', glow: '' },
+  3: { riser: 'bg-gradient-to-b from-[#a9713c] to-[#7a4f27]', riserHeight: 'h-14', numberCls: 'text-white', label: '3rd', glow: '' },
 };
 
-function PodiumCardSkeleton() {
-  return <div className="h-48 animate-pulse rounded-md bg-on-blue/5" aria-hidden="true" />;
+function PodiumStepSkeleton({ height }: { height: string }) {
+  return (
+    <div className="flex flex-1 flex-col items-center gap-0">
+      <div className="mb-3 h-32 w-full animate-pulse rounded-md bg-on-blue/5" />
+      <div className={`w-full animate-pulse rounded-t-sm bg-on-blue/10 ${height}`} />
+    </div>
+  );
 }
 
-function PodiumCard({ result }: { result: NormalizedRaceResult }) {
+function PodiumStep({ result }: { result: NormalizedRaceResult }) {
   const style = PODIUM_STYLES[result.position] ?? PODIUM_STYLES[3];
+  const isWinner = result.position === 1;
+
   return (
-    <div className={`flex flex-col items-center gap-3 border border-on-blue/10 bg-navy-deep px-5 py-8 text-center transition ${style.lift}`}>
-      <span className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold ${style.badge}`}>
-        {style.label}
-      </span>
-      <h3 className="font-serif text-xl font-bold uppercase leading-tight text-on-blue">{result.horseName}</h3>
-      <p className="text-xs text-on-blue/55">Ridden by {result.jockeyName}</p>
-      {result.time && <p className="tnum text-xs text-on-blue/40">{result.time}</p>}
+    <div className="flex flex-1 flex-col items-center">
+      {/* Info card */}
+      <div className={`mb-3 flex w-full flex-col items-center gap-1.5 border px-4 py-6 text-center transition ${
+        isWinner ? 'border-gold/30 bg-navy-deep' : 'border-on-blue/10 bg-navy-deep'
+      }`}>
+        {isWinner && <Crown size={18} className="mb-1 text-gold" strokeWidth={1.75} />}
+        <h3 className={`font-serif font-bold uppercase leading-tight text-on-blue ${isWinner ? 'text-2xl' : 'text-lg'}`}>
+          {result.horseName}
+        </h3>
+        <p className="text-xs text-on-blue/55">Ridden by {result.jockeyName}</p>
+        {result.time && <p className="tnum text-xs text-on-blue/35">{result.time}</p>}
+      </div>
+
+      {/* Podium riser */}
+      <div className={`flex w-full items-center justify-center rounded-t-sm ${style.riser} ${style.riserHeight} ${style.glow}`}>
+        <span className={`font-serif text-4xl font-bold ${style.numberCls}`}>{result.position}</span>
+      </div>
     </div>
   );
 }
@@ -55,8 +72,10 @@ export default function LatestChampionsSection() {
         />
 
         {loading ? (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-            {[0, 1, 2].map((i) => <PodiumCardSkeleton key={i} />)}
+          <div className="mx-auto flex max-w-2xl items-end gap-4 sm:gap-6">
+            <PodiumStepSkeleton height="h-20" />
+            <PodiumStepSkeleton height="h-28" />
+            <PodiumStepSkeleton height="h-14" />
           </div>
         ) : ordered.length === 0 ? (
           <div className="flex flex-col items-center gap-4 border border-on-blue/10 bg-navy-deep py-20 text-center">
@@ -68,10 +87,10 @@ export default function LatestChampionsSection() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 items-end gap-6 sm:grid-cols-3">
+            <div className="mx-auto flex max-w-2xl items-end gap-4 sm:gap-6">
               {ordered.map((result, idx) => (
-                <Reveal key={result.id} delay={idx * 80}>
-                  <PodiumCard result={result} />
+                <Reveal key={result.id} delay={idx * 80} className="flex flex-1">
+                  <PodiumStep result={result} />
                 </Reveal>
               ))}
             </div>
