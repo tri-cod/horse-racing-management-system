@@ -9,4 +9,5 @@ export interface Jockey {
  experienceYear?: number;
  experience?: string;
  wins?: number;
+ status?: string;
 }

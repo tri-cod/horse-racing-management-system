@@ -13,7 +13,9 @@ const LoginPage = lazy(() => import('@/pages/public/LoginPage'));
 const RegisterPage = lazy(() => import('@/pages/public/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/public/ForgotPasswordPage'));
 const JockeysPage = lazy(() => import('@/pages/public/JockeysPage'));
+const JockeyProfilePage = lazy(() => import('@/pages/public/JockeyProfilePage'));
 const HorsesPage = lazy(() => import('@/pages/public/HorsesPage'));
+const HorseProfilePage = lazy(() => import('@/pages/public/HorseProfilePage'));
 const RacesPage = lazy(() => import('@/pages/public/RacesPage'));
 const RaceDetailPage = lazy(() => import('@/pages/public/RaceDetailPage'));
 const RaceResultsPage = lazy(() => import('@/pages/public/RaceResultsPage'));
@@ -77,7 +79,9 @@ export default function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/jockeys" element={<Layout><JockeysPage /></Layout>} />
+          <Route path="/jockeys/:id" element={<Layout><JockeyProfilePage /></Layout>} />
           <Route path="/horses" element={<Layout><HorsesPage /></Layout>} />
+          <Route path="/horses/:id" element={<Layout><HorseProfilePage /></Layout>} />
           <Route path="/races" element={<Layout><RacesPage /></Layout>} />
           <Route path="/races/:id" element={<Layout><RaceDetailPage /></Layout>} />
           <Route path="/bet" element={<Layout><BetHomePage /></Layout>} />

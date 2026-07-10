@@ -52,6 +52,25 @@ export interface RaceResult {
  prizeMoney?: number;
 }
 
+// Matches the backend's flat RaceResultResponse DTO returned by
+// GET /race-results/race/{raceId} (all fields but `id` are optional).
+export interface RaceResultFlat {
+ id: number;
+ rank?: number;
+ completionTimeSeconds?: number;
+ completionTimeFormatted?: string;
+ horseId?: number;
+ horseName?: string;
+ breed?: string;
+ avatarUrl?: string;
+ jockeyId?: number;
+ jockeyName?: string;
+ raceId?: number;
+ raceName?: string;
+ raceStartTime?: string;
+ rewards?: number;
+}
+
 export interface RaceResultNested {
  id: number;
  rank?: number;

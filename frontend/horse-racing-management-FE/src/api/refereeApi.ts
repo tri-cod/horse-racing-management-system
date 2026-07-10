@@ -7,6 +7,7 @@ import type {
  RaceListParams,
  SetRaceResultPayload,
  UpdateRacePayload,
+ HorseRaceHistoryItem,
 } from '@/types';
 
 export const startRace = (id: number) =>
@@ -34,6 +35,11 @@ export const setRaceResult = (payload: SetRaceResultPayload) =>
 export const getRaceResults = (raceId: number) =>
  axiosInstance
  .get<ApiResponse<RaceResult[]>>(`/race-results/race/${raceId}`)
+ .then((r) => r.data.data);
+
+export const getHorseRaceHistory = (horseId: number) =>
+ axiosInstance
+ .get<ApiResponse<HorseRaceHistoryItem[]>>(`/race-results/horse/${horseId}/history`)
  .then((r) => r.data.data);
 
 // Closes registration by sending a full race update with status = CLOSED_REGISTRATION.

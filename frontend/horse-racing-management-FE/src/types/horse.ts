@@ -12,6 +12,19 @@ export interface HorseCurrentStatusResponse {
   registrationStatus?: string;
 }
 
+export interface HorseRaceHistoryItem {
+  raceId: number;
+  raceName: string;
+  location?: string;
+  startTime?: string;
+  rank?: number;
+  completionTimeSeconds?: number;
+  completionTimeFormatted?: string;
+  rewards?: number;
+  jockeyName?: string;
+  totalParticipants?: number;
+}
+
 export interface Horse {
  id: number;
  horseName: string;
