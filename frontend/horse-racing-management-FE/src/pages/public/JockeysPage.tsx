@@ -1,12 +1,11 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Users } from 'lucide-react';
 import { useJockeys } from '@/hooks/useJockeys';
 import JockeyCard from '@/components/features/jockey/JockeyCard';
-import JockeyDetailModal from '@/components/features/jockey/JockeyDetailModal';
 import Container from '@/components/ui/Container';
 import Button from '@/components/ui/Button';
 import Seo from '@/components/seo/Seo';
-import type { Jockey } from '@/types';
 
 const inputCls =
   'w-full border border-rim bg-surface-input rounded px-3 py-2.5 text-sm text-ink ' +
@@ -14,8 +13,8 @@ const inputCls =
 
 export default function JockeysPage() {
   const { jockeys, loading, error, refetch } = useJockeys();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<Jockey | null>(null);
 
   const filtered = useMemo(() => {
     const kw = search.trim().toLowerCase();
@@ -80,12 +79,10 @@ export default function JockeysPage() {
 
         {!loading && !error && filtered.length > 0 && (
           <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
-            {filtered.map((j, i) => <JockeyCard key={j.id} jockey={j} index={i} onClick={setSelected} />)}
+            {filtered.map((j, i) => <JockeyCard key={j.id} jockey={j} index={i} onClick={() => navigate(`/jockeys/${j.id}`)} />)}
           </div>
         )}
       </Container>
-
-      <JockeyDetailModal jockey={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }

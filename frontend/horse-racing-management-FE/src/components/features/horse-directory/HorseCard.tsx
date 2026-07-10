@@ -35,8 +35,8 @@ export default function HorseCard({ horse, onClick }: HorseCardProps) {
         <img src={horse.avatarUrl} alt={horse.horseName} loading="lazy"
           className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
       ) : (
-        <div className="absolute inset-0 flex items-center justify-center bg-navy-deep">
-          <Rabbit size={72} strokeWidth={0.6} className="text-on-blue/10" />
+        <div className="absolute inset-0 flex items-center justify-center bg-surface-overlay">
+          <Rabbit size={72} strokeWidth={0.6} className="text-navy/10" />
         </div>
       )}
 

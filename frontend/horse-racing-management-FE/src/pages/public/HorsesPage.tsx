@@ -1,12 +1,11 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Rabbit } from 'lucide-react';
 import { useHorses } from '@/hooks/useHorses';
 import HorseCard from '@/components/features/horse-directory/HorseCard';
-import HorseDetailModal from '@/components/features/horse-directory/HorseDetailModal';
 import Container from '@/components/ui/Container';
 import Button from '@/components/ui/Button';
 import Seo from '@/components/seo/Seo';
-import type { HorseCurrentStatusResponse } from '@/types';
 
 const inputCls =
   'w-full border border-rim bg-surface-input rounded px-3 py-2.5 text-sm text-ink ' +
@@ -15,7 +14,7 @@ const inputCls =
 export default function HorsesPage() {
   const { horses, loading, error, refetch } = useHorses();
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<HorseCurrentStatusResponse | null>(null);
+  const navigate = useNavigate();
 
   const filtered = useMemo(() => {
     const kw = search.trim().toLowerCase();
@@ -80,12 +79,10 @@ export default function HorsesPage() {
 
         {!loading && !error && filtered.length > 0 && (
           <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
-            {filtered.map((h, i) => <HorseCard key={h.horseId} horse={h} index={i} onClick={setSelected} />)}
+            {filtered.map((h, i) => <HorseCard key={h.horseId} horse={h} index={i} onClick={() => navigate(`/horses/${h.horseId}`)} />)}
           </div>
         )}
       </Container>
-
-      <HorseDetailModal horse={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }
