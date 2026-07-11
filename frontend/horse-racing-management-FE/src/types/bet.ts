@@ -31,6 +31,3 @@ export interface BetResponse {
   betItems: BetItemResponse[];
   createdAt: string;
 }
-
-/* Legacy — giữ lại để không break các import cũ */
-export type Bet = BetResponse;
