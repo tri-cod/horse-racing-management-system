@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, type ReactNode, type ChangeEvent } from 'react';
 import { Upload, X, ArrowLeft } from 'lucide-react';
-import axiosInstance from '@/api/axiosInstance';
+import { uploadAvatar } from '@/api/horseOwnerApi';
 import Button from '@/components/ui/Button';
 import type { CreateRacePayload, RaceStatus } from '@/types';
 
@@ -114,12 +114,10 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
  const file = e.target.files?.[0];
  if (!file) return;
- const fd = new FormData();
- fd.append('file', file);
  try {
  setUploading(true);
- const res = await axiosInstance.post('/horse-owner/horses/avatar', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
- setField('bannerImageurl', res.data.data);
+ const url = await uploadAvatar(file);
+ setField('bannerImageurl', url);
  } catch (err: unknown) {
  const e = err as { response?: { data?: { message?: string } }; message?: string };
  alert('Upload failed: ' + (e?.response?.data?.message ?? e.message));

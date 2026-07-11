@@ -11,8 +11,8 @@ const fmtDate = (iso?: string) => iso ? new Date(iso).toLocaleDateString('en-GB'
 const fmtPrize = (n?: number) => n != null ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n) : null;
 
 const inputCls =
- 'w-full border border-on-blue/20 bg-on-blue/5 rounded px-3 py-2.5 text-sm text-on-blue ' +
- 'placeholder:text-on-blue/35 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/10';
+ 'w-full border border-rim bg-surface-input rounded px-3 py-2.5 text-sm text-ink ' +
+ 'placeholder:text-ink-4 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/10';
 
 function RaceResultCard({ race }: { race: Race }) {
  const [open, setOpen] = useState(false);
@@ -88,24 +88,14 @@ export default function RaceResultsPage() {
  }, [races, search]);
 
  return (
- <div className="relative min-h-screen overflow-hidden bg-navy">
+ <div className="min-h-screen bg-surface">
  <Seo title="Race Results" description="View final standings and prize distribution for completed Royal Derby races." />
 
- {/* Diagonal gold stripe pattern */}
- <div className="pointer-events-none absolute inset-0" style={{
- backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 28px, rgba(168,132,59,0.045) 28px, rgba(168,132,59,0.045) 29px)'
- }} />
- {/* Glow circles */}
- <div className="pointer-events-none absolute inset-0 overflow-hidden">
- <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-gold/8 blur-3xl" />
- <div className="absolute -bottom-32 -right-32 h-80 w-80 rounded-full bg-on-blue/5 blur-3xl" />
- </div>
-
- <div className="relative z-10 mx-auto max-w-5xl px-6 py-10 lg:px-8">
+ <div className="mx-auto max-w-5xl px-6 py-10 lg:px-8">
  {!loading && races.length > 0 && (
- <div className="mb-6 border-b border-on-blue/15 pb-6">
+ <div className="mb-6 border-b border-rim pb-6">
  <div className="relative w-full sm:max-w-xs">
- <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-on-blue/40" />
+ <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-4" />
  <label htmlFor="results-search" className="sr-only">Search by race name</label>
  <input id="results-search" type="text" placeholder="Search by race name..." value={search} onChange={(e) => setSearch(e.target.value)}
  className={`${inputCls} pl-9`} />
@@ -116,14 +106,14 @@ export default function RaceResultsPage() {
  {error && <p className="mb-6 bg-fail-subtle px-4 py-3 text-sm text-fail">{error}</p>}
  {loading ? <div className="flex justify-center py-24"><LoadingSpinner size="lg" /></div>
  : races.length === 0 ? (
- <div className="flex flex-col items-center gap-3 border border-on-blue/15 bg-on-blue/5 py-24 text-center">
- <Trophy size={40} className="text-on-blue/30" strokeWidth={1.5} />
- <p className="text-sm text-on-blue/50">No completed races yet.</p>
+ <div className="flex flex-col items-center gap-3 rounded-md border border-rim bg-surface-overlay py-24 text-center">
+ <Trophy size={40} className="text-ink-4" strokeWidth={1.5} />
+ <p className="text-sm text-ink-3">No completed races yet.</p>
  </div>
  ) : filtered.length === 0 ? (
- <div className="flex flex-col items-center gap-3 border border-on-blue/15 bg-on-blue/5 py-24 text-center">
- <Search size={40} className="text-on-blue/30" strokeWidth={1.5} />
- <p className="text-sm text-on-blue/50">No matching races found.</p>
+ <div className="flex flex-col items-center gap-3 rounded-md border border-rim bg-surface-overlay py-24 text-center">
+ <Search size={40} className="text-ink-4" strokeWidth={1.5} />
+ <p className="text-sm text-ink-3">No matching races found.</p>
  </div>
  ) : <div className="space-y-4">{filtered.map((r) => <RaceResultCard key={r.id} race={r} />)}</div>}
  </div>

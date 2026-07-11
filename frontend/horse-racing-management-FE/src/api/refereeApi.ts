@@ -1,10 +1,10 @@
 import axiosInstance from './axiosInstance';
+import { updateRace } from './raceApi';
 import type {
  ApiResponse,
  Race,
  RaceHorse,
  RaceResult,
- RaceListParams,
  SetRaceResultPayload,
  UpdateRacePayload,
  HorseRaceHistoryItem,
@@ -15,14 +15,6 @@ export const startRace = (id: number) =>
 
 export const finishRace = (id: number) =>
  axiosInstance.put<ApiResponse<Race>>(`/races/${id}/finish`).then((r) => r.data.data);
-
-export const getAllRaces = ({ status, page = 0, size = 100 }: RaceListParams = {}) => {
- const params: Record<string, unknown> = { page, size };
- if (status) params.status = status;
- return axiosInstance
- .get<ApiResponse<{ content: Race[] }>>('/races/list', { params })
- .then((r) => r.data.data);
-};
 
 export const getHorsesByRace = (raceId: number) =>
  axiosInstance
@@ -40,6 +32,11 @@ export const getRaceResults = (raceId: number) =>
 export const getHorseRaceHistory = (horseId: number) =>
  axiosInstance
  .get<ApiResponse<HorseRaceHistoryItem[]>>(`/race-results/horse/${horseId}/history`)
+ .then((r) => r.data.data);
+
+export const getHorseBestResult = (horseId: number) =>
+ axiosInstance
+ .get<ApiResponse<HorseRaceHistoryItem | null>>(`/race-results/horse/${horseId}/best`)
  .then((r) => r.data.data);
 
 // Closes registration by sending a full race update with status = CLOSED_REGISTRATION.
@@ -61,7 +58,5 @@ export const closeRegistration = (race: Race) => {
  refereeId: race.refereeId ?? null,
  status: 'CLOSED_REGISTRATION',
  };
- return axiosInstance
- .put<ApiResponse<Race>>(`/races/update/${race.id}`, payload)
- .then((r) => r.data.data);
+ return updateRace(race.id, payload);
 };

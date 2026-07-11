@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Flag, Play, StopCircle, Lock, ChevronDown, ChevronUp, Calendar, MapPin } from 'lucide-react';
-import { getAllRaces, startRace, finishRace, closeRegistration } from '@/api/refereeApi';
+import { startRace, finishRace, closeRegistration } from '@/api/refereeApi';
+import { getRaces } from '@/api/raceApi';
 import SetResultModal from '@/components/features/referee/SetResultModal';
 import RegisteredHorsesList from '@/components/features/race-horse/RegisteredHorsesList';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -49,7 +50,7 @@ export default function RefereeRacesPage() {
   const fetchRaces = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getAllRaces({ size: 100 });
+      const data = await getRaces({ size: 100 });
       const items = (data as unknown as { content?: Race[] }).content ?? (data as unknown as Race[]) ?? [];
       setRaces([...items].sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()));
     } catch { addToast('Failed to load races.', 'error'); }

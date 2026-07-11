@@ -27,9 +27,3 @@ export const updateRace = (id: number, payload: UpdateRacePayload) =>
 
 export const deleteRace = (id: number) =>
  axiosInstance.delete<ApiResponse<null>>(`/races/${id}`).then((r) => r.data.data);
-
-export const startRace = (id: number) =>
- axiosInstance.put<ApiResponse<Race>>(`/races/${id}/start`).then((r) => r.data.data);
-
-export const finishRace = (id: number) =>
- axiosInstance.put<ApiResponse<Race>>(`/races/${id}/finish`).then((r) => r.data.data);

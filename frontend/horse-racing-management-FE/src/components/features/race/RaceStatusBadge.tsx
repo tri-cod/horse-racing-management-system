@@ -1,18 +1,15 @@
 import { useNow } from '@/hooks/useNow';
-import { computeRaceStatus, getRaceStatusLabel } from '@/utils/raceStatus';
+import { computeRaceStatus, getRaceStatusLabel, getRaceStatusVariant } from '@/utils/raceStatus';
 import type { Race } from '@/types';
 
 const MANUAL_STATUSES = new Set(['OPEN_REGISTRATION', 'CLOSED_REGISTRATION', 'ONGOING', 'FINISHED', 'CANCELLED']);
 
-const CONFIG: Record<string, string> = {
-  UPCOMING:            'bg-blue/10       text-blue   border border-blue/30',
-  OPEN_REGISTRATION:   'bg-ok-subtle     text-ok     border border-ok/30',
-  CLOSED_REGISTRATION: 'bg-warn-subtle   text-warn   border border-warn/30',
-  ONGOING:             'bg-fail-subtle   text-fail   border border-fail/30',
-  FINISHED:            'bg-surface-overlay text-ink-3 border border-rim',
-  COMPLETED:           'bg-surface-overlay text-ink-3 border border-rim',
-  CANCELLED:           'bg-surface-overlay text-ink-4 border border-rim',
-  UNKNOWN:             'bg-surface-overlay text-ink-4 border border-rim',
+const VARIANT_CLASSES: Record<string, string> = {
+  ocean:   'bg-ok-subtle       text-ok     border border-ok/30',
+  warning: 'bg-warn-subtle     text-warn   border border-warn/30',
+  danger:  'bg-fail-subtle     text-fail   border border-fail/30',
+  neutral: 'bg-surface-overlay text-ink-3  border border-rim',
+  dark:    'bg-surface-overlay text-ink-4  border border-rim',
 };
 
 const SIZE: Record<'sm' | 'md' | 'lg', string> = {
@@ -27,7 +24,7 @@ export default function RaceStatusBadge({ race, size = 'md' }: { race: Race | nu
     ? race.status
     : computeRaceStatus(race, now);
 
-  const cls = CONFIG[status] ?? CONFIG.UNKNOWN;
+  const cls = VARIANT_CLASSES[getRaceStatusVariant(status)] ?? VARIANT_CLASSES.neutral;
 
   return (
     <span className={`inline-flex items-center gap-1 rounded-full font-medium ${cls} ${SIZE[size]}`}>
