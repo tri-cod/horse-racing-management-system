@@ -29,12 +29,12 @@ public class RaceSchedule {
     @Scheduled(fixedRate = 60000)
     public void autoCloseRegistration() {
         Instant now = Instant.now();
-        Instant oneDayFromNow = now.plus(1, ChronoUnit.DAYS);
+        Instant oneDayFromNow = now.plus(2, ChronoUnit.DAYS);
 
         List<Race> races = raceRepository.findByStatus(RaceStatus.OPEN_REGISTRATION);
         for (Race race : races) {
             if (race.getStartTime() != null && now.isAfter(
-                    race.getStartTime().minus(1, ChronoUnit.DAYS))) {
+                    race.getStartTime().minus(2, ChronoUnit.DAYS))) {
 
                 race.setStatus(RaceStatus.CLOSED_REGISTRATION);
                 raceRepository.save(race);
@@ -62,6 +62,8 @@ public class RaceSchedule {
         }
     }
 
+
+
     // Ngày đua — gửi thông báo cho referee vào buổi sáng
     @Scheduled(cron = "0 0 7 * * *")  // 7h sáng mỗi ngày
     public void notifyRefereeOnRaceDay() {
@@ -85,5 +87,31 @@ public class RaceSchedule {
                         );
                     }
                 });
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void autoOpenBetting() {
+        Instant now = Instant.now();
+        Instant oneDayFromNow = now.plus(1, ChronoUnit.DAYS);
+
+        List<Race> races = raceRepository.findByStatus(RaceStatus.OPEN_REGISTRATION);
+        for (Race race : races) {
+            if (race.getStartTime() != null && now.isAfter(
+                    race.getStartTime().minus(1, ChronoUnit.DAYS))) {
+
+                race.setStatus(RaceStatus.OPEN_BETTING);
+                raceRepository.save(race);
+
+                // [WS] Notify FE về auto-close — user đang xem list/detail thấy nút Bet xuất hiện ngay
+                wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
+                        .raceId(race.getId())
+                        .raceName(race.getRaceName())
+                        .status("OPEN_BETTING")
+                        .message("Registration automatically closed. Betting is now open!")
+                        .updatedAt(Instant.now())
+                        .build());
+
+            }
+        }
     }
 }

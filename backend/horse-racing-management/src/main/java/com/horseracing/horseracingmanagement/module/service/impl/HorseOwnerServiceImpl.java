@@ -110,25 +110,36 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .collect(Collectors.toList());
     }
 
+
+
     @Override
-    public List<SignHorseResponse> getAvailableHorseList(Long userId) {
+    public List<SignHorseResponse> getAvailableHorseList(Long userId, Long raceId) {
         HorseOwner owner = horseOwnerRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
 
+        Race race = raceRepository.findById(raceId)
+                .orElseThrow(() -> new RuntimeException("Race not found"));
+
         List<Horse> ownerHorses = horseRepository.findByOwnerId(owner.getId());
 
-        // Lấy danh sách horseId đã đăng ký vào bất kỳ race nào (Pending/Approved)
-        List<Long> horsesInRace = raceHorseRepository.findHorseIdsAlreadyInAnyRace();
+        // ← Chặn theo ngày thay vì chặn toàn bộ
+        List<Long> horsesOnSameDay = race.getStartTime() != null
+                ? raceHorseRepository.findHorseIdsOnSameDay(raceId, race.getStartTime())
+                : List.of();
 
-        // Lọc ra horse chưa đăng ký race nào
+        // ← Chặn horse đã đăng ký chính race này rồi
+        List<Long> horsesInThisRace = raceHorseRepository.findHorseIdsByRaceId(raceId);
+
         return ownerHorses.stream()
-                .filter(horse -> !horsesInRace.contains(horse.getId()))
+                .filter(horse -> !horsesOnSameDay.contains(horse.getId())
+                        && !horsesInThisRace.contains(horse.getId()))
                 .map(horse -> {
                     String trainerName = horse.getTrainerId() != null
                             ? trainerRepository.findById(horse.getTrainerId())
                             .map(t -> t.getUser().getFullName()).orElse(null)
                             : null;
-                    return mapToResponse(horse, owner.getName(), horse.getTrainerId(), trainerName);
+                    return mapToResponse(horse, owner.getName(),
+                            horse.getTrainerId(), trainerName);
                 })
                 .collect(Collectors.toList());
     }
@@ -147,26 +158,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 });
     }
 
-    // Horse của owner mà CHƯA đăng ký vào race cụ thể này (tránh đăng ký trùng)
-    @Override
-    public List<SignHorseResponse> getAvailableHorseList(Long userId, Long raceId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
 
-        List<Horse> ownerHorses = horseRepository.findByOwnerId(owner.getId());
-        List<Long> horsesInThisRace = raceHorseRepository.findHorseIdsByRaceId(raceId);
-
-        return ownerHorses.stream()
-                .filter(horse -> !horsesInThisRace.contains(horse.getId()))
-                .map(horse -> {
-                    String trainerName = horse.getTrainerId() != null
-                            ? trainerRepository.findById(horse.getTrainerId())
-                            .map(t -> t.getUser().getFullName()).orElse(null)
-                            : null;
-                    return mapToResponse(horse, owner.getName(), horse.getTrainerId(), trainerName);
-                })
-                .collect(Collectors.toList());
-    }
 
     // Toàn bộ lịch sử race mà horse này đã/đang tham gia
     @Override

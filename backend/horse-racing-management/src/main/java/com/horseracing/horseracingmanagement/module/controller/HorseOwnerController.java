@@ -65,8 +65,6 @@ public class HorseOwnerController {
             @Valid @RequestBody SignHorseRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails) { // ← lấy từ token
 
-        System.out.println("userId từ token: " + userDetails.getId()); // ← thêm dòng này
-        System.out.println("username từ token: " + userDetails.getUsername());
 
         Long userId = userDetails.getId();
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -101,8 +99,9 @@ public class HorseOwnerController {
 
     @GetMapping("/horses/available")
     public ResponseEntity<ApiResponse<List<SignHorseResponse>>> getAvailableHorses(
+            @RequestParam Long raceId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(ApiResponse.success("Success",
-                horseOwnerService.getAvailableHorseList(userDetails.getId())));
+                horseOwnerService.getAvailableHorseList(userDetails.getId(), raceId)));
     }
 }

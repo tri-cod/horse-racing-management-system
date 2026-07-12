@@ -85,6 +85,14 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         if (race.getCapacity() != null && registered >= race.getCapacity()) {
             throw new RuntimeException("Race is full");
         }
+        if (race.getStartTime() != null) {
+            List<Long> horsesOnSameDay = raceHorseRepository.findHorseIdsOnSameDay(
+                    race.getId(), race.getStartTime());
+            if (horsesOnSameDay.contains(request.getHorseId())) {
+                throw new RuntimeException(
+                        "This horse is already registered in another race on the same day");
+            }
+        }
 
         RaceHorse raceHorse = RaceHorse.builder()
                 .race(race)
@@ -222,7 +230,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                         .build())
                 .collect(Collectors.toList());
     }
-    
+
 
 
     @Override

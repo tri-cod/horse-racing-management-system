@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface JockeyRepository extends JpaRepository<Jockey, Long> {
-    Optional<Jockey> findByUserId(Long userId);
+    Optional<Jockey> findByUser_Id(Long userId);
     List<Jockey> findByStatus(String status);
 }

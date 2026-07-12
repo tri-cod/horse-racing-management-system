@@ -69,3 +69,6 @@ CREATE TABLE race_result (
                              completion_time_seconds DOUBLE PRECISION,
                              rewards                 BIGINT DEFAULT 0
 );
+
+ALTER TABLE jockey ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(255);
+

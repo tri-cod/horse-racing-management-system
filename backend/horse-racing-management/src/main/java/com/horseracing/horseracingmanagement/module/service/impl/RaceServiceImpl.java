@@ -70,6 +70,8 @@ public class RaceServiceImpl implements RaceService {
         race.setStatus(RaceStatus.FINISHED);
         raceRepository.save(race);
 
+
+
         // ← Push WebSocket → FE load kết quả
         // [CHANGED] "Finished" → "FINISHED": nhất quán UPPER_CASE với startRace và setRaceResult
         wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()

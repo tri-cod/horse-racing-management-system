@@ -147,7 +147,7 @@ public class RaceResultServiceImpl implements RaceResultService {
     public RaceHistoryResponse getHorseBestResult(Long horseId) {
         return raceResultRepository.findByHorseIdOrderByRaceDesc(horseId)
                 .stream()
-                .min(Comparator.comparing(RaceResult::getRank))  // rank nhỏ nhất = hạng cao nhất
+                .min(Comparator.comparing(RaceResult::getRank))
                 .map(rr -> {
                     long totalParticipants = raceResultRepository.countByRace_Id(rr.getRace().getId());
                     return mapToHistoryResponse(rr, totalParticipants);
