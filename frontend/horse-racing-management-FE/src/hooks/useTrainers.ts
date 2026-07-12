@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getTrainerList } from '@/api/trainerApi';
+import { getErrorMessage } from '@/utils/errors';
 import type { Trainer } from '@/types';
 
 export function useTrainers() {
@@ -11,7 +12,7 @@ export function useTrainers() {
  return {
  trainers: data ?? [],
  loading: isLoading,
- error: error ? (error as { response?: { data?: { message?: string } }; message?: string }).response?.data?.message ?? 'Failed to load trainers' : null,
+ error: error ? getErrorMessage(error, 'Failed to load trainers') : null,
  refetch,
  };
 }

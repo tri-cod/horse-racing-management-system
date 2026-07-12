@@ -42,7 +42,7 @@ export const assignTrainer = (horseId: number, trainerId: number) =>
  })
  .then((r) => r.data.data);
 
-export const getAvailableHorses = () =>
+export const getAvailableHorses = (raceId: number) =>
   axiosInstance
-    .get<ApiResponse<Horse[]>>('/horse-owner/horses/available')
+    .get<ApiResponse<Horse[]>>('/horse-owner/horses/available', { params: { raceId } })
     .then((r) => r.data.data);

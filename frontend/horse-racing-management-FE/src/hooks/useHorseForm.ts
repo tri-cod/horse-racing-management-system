@@ -1,6 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signHorse, uploadAvatar } from '@/api/horseOwnerApi';
+import { getErrorMessage } from '@/utils/errors';
 
 // ─── Field definitions (exported so the form component can render them) ───────
 
@@ -177,8 +178,7 @@ export function useHorseForm() {
  });
  navigate(`/horse-owner/horses/${newHorse.id}`);
  } catch (e: unknown) {
- const err = e as { response?: { data?: { message?: string } }; message?: string };
- setApiError(err.response?.data?.message ?? 'Horse registration failed. Please try again.');
+ setApiError(getErrorMessage(e, 'Horse registration failed. Please try again.'));
  } finally {
  setLoading(false);
  }

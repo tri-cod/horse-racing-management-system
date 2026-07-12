@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { X, Plus, Trash2, AlertCircle, Trophy, TrendingUp } from 'lucide-react';
+import { Plus, Trash2, AlertCircle, Trophy, TrendingUp } from 'lucide-react';
 import { placeBet } from '@/api/betApi';
 import { assignLanes } from '@/utils/laneUtils';
+import { getErrorMessage } from '@/utils/errors';
 import Button from '@/components/ui/Button';
+import Modal from '@/components/ui/Modal';
 import type { Race, RaceHorse } from '@/types';
 
 const fmt = (n?: number) =>
@@ -27,15 +29,6 @@ export default function PlaceBetModal({ open, onClose, race, raceHorses = [], on
  const [error, setError] = useState('');
 
  useEffect(() => { if (open) { setItems([{ raceHorseId: '', betAmount: '' }]); setError(''); } }, [open]);
-
- useEffect(() => {
- if (!open) return;
- const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
- document.addEventListener('keydown', h);
- return () => document.removeEventListener('keydown', h);
- }, [open, onClose]);
-
- if (!open) return null;
 
  const total = items.reduce((s, it) => s + (parseInt(it.betAmount, 10) || 0), 0);
  const addItem = () => setItems((p) => [...p, { raceHorseId: '', betAmount: '' }]);
@@ -66,29 +59,37 @@ export default function PlaceBetModal({ open, onClose, race, raceHorses = [], on
  onSuccess?.(result);
  onClose();
  } catch (e: unknown) {
- const err = e as { response?: { data?: { message?: string } } };
- setError(err?.response?.data?.message ?? 'Failed to place bet. Please try again.');
+ setError(getErrorMessage(e, 'Failed to place bet. Please try again.'));
  } finally { setLoading(false); }
  };
 
- return (
- <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onMouseDown={onClose}>
- <div className="relative flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-lg border border-rim bg-surface-raised shadow-2xl"
- onMouseDown={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
-
- {/* Header */}
- <div className="flex shrink-0 items-center justify-between border-b border-rim px-6 py-4">
+ const header = (
  <div>
  <p className="text-[11px] font-semibold uppercase tracking-widest text-gold">Place a Bet</p>
  <h3 className="font-serif text-lg font-bold text-ink">{race.raceName}</h3>
  </div>
- <button type="button" onClick={onClose} className="text-ink-3 hover:text-ink transition-colors" aria-label="Close">
- <X size={20} />
- </button>
- </div>
+ );
 
- <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
- <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+ const footer = (
+ <div className="space-y-3">
+ <div className="flex items-center justify-between text-sm">
+ <span className="text-ink-3">Horses selected</span><span className="font-semibold text-ink">{items.length}</span>
+ </div>
+ <div className="flex items-center justify-between text-sm">
+ <span className="text-ink-3">Total Bet Amount</span><span className="tnum font-serif text-lg font-bold text-navy">{fmt(total)}</span>
+ </div>
+ <div className="flex gap-3">
+ <Button type="button" variant="ghost" size="md" className="flex-1" onClick={onClose} disabled={loading}>Cancel</Button>
+ <Button type="submit" variant="primary" size="md" className="flex-1" disabled={loading || total < 1000}>
+ {loading ? 'Processing...' : 'Confirm Bet'}
+ </Button>
+ </div>
+ </div>
+ );
+
+ return (
+ <form onSubmit={handleSubmit}>
+ <Modal open={open} onClose={onClose} title={header} size="lg" rounded bodyClassName="px-6 py-5 space-y-4" footer={footer}>
  <div className="flex items-center justify-between text-xs text-ink-3">
  <span className="flex items-center gap-1.5"><Trophy size={14} className="text-gold" />{race.location ?? 'Racetrack'}</span>
  <span className="flex items-center gap-1.5"><TrendingUp size={14} className="text-navy" />Total: <strong className="tnum text-ink">{fmt(total)}</strong></span>
@@ -159,25 +160,7 @@ export default function PlaceBetModal({ open, onClose, race, raceHorses = [], on
  <AlertCircle size={14} className="shrink-0" />{error}
  </div>
  )}
- </div>
-
- {/* Footer summary */}
- <div className="shrink-0 border-t border-rim bg-surface px-6 py-4 space-y-3">
- <div className="flex items-center justify-between text-sm">
- <span className="text-ink-3">Horses selected</span><span className="font-semibold text-ink">{items.length}</span>
- </div>
- <div className="flex items-center justify-between text-sm">
- <span className="text-ink-3">Total Bet Amount</span><span className="tnum font-serif text-lg font-bold text-navy">{fmt(total)}</span>
- </div>
- <div className="flex gap-3">
- <Button type="button" variant="ghost" size="md" className="flex-1" onClick={onClose} disabled={loading}>Cancel</Button>
- <Button type="submit" variant="primary" size="md" className="flex-1" disabled={loading || total < 1000}>
- {loading ? 'Processing...' : 'Confirm Bet'}
- </Button>
- </div>
- </div>
+ </Modal>
  </form>
- </div>
- </div>
  );
 }

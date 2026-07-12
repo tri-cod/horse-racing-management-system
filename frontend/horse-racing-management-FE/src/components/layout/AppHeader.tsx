@@ -8,6 +8,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useWalletBalance } from '@/hooks/useWalletBalance';
 import NotificationBell from '@/components/NotificationBell';
+import UserAvatar from '@/components/features/admin/UserAvatar';
 import type { UserRole } from '@/types';
 
 interface NavItem { icon: LucideIcon; label: string; href: string }
@@ -102,9 +103,8 @@ export default function AppHeader() {
  </Link>
 
  <div className="relative" onMouseEnter={openMenu} onMouseLeave={closeMenu}>
- <button type="button"
- className="flex h-8 w-8 items-center justify-center rounded-full bg-gold text-on-gold text-xs font-bold cursor-pointer">
- {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
+ <button type="button" className="cursor-pointer">
+ <UserAvatar name={user?.fullName || user?.username} avatarUrl={user?.avatarUrl} size={32} />
  </button>
 
  {menuOpen && (

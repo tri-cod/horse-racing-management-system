@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getRaces } from '@/api/raceApi';
 import { useRaceUpdates } from '@/context/RaceSocketContext';
+import { getErrorMessage } from '@/utils/errors';
 import type { PageResponse, Race } from '@/types';
 
 interface UseRacesOptions {
@@ -39,7 +40,7 @@ export function useRaces({ page = 0, size = 9 }: UseRacesOptions = {}) {
  totalPages: data?.totalPages ?? 0,
  totalElements: data?.totalElements ?? 0,
  loading: isLoading,
- error: error ? (error as { message?: string }).message ?? 'Failed to load races' : null,
+ error: error ? getErrorMessage(error, 'Failed to load races') : null,
  refetch,
  };
 }

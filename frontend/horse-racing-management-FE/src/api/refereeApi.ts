@@ -3,23 +3,19 @@ import { updateRace } from './raceApi';
 import type {
  ApiResponse,
  Race,
- RaceHorse,
  RaceResult,
  SetRaceResultPayload,
  UpdateRacePayload,
  HorseRaceHistoryItem,
 } from '@/types';
 
+export { getHorsesByRace } from './raceHorseApi';
+
 export const startRace = (id: number) =>
  axiosInstance.put<ApiResponse<Race>>(`/races/${id}/start`).then((r) => r.data.data);
 
 export const finishRace = (id: number) =>
  axiosInstance.put<ApiResponse<Race>>(`/races/${id}/finish`).then((r) => r.data.data);
-
-export const getHorsesByRace = (raceId: number) =>
- axiosInstance
- .get<ApiResponse<RaceHorse[]>>(`/race-horse/race/${raceId}`)
- .then((r) => r.data.data);
 
 export const setRaceResult = (payload: SetRaceResultPayload) =>
  axiosInstance.post<ApiResponse<null>>('/race-results', payload).then((r) => r.data);

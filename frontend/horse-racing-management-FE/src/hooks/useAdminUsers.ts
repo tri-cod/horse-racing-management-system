@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getUsers } from '@/api/adminApi';
+import { getErrorMessage } from '@/utils/errors';
 import type { User, UserRole, UserStatus } from '@/types';
 
 interface UseAdminUsersOptions {
@@ -42,7 +43,7 @@ export function useAdminUsers({
  currentPage,
  setCurrentPage,
  loading: isLoading,
- error: error ? (error as { response?: { data?: { message?: string } }; message?: string }).response?.data?.message ?? 'Failed to load users' : null,
+ error: error ? getErrorMessage(error, 'Failed to load users') : null,
  refetch,
  };
 }

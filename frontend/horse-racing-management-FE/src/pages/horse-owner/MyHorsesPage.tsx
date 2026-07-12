@@ -26,9 +26,8 @@ export default function MyHorsesPage() {
   const navigate = useNavigate();
   const { horses, loading, error, refetch } = useMyHorses();
 
-  const active  = horses.filter((h) => ['APPROVED', 'ACTIVE'].includes(h.status)).length;
-  const pending = horses.filter((h) => h.status === 'PENDING').length;
-  const other   = horses.length - active - pending;
+  const active = horses.filter((h) => h.status === 'ACTIVE').length;
+  const other  = horses.length - active;
 
   return (
     <div className="px-8 py-6">
@@ -56,15 +55,6 @@ export default function MyHorsesPage() {
             <span className="tnum text-sm font-semibold text-ok">{active}</span>
             <span className="text-xs text-ink-3">active</span>
           </div>
-          {pending > 0 && (
-            <>
-              <div className="h-5 w-px bg-rim" />
-              <div className="flex items-baseline gap-1.5">
-                <span className="tnum text-sm font-semibold text-gold">{pending}</span>
-                <span className="text-xs text-ink-3">pending</span>
-              </div>
-            </>
-          )}
           {other > 0 && (
             <>
               <div className="h-5 w-px bg-rim" />

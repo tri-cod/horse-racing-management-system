@@ -43,6 +43,10 @@ const MyRaceRegistrationsPage = lazy(() => import('@/pages/horse-owner/MyRaceReg
 const TrainerDashboardPage = lazy(() => import('@/pages/trainer/TrainerDashboardPage'));
 const TrainerProfilePage = lazy(() => import('@/pages/trainer/TrainerProfilePage'));
 
+// Jockey
+const JockeyDashboardPage = lazy(() => import('@/pages/jockey/JockeyDashboardPage'));
+const JockeyMyProfilePage = lazy(() => import('@/pages/jockey/JockeyMyProfilePage'));
+
 // Referee
 const RefereeDashboardPage = lazy(() => import('@/pages/referee/RefereeDashboardPage'));
 const RefereeRacesPage = lazy(() => import('@/pages/referee/RefereeRacesPage'));
@@ -156,6 +160,18 @@ export default function App() {
           <Route path="/trainer/profile" element={
             <ProtectedRoute allowedRoles={['TRAINER']}>
               <AppLayout><TrainerProfilePage /></AppLayout>
+            </ProtectedRoute>
+          } />
+
+          {/* Jockey */}
+          <Route path="/jockey/dashboard" element={
+            <ProtectedRoute allowedRoles={['JOCKEY']}>
+              <AppLayout><JockeyDashboardPage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/jockey/profile" element={
+            <ProtectedRoute allowedRoles={['JOCKEY']}>
+              <AppLayout><JockeyMyProfilePage /></AppLayout>
             </ProtectedRoute>
           } />
 

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { X, ArrowDownLeft, Landmark, Plus, AlertCircle, CheckCircle } from 'lucide-react';
+import { ArrowDownLeft, Landmark, Plus, AlertCircle, CheckCircle } from 'lucide-react';
 import {
   getMyBankAccounts,
   addBankAccount,
   createWithdraw,
 } from '@/api/walletApi';
+import Modal from '@/components/ui/Modal';
+import { getErrorMessage } from '@/utils/errors';
 import type { BankAccount } from '@/types';
 
 const fmt = (n?: number) =>
@@ -56,15 +58,6 @@ export default function WithdrawModal({ open, onClose, onSuccess }: WithdrawModa
       .finally(() => setLoadingAccounts(false));
   }, [open]);
 
-  useEffect(() => {
-    if (!open) return;
-    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', h);
-    return () => document.removeEventListener('keydown', h);
-  }, [open, onClose]);
-
-  if (!open) return null;
-
   const handleAddBank = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!bankForm.bankName || !bankForm.bankNumber || !bankForm.bankUserName) {
@@ -80,8 +73,7 @@ export default function WithdrawModal({ open, onClose, onSuccess }: WithdrawModa
       setShowAddForm(false);
       setBankForm({ bankName: '', bankNumber: '', bankUserName: '' });
     } catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string } } };
-      setBankError(err?.response?.data?.message ?? 'Failed to add bank account.');
+      setBankError(getErrorMessage(e, 'Failed to add bank account.'));
     } finally { setAddingBank(false); }
   };
 
@@ -96,41 +88,23 @@ export default function WithdrawModal({ open, onClose, onSuccess }: WithdrawModa
       setSuccess(true);
       onSuccess?.();
     } catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string } } };
-      setError(err?.response?.data?.message ?? 'Failed to submit withdrawal request.');
+      setError(getErrorMessage(e, 'Failed to submit withdrawal request.'));
     } finally { setSubmitting(false); }
   };
 
+  const header = (
+    <div>
+      <div className="flex items-center gap-2">
+        <ArrowDownLeft size={14} className="text-gold" />
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Wallet</p>
+      </div>
+      <h2 className="mt-0.5 font-serif text-xl font-bold text-ink">Withdraw Funds</h2>
+    </div>
+  );
+
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-navy/50 p-4 backdrop-blur-sm"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div className="relative w-full max-w-md border border-rim bg-surface-raised shadow-modal">
-        {/* Gold accent */}
-        <div className="absolute inset-x-0 top-0 h-0.5 bg-gold" />
-
-        {/* Header */}
-        <div className="flex items-start justify-between border-b border-rim px-6 py-5">
-          <div>
-            <div className="flex items-center gap-2">
-              <ArrowDownLeft size={14} className="text-gold" />
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Wallet</p>
-            </div>
-            <h2 className="mt-0.5 font-serif text-xl font-bold text-ink">Withdraw Funds</h2>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="ml-4 flex h-8 w-8 shrink-0 items-center justify-center text-ink-3 transition-colors hover:text-ink"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="px-6 py-5">
-          {success ? (
+    <Modal open={open} onClose={onClose} title={header} backdrop="navy" accentClassName="bg-gold" bodyClassName="px-6 py-5">
+      {success ? (
             <div className="flex flex-col items-center gap-4 py-6 text-center">
               <div className="flex h-14 w-14 items-center justify-center bg-ok-subtle text-ok">
                 <CheckCircle size={28} />
@@ -317,8 +291,6 @@ export default function WithdrawModal({ open, onClose, onSuccess }: WithdrawModa
               </div>
             </form>
           )}
-        </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

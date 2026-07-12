@@ -8,3 +8,21 @@ export const getAvailableJockeys = (raceId: number) =>
   axiosInstance
     .get<ApiResponse<Jockey[]>>('/jockeys/available', { params: { raceId } })
     .then((r) => r.data.data);
+
+export const getJockeyProfile = (jockeyId: number) =>
+  axiosInstance.get<ApiResponse<Jockey>>(`/jockeys/${jockeyId}`).then((r) => r.data.data);
+
+export const getMyProfile = () =>
+  axiosInstance.get<ApiResponse<Jockey>>('/jockeys/me').then((r) => r.data.data);
+
+export interface CompleteJockeyProfilePayload {
+  age?: number;
+  experienceYear?: number;
+  description?: string;
+  avatarUrl?: string | null;
+}
+
+export const completeProfile = (payload: CompleteJockeyProfilePayload) =>
+  axiosInstance
+    .put<ApiResponse<Jockey>>('/jockeys/complete-profile', payload)
+    .then((r) => r.data.data);

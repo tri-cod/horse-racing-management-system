@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { X, AlertCircle, Copy, CheckCircle, ArrowLeft, ArrowRight } from 'lucide-react';
+import { AlertCircle, Copy, CheckCircle, ArrowLeft, ArrowRight } from 'lucide-react';
 import { createDeposit } from '@/api/walletApi';
 import Button from '@/components/ui/Button';
+import Modal from '@/components/ui/Modal';
+import { getErrorMessage } from '@/utils/errors';
 
 const fmt = (n?: number) =>
  n != null ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n) : '—';
@@ -27,14 +29,6 @@ export default function DepositModal({ open, onClose, onSuccess }: DepositModalP
  const [copied, setCopied] = useState(false);
 
  useEffect(() => { if (open) { setStep(1); setAmount(''); setError(''); setResult(null); setCopied(false); } }, [open]);
- useEffect(() => {
- if (!open) return;
- const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
- document.addEventListener('keydown', h);
- return () => document.removeEventListener('keydown', h);
- }, [open, onClose]);
-
- if (!open) return null;
 
  const handleCopy = () => {
  if (result?.referenceCode) { navigator.clipboard.writeText(result.referenceCode); setCopied(true); setTimeout(() => setCopied(false), 2000); }
@@ -51,8 +45,7 @@ export default function DepositModal({ open, onClose, onSuccess }: DepositModalP
  setStep(2);
  onSuccess?.();
  } catch (e: unknown) {
- const err = e as { response?: { data?: { message?: string } } };
- setError(err?.response?.data?.message ?? 'Failed to create deposit request.');
+ setError(getErrorMessage(e, 'Failed to create deposit request.'));
  } finally { setLoading(false); }
  };
 
@@ -73,13 +66,7 @@ export default function DepositModal({ open, onClose, onSuccess }: DepositModalP
  );
  };
 
- return (
- <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onMouseDown={onClose}>
- <div className="relative w-full max-w-md overflow-hidden rounded-lg border border-rim bg-surface-raised shadow-2xl"
- onMouseDown={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
-
- {/* Header */}
- <div className="flex items-center justify-between border-b border-rim px-6 py-4">
+ const header = (
  <div className="flex items-center gap-2.5">
  {step === 2 && (
  <button type="button" onClick={() => setStep(1)}
@@ -92,11 +79,10 @@ export default function DepositModal({ open, onClose, onSuccess }: DepositModalP
  <h3 className="font-serif text-lg font-bold text-ink">{step === 1 ? 'Deposit Funds' : 'Complete Payment'}</h3>
  </div>
  </div>
- <button type="button" onClick={onClose} className="text-ink-3 hover:text-ink transition-colors" aria-label="Close">
- <X size={20} />
- </button>
- </div>
+ );
 
+ return (
+ <Modal open={open} onClose={onClose} title={header} rounded bodyClassName="">
  {/* Step indicator */}
  <div className="flex items-start justify-center gap-3 border-b border-rim bg-surface px-6 py-4">
  {stepDot(1)}
@@ -190,7 +176,6 @@ export default function DepositModal({ open, onClose, onSuccess }: DepositModalP
  </div>
  )}
  </div>
- </div>
- </div>
+ </Modal>
  );
 }

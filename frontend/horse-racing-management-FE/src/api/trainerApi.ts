@@ -20,13 +20,5 @@ export const completeTrainerProfile = (payload: CompleteTrainerProfilePayload) =
  .put<ApiResponse<Trainer>>('/trainer/complete-profile', payload)
  .then((r) => r.data.data);
 
-export const uploadTrainerAvatar = (file: File): Promise<string> => {
-  const formData = new FormData();
-  formData.append('file', file);
-  return axiosInstance
-    .post<ApiResponse<string>>('/trainer/avatar', formData)
-    .then((r) => r.data.data);
-};
-
 export const getTrainerList = () =>
   axiosInstance.get<ApiResponse<Trainer[]>>('/trainer/list').then((r) => r.data.data);

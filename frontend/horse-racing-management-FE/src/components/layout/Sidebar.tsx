@@ -5,6 +5,7 @@ import {
  User, LogOut, Landmark, PencilLine, FlagTriangleRight, type LucideIcon,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import UserAvatar from '@/components/features/admin/UserAvatar';
 import type { UserRole } from '@/types';
 
 interface NavItem { icon: LucideIcon; label: string; href: string; end?: boolean }
@@ -39,6 +40,8 @@ const ROLE_ITEMS: Partial<Record<UserRole, NavItem[]>> = {
     { icon: Ticket, label: 'My Bets', href: '/my-bets' }, 
     { icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
     JOCKEY: [
+        { icon: LayoutDashboard, label: 'Dashboard', href: '/jockey/dashboard' },
+        { icon: UserCog, label: 'My Profile', href: '/jockey/profile' },
         { icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
 };
 
@@ -65,9 +68,7 @@ export default function Sidebar() {
  </a>
 
  <div className="flex items-center gap-3 border-b border-rim px-4 py-3">
- <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold text-on-gold text-sm font-bold">
- {user.username?.charAt(0)?.toUpperCase() ?? 'U'}
- </div>
+ <UserAvatar name={user.fullName || user.username} avatarUrl={user.avatarUrl} size={36} />
  <div className="min-w-0">
  <p className="truncate text-sm font-medium text-ink">{user.username}</p>
  <p className="truncate text-xs text-ink-4">{ROLE_LABEL[user.role] ?? user.role}</p>
