@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useWalletBalance } from '@/hooks/useWalletBalance';
 import Container from '@/components/ui/Container';
 import NotificationBell from '@/components/NotificationBell';
+import UserAvatar from '@/components/features/admin/UserAvatar';
 import { getRaces } from '@/api/raceApi';
 import { getJockeyList } from '@/api/jockeyApi';
 import { getAllHorses } from '@/api/horseApi';
@@ -16,7 +17,7 @@ import type { Race, Jockey, UserRole, HorseCurrentStatusResponse } from '@/types
 const DASHBOARD_ROUTE: Partial<Record<UserRole, string>> = {
   ADMIN: '/admin/dashboard', REFEREE: '/referee/dashboard',
   HORSE_OWNER: '/horse-owner/dashboard', TRAINER: '/trainer/dashboard',
-  USER: '/dashboard', JOCKEY: '/my-wallet',
+  USER: '/dashboard', JOCKEY: '/jockey/dashboard',
 };
 
 const WALLET_ROLES = new Set<UserRole>(['USER', 'HORSE_OWNER', 'JOCKEY', 'REFEREE', 'TRAINER']);
@@ -258,8 +259,8 @@ export default function Header() {
  onMouseEnter={() => { clearTimeout(userMenuTimer.current); setUserMenuOpen(true); }}
  onMouseLeave={() => { userMenuTimer.current = setTimeout(() => setUserMenuOpen(false), 150); }}
  >
- <button className="flex h-6 w-6 items-center justify-center rounded-full bg-gold text-[11px] font-bold text-on-gold">
- {user.username?.charAt(0).toUpperCase() ?? 'U'}
+ <button className="block cursor-pointer">
+ <UserAvatar name={user.fullName || user.username} avatarUrl={user.avatarUrl} size={24} />
  </button>
  {userMenuOpen && (
  <div className="absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-lg border border-rim bg-surface-raised shadow-2xl shadow-black/60"
@@ -268,9 +269,7 @@ export default function Header() {
  >
  {/* User info */}
  <div className="flex items-center gap-3 border-b border-rim px-4 py-3">
- <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold text-sm font-bold text-on-gold">
- {user.username?.charAt(0).toUpperCase() ?? 'U'}
- </div>
+ <UserAvatar name={user.fullName || user.username} avatarUrl={user.avatarUrl} size={32} />
  <div className="min-w-0">
  <p className="truncate text-sm font-semibold text-ink">{user.username}</p>
  <p className="truncate text-[11px] text-ink-4 capitalize">{user.role?.toLowerCase().replace('_', ' ')}</p>

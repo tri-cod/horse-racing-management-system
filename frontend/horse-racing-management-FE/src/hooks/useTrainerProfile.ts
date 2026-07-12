@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getTrainerProfile, completeTrainerProfile, type CompleteTrainerProfilePayload } from '@/api/trainerApi';
+import { getErrorMessage } from '@/utils/errors';
 import type { Trainer } from '@/types';
 
 export function useTrainerProfile() {
@@ -19,7 +20,7 @@ export function useTrainerProfile() {
  return {
  profile: profile ?? null,
  loading: isLoading,
- error: error ? (error as { response?: { data?: { message?: string } }; message?: string }).response?.data?.message ?? 'Failed to load trainer profile' : null,
+ error: error ? getErrorMessage(error, 'Failed to load trainer profile') : null,
  refetch: () => queryClient.invalidateQueries({ queryKey: ['trainer-profile'] }),
  save,
  };

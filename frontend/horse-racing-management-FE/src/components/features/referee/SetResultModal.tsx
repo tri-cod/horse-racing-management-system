@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { X, Trophy } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { getHorsesByRace, setRaceResult } from '@/api/refereeApi';
 import { assignLanes } from '@/utils/laneUtils';
+import { getErrorMessage } from '@/utils/errors';
+import Modal from '@/components/ui/Modal';
 import type { Race, RaceHorse } from '@/types';
 
 interface Ranks { [raceHorseId: number]: { rank: string; completionTimeSeconds: string } }
@@ -61,8 +63,7 @@ export default function SetResultModal({ race, onClose, onSuccess }: SetResultMo
       });
       onSuccess();
     } catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string } } };
-      setError(err?.response?.data?.message ?? 'Failed to save results.');
+      setError(getErrorMessage(e, 'Failed to save results.'));
     } finally { setSubmitting(false); }
   };
 
@@ -70,34 +71,40 @@ export default function SetResultModal({ race, onClose, onSuccess }: SetResultMo
     'w-full border border-rim bg-surface-input px-3 py-1.5 text-sm text-ink outline-none ' +
     'placeholder:text-ink-4 focus:border-navy focus:ring-1 focus:ring-navy/10 transition-colors';
 
+  const header = (
+    <div>
+      <div className="flex items-center gap-2">
+        <Trophy size={14} className="text-gold" />
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Race Result</p>
+      </div>
+      <h2 className="mt-0.5 font-serif text-xl font-bold text-ink">{race.raceName}</h2>
+    </div>
+  );
+
+  const footer = !loading && horses.length > 0 && (
+    <div className="flex items-center justify-end gap-3">
+      <button
+        type="button"
+        onClick={onClose}
+        disabled={submitting}
+        className="px-5 py-2 text-sm font-medium text-ink-3 transition-colors hover:text-ink disabled:opacity-50"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        onClick={handleSubmit}
+        disabled={submitting}
+        className="bg-navy px-6 py-2.5 text-xs font-bold uppercase tracking-widest text-on-blue transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {submitting ? 'Saving…' : 'Save Results'}
+      </button>
+    </div>
+  );
+
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-navy/50 p-4 backdrop-blur-sm"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div className="relative flex max-h-[90vh] w-full max-w-2xl flex-col border border-rim bg-surface-raised shadow-modal">
-
-        {/* Header */}
-        <div className="flex items-start justify-between border-b border-rim px-6 py-5">
-          <div>
-            <div className="flex items-center gap-2">
-              <Trophy size={14} className="text-gold" />
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Race Result</p>
-            </div>
-            <h2 className="mt-0.5 font-serif text-xl font-bold text-ink">{race.raceName}</h2>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="ml-4 flex h-8 w-8 shrink-0 items-center justify-center text-ink-3 transition-colors hover:text-ink"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-5">
-          {loading ? (
+    <Modal open onClose={onClose} title={header} backdrop="navy" size="xl" bodyClassName="px-6 py-5" footer={footer || undefined}>
+      {loading ? (
             <div className="space-y-2">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="flex gap-4 py-2">
@@ -171,30 +178,6 @@ export default function SetResultModal({ race, onClose, onSuccess }: SetResultMo
               {error}
             </div>
           )}
-        </div>
-
-        {/* Footer */}
-        {!loading && horses.length > 0 && (
-          <div className="flex items-center justify-end gap-3 border-t border-rim px-6 py-4">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={submitting}
-              className="px-5 py-2 text-sm font-medium text-ink-3 transition-colors hover:text-ink disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="bg-navy px-6 py-2.5 text-xs font-bold uppercase tracking-widest text-on-blue transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {submitting ? 'Saving…' : 'Save Results'}
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
+    </Modal>
   );
 }

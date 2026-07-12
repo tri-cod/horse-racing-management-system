@@ -1,17 +1,16 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import Button from '@/components/ui/Button';
-import type { Trainer } from '@/types';
+import type { Jockey } from '@/types';
 
 interface FormData {
   age: string;
-  experienceYears: string;
+  experienceYear: string;
   description: string;
-  avatarUrl: string;
 }
 
-interface TrainerProfileFormProps {
-  initialValues?: Partial<Trainer>;
-  onSubmit: (payload: { age: number; experienceYears: number; description: string; avatarUrl: string | null }) => void;
+interface JockeyProfileFormProps {
+  initialValues?: Partial<Jockey>;
+  onSubmit: (payload: { age: number; experienceYear: number; description: string }) => void;
   loading?: boolean;
 }
 
@@ -19,12 +18,11 @@ const baseCls = 'w-full rounded border bg-surface-input px-3 py-2.5 text-sm text
 const inputCls = (err?: string) =>
   `${baseCls} ${err ? 'border-fail focus:border-fail focus:ring-2 focus:ring-fail/10' : 'border-rim focus:border-navy focus:ring-2 focus:ring-navy/10'}`;
 
-export default function TrainerProfileForm({ initialValues = {}, onSubmit, loading }: TrainerProfileFormProps) {
+export default function JockeyProfileForm({ initialValues = {}, onSubmit, loading }: JockeyProfileFormProps) {
   const [form, setForm] = useState<FormData>({
     age: initialValues.age?.toString() ?? '',
-    experienceYears: initialValues.experienceYears?.toString() ?? '',
+    experienceYear: initialValues.experienceYear?.toString() ?? '',
     description: initialValues.description ?? '',
-    avatarUrl: initialValues.avatarUrl ?? '',
   });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
 
@@ -34,9 +32,9 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
   const validate = () => {
     const errs: Partial<Record<keyof FormData, string>> = {};
     const age = Number(form.age);
-    if (!form.age || isNaN(age) || age < 18 || age > 99) errs.age = 'Age must be between 18 and 99.';
-    const exp = Number(form.experienceYears);
-    if (form.experienceYears === '' || isNaN(exp) || exp < 0 || exp > 70) errs.experienceYears = 'Experience must be between 0 and 70.';
+    if (!form.age || isNaN(age) || age < 14 || age > 70) errs.age = 'Age must be between 14 and 70.';
+    const exp = Number(form.experienceYear);
+    if (form.experienceYear === '' || isNaN(exp) || exp < 0 || exp > 50) errs.experienceYear = 'Experience must be between 0 and 50.';
     if (form.description.length > 1000) errs.description = 'Maximum 1000 characters.';
     return errs;
   };
@@ -48,9 +46,8 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
     setErrors({});
     onSubmit({
       age: Number(form.age),
-      experienceYears: Number(form.experienceYears),
+      experienceYear: Number(form.experienceYear),
       description: form.description,
-      avatarUrl: form.avatarUrl || null,
     });
   };
 
@@ -59,32 +56,32 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
 
       {/* Age */}
       <div className="px-6 py-5">
-        <label htmlFor="tf-age" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-ink-4">
+        <label htmlFor="jf-age" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-ink-4">
           Age <span className="text-fail">*</span>
         </label>
-        <input id="tf-age" type="number" className={inputCls(errors.age)}
-          value={form.age} onChange={set('age')} min={18} max={99} placeholder="e.g. 32" />
+        <input id="jf-age" type="number" className={inputCls(errors.age)}
+          value={form.age} onChange={set('age')} min={14} max={70} placeholder="e.g. 24" />
         {errors.age && <p className="mt-1.5 text-xs text-fail">{errors.age}</p>}
       </div>
 
       {/* Experience */}
       <div className="px-6 py-5">
-        <label htmlFor="tf-exp" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-ink-4">
+        <label htmlFor="jf-exp" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-ink-4">
           Experience Years <span className="text-fail">*</span>
         </label>
-        <input id="tf-exp" type="number" className={inputCls(errors.experienceYears)}
-          value={form.experienceYears} onChange={set('experienceYears')} min={0} max={70} placeholder="e.g. 10" />
-        {errors.experienceYears && <p className="mt-1.5 text-xs text-fail">{errors.experienceYears}</p>}
+        <input id="jf-exp" type="number" className={inputCls(errors.experienceYear)}
+          value={form.experienceYear} onChange={set('experienceYear')} min={0} max={50} placeholder="e.g. 5" />
+        {errors.experienceYear && <p className="mt-1.5 text-xs text-fail">{errors.experienceYear}</p>}
       </div>
 
       {/* Description */}
       <div className="px-6 py-5">
-        <label htmlFor="tf-desc" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-ink-4">
+        <label htmlFor="jf-desc" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-ink-4">
           Description
         </label>
-        <textarea id="tf-desc" className={`${inputCls(errors.description)} resize-none`}
+        <textarea id="jf-desc" className={`${inputCls(errors.description)} resize-none`}
           value={form.description} onChange={set('description')} rows={5} maxLength={1000}
-          placeholder="Tell horse owners about your experience and training philosophy…" />
+          placeholder="Tell horse owners about your riding style and achievements…" />
         <div className="mt-1.5 text-right text-[11px] text-ink-4">{form.description.length} / 1000</div>
         {errors.description && <p className="mt-1 text-xs text-fail">{errors.description}</p>}
       </div>

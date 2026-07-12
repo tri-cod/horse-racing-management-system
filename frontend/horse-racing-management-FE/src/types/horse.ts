@@ -1,4 +1,4 @@
-export type HorseStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+export type HorseStatus = 'ACTIVE' | 'INACTIVE' | 'RETIRE';
 
 export interface HorseCurrentStatusResponse {
   horseId: number;

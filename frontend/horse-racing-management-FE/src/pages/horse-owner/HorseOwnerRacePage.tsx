@@ -116,7 +116,7 @@ export default function HorseOwnerRacePage() {
     if (view !== 'register' || !selectedRace) return;
     let cancelled = false;
     setLoadingForm(true);
-    Promise.all([getAvailableHorses(), getAvailableJockeys(selectedRace.id)])
+    Promise.all([getAvailableHorses(selectedRace.id), getAvailableJockeys(selectedRace.id)])
       .then(([h, j]) => {
         if (cancelled) return;
         setHorses(h ?? []);

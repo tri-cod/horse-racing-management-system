@@ -51,4 +51,5 @@ export interface UserListParams {
 export interface UpdateInfoPayload {
  fullName?: string;
  phoneNumber?: string;
+ avatarUrl?: string;
 }

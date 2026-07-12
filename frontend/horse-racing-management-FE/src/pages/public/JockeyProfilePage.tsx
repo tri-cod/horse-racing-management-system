@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, User, Calendar, Award, Activity } from 'lucide-react';
+import { ChevronLeft, User, Calendar, Award, Activity, Flag, Trophy, Percent } from 'lucide-react';
 import { useJockeyProfile } from '@/hooks/useJockeyProfile';
 import Container from '@/components/ui/Container';
 import Seo from '@/components/seo/Seo';
@@ -16,12 +16,23 @@ function InfoRow({ icon: Icon, label, value }: { icon: typeof User; label: strin
   );
 }
 
+function StatTile({ icon: Icon, label, value }: { icon: typeof Flag; label: string; value: string }) {
+  return (
+    <div className="flex flex-col items-center gap-1 px-4 py-3 text-center">
+      <Icon size={16} className="text-gold" />
+      <p className="tnum text-xl font-bold text-ink">{value}</p>
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-4">{label}</p>
+    </div>
+  );
+}
+
 export default function JockeyProfilePage() {
   const { id } = useParams<{ id: string }>();
   const jockeyId = id ? Number(id) : undefined;
 
   const { jockey, loading, error } = useJockeyProfile(jockeyId);
   const initial = jockey?.name?.charAt(0)?.toUpperCase() ?? 'J';
+  const hasStats = jockey?.totalRaces != null || jockey?.totalWins != null || jockey?.winRate != null;
 
   return (
     <div className="min-h-screen bg-surface pb-20">
@@ -47,10 +58,14 @@ export default function JockeyProfilePage() {
               <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent" />
             </div>
 
-            {/* Avatar (initial) overlapping cover, centered */}
+            {/* Avatar (photo or initial) overlapping cover, centered */}
             <div className="relative bg-surface-raised px-6 pb-6 pt-16 text-center sm:px-8">
-              <div className="absolute -top-14 left-1/2 flex h-28 w-28 -translate-x-1/2 items-center justify-center rounded-full border-4 border-surface-raised bg-gold shadow-lg">
-                <span className="font-serif text-5xl font-bold text-on-gold">{initial}</span>
+              <div className="absolute -top-14 left-1/2 flex h-28 w-28 -translate-x-1/2 items-center justify-center overflow-hidden rounded-full border-4 border-surface-raised bg-gold shadow-lg">
+                {jockey.avatarUrl ? (
+                  <img src={jockey.avatarUrl} alt={jockey.name} className="h-full w-full object-cover" />
+                ) : (
+                  <span className="font-serif text-5xl font-bold text-on-gold">{initial}</span>
+                )}
               </div>
 
               {jockey.status && (
@@ -61,6 +76,15 @@ export default function JockeyProfilePage() {
               <h1 className="font-serif text-3xl font-bold uppercase leading-tight text-ink">{jockey.name}</h1>
             </div>
 
+            {/* Career stats */}
+            {hasStats && (
+              <div className="grid grid-cols-3 divide-x divide-rim border-t border-rim bg-surface-raised">
+                <StatTile icon={Flag} label="Races" value={jockey.totalRaces != null ? String(jockey.totalRaces) : '—'} />
+                <StatTile icon={Trophy} label="Wins" value={jockey.totalWins != null ? String(jockey.totalWins) : '—'} />
+                <StatTile icon={Percent} label="Win Rate" value={jockey.winRate != null ? `${jockey.winRate.toFixed(0)}%` : '—'} />
+              </div>
+            )}
+
             {/* Details */}
             <div className="flex flex-col divide-y divide-rim border-t border-rim bg-surface-raised px-6 py-1 sm:px-8">
               <InfoRow icon={User} label="Jockey ID" value={`#${jockey.id}`} />
@@ -68,6 +92,14 @@ export default function JockeyProfilePage() {
               <InfoRow icon={Award} label="Experience" value={jockey.experienceYear ? `${jockey.experienceYear} years` : '—'} />
               <InfoRow icon={Activity} label="Status" value={jockey.status ?? '—'} />
             </div>
+
+            {/* Bio */}
+            {jockey.description && (
+              <div className="border-t border-rim bg-surface-raised px-6 py-6 sm:px-8">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-4">About</p>
+                <p className="max-w-prose text-sm leading-relaxed text-ink-2">{jockey.description}</p>
+              </div>
+            )}
           </div>
         )}
       </Container>

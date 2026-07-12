@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   User, Mail, Phone, IdCard, Shield, CheckCircle,
-  LogOut, Pencil, X, Check, AlertCircle,
+  LogOut, Pencil, X, Check, AlertCircle, Camera, Loader2,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { updateInfo } from '@/api/authApi';
+import { updateInfo, uploadAvatar } from '@/api/authApi';
+import { getErrorMessage } from '@/utils/errors';
+import UserAvatar from '@/components/features/admin/UserAvatar';
 import Seo from '@/components/seo/Seo';
 
 const val = (v?: string | null) => v || '—';
@@ -40,21 +42,25 @@ export default function ProfilePage() {
   const navigate = useNavigate();
 
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ fullName: '', phoneNumber: '' });
+  const [form, setForm] = useState({ fullName: '', phoneNumber: '', avatarUrl: '' });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const handleLogout = () => {
-    if (!window.confirm('Are you sure you want to log out?')) return;
+    // if (!window.confirm('Are you sure you want to log out?')) return;
     logout();
     navigate('/');
   };
 
   const openEdit = () => {
-    setForm({ fullName: user?.fullName ?? '', phoneNumber: user?.phoneNumber ?? '' });
+    setForm({ fullName: user?.fullName ?? '', phoneNumber: user?.phoneNumber ?? '', avatarUrl: user?.avatarUrl ?? '' });
     setSaveError('');
     setSaveSuccess(false);
+    setUploadError('');
     setEditing(true);
   };
 
@@ -63,19 +69,38 @@ export default function ProfilePage() {
     setSaveError('');
   };
 
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploading(true);
+      setUploadError('');
+      const url = await uploadAvatar(file);
+      setForm((p) => ({ ...p, avatarUrl: url }));
+    } catch (err: unknown) {
+      setUploadError(getErrorMessage(err, 'Upload failed. Please try again.'));
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setSaveError('');
     try {
-      await updateInfo({ fullName: form.fullName || undefined, phoneNumber: form.phoneNumber || undefined });
+      await updateInfo({
+        fullName: form.fullName || undefined,
+        phoneNumber: form.phoneNumber || undefined,
+        avatarUrl: form.avatarUrl || undefined,
+      });
       await refreshUser();
       setSaveSuccess(true);
       setEditing(false);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err: unknown) {
-      const e = err as { response?: { data?: { message?: string } } };
-      setSaveError(e?.response?.data?.message ?? 'Failed to update profile.');
+      setSaveError(getErrorMessage(err, 'Failed to update profile.'));
     } finally {
       setSaving(false);
     }
@@ -89,8 +114,6 @@ export default function ProfilePage() {
       </div>
     );
   }
-
-  const initial = user.username?.charAt(0)?.toUpperCase() ?? 'U';
 
   const readonlyFields = [
     { icon: User,   label: 'Username', value: user.username },
@@ -112,8 +135,26 @@ export default function ProfilePage() {
           <div className="relative bg-navy px-6 py-6">
             <div className="absolute inset-x-0 top-0 h-0.5 bg-gold" />
             <div className="flex items-center gap-5">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gold font-serif text-2xl font-bold text-navy">
-                {initial}
+              <div className="relative shrink-0">
+                <UserAvatar name={user.fullName || user.username} avatarUrl={editing ? form.avatarUrl : user.avatarUrl} size={64} />
+                {editing && (
+                  <>
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept="image/*"
+                      className="sr-only"
+                      onChange={handleAvatarChange}
+                      id="profile-avatar-file"
+                    />
+                    <label
+                      htmlFor="profile-avatar-file"
+                      className="absolute -bottom-1 -right-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-2 border-navy bg-gold text-navy transition-colors hover:bg-gold-hi"
+                    >
+                      {uploading ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
+                    </label>
+                  </>
+                )}
               </div>
               <div className="min-w-0 flex-1">
                 <h2 className="font-serif text-xl font-bold text-on-blue">
@@ -142,6 +183,11 @@ export default function ProfilePage() {
                 </button>
               )}
             </div>
+            {editing && uploadError && (
+              <p className="mt-3 flex items-center gap-1.5 text-xs text-fail">
+                <AlertCircle size={12} className="shrink-0" /> {uploadError}
+              </p>
+            )}
           </div>
 
           {/* Read-only fields */}
@@ -155,7 +201,6 @@ export default function ProfilePage() {
                   <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">{label}</p>
                   <p className="mt-0.5 text-sm font-medium capitalize text-ink">{val(value)}</p>
                 </div>
-                <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-ink-4">Read only</span>
               </div>
             ))}
           </div>

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getMyRaceRegistrations } from '@/api/raceHorseApi';
+import { getErrorMessage } from '@/utils/errors';
 import type { RaceHorse } from '@/types';
 
 export function useMyRaceRegistrations() {
@@ -11,7 +12,7 @@ export function useMyRaceRegistrations() {
  return {
  registrations: data ?? [],
  loading: isLoading,
- error: error ? (error as { response?: { data?: { message?: string } }; message?: string }).response?.data?.message ?? 'Unable to load race registrations. Please try again.' : null,
+ error: error ? getErrorMessage(error, 'Unable to load race registrations. Please try again.') : null,
  refetch,
  };
 }

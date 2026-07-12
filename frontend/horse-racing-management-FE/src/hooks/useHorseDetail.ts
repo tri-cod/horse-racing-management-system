@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getHorseById } from '@/api/horseOwnerApi';
+import { getErrorMessage } from '@/utils/errors';
 import type { Horse } from '@/types';
 
 export function useHorseDetail(horseId: number | undefined) {
@@ -12,7 +13,7 @@ export function useHorseDetail(horseId: number | undefined) {
  return {
  horse: data ?? null,
  loading: isLoading,
- error: error ? (error as { response?: { data?: { message?: string } }; message?: string }).response?.data?.message ?? 'Unable to load horse information. Please try again.' : null,
+ error: error ? getErrorMessage(error, 'Unable to load horse information. Please try again.') : null,
  refetch,
  };
 }

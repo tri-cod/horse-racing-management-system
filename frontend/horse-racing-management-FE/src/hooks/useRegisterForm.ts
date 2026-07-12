@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { register } from '@/api/authApi';
 import { sendVerificationOtp, verifyEmail } from '@/api/emailVerifyApi';
+import { getErrorMessage } from '@/utils/errors';
 import type { UserRole } from '@/types';
 
 // ─── Field definitions ────────────────────────────────────────────────────────
@@ -122,8 +123,7 @@ export function useRegisterForm() {
  setOtp(''); setOtpError(''); setResendSuccess(false);
  setStep(3);
  } catch (e: unknown) {
- const err = e as { response?: { data?: { message?: string } } };
- setErrors((prev) => ({ ...prev, email: err.response?.data?.message ?? 'Failed to send verification code' }));
+ setErrors((prev) => ({ ...prev, email: getErrorMessage(e, 'Failed to send verification code') }));
  } finally {
  setSendOtpLoading(false);
  }
@@ -153,8 +153,7 @@ export function useRegisterForm() {
  try {
  await verifyEmail(form.email, otp);
  } catch (e: unknown) {
- const err = e as { response?: { data?: { message?: string } } };
- setOtpError(err.response?.data?.message ?? 'Invalid or expired code. Please try again.');
+ setOtpError(getErrorMessage(e, 'Invalid or expired code. Please try again.'));
  setOtpLoading(false);
  return;
  }
@@ -164,8 +163,7 @@ export function useRegisterForm() {
  await register({ ...rest, role: selectedRole!.apiRole });
  setStep('success');
  } catch (e: unknown) {
- const err = e as { response?: { data?: { message?: string } } };
- setApiError(err.response?.data?.message ?? 'Registration failed. Please try again.');
+ setApiError(getErrorMessage(e, 'Registration failed. Please try again.'));
  } finally {
  setOtpLoading(false);
  }

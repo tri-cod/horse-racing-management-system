@@ -1,14 +1,16 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { getErrorMessage } from '@/utils/errors';
 import type { LoginPayload, User, UserRole } from '@/types';
 
 const DASHBOARD_BY_ROLE: Partial<Record<UserRole, string>> = {
   ADMIN: '/admin/dashboard',
   HORSE_OWNER: '/horse-owner/dashboard',
   TRAINER: '/trainer/dashboard',
+  JOCKEY: '/jockey/dashboard',
   REFEREE: '/referee/dashboard',
-  USER: '/dashboard',
+  // USER: '/dashboard',
 };
 
 export function useLogin() {
@@ -29,8 +31,7 @@ export function useLogin() {
         navigate(DASHBOARD_BY_ROLE[result.role] ?? '/');
         return result;
       } catch (e: unknown) {
-        const err = e as { response?: { data?: { message?: string } }; message?: string };
-        setError(err.response?.data?.message ?? err.message ?? 'Login failed. Please try again.');
+        setError(getErrorMessage(e, 'Login failed. Please try again.'));
         return null;
       } finally {
         setLoading(false);
