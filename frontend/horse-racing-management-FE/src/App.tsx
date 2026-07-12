@@ -208,7 +208,7 @@ export default function App() {
             </ProtectedRoute>
           } />
           <Route path="/admin/set-odds" element={
-            <ProtectedRoute allowedRoles={['ADMIN']}>
+            <ProtectedRoute allowedRoles={['ADMIN', 'STAFF']}>
               <AppLayout><AdminSetOddsPage /></AppLayout>
             </ProtectedRoute>
           } />

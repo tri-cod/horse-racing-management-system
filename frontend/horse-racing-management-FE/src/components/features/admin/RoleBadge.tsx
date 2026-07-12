@@ -2,6 +2,7 @@ import type { UserRole } from '@/types';
 
 const CONFIG: Record<UserRole, string> = {
   ADMIN:       'bg-navy/10    text-navy   border border-navy/20',
+  STAFF:       'bg-gold/10    text-gold   border border-gold/20',
   REFEREE:     'bg-warn-subtle text-warn  border border-warn/30',
   HORSE_OWNER: 'bg-ok-subtle   text-ok    border border-ok/30',
   TRAINER:     'bg-ok-subtle   text-ok    border border-ok/30',
@@ -10,7 +11,7 @@ const CONFIG: Record<UserRole, string> = {
 };
 
 const LABEL: Record<UserRole, string> = {
-  ADMIN: 'Admin', REFEREE: 'Referee', HORSE_OWNER: 'Horse Owner',
+  ADMIN: 'Admin', STAFF: 'Staff', REFEREE: 'Referee', HORSE_OWNER: 'Horse Owner',
   TRAINER: 'Trainer', JOCKEY: 'Jockey', USER: 'Member',
 };
 

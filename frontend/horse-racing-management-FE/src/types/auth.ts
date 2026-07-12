@@ -1,11 +1,11 @@
 export type UserRole =
  | 'ADMIN'
+ | 'STAFF'
  | 'HORSE_OWNER'
  | 'JOCKEY'
  | 'TRAINER'
  | 'REFEREE'
  | 'USER';
-
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'BANNED';
 
 export interface User {
