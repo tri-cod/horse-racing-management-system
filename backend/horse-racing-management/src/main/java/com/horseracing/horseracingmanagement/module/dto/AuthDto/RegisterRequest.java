@@ -2,6 +2,7 @@ package com.horseracing.horseracingmanagement.module.dto.AuthDto;
 
 
 import com.horseracing.horseracingmanagement.common.constant.RoleName;
+import com.horseracing.horseracingmanagement.common.validation.FieldsNotEqual;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -9,6 +10,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
+@FieldsNotEqual(field1 = "username", field2 = "password",
+        message = "Username and password cannot be the same")
 public class RegisterRequest {
     private RoleName role;
 

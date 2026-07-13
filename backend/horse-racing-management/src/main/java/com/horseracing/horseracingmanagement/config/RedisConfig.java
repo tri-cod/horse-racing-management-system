@@ -22,19 +22,19 @@ public class RedisConfig {
 
 
     /////======máy khác không phải máy t thì chạy cái này
-//    @Bean
-//    public RedisConnectionFactory redisConnectionFactory() {
-//        RedisStandaloneConfiguration config =
-//                new RedisStandaloneConfiguration(host, port); // đổi thành 127.0.0.1
-//        return new LettuceConnectionFactory(config);
-//    }
-
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration config =
-                new RedisStandaloneConfiguration("172.20.25.195", 6379); // đổi thành 127.0.0.1
+                new RedisStandaloneConfiguration(host, port); // đổi thành 127.0.0.1
         return new LettuceConnectionFactory(config);
     }
+
+//    @Bean
+//    public RedisConnectionFactory redisConnectionFactory() {
+//        RedisStandaloneConfiguration config =
+//                new RedisStandaloneConfiguration("172.20.25.195", 6379); // đổi thành 127.0.0.1
+//        return new LettuceConnectionFactory(config);
+//    }
     @Bean
     public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, String> template = new RedisTemplate<>();
