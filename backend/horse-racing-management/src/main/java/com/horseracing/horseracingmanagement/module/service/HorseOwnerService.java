@@ -4,6 +4,7 @@ import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseCurrentSta
 import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseRaceHistoryResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseRequest;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseResponse;
+import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.UpdateHorse;
 import com.horseracing.horseracingmanagement.module.entity.Horse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,5 +26,7 @@ public interface HorseOwnerService {
 
     List<HorseCurrentStatusResponse> getAllHorsesWithCurrentRace();
     List<HorseCurrentStatusResponse> getHorsesByRaceId(Long raceId);
+    SignHorseResponse updateHorse(Long horseId, UpdateHorse request, Long userId);
+    void deleteHorse(Long horseId, Long userId);
     HorseCurrentStatusResponse mapToCurrentStatusResponse(Horse horse);
 }
