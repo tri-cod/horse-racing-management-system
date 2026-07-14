@@ -5,50 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="71f9b656-b1d0-485a-abcc-d8d204940871" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/dto/HorseOwnerDto/UpdateHorse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/common/validation/FieldsNotEqual.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/common/validation/FieldsNotEqualValidator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4cdd1821-d3b3-4170-b3d4-044c72a399c4.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/4cdd1821-d3b3-4170-b3d4-044c72a399c4.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4cdd1821-d3b3-4170-b3d4-044c72a399c4/storage_v2/_src_/database/horse_racing_management_system.HJkssA.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4cdd1821-d3b3-4170-b3d4-044c72a399c4/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4cdd1821-d3b3-4170-b3d4-044c72a399c4/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4cdd1821-d3b3-4170-b3d4-044c72a399c4/storage_v2/_src_/database/horse_racing_management_system.HJkssA/schema/public.abK9xQ.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/controller/HorseOwnerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/controller/HorseOwnerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/service/HorseOwnerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/service/HorseOwnerService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/service/impl/HorseOwnerServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/service/impl/HorseOwnerServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/config/RedisConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/config/RedisConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/dto/AuthDto/RegisterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/module/dto/AuthDto/RegisterRequest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="CopilotChats">
-    <option name="panelChat">
-      <chat>
-        <option name="activeSessionId" value="3d3f9201-c5c6-4be3-90cc-01247c10d37a" />
-        <option name="sessions">
-          <session>
-            <option name="chatType" value="PANEL" />
-            <option name="id" value="3d3f9201-c5c6-4be3-90cc-01247c10d37a" />
-            <option name="modeId" value="Ask" />
-            <option name="modelType" value="builtin_family" />
-            <option name="modelValue" value="auto" />
-            <option name="targetType" value="LOCAL" />
-          </session>
-        </option>
-        <option name="type" value="PANEL" />
-      </chat>
-    </option>
-  </component>
-  <component name="CopilotPersistence">
-    <persistenceIdMap>
-      <entry key="_D:/GITHUB/13-07/horse-racing-management-system" value="3ExSVLVX4uyI74woy6JbS4vTf7e" />
-    </persistenceIdMap>
-  </component>
-  <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="395" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -70,61 +38,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.3671886541608522" />
-      <entry key="MS500" value="2.576657585725732" />
-      <entry key="S2" value="3.4960292317391235" />
-      <entry key="S5" value="3.792014581366199" />
-      <entry key="S10" value="4.1373338759401515" />
-      <entry key="S30" value="6.036867092415911" />
-      <entry key="S60" value="7.508431943807496" />
-      <entry key="M2" value="8.59071844737005" />
-      <entry key="M5" value="9.39125513108711" />
-      <entry key="M10" value="9.687579473081172" />
-      <entry key="M15" value="9.789888624113628" />
-      <entry key="M30" value="9.894017921630825" />
-      <entry key="H1" value="9.946775300787522" />
-      <entry key="H2" value="9.97332897557184" />
-      <entry key="H4" value="9.98664978647696" />
-      <entry key="D1" value="9.997772919791187" />
-      <entry key="W1" value="9.999681795575887" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0" />
+      <entry key="S10" value="1.0" />
+      <entry key="S30" value="1.0" />
+      <entry key="S60" value="1.000000000000001" />
+      <entry key="M2" value="1.0000000335712151" />
+      <entry key="M5" value="1.0010242048420035" />
+      <entry key="M10" value="1.032003200496254" />
+      <entry key="M15" value="1.1008004045005682" />
+      <entry key="M30" value="1.3174907943556289" />
+      <entry key="H1" value="1.5634632147315641" />
+      <entry key="H2" value="1.7506418684909364" />
+      <entry key="H4" value="1.86639590747587" />
+      <entry key="D1" value="1.9763811777731128" />
+      <entry key="W1" value="1.9965912205801861" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
       <entry key="MS500" value="0.0" />
-      <entry key="S2" value="0.0" />
-      <entry key="S5" value="0.0" />
-      <entry key="S10" value="0.0" />
-      <entry key="S30" value="0.0" />
-      <entry key="S60" value="0.0" />
-      <entry key="M2" value="0.0" />
-      <entry key="M5" value="0.0" />
-      <entry key="M10" value="0.0" />
-      <entry key="M15" value="0.0" />
-      <entry key="M30" value="0.0" />
-      <entry key="H1" value="0.0" />
-      <entry key="H2" value="0.0" />
-      <entry key="H4" value="0.0" />
-      <entry key="D1" value="0.0" />
-      <entry key="W1" value="0.0" />
+      <entry key="S2" value="6.819482873367883E-109" />
+      <entry key="S5" value="5.413779674119406E-44" />
+      <entry key="S10" value="2.326753032472378E-22" />
+      <entry key="S30" value="6.150589788522625E-8" />
+      <entry key="S60" value="2.4800382635313436E-4" />
+      <entry key="M2" value="0.01574817111570363" />
+      <entry key="M5" value="0.19108839545560174" />
+      <entry key="M10" value="0.4680213045009611" />
+      <entry key="M15" value="0.6758747077673961" />
+      <entry key="M30" value="1.0759404859022055" />
+      <entry key="H1" value="1.4344143408415577" />
+      <entry key="H2" value="1.683911992245892" />
+      <entry key="H4" value="1.832461821495626" />
+      <entry key="D1" value="1.9706449117842746" />
+      <entry key="W1" value="1.995769760299653" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.302808130581753" />
-      <entry key="MS500" value="2.552243518146422" />
-      <entry key="S2" value="3.4876203294046197" />
-      <entry key="S5" value="3.7883257965683708" />
-      <entry key="S10" value="4.1350346811874195" />
-      <entry key="S30" value="6.035016228303166" />
-      <entry key="S60" value="7.507069228476116" />
-      <entry key="M2" value="8.589874533976717" />
-      <entry key="M5" value="9.390869206705817" />
-      <entry key="M10" value="9.687377537014445" />
-      <entry key="M15" value="9.78975193270685" />
-      <entry key="M30" value="9.893948523395288" />
-      <entry key="H1" value="9.946740334948423" />
-      <entry key="H2" value="9.973311425518656" />
-      <entry key="H4" value="9.986640994609997" />
-      <entry key="D1" value="9.997771452136234" />
-      <entry key="W1" value="9.999681585853432" />
+      <entry key="MS100" value="0.014278616409834377" />
+      <entry key="MS500" value="0.4275010889459864" />
+      <entry key="S2" value="0.8086010600218005" />
+      <entry key="S5" value="0.9185307978124196" />
+      <entry key="S10" value="0.9584001240674063" />
+      <entry key="S30" value="0.9859365710806984" />
+      <entry key="S60" value="0.9931684953634882" />
+      <entry key="M2" value="1.0114699421947386" />
+      <entry key="M5" value="1.1870519302943712" />
+      <entry key="M10" value="1.4950727618528363" />
+      <entry key="M15" value="1.7724096004947638" />
+      <entry key="M30" value="2.3906011457187106" />
+      <entry key="H1" value="2.996221093742129" />
+      <entry key="H2" value="3.4336525883122055" />
+      <entry key="H4" value="3.6983868263768453" />
+      <entry key="D1" value="3.946944595787394" />
+      <entry key="W1" value="3.992349262461538" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -143,7 +111,6 @@
     "RequestMappingsPanelOrder1": "1",
     "RequestMappingsPanelWidth0": "75",
     "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
@@ -151,11 +118,11 @@
     "Spring Boot.HorseRacingManagementApplication.executor": "Run",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "update__horse",
+    "git-widget-placeholder": "validate__account",
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/GITHUB/13-07/horse-racing-management-system",
+    "last_opened_file_path": "D:/GITHUB/13-07/horse-racing-management-system/backend/horse-racing-management/src/main/java/com/horseracing/horseracingmanagement/common/validation",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -171,8 +138,8 @@
   }
 }]]></component>
   <component name="RecentsManager">
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto" />
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\GITHUB\13-07\horse-racing-management-system\backend\horse-racing-management\src\main\java\com\horseracing\horseracingmanagement\common\validation" />
     </key>
   </component>
   <component name="RunManager">
@@ -188,8 +155,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.24374.151" />
-        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.24374.151" />
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.25134.95" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.25134.95" />
       </set>
     </attachedChunks>
   </component>
@@ -204,19 +171,10 @@
       <workItem from="1781496954025" duration="1277000" />
       <workItem from="1781504096577" duration="8886000" />
       <workItem from="1781522658732" duration="1818000" />
-      <workItem from="1783952900342" duration="1087000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="github-copilot-workspace">
-    <instructionFileLocations>
-      <option value=".github/instructions" />
-    </instructionFileLocations>
-    <promptFileLocations>
-      <option value=".github/prompts" />
-    </promptFileLocations>
   </component>
 </project>
