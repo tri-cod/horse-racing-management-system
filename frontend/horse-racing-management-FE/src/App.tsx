@@ -36,6 +36,7 @@ const HorseOwnerDashboardPage = lazy(() => import('@/pages/horse-owner/HorseOwne
 const MyHorsesPage = lazy(() => import('@/pages/horse-owner/MyHorsesPage'));
 const HorseRegisterPage = lazy(() => import('@/pages/horse-owner/HorseRegisterPage'));
 const HorseDetailPage = lazy(() => import('@/pages/horse-owner/HorseDetailPage'));
+const HorseEditPage = lazy(() => import('@/pages/horse-owner/HorseEditPage'));
 const HorseOwnerRacePage = lazy(() => import('@/pages/horse-owner/HorseOwnerRacePage'));
 const MyRaceRegistrationsPage = lazy(() => import('@/pages/horse-owner/MyRaceRegistrationsPage'));
 
@@ -138,6 +139,11 @@ export default function App() {
           <Route path="/horse-owner/horses/:id" element={
             <ProtectedRoute allowedRoles={['HORSE_OWNER']}>
               <AppLayout><HorseDetailPage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/horse-owner/horses/:id/edit" element={
+            <ProtectedRoute allowedRoles={['HORSE_OWNER']}>
+              <AppLayout><HorseEditPage /></AppLayout>
             </ProtectedRoute>
           } />
           <Route path="/horse-owner/register-race" element={
