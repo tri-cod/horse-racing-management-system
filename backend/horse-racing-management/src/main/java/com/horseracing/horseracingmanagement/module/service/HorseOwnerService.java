@@ -29,4 +29,6 @@ public interface HorseOwnerService {
     SignHorseResponse updateHorse(Long horseId, UpdateHorse request, Long userId);
     void deleteHorse(Long horseId, Long userId);
     HorseCurrentStatusResponse mapToCurrentStatusResponse(Horse horse);
+
+    
 }
