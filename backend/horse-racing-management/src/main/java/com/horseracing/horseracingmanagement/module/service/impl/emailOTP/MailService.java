@@ -13,6 +13,7 @@ public class MailService {
     private final JavaMailSender mailSender;
 
     public void sendOtpEmail(String toEmail, String otp, String purpose) {
+
         String subject = purpose.equals("VERIFY_EMAIL")
                 ? "Verify Your Email"
                 : "Reset Your Password";
@@ -25,6 +26,14 @@ public class MailService {
             """.formatted(purpose.equals("VERIFY_EMAIL") ? "verify your email" : "reset your password", otp);
 
         MimeMessage message = mailSender.createMimeMessage();
+
+        System.out.println("Before send");
+        System.out.println("To Email = " + toEmail);
+
+        System.out.println("After send");
+
+
+
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(toEmail);

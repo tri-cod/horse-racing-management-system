@@ -61,7 +61,10 @@ public class AuthServiceImpl  implements AuthService {
 
         if (userRepository.existsByEmail(email)) {
             throw new RuntimeException("Email already registered");
+
         }
+
+
 
         String otp = otpService.generateAndStoreOtp(email, "VERIFY_EMAIL");
         emailService.sendOtpEmail(email, otp, "VERIFY_EMAIL");

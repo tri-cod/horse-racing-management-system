@@ -187,6 +187,7 @@ public class RaceServiceImpl implements RaceService {
         race.setSurfaceType(request.getSurfaceType());
         race.setTotalprizepool(request.getTotalprizepool());
         race.setDistance(request.getDistance());
+        race.setRegistrationDeadline(request.getRegistrationDeadline());
         race.setLocation(request.getLocation());
         race.setCapacity(request.getCapacity());
         race.setBannerImageurl(request.getBannerImageurl());

@@ -28,6 +28,9 @@ public class AuthController {
     public ResponseEntity<String> sendVerificationOtp(@RequestParam String email) {
         authService.sendEmailVerificationOtp(email);
 
+        System.out.println("Controller entered");
+
+
         return ResponseEntity.ok("OTP sent to " + email);
     }
 
