@@ -5,10 +5,10 @@ import Modal from '@/components/ui/Modal';
 import RoleBadge from './RoleBadge';
 import type { User, UserRole } from '@/types';
 
-const ROLES: UserRole[] = ['ADMIN', 'REFEREE', 'HORSE_OWNER', 'TRAINER', 'JOCKEY', 'USER'];
+const ROLES: UserRole[] = ['ADMIN', 'STAFF', 'REFEREE', 'HORSE_OWNER', 'TRAINER', 'JOCKEY', 'USER'];
 
 const ROLE_LABELS: Record<UserRole, string> = {
-  ADMIN: 'Admin', REFEREE: 'Referee', HORSE_OWNER: 'Horse Owner',
+  ADMIN: 'Admin', STAFF: 'Staff', REFEREE: 'Referee', HORSE_OWNER: 'Horse Owner',
   TRAINER: 'Trainer', JOCKEY: 'Jockey', USER: 'Member',
 };
 

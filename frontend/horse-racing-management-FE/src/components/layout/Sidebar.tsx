@@ -43,10 +43,13 @@ const ROLE_ITEMS: Partial<Record<UserRole, NavItem[]>> = {
         { icon: LayoutDashboard, label: 'Dashboard', href: '/jockey/dashboard' },
         { icon: UserCog, label: 'My Profile', href: '/jockey/profile' },
         { icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
+STAFF: [
+ { icon: TrendingUp, label: 'Set Odds', href: '/admin/set-odds' },
+],
 };
 
 const ROLE_LABEL: Partial<Record<UserRole, string>> = {
- ADMIN: 'Administrator', REFEREE: 'Referee', HORSE_OWNER: 'Horse Owner',
+ ADMIN: 'Administrator', STAFF: 'Staff', REFEREE: 'Referee', HORSE_OWNER: 'Horse Owner',
  TRAINER: 'Trainer', USER: 'Member', JOCKEY: 'Jockey',
 };
 
