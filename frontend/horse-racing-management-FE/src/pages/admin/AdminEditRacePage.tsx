@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Eye } from 'lucide-react';
 import { updateRace } from '@/api/raceApi';
 import { useRaceDetail } from '@/hooks/useRaceDetail';
@@ -50,6 +51,7 @@ export default function AdminEditRacePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const addToast = useToast();
+  const queryClient = useQueryClient();
   const { race, loading, error, refetch } = useRaceDetail(id ? Number(id) : undefined);
   const [saving, setSaving] = useState(false);
 
@@ -57,6 +59,11 @@ export default function AdminEditRacePage() {
     setSaving(true);
     try {
       await updateRace(Number(id), payload);
+      // The save succeeded on the server, but ['race', id] and ['races', ...] stay
+      // "fresh" for 30s (see main.tsx staleTime) — without invalidating them, the
+      // list/detail pages the user lands on next would keep showing the old data.
+      await queryClient.invalidateQueries({ queryKey: ['race', Number(id)] });
+      await queryClient.invalidateQueries({ queryKey: ['races'] });
       addToast('Race updated successfully!', 'success');
       navigate('/admin/races');
     } finally { setSaving(false); }

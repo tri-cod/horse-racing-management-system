@@ -13,8 +13,16 @@ export interface SignHorsePayload {
  status?: string;
 }
 
+export type UpdateHorsePayload = Partial<SignHorsePayload>;
+
 export const signHorse = (payload: SignHorsePayload) =>
  axiosInstance.post<ApiResponse<Horse>>('/horse-owner/horses', payload).then((r) => r.data.data);
+
+export const updateHorse = (horseId: number, payload: UpdateHorsePayload) =>
+ axiosInstance.patch<ApiResponse<Horse>>(`/horse-owner/horses/${horseId}`, payload).then((r) => r.data.data);
+
+export const deleteHorse = (horseId: number) =>
+ axiosInstance.delete<ApiResponse<null>>(`/horse-owner/horses/${horseId}`).then((r) => r.data);
 
 export const uploadAvatar = (file: File): Promise<string> => {
  const formData = new FormData();

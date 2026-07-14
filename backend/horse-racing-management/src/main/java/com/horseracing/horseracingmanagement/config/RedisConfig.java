@@ -22,6 +22,12 @@ public class RedisConfig {
 
 
     /////======máy khác không phải máy t thì chạy cái này
+
+//    @Bean
+//    public RedisConnectionFactory redisConnectionFactory() {
+//        RedisStandaloneConfiguration config =
+//                new RedisStandaloneConfiguration("172.20.25.195", 6379); // đổi thành 127.0.0.1
+
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration config =

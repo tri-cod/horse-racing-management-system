@@ -1,7 +1,9 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signHorse, uploadAvatar } from '@/api/horseOwnerApi';
+import { useQueryClient } from '@tanstack/react-query';
+import { signHorse, updateHorse, uploadAvatar } from '@/api/horseOwnerApi';
 import { getErrorMessage } from '@/utils/errors';
+import type { Horse } from '@/types';
 
 // ─── Field definitions (exported so the form component can render them) ───────
 
@@ -100,14 +102,37 @@ const initialForm: HorseFormData = {
  speedRating: '', history_rank: '', avatar_url: '', weight: '', status: 'ACTIVE',
 };
 
-export function useHorseForm() {
+function formFromHorse(horse: Horse): HorseFormData {
+ return {
+ horseName: horse.horseName ?? '',
+ breed: horse.breed ?? '',
+ age: horse.age != null ? String(horse.age) : '',
+ gender: horse.gender ?? 'Male',
+ speedRating: horse.speedRating != null ? String(horse.speedRating) : '',
+ history_rank: horse.historyRank ?? '',
+ avatar_url: horse.avatarUrl ?? '',
+ weight: horse.weight != null ? String(horse.weight) : '',
+ status: horse.status ?? 'ACTIVE',
+ };
+}
+
+interface UseHorseFormOptions {
+ mode?: 'create' | 'edit';
+ horseId?: number;
+ initialValues?: Horse;
+}
+
+export function useHorseForm({ mode = 'create', horseId, initialValues }: UseHorseFormOptions = {}) {
  const navigate = useNavigate();
- const [form, setForm] = useState<HorseFormData>(initialForm);
+ const queryClient = useQueryClient();
+ const [form, setForm] = useState<HorseFormData>(() =>
+ mode === 'edit' && initialValues ? formFromHorse(initialValues) : initialForm,
+ );
  const [errors, setErrors] = useState<FormErrors>({});
  const [loading, setLoading] = useState(false);
  const [apiError, setApiError] = useState('');
  const [avatarFile, setAvatarFile] = useState<File | null>(null);
- const [avatarPreview, setAvatarPreview] = useState('');
+ const [avatarPreview, setAvatarPreview] = useState(initialValues?.avatarUrl ?? '');
  const [avatarFileName, setAvatarFileName] = useState('');
 
  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -165,7 +190,7 @@ export function useHorseForm() {
  try {
  const avatarUrl = avatarFile ? await uploadAvatar(avatarFile) : form.avatar_url || undefined;
 
- const newHorse = await signHorse({
+ const payload = {
  horseName: form.horseName.trim(),
  breed: form.breed.trim() || undefined,
  age: form.age ? Number(form.age) : undefined,
@@ -175,10 +200,22 @@ export function useHorseForm() {
  avatar_url: avatarUrl || undefined,
  weight: form.weight ? Number(form.weight) : undefined,
  status: form.status || undefined,
- });
+ };
+
+ if (mode === 'edit' && horseId) {
+ await updateHorse(horseId, payload);
+ // Same staleTime gotcha as race edits — without this the detail/list pages
+ // would keep showing the pre-edit values for up to 30s.
+ await queryClient.invalidateQueries({ queryKey: ['horse', horseId] });
+ await queryClient.invalidateQueries({ queryKey: ['my-horses'] });
+ navigate(`/horse-owner/horses/${horseId}`);
+ } else {
+ const newHorse = await signHorse(payload);
+ await queryClient.invalidateQueries({ queryKey: ['my-horses'] });
  navigate(`/horse-owner/horses/${newHorse.id}`);
+ }
  } catch (e: unknown) {
- setApiError(getErrorMessage(e, 'Horse registration failed. Please try again.'));
+ setApiError(getErrorMessage(e, mode === 'edit' ? 'Failed to update horse. Please try again.' : 'Horse registration failed. Please try again.'));
  } finally {
  setLoading(false);
  }
