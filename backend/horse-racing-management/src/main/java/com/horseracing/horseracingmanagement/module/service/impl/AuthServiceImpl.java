@@ -11,9 +11,11 @@ import com.horseracing.horseracingmanagement.module.service.impl.emailOTP.MailSe
 import com.horseracing.horseracingmanagement.module.service.impl.emailOTP.OtpService;
 import com.horseracing.horseracingmanagement.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+
 public class AuthServiceImpl  implements AuthService {
 
     private final UserRepository userRepository;
@@ -49,27 +53,30 @@ public class AuthServiceImpl  implements AuthService {
 
 
     // --- Email Verification ---
+    @Async
     public void sendEmailVerificationOtp(String email) {
+        log.info("→ Checking email format: {}", email);
 
         if (!emailValidatorService.isValidFormat(email)) {
+            log.warn("Invalid email format: {}", email);
             throw new RuntimeException("Email invalid");
         }
 
+        log.info("→ Checking domain exists for: {}", email);
+
         if (!emailValidatorService.isDomainExists(email)) {
+            log.warn("Domain does not exist for: {}", email);
             throw new RuntimeException("Domain email does not exist");
         }
 
-        if (userRepository.existsByEmail(email)) {
-            throw new RuntimeException("Email already registered");
-
-        }
-
-
-
+        log.info("→ Generating OTP for: {}", email);
         String otp = otpService.generateAndStoreOtp(email, "VERIFY_EMAIL");
-        emailService.sendOtpEmail(email, otp, "VERIFY_EMAIL");
-    }
 
+        log.info("→ Sending OTP email to: {}", email);
+        emailService.sendOtpEmail(email, otp, "VERIFY_EMAIL");
+
+        log.info("✓ OTP sent successfully to: {}", email);
+    }
 
     // --- Forgot Password ---
     public void sendForgotPasswordOtp(String email) {

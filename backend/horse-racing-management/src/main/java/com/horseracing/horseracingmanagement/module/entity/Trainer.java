@@ -36,6 +36,12 @@ public class Trainer {
     private String description;
 
     @Column(name = "avatar_url")
+    private String avatarUrl;         // ← ảnh đại diện
+
+    @Column(name = "cover_image_url")
+    private String coverImageUrl;
+
+    @Column(name = "avatar_url")
     private String avatarUrl;
 
     @Column(name = "status", length = 20)

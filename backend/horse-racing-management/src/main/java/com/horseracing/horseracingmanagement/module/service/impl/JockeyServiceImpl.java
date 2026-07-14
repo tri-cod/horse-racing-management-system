@@ -32,6 +32,8 @@ public class JockeyServiceImpl implements JockeyService {
         if (request.getAge() != null) jockey.setAge(request.getAge());
         if (request.getExperienceYear() != null) jockey.setExperienceYear(request.getExperienceYear());
         if (request.getDescription() != null) jockey.setDescription(request.getDescription());
+        if (request.getAvatarUrl() != null) jockey.setAvatarUrl(request.getAvatarUrl());          // ← thêm
+        if (request.getCoverImageUrl() != null) jockey.setCoverImageUrl(request.getCoverImageUrl());
 
         return mapToProfileResponse(jockeyRepository.save(jockey));
     }
@@ -81,6 +83,8 @@ public class JockeyServiceImpl implements JockeyService {
                 .name(jockey.getUser().getFullName() != null
                         ? jockey.getUser().getFullName()
                         : jockey.getUser().getUsername())
+                .avatarUrl(jockey.getAvatarUrl())        // ← thêm
+                .coverImageUrl(jockey.getCoverImageUrl())
                 .age(jockey.getAge())
                 .experienceYear(jockey.getExperienceYear())
                 .description(jockey.getDescription())

@@ -21,10 +21,11 @@ public class TrainerServiceImpl implements TrainerService {
         Trainer trainer = trainerRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("Trainer profile not found"));
 
-        trainer.setAge(request.getAge());
-        trainer.setExperienceYears(request.getExperienceYears());
-        trainer.setDescription(request.getDescription());
-        trainer.setAvatarUrl(request.getAvatarUrl());
+        if (request.getAge() != null) trainer.setAge(request.getAge());
+        if (request.getExperienceYears() != null) trainer.setExperienceYears(request.getExperienceYears());
+        if (request.getDescription() != null) trainer.setDescription(request.getDescription());
+        if (request.getAvatarUrl() != null) trainer.setAvatarUrl(request.getAvatarUrl());            // ← thêm
+        if (request.getCoverImageUrl() != null) trainer.setCoverImageUrl(request.getCoverImageUrl()); // ← thêm
 
         Trainer saved = trainerRepository.save(trainer);
         return mapToResponse(saved);
@@ -44,6 +45,8 @@ public class TrainerServiceImpl implements TrainerService {
                 .name(trainer.getUser().getFullName() != null  // ← lấy từ user trực tiếp
                         ? trainer.getUser().getFullName()
                         : trainer.getUser().getUsername())
+                .avatarUrl(trainer.getAvatarUrl())        // ← thêm
+                .coverImageUrl(trainer.getCoverImageUrl())
                 .age(trainer.getAge())
                 .experienceYears(trainer.getExperienceYears())
                 .description(trainer.getDescription())

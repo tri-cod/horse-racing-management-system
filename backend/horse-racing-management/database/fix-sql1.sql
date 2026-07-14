@@ -72,3 +72,10 @@ CREATE TABLE race_result (
 
 ALTER TABLE jockey ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(255);
 
+-- Jockey
+ALTER TABLE jockey ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(255);
+ALTER TABLE jockey ADD COLUMN IF NOT EXISTS cover_image_url VARCHAR(255);
+
+-- Trainer
+ALTER TABLE trainer ADD COLUMN IF NOT EXISTS cover_image_url VARCHAR(255);
+

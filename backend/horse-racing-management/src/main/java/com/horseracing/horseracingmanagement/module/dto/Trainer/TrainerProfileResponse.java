@@ -12,6 +12,7 @@ public class TrainerProfileResponse {
     private Integer age;
     private Integer experienceYears;
     private String description;
-    private String avatarUrl;
+    private String avatarUrl;       // ← ảnh đại diện
+    private String coverImageUrl;
     private String status;
 }

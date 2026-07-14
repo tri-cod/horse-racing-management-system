@@ -11,5 +11,6 @@ public class CompleteJockeyProfileRequest {
     private Long age;
     private Long experienceYear;
     private String description;
-    private String avatarUrl;
+    private String avatarUrl;       // ← ảnh đại diện
+    private String coverImageUrl;
 }
