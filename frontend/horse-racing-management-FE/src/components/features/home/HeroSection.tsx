@@ -65,9 +65,9 @@ function RacecardBoard({ race }: { race: Race | null }) {
  const cd = useCountdown(race?.startTime);
 
  if (!race) return (
- <div className="flex flex-col items-center justify-center gap-4 border border-white/20 bg-white/10 p-10 text-center shadow-modal backdrop-blur-md">
- <Flag size={32} className="text-white/40" strokeWidth={1.5} />
- <p className="text-sm text-white/70">No upcoming races scheduled yet.</p>
+ <div className="flex flex-col items-center justify-center gap-4 border border-rim bg-surface-raised/80 p-10 text-center shadow-modal backdrop-blur-md">
+ <Flag size={32} className="text-ink-4" strokeWidth={1.5} />
+ <p className="text-sm text-ink-3">No upcoming races scheduled yet.</p>
  <Link to="/races" className="flex items-center gap-1 text-sm font-medium text-gold hover:text-gold-hi transition-colors">
  View all races <ArrowRight size={14} />
  </Link>
@@ -75,7 +75,7 @@ function RacecardBoard({ race }: { race: Race | null }) {
  );
 
  return (
- <div className=" rounded-md border border-white/20 bg-white/10 p-6 shadow-modal backdrop-blur-md">
+ <div className=" rounded-md border border-rim bg-surface-raised/80 p-6 shadow-modal backdrop-blur-md">
  {/* Header */}
  <div className="mb-3 flex items-center justify-between">
  <span className="eyebrow">Next Race</span>
@@ -85,42 +85,42 @@ function RacecardBoard({ race }: { race: Race | null }) {
  </div>
 
  {/* Race name */}
- <h3 className="mb-4 text-lg font-bold text-white">{race.raceName}</h3>
+ <h3 className="mb-4 text-lg font-bold text-ink">{race.raceName}</h3>
 
  {/* Countdown */}
  {cd && (
  <div className="mb-5 flex items-end justify-center gap-3">
  <CountCell value={cd.d} unit="Days" />
- <span className="mb-4 text-xl font-light text-white/30">:</span>
+ <span className="mb-4 text-xl font-light text-ink-4">:</span>
  <CountCell value={cd.h} unit="Hrs" />
- <span className="mb-4 text-xl font-light text-white/30">:</span>
+ <span className="mb-4 text-xl font-light text-ink-4">:</span>
  <CountCell value={cd.m} unit="Min" />
- <span className="mb-4 text-xl font-light text-white/30">:</span>
+ <span className="mb-4 text-xl font-light text-ink-4">:</span>
  <CountCell value={cd.s ?? 0} unit="Sec" />
  </div>
  )}
 
- <hr className="mb-4 border-white/15" />
+ <hr className="mb-4 border-rim" />
 
  {/* Race details */}
  <ul className="mb-5 space-y-1.5">
  {race.location && (
- <li className="flex items-center gap-2 text-sm text-white/75">
- <MapPin size={13} className="shrink-0 text-white/40" />{race.location}
+ <li className="flex items-center gap-2 text-sm text-ink-2">
+ <MapPin size={13} className="shrink-0 text-ink-4" />{race.location}
  </li>
  )}
  {race.startTime && (
- <li className="flex items-center gap-2 text-sm text-white/75">
- <Calendar size={13} className="shrink-0 text-white/40" />{fmtDate(race.startTime)}
+ <li className="flex items-center gap-2 text-sm text-ink-2">
+ <Calendar size={13} className="shrink-0 text-ink-4" />{fmtDate(race.startTime)}
  </li>
  )}
  {race.startTime && (
- <li className="flex items-center gap-2 text-sm text-white/75">
- <Clock size={13} className="shrink-0 text-white/40" />{fmtTime(race.startTime)}
+ <li className="flex items-center gap-2 text-sm text-ink-2">
+ <Clock size={13} className="shrink-0 text-ink-4" />{fmtTime(race.startTime)}
  </li>
  )}
  {race.totalprizepool != null && (
- <li className="flex items-center gap-2 text-sm text-white/75">
+ <li className="flex items-center gap-2 text-sm text-ink-2">
  <Trophy size={13} className="shrink-0 text-gold" />
  Prize: ${Number(race.totalprizepool).toLocaleString()}
  </li>
@@ -149,8 +149,8 @@ export default function HeroSection() {
  className="absolute inset-0 h-full w-full object-cover"
  autoPlay loop muted playsInline aria-hidden="true"
  />
- {/* Gradient overlay — racing green tint for text readability */}
- <div className="absolute inset-0 bg-gradient-to-r from-navy-deep/80 via-navy-deep/35 to-transparent" />
+ {/* Gradient overlay — ivory tint for text readability */}
+ <div className="absolute inset-0 bg-gradient-to-r from-surface/95 via-surface/55 to-transparent" />
 
  <Container className="relative z-10 py-24">
  <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
@@ -167,19 +167,19 @@ export default function HeroSection() {
  </motion.div>
 
  {/* h1 — Cormorant Garamond at large display scale */}
- <motion.h1 variants={fadeUp} className="font-serif text-6xl font-bold leading-[1.05] text-on-blue sm:text-7xl lg:text-8xl">
+ <motion.h1 variants={fadeUp} className="font-serif text-6xl font-bold leading-[1.05] text-ink sm:text-7xl lg:text-8xl">
  Glory On<br />
  <em className="not-italic text-gold">The Racetrack</em>
  </motion.h1>
 
- <motion.p variants={fadeUp} className="mt-8 max-w-lg text-xl leading-relaxed text-on-blue/70">
+ <motion.p variants={fadeUp} className="mt-8 max-w-lg text-xl leading-relaxed text-ink-2">
  Where the proudest steeds and the most talented jockeys compete for
  glory in the world-class Royal Derby tournament.
  </motion.p>
 
  <motion.div variants={fadeUp} className="mt-10 flex flex-wrap gap-4">
  <Button as={Link} to="/races" variant="primary" size="lg">View Schedule</Button>
- <Button as={Link} to="/register" variant="ghost" size="lg" className="!border-0 !bg-white/10 !text-white backdrop-blur-md hover:!bg-white/20">
+ <Button as={Link} to="/register" variant="ghost" size="lg" className="!border-0 !bg-surface/70 !text-ink backdrop-blur-md hover:!bg-surface/90">
  Join Now <ArrowRight size={16} />
  </Button>
  </motion.div>

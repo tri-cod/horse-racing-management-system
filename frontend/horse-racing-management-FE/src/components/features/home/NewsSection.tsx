@@ -18,27 +18,27 @@ const [FEATURED, ...REST] = NEWS;
 
 export default function NewsSection() {
   return (
-    <section className="py-32 bg-navy">
+    <section className="py-32 bg-surface">
       <Container>
         <SectionHeader title="News & Events"
-          subtitle="Stay up to date with the latest stories from the Royal Derby season." invert />
+          subtitle="Stay up to date with the latest stories from the Royal Derby season." />
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Featured story */}
           <Reveal className="lg:col-span-2">
-            <article className="group h-full overflow-hidden rounded-md border border-on-blue/20 bg-on-blue/5 transition hover:border-gold/40 hover:shadow-xl hover:shadow-navy/50">
+            <article className="group h-full overflow-hidden rounded-md border border-rim bg-surface-raised transition hover:border-gold/40 hover:shadow-xl hover:shadow-surface/60">
               <div className="overflow-hidden">
                 <img src={FEATURED.img} alt={FEATURED.title} loading="lazy"
                   className="h-64 w-full object-cover transition duration-500 group-hover:scale-105 sm:h-80" />
               </div>
               <div className="p-6">
-                <h3 className="mb-2 font-serif text-2xl font-bold leading-snug text-on-blue">{FEATURED.title}</h3>
-                <p className="mb-4 text-sm leading-relaxed text-on-blue/65">{FEATURED.excerpt}</p>
-                <div className="flex items-center justify-between text-xs text-on-blue/40">
+                <h3 className="mb-2 font-serif text-2xl font-bold leading-snug text-ink">{FEATURED.title}</h3>
+                <p className="mb-4 text-sm leading-relaxed text-ink-2">{FEATURED.excerpt}</p>
+                <div className="flex items-center justify-between text-xs text-ink-4">
                   <span>{FEATURED.date}</span>
                   <span className="flex items-center gap-1"><Eye size={12} />{FEATURED.views}</span>
                 </div>
-                <div className="mt-3 border-t border-on-blue/15 pt-3">
+                <div className="mt-3 border-t border-rim pt-3">
                   <a href="#" className="flex items-center gap-1 text-xs font-semibold text-gold hover:text-gold-hi transition-colors">
                     Read more <ArrowRight size={11} />
                   </a>
@@ -51,12 +51,12 @@ export default function NewsSection() {
           <div className="flex flex-col gap-4">
             {REST.map((item, i) => (
               <Reveal key={item.id} delay={(i + 1) * 80}>
-                <article className="group flex gap-4 rounded-md border border-on-blue/20 bg-on-blue/5 p-3 transition hover:border-gold/40">
+                <article className="group flex gap-4 rounded-md border border-rim bg-surface-raised p-3 transition hover:border-gold/40">
                   <img src={item.img} alt={item.title} loading="lazy"
                     className="h-20 w-20 shrink-0 object-cover transition duration-500 group-hover:scale-105" />
                   <div className="min-w-0">
-                    <h3 className="mb-1 line-clamp-2 text-sm font-bold leading-snug text-on-blue">{item.title}</h3>
-                    <div className="flex items-center gap-3 text-[11px] text-on-blue/40">
+                    <h3 className="mb-1 line-clamp-2 text-sm font-bold leading-snug text-ink">{item.title}</h3>
+                    <div className="flex items-center gap-3 text-[11px] text-ink-4">
                       <span>{item.date}</span>
                       <span className="flex items-center gap-1"><Eye size={11} />{item.views}</span>
                     </div>
