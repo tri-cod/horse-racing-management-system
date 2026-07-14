@@ -30,7 +30,6 @@ public class AuthController {
 
         System.out.println("Controller entered");
 
-
         return ResponseEntity.ok("OTP sent to " + email);
     }
 

@@ -9,7 +9,8 @@ public class JockeyProfileResponse {
     private Long id;
     private Long userId;
     private String name;
-    private String avatarUrl;
+    private String avatarUrl;       // ← ảnh đại diện
+    private String coverImageUrl;
     private Long age;
     private Long experienceYear;
     private String description;
