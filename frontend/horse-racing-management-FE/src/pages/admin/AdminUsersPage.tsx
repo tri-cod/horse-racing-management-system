@@ -10,7 +10,7 @@ import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
 import type { User, UserRole, UserStatus } from '@/types';
 
-const ROLES: UserRole[] = ['ADMIN', 'REFEREE', 'HORSE_OWNER', 'TRAINER', 'JOCKEY', 'USER'];
+const ROLES: UserRole[] = ['ADMIN', 'STAFF', 'REFEREE', 'HORSE_OWNER', 'TRAINER', 'JOCKEY', 'USER'];
 const STATUSES: UserStatus[] = ['ACTIVE', 'INACTIVE', 'BANNED'];
 
 const selectCls =
