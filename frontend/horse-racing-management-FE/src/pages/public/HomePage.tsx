@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import HeroSection from '@/components/features/home/HeroSection';
 import AboutSection from '@/components/features/home/AboutSection';
 import RacesSection from '@/components/features/home/RacesSection';
-import LatestChampionsSection from '@/components/features/home/LatestChampionsSection';
+import JockeysSection from '@/components/features/home/JockeysSection';
 import SeasonStatsSection from '@/components/features/home/SeasonStatsSection';
 import GallerySection from '@/components/features/home/GallerySection';
 import NewsSection from '@/components/features/home/NewsSection';
@@ -32,8 +32,8 @@ export default function HomePage() {
       <Seo title="Royal Derby — Horse Racing Management" description="Welcome to Royal Derby — the premier platform for managing horse races, jockeys, results and betting." type="website" />
       <HeroSection />
       <RacesSection />
-      <LatestChampionsSection />
       <SeasonStatsSection />
+      <JockeysSection />
       <AboutSection />
       <GallerySection />
       <NewsSection />
