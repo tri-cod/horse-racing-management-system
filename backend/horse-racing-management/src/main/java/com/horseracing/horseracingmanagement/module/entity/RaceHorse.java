@@ -49,6 +49,7 @@ public class RaceHorse {
     @Column(name = "withdraw_reason", columnDefinition = "TEXT")
     private String withdrawReason;
 
+
     @Column(name = "start_position")
     private Long startPosition;
 

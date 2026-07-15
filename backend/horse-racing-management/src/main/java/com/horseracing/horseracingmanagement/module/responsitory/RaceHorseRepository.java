@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RaceHorseRepository extends JpaRepository<RaceHorse, Long> {
@@ -57,6 +58,9 @@ public interface RaceHorseRepository extends JpaRepository<RaceHorse, Long> {
     """, nativeQuery = true)
     void deleteHorseFromRace(@Param("horseId") Long horseId,
                              @Param("raceId") Long raceId);
+
+    Optional<RaceHorse> findByRace_IdAndHorse_Id(Long raceId, Long horseId);
+
 
     // ← thêm
     List<RaceHorse> findByRace_IdAndStatusIn(Long raceId, List<String> statuses);

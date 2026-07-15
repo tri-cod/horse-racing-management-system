@@ -96,7 +96,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         }
 
         // ← Tạo RaceHorse với status "PendingJockey" — chưa gắn jockey
-        RaceHorse raceHorse = raceHorseRepository.save(RaceHorse.builder()
+        RaceHorse saved = raceHorseRepository.save(RaceHorse.builder()
                 .race(race)
                 .horse(horse)
                 .jockey(null)  // ← chưa có jockey
@@ -109,10 +109,10 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                 String.format("Horse '%s' registered to race '%s'. Waiting for jockey.",
                         horse.getHorseName(), race.getRaceName()),
                 NotificationType.RACE_REGISTRATION,
-                raceHorse.getId()  // ← save trước rồi mới lấy id
+                saved.getId()  // ← save trước rồi mới lấy id
         );
 
-        return mapToResponse(raceHorse);
+        return mapToResponse(saved);
     }
 
     // ============ STEP 2 — HorseOwner gửi request cho Jockey ============
@@ -317,7 +317,8 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                     .add(BigDecimal.valueOf(race.getEntryFee())));
             walletRepository.save(ownerWallet);
         }
-
+        raceHorse.setStatus("Rejected");
+        RaceHorse saved = raceHorseRepository.save(raceHorse);
         // Notify HorseOwner
         notificationService.sendToUser(
                 ho.getUser().getId(),
@@ -329,10 +330,11 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                 raceHorseId
         );
 
-        // ← xóa hẳn khỏi race (fix bug: trước đây save sau delete tạo lại record)
-        raceHorseRepository.deleteById(raceHorseId);
 
-        return mapToResponse(raceHorse);  // trả về thông tin trước khi xóa
+
+        // ← xóa hẳn khỏi race (fix bug: trước đây save sau delete tạo lại record)
+        raceHorseRepository.deleteById(raceHorseId);  // xóa sau khi đã notify
+        return mapToResponse(saved);  // trả về thông tin trước khi xóa
     }
 
 

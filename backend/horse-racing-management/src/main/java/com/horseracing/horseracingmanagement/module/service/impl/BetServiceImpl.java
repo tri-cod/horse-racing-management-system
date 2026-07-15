@@ -108,7 +108,7 @@ public class BetServiceImpl implements BetService {
                     .horseName(raceHorse.getHorse().getHorseName())
                     .totalBetAmount(totalBet)
                     .totalBetCount(totalCount)
-                    .odds(BigDecimal.valueOf(2.0))
+                    .odds(raceHorse.getOdds())
                     .build());
         });
 
@@ -118,9 +118,10 @@ public class BetServiceImpl implements BetService {
     @Transactional
     public void calculateBetResults(Long raceId) {
         RaceResult winner = raceResultRepository.findByRace_IdOrderByRankAsc(raceId)
-                .stream().findFirst()
-                .orElseThrow(() -> new RuntimeException("Race result not found"));
-
+                .stream()
+                .filter(r -> r.getRank() != null && r.getRank() == 1L)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Winner (rank 1) not found"));
         Long winnerRaceHorseId = winner.getRaceHorse().getId();
         List<Bet> bets = betRepository.findByRace_IdAndStatus(raceId, "PENDING");
 

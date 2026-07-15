@@ -94,7 +94,7 @@ public class RaceSchedule {
         Instant now = Instant.now();
         Instant oneDayFromNow = now.plus(1, ChronoUnit.DAYS);
 
-        List<Race> races = raceRepository.findByStatus(RaceStatus.OPEN_REGISTRATION);
+        List<Race> races = raceRepository.findByStatus(RaceStatus.CLOSED_REGISTRATION);
         for (Race race : races) {
             if (race.getStartTime() != null && now.isAfter(
                     race.getStartTime().minus(1, ChronoUnit.DAYS))) {
