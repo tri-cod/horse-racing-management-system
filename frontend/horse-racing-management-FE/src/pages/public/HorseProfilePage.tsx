@@ -173,11 +173,6 @@ export default function HorseProfilePage() {
                 )}
               </div>
 
-              {horse.status && (
-                <span className="mb-1.5 inline-block rounded-full bg-gold/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gold">
-                  {horse.status}
-                </span>
-              )}
               <h1 className="font-serif text-3xl font-bold uppercase leading-tight text-ink sm:text-4xl">{horse.horseName}</h1>
               {horse.breed && <p className="mt-1 text-sm text-ink-3">{horse.breed}</p>}
             </div>
