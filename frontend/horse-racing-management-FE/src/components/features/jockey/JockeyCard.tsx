@@ -71,16 +71,6 @@ export default function JockeyCard({ jockey, onClick }: JockeyCardProps) {
         №{jockey.id}
       </span>
 
-      {/* Trạng thái, góc trái trên */}
-      {jockey.status && (
-        <span
-          className="absolute left-3 top-4 z-10 rounded-full px-2.5 py-1 text-[9px] font-semibold uppercase tracking-wider backdrop-blur-sm"
-          style={{ backgroundColor: GOLD_HAIRLINE, color: GOLD }}
-        >
-          {jockey.status}
-        </span>
-      )}
-
       {/* Nội dung chính - căn giữa như một thẻ hội viên */}
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-3 px-5 pt-2 text-center">
         {/* Huy hiệu tròn - ảnh thật hoặc initial khi chưa có ảnh */}
