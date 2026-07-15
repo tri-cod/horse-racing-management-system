@@ -14,6 +14,8 @@ export function useMyJockeyProfile() {
   const save = async (payload: CompleteJockeyProfilePayload): Promise<Jockey> => {
     const updated = await completeProfile(payload);
     queryClient.setQueryData<Jockey>(['my-jockey-profile'], updated);
+    // Keep the homepage's jockey highlights (avatar, name, stats) in sync with this save.
+    queryClient.invalidateQueries({ queryKey: ['top-jockeys'] });
     return updated;
   };
 

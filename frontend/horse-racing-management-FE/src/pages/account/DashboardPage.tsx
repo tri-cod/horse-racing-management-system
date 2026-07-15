@@ -73,6 +73,7 @@ export default function DashboardPage() {
         title={`Welcome back, ${user?.fullName ?? user?.username ?? 'Member'}`}
         subtitle="Here's an overview of your betting activity"
         initial={(user?.fullName ?? user?.username ?? 'M').charAt(0).toUpperCase()}
+        avatarUrl={user?.avatarUrl}
       />
 
       <div className="px-8">

@@ -18,6 +18,7 @@ const fmt = (n: number | null | undefined) =>
 
 export default function TrainerDashboardPage() {
   const { user } = useAuth();
+  const [profileAvatarUrl, setProfileAvatarUrl] = useState<string | null>(null);
   const [experienceYears, setExperienceYears] = useState<number | null>(null);
   const [profileComplete, setProfileComplete] = useState<boolean | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
@@ -38,6 +39,7 @@ export default function TrainerDashboardPage() {
 
     if (profileR.status === 'fulfilled') {
       const p = profileR.value;
+      setProfileAvatarUrl(p?.avatarUrl ?? null);
       setExperienceYears(p?.experienceYears ?? null);
       setProfileComplete(!!(p?.age && p?.experienceYears != null));
     } else {
@@ -79,6 +81,7 @@ export default function TrainerDashboardPage() {
         title={`Welcome back, ${user?.fullName ?? user?.username ?? 'Trainer'}`}
         subtitle="Here's an overview of your profile"
         initial={(user?.fullName ?? user?.username ?? 'T').charAt(0).toUpperCase()}
+        avatarUrl={profileAvatarUrl ?? user?.avatarUrl}
       />
 
       <div className="px-8">

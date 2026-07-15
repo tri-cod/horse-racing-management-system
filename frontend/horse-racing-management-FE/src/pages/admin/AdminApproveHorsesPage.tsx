@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CheckCircle, XCircle, ClipboardCheck, ChevronRight, ArrowLeft, Flag } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { CheckCircle, XCircle, ClipboardCheck, ChevronRight, ArrowLeft, Flag, Gauge, Award } from 'lucide-react';
 import { getPendingHorses, approveRaceHorse, rejectRaceHorse } from '@/api/raceHorseApi';
+import { getHorseById } from '@/api/horseOwnerApi';
 import { useToast } from '@/components/ui/ToastProvider';
 import EmptyState from '@/components/ui/EmptyState';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
-import type { RaceHorse } from '@/types';
+import type { RaceHorse, Horse } from '@/types';
 
 type FullRaceHorse = RaceHorse & { raceName?: string; registerAt?: string };
 
@@ -74,6 +75,8 @@ export default function AdminApproveHorsesPage() {
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<number | null>(null);
   const [selectedRaceId, setSelectedRaceId] = useState<number | null>(null);
+  const [horseDetails, setHorseDetails] = useState<Record<number, Horse>>({});
+  const fetchedHorseIdsRef = useRef<Set<number>>(new Set());
 
   const fetchPending = useCallback(async () => {
     setLoading(true); setError(null);
@@ -83,6 +86,19 @@ export default function AdminApproveHorsesPage() {
   }, []);
 
   useEffect(() => { fetchPending(); }, [fetchPending]);
+
+  // Pending entries don't carry breed/age/speed/rank — fetch per unique horse
+  // (same N+1 pattern used in AdminSetOddsPage / AdminRaceDetailPage), deduped
+  // via a ref so switching between races never re-fetches a horse already loaded.
+  useEffect(() => {
+    const toFetch = [...new Set(horses.map((h) => h.horseId))].filter((hid) => !fetchedHorseIdsRef.current.has(hid));
+    toFetch.forEach((hid) => {
+      fetchedHorseIdsRef.current.add(hid);
+      getHorseById(hid)
+        .then((horse) => setHorseDetails((prev) => ({ ...prev, [hid]: horse })))
+        .catch(() => { fetchedHorseIdsRef.current.delete(hid); });
+    });
+  }, [horses]);
 
   // Group pending entries by race so admin picks a race before seeing its list.
   const raceGroups: RaceGroup[] = useMemo(() => {
@@ -208,19 +224,42 @@ export default function AdminApproveHorsesPage() {
                   {selectedGroup.entries.map((rh) => {
                     const isLoading = actionLoading === rh.id;
                     const initial = rh.horseName?.charAt(0)?.toUpperCase() ?? '?';
+                    const detail = horseDetails[rh.horseId];
                     return (
                       <tr key={rh.id} className="transition-colors hover:bg-surface-overlay/40">
                         {/* Horse */}
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-3">
                             {rh.horseAvatarUrl ? (
-                              <img src={rh.horseAvatarUrl} alt={rh.horseName} className="h-8 w-8 shrink-0 rounded-full object-cover" />
+                              <img src={rh.horseAvatarUrl} alt={rh.horseName} className="h-9 w-9 shrink-0 rounded-full object-cover" />
                             ) : (
-                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy/10 font-serif text-sm font-bold text-navy">
+                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy/10 font-serif text-sm font-bold text-navy">
                                 {initial}
                               </div>
                             )}
-                            <span className="font-serif text-sm font-bold text-ink">{rh.horseName ?? '—'}</span>
+                            <div className="min-w-0">
+                              <p className="font-serif text-sm font-bold text-ink">{rh.horseName ?? '—'}</p>
+                              <p className="mt-0.5 flex items-center gap-2.5 truncate text-[10px] font-medium text-ink-4">
+                                {detail ? (
+                                  <>
+                                    {detail.breed && <span className="truncate">{detail.breed}</span>}
+                                    {detail.age != null && <span className="shrink-0">Age {detail.age}</span>}
+                                    {detail.speedRating != null && (
+                                      <span className="flex shrink-0 items-center gap-0.5">
+                                        <Gauge size={10} className="text-ink-4" /> {detail.speedRating}
+                                      </span>
+                                    )}
+                                    {detail.historyRank && (
+                                      <span className="flex shrink-0 items-center gap-0.5 text-gold">
+                                        <Award size={10} /> {detail.historyRank}
+                                      </span>
+                                    )}
+                                  </>
+                                ) : (
+                                  <span className="italic text-ink-4/60">Loading stats…</span>
+                                )}
+                              </p>
+                            </div>
                           </div>
                         </td>
                         {/* Jockey */}

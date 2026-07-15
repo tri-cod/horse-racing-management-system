@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Dna, Cake, VenetianMask, Scale, Zap, Trophy, UserCog } from 'lucide-react';
+import { ArrowLeft, Dna, Cake, VenetianMask, Scale, Zap, Trophy, UserCog, Pencil, Trash2 } from 'lucide-react';
 import { useHorseDetail } from '@/hooks/useHorseDetail';
+import { deleteHorse } from '@/api/horseOwnerApi';
+import { useToast } from '@/components/ui/ToastProvider';
 import AssignTrainerCard from '@/components/features/horse-owner/AssignTrainerCard';
 import HorseStatusBadge from '@/components/features/horse-owner/HorseStatusBadge';
 import Button from '@/components/ui/Button';
 import Seo from '@/components/seo/Seo';
+import { getErrorMessage } from '@/utils/errors';
 import type { Horse } from '@/types';
 
 type FullHorse = Horse & { history_rank?: string };
@@ -35,7 +39,23 @@ function PageSkeleton() {
 export default function HorseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const addToast = useToast();
   const { horse, loading, error, refetch } = useHorseDetail(id ? Number(id) : undefined);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!horse) return;
+    if (!window.confirm(`Delete "${horse.horseName}"? This cannot be undone.`)) return;
+    setDeleting(true);
+    try {
+      await deleteHorse(horse.id);
+      addToast(`"${horse.horseName}" deleted.`, 'success');
+      navigate('/horse-owner/horses');
+    } catch (e: unknown) {
+      addToast(getErrorMessage(e, 'Failed to delete horse.'), 'error');
+      setDeleting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -71,13 +91,30 @@ export default function HorseDetailPage() {
     <div className="px-8 py-6">
       <Seo title={h.horseName} description={`Horse detail — ${h.horseName}`} />
 
-      <button
-        type="button"
-        onClick={() => navigate(-1)}
-        className="mb-6 flex items-center gap-1.5 text-sm font-medium text-ink-3 transition-colors hover:text-ink"
-      >
-        <ArrowLeft size={15} /> Back to My Horses
-      </button>
+      <div className="mb-6 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1.5 text-sm font-medium text-ink-3 transition-colors hover:text-ink"
+        >
+          <ArrowLeft size={15} /> Back to My Horses
+        </button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost" size="sm"
+            onClick={() => navigate(`/horse-owner/horses/${h.id}/edit`)}
+          >
+            <Pencil size={13} /> Edit
+          </Button>
+          <Button
+            variant="ghost" size="sm" disabled={deleting}
+            onClick={handleDelete}
+            className="!border-fail/40 !text-fail hover:!bg-fail-subtle"
+          >
+            <Trash2 size={13} /> {deleting ? 'Deleting…' : 'Delete'}
+          </Button>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_272px]">
 

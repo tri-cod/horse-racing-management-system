@@ -18,6 +18,8 @@ const fmt = (n: number | null | undefined) =>
 
 export default function JockeyDashboardPage() {
   const { user } = useAuth();
+  const [profileName, setProfileName] = useState<string | null>(null);
+  const [profileAvatarUrl, setProfileAvatarUrl] = useState<string | null>(null);
   const [experienceYear, setExperienceYear] = useState<number | null>(null);
   const [profileComplete, setProfileComplete] = useState<boolean | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
@@ -38,6 +40,8 @@ export default function JockeyDashboardPage() {
 
     if (profileR.status === 'fulfilled') {
       const p = profileR.value;
+      setProfileName(p?.name ?? null);
+      setProfileAvatarUrl(p?.avatarUrl ?? null);
       setExperienceYear(p?.experienceYear ?? null);
       setProfileComplete(!!(p?.age && p?.experienceYear != null));
     } else {
@@ -71,14 +75,17 @@ export default function JockeyDashboardPage() {
     badge: { label: 'Active', tone: 'ok' },
   }));
 
+  const displayName = profileName ?? user?.fullName ?? user?.username ?? 'Jockey';
+
   return (
     <div>
       <Seo title="My Dashboard" description="Overview of your jockey profile." />
       <DashboardHero
         eyebrow="Jockey"
-        title={`Welcome back, ${user?.fullName ?? user?.username ?? 'Jockey'}`}
+        title={`Welcome back, ${displayName}`}
         subtitle="Here's an overview of your profile"
-        initial={(user?.fullName ?? user?.username ?? 'J').charAt(0).toUpperCase()}
+        initial={displayName.charAt(0).toUpperCase()}
+        avatarUrl={profileAvatarUrl ?? user?.avatarUrl}
       />
 
       <div className="px-8">

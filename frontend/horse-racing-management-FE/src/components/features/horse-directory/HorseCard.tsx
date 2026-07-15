@@ -8,16 +8,8 @@ interface HorseCardProps {
   onClick?: (horse: HorseCurrentStatusResponse) => void;
 }
 
-const STATUS_STYLES: Record<string, string> = {
-  ACTIVE: 'bg-gold/90 text-on-gold',
-  INACTIVE: 'bg-on-blue/20 text-on-blue/80',
-  RETIRE: 'bg-fail/90 text-white',
-};
-
 export default function HorseCard({ horse, onClick }: HorseCardProps) {
   const reduce = useReducedMotion();
-  const statusKey = (horse.status ?? '').toUpperCase();
-  const statusCls = STATUS_STYLES[statusKey] ?? 'bg-on-blue/20 text-on-blue/80';
 
   return (
     <motion.div
@@ -47,13 +39,6 @@ export default function HorseCard({ horse, onClick }: HorseCardProps) {
       <div className="absolute right-0 top-4 z-10 flex h-8 items-center rounded-l-full bg-navy/80 py-1 pl-3 pr-4 backdrop-blur-sm">
         <span className="tnum text-xs font-bold text-gold">#{horse.horseId}</span>
       </div>
-
-      {/* Status badge, top-left */}
-      {horse.status && (
-        <span className={`absolute left-4 top-4 z-10 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${statusCls}`}>
-          {horse.status}
-        </span>
-      )}
 
       {/* Content, bottom */}
       <div className="absolute inset-x-0 bottom-0 z-10 p-5">

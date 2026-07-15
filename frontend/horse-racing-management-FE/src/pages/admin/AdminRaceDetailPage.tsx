@@ -1,22 +1,27 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
-  ChevronLeft, Pencil, Trash2, Lock, TrendingUp, MapPin, Calendar,
-  Trophy, Users, CheckCircle2, XCircle, Flag,
+  ChevronLeft, Pencil, Trash2, Lock, LockOpen, TrendingUp, MapPin, Calendar,
+  Trophy, Users, CheckCircle2, XCircle, Flag, PlayCircle, FlagOff, Gauge, Award,
 } from 'lucide-react';
 import { useRaceDetail } from '@/hooks/useRaceDetail';
 import { useHorsesByRace } from '@/hooks/useHorsesByRace';
 import { useRaceResults } from '@/hooks/useRaceResults';
-import { approveRaceHorse, rejectRaceHorse } from '@/api/raceHorseApi';
-import { updateRace, deleteRace } from '@/api/raceApi';
+import { approveRaceHorse, rejectRaceHorse, approveWithdrawal, rejectWithdrawal } from '@/api/raceHorseApi';
+import { updateRace, deleteRace, reopenRace, startRace, finishRace } from '@/api/raceApi';
+import { getHorseById } from '@/api/horseOwnerApi';
 import { useToast } from '@/components/ui/ToastProvider';
 import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
 import RaceHorseStatusBadge from '@/components/features/race-horse/RaceHorseStatusBadge';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Seo from '@/components/seo/Seo';
+import type { Horse } from '@/types';
 
 const CLOSEABLE = new Set(['UPCOMING', 'OPEN_REGISTRATION']);
+const REOPENABLE = new Set(['CLOSED_REGISTRATION']);
+const STARTABLE = new Set(['CLOSED_REGISTRATION']);
+const FINISHABLE = new Set(['ONGOING']);
 
 const fmtPrize = (n?: number) =>
   n != null
@@ -47,7 +52,25 @@ export default function AdminRaceDetailPage() {
 
   const [actionId, setActionId] = useState<number | null>(null);
   const [closing, setClosing] = useState(false);
+  const [reopening, setReopening] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [starting, setStarting] = useState(false);
+  const [finishing, setFinishing] = useState(false);
+  const [horseDetails, setHorseDetails] = useState<Record<number, Horse>>({});
+  const fetchedHorseIdsRef = useRef<Set<number>>(new Set());
+
+  // Race-horse entries don't carry breed/age/speed/rank — fetch them per unique
+  // horse (same N+1 pattern already used in AdminSetOddsPage), deduped via a ref
+  // so re-renders never re-fetch a horse already loaded.
+  useEffect(() => {
+    const toFetch = [...new Set(entries.map((e) => e.horseId))].filter((hid) => !fetchedHorseIdsRef.current.has(hid));
+    toFetch.forEach((hid) => {
+      fetchedHorseIdsRef.current.add(hid);
+      getHorseById(hid)
+        .then((horse) => setHorseDetails((prev) => ({ ...prev, [hid]: horse })))
+        .catch(() => { fetchedHorseIdsRef.current.delete(hid); });
+    });
+  }, [entries]);
 
   const handleApprove = async (entryId: number, horseName?: string) => {
     setActionId(entryId);
@@ -73,6 +96,43 @@ export default function AdminRaceDetailPage() {
     } finally { setActionId(null); }
   };
 
+  const handleApproveWithdrawal = async (entryId: number, horseName?: string) => {
+    setActionId(entryId);
+    try {
+      await approveWithdrawal(entryId);
+      addToast(`Withdrawal approved for "${horseName ?? 'horse'}".`, 'success');
+      refetchEntries();
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      addToast(err?.response?.data?.message ?? 'Failed to approve withdrawal.', 'error');
+    } finally { setActionId(null); }
+  };
+
+  const handleRejectWithdrawal = async (entryId: number, horseName?: string) => {
+    setActionId(entryId);
+    try {
+      await rejectWithdrawal(entryId);
+      addToast(`Withdrawal rejected for "${horseName ?? 'horse'}".`, 'success');
+      refetchEntries();
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      addToast(err?.response?.data?.message ?? 'Failed to reject withdrawal.', 'error');
+    } finally { setActionId(null); }
+  };
+
+  const handleReopenRegistration = async () => {
+    if (!race) return;
+    setReopening(true);
+    try {
+      await reopenRace(race.id);
+      addToast('Registration reopened.', 'success');
+      refetchRace();
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      addToast(err?.response?.data?.message ?? 'Failed to reopen registration.', 'error');
+    } finally { setReopening(false); }
+  };
+
   const handleCloseRegistration = async () => {
     if (!race) return;
     if (!window.confirm(`Close registration for "${race.raceName}"?`)) return;
@@ -85,6 +145,34 @@ export default function AdminRaceDetailPage() {
       const err = e as { response?: { data?: { message?: string } } };
       addToast(err?.response?.data?.message ?? 'Failed to close registration.', 'error');
     } finally { setClosing(false); }
+  };
+
+  const handleStartRace = async () => {
+    if (!race) return;
+    if (!window.confirm(`Start "${race.raceName}"? Betting and registration will close.`)) return;
+    setStarting(true);
+    try {
+      await startRace(race.id);
+      addToast('Race started.', 'success');
+      refetchRace();
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      addToast(err?.response?.data?.message ?? 'Failed to start race.', 'error');
+    } finally { setStarting(false); }
+  };
+
+  const handleFinishRace = async () => {
+    if (!race) return;
+    if (!window.confirm(`Mark "${race.raceName}" as finished?`)) return;
+    setFinishing(true);
+    try {
+      await finishRace(race.id);
+      addToast('Race finished.', 'success');
+      refetchRace();
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      addToast(err?.response?.data?.message ?? 'Failed to finish race.', 'error');
+    } finally { setFinishing(false); }
   };
 
   const handleDelete = async () => {
@@ -117,7 +205,8 @@ export default function AdminRaceDetailPage() {
     );
   }
 
-const pendingCount = entries.filter((e) => (e.status as string) === 'Pending').length;
+const pendingCount = entries.filter((e) => (e.status as string) === 'PendingAdmin').length;
+const withdrawCount = entries.filter((e) => (e.status as string) === 'WithdrawPending').length;
 
   return (
     <div className="px-8 py-6">
@@ -141,6 +230,36 @@ const pendingCount = entries.filter((e) => (e.status as string) === 'Pending').l
                 className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-warn-subtle hover:text-warn disabled:opacity-50"
               >
                 <Lock size={13} /> {closing ? 'Closing…' : 'Close Registration'}
+              </button>
+            )}
+            {REOPENABLE.has(race.status) && (
+              <button
+                type="button"
+                disabled={reopening}
+                onClick={handleReopenRegistration}
+                className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-ok-subtle hover:text-ok disabled:opacity-50"
+              >
+                <LockOpen size={13} /> {reopening ? 'Reopening…' : 'Reopen Registration'}
+              </button>
+            )}
+            {STARTABLE.has(race.status) && (
+              <button
+                type="button"
+                disabled={starting}
+                onClick={handleStartRace}
+                className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-ok-subtle hover:text-ok disabled:opacity-50"
+              >
+                <PlayCircle size={13} /> {starting ? 'Starting…' : 'Start Race'}
+              </button>
+            )}
+            {FINISHABLE.has(race.status) && (
+              <button
+                type="button"
+                disabled={finishing}
+                onClick={handleFinishRace}
+                className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-gold/10 hover:text-gold disabled:opacity-50"
+              >
+                <FlagOff size={13} /> {finishing ? 'Finishing…' : 'Finish Race'}
               </button>
             )}
             <Link
@@ -207,7 +326,10 @@ const pendingCount = entries.filter((e) => (e.status as string) === 'Pending').l
         <div className="mb-4 flex items-center justify-between">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">
-              {pendingCount > 0 ? `${pendingCount} awaiting approval` : 'Entries'}
+              {[
+                pendingCount > 0 ? `${pendingCount} awaiting approval` : null,
+                withdrawCount > 0 ? `${withdrawCount} awaiting withdrawal review` : null,
+              ].filter(Boolean).join(' · ') || 'Entries'}
             </p>
             <h2 className="font-serif text-lg font-bold text-ink">Race Entries</h2>
           </div>
@@ -252,25 +374,48 @@ const pendingCount = entries.filter((e) => (e.status as string) === 'Pending').l
                   {entries.map((e) => {
                     const isLoading = actionId === e.id;
                     const initial = e.horseName?.charAt(0)?.toUpperCase() ?? '?';
+                    const detail = horseDetails[e.horseId];
                     return (
                       <tr key={e.id} className="transition-colors hover:bg-surface-overlay/40">
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-3">
                             {e.horseAvatarUrl ? (
-                              <img src={e.horseAvatarUrl} alt={e.horseName} className="h-8 w-8 shrink-0 rounded-full object-cover" />
+                              <img src={e.horseAvatarUrl} alt={e.horseName} className="h-9 w-9 shrink-0 rounded-full object-cover" />
                             ) : (
-                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy/10 font-serif text-sm font-bold text-navy">
+                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy/10 font-serif text-sm font-bold text-navy">
                                 {initial}
                               </div>
                             )}
-                            <span className="font-serif text-sm font-bold text-ink">{e.horseName ?? `Horse #${e.horseId}`}</span>
+                            <div className="min-w-0">
+                              <p className="font-serif text-sm font-bold text-ink">{e.horseName ?? `Horse #${e.horseId}`}</p>
+                              <p className="mt-0.5 flex items-center gap-2.5 truncate text-[10px] font-medium text-ink-4">
+                                {detail ? (
+                                  <>
+                                    {detail.breed && <span className="truncate">{detail.breed}</span>}
+                                    {detail.age != null && <span className="shrink-0">Age {detail.age}</span>}
+                                    {detail.speedRating != null && (
+                                      <span className="flex shrink-0 items-center gap-0.5">
+                                        <Gauge size={10} className="text-ink-4" /> {detail.speedRating}
+                                      </span>
+                                    )}
+                                    {detail.historyRank && (
+                                      <span className="flex shrink-0 items-center gap-0.5 text-gold">
+                                        <Award size={10} /> {detail.historyRank}
+                                      </span>
+                                    )}
+                                  </>
+                                ) : (
+                                  <span className="italic text-ink-4/60">Loading stats…</span>
+                                )}
+                              </p>
+                            </div>
                           </div>
                         </td>
                         <td className="px-5 py-3.5 text-sm text-ink-2">{e.jockeyName ?? '—'}</td>
                         <td className="px-5 py-3.5"><RaceHorseStatusBadge status={e.status} /></td>
                         <td className="tnum px-5 py-3.5 text-sm font-semibold text-ink">{e.odds != null ? `×${Number(e.odds).toFixed(2)}` : '—'}</td>
                         <td className="px-5 py-3.5">
-{(e.status as string) === 'Pending' ? (
+                          {(e.status as string) === 'PendingAdmin' ? (
                             <div className="flex gap-2">
                               <button
                                 type="button"
@@ -287,6 +432,25 @@ const pendingCount = entries.filter((e) => (e.status as string) === 'Pending').l
                                 className="inline-flex items-center gap-1 border border-fail/30 bg-fail-subtle px-2.5 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail hover:text-white disabled:opacity-50"
                               >
                                 <XCircle size={12} /> Reject
+                              </button>
+                            </div>
+                          ) : (e.status as string) === 'WithdrawPending' ? (
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                disabled={isLoading}
+                                onClick={() => handleApproveWithdrawal(e.id, e.horseName)}
+                                className="inline-flex items-center gap-1 border border-ok/30 bg-ok-subtle px-2.5 py-1.5 text-xs font-semibold text-ok transition-colors hover:bg-ok hover:text-white disabled:opacity-50"
+                              >
+                                <CheckCircle2 size={12} /> Approve Withdrawal
+                              </button>
+                              <button
+                                type="button"
+                                disabled={isLoading}
+                                onClick={() => handleRejectWithdrawal(e.id, e.horseName)}
+                                className="inline-flex items-center gap-1 border border-fail/30 bg-fail-subtle px-2.5 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail hover:text-white disabled:opacity-50"
+                              >
+                                <XCircle size={12} /> Reject Withdrawal
                               </button>
                             </div>
                           ) : (

@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import AppLayout from '@/components/layout/AppLayout';
 import { ProtectedRoute } from '@/router/ProtectedRoute';
@@ -36,6 +36,7 @@ const HorseOwnerDashboardPage = lazy(() => import('@/pages/horse-owner/HorseOwne
 const MyHorsesPage = lazy(() => import('@/pages/horse-owner/MyHorsesPage'));
 const HorseRegisterPage = lazy(() => import('@/pages/horse-owner/HorseRegisterPage'));
 const HorseDetailPage = lazy(() => import('@/pages/horse-owner/HorseDetailPage'));
+const HorseEditPage = lazy(() => import('@/pages/horse-owner/HorseEditPage'));
 const HorseOwnerRacePage = lazy(() => import('@/pages/horse-owner/HorseOwnerRacePage'));
 const MyRaceRegistrationsPage = lazy(() => import('@/pages/horse-owner/MyRaceRegistrationsPage'));
 
@@ -46,6 +47,7 @@ const TrainerProfilePage = lazy(() => import('@/pages/trainer/TrainerProfilePage
 // Jockey
 const JockeyDashboardPage = lazy(() => import('@/pages/jockey/JockeyDashboardPage'));
 const JockeyMyProfilePage = lazy(() => import('@/pages/jockey/JockeyMyProfilePage'));
+const JockeyRaceRequestsPage = lazy(() => import('@/pages/jockey/JockeyRaceRequestsPage'));
 
 // Referee
 const RefereeDashboardPage = lazy(() => import('@/pages/referee/RefereeDashboardPage'));
@@ -59,8 +61,8 @@ const AdminRaceDetailPage = lazy(() => import('@/pages/admin/AdminRaceDetailPage
 const AdminCreateRacePage = lazy(() => import('@/pages/admin/AdminCreateRacePage'));
 const AdminEditRacePage = lazy(() => import('@/pages/admin/AdminEditRacePage'));
 const AdminApproveHorsesPage = lazy(() => import('@/pages/admin/AdminApproveHorsesPage'));
+const AdminWithdrawalRequestsPage = lazy(() => import('@/pages/admin/AdminWithdrawalRequestsPage'));
 const AdminSetOddsPage = lazy(() => import('@/pages/admin/AdminSetOddsPage'));
-const AdminDepositPage = lazy(() => import('@/pages/admin/AdminDepositPage'));
 const AdminWalletPage = lazy(() => import('@/pages/admin/AdminWalletPage'));
 
 function RouteFallback() {
@@ -140,6 +142,11 @@ export default function App() {
               <AppLayout><HorseDetailPage /></AppLayout>
             </ProtectedRoute>
           } />
+          <Route path="/horse-owner/horses/:id/edit" element={
+            <ProtectedRoute allowedRoles={['HORSE_OWNER']}>
+              <AppLayout><HorseEditPage /></AppLayout>
+            </ProtectedRoute>
+          } />
           <Route path="/horse-owner/register-race" element={
             <ProtectedRoute allowedRoles={['HORSE_OWNER']}>
               <AppLayout><HorseOwnerRacePage /></AppLayout>
@@ -172,6 +179,11 @@ export default function App() {
           <Route path="/jockey/profile" element={
             <ProtectedRoute allowedRoles={['JOCKEY']}>
               <AppLayout><JockeyMyProfilePage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/jockey/race-requests" element={
+            <ProtectedRoute allowedRoles={['JOCKEY']}>
+              <AppLayout><JockeyRaceRequestsPage /></AppLayout>
             </ProtectedRoute>
           } />
 
@@ -223,16 +235,19 @@ export default function App() {
               <AppLayout><AdminApproveHorsesPage /></AppLayout>
             </ProtectedRoute>
           } />
+          <Route path="/admin/withdrawal-requests" element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AppLayout><AdminWithdrawalRequestsPage /></AppLayout>
+            </ProtectedRoute>
+          } />
           <Route path="/admin/set-odds" element={
             <ProtectedRoute allowedRoles={['ADMIN', 'STAFF']}>
               <AppLayout><AdminSetOddsPage /></AppLayout>
             </ProtectedRoute>
           } />
-          <Route path="/admin/deposits" element={
-            <ProtectedRoute allowedRoles={['ADMIN']}>
-              <AppLayout><AdminDepositPage /></AppLayout>
-            </ProtectedRoute>
-          } />
+          {/* Deposit Requests merged into System Wallet as a tab — keep the old
+              URL working by redirecting straight into that tab. */}
+          <Route path="/admin/deposits" element={<Navigate to="/admin/wallet?tab=deposits" replace />} />
           <Route path="/admin/wallet" element={
             <ProtectedRoute allowedRoles={['ADMIN']}>
               <AppLayout><AdminWalletPage /></AppLayout>
