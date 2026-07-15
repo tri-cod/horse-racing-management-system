@@ -32,6 +32,12 @@ public class Jockey {
     @Column(name = "experience_year")
     private Long experienceYear;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    @Column(name = "cover_image_url")
+    private String coverImageUrl;
+
     @Size(max = 20)
     @Column(name = "status", length = 20)
     private String status;

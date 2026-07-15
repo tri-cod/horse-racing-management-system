@@ -40,6 +40,15 @@ public class RaceHorse {
     @Column(name = "lane_number")
     private Long laneNumber;
 
+    @Column(name = "jockey_revenue_percent", precision = 5, scale = 2)
+    private BigDecimal jockeyRevenuePercent;  // % Jockey được hưởng, ví dụ 10.00
+
+    @Column(name = "owner_revenue_percent", precision = 5, scale = 2)
+    private BigDecimal ownerRevenuePercent;
+
+    @Column(name = "withdraw_reason", columnDefinition = "TEXT")
+    private String withdrawReason;
+
     @Column(name = "start_position")
     private Long startPosition;
 

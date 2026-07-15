@@ -13,6 +13,6 @@ public class RegisterRaceHorseRequest {
     private Long raceId;
     @NotNull
     private Long horseId;
-    @NotNull
-    private Long jockeyId;
+
+    private Long entryFee;
 }

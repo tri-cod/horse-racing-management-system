@@ -2,7 +2,9 @@ package com.horseracing.horseracingmanagement.module.responsitory;
 
 import com.horseracing.horseracingmanagement.module.entity.RaceHorse;
 import io.lettuce.core.dynamic.annotation.Param;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -43,6 +45,22 @@ public interface RaceHorseRepository extends JpaRepository<RaceHorse, Long> {
             @Param("raceDate") Instant raceDate);
 
     List<RaceHorse> findByJockey_IdAndStatus(Long jockeyId, String status);
+
+
+
+    @Modifying
+    @Transactional
+    @Query(value = """
+    DELETE FROM race_horse
+    WHERE horse_id = :horseId
+      AND race_id = :raceId
+    """, nativeQuery = true)
+    void deleteHorseFromRace(@Param("horseId") Long horseId,
+                             @Param("raceId") Long raceId);
+
+    // ← thêm
+    List<RaceHorse> findByRace_IdAndStatusIn(Long raceId, List<String> statuses);
+    List<RaceHorse> findByJockey_IdAndStatusIn(Long jockeyId, List<String> statuses);
 
 
 

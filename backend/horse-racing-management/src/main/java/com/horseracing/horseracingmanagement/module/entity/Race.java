@@ -60,6 +60,9 @@ public class Race {
     @Column(name = "distance", length = Integer.MAX_VALUE)  // ← bỏ NotNull
     private String distance;
 
+    @Column(name = "entry_fee")
+    private Long entryFee;
+
     @Size(max = 150)
     @Column(name = "location", length = 150)
     private String location;
