@@ -46,6 +46,9 @@ public class RaceHorse {
     @Column(name = "owner_revenue_percent", precision = 5, scale = 2)
     private BigDecimal ownerRevenuePercent;
 
+    @Column(name = "withdraw_reason", columnDefinition = "TEXT")
+    private String withdrawReason;
+
     @Column(name = "start_position")
     private Long startPosition;
 

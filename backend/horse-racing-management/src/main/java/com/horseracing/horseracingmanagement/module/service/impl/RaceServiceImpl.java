@@ -175,6 +175,8 @@ public class RaceServiceImpl implements RaceService {
 
         RaceStatus oldStatus = race.getStatus(); // [WS] lưu status cũ để so sánh sau khi save
 
+
+        validateRaceTimeUpdate(race, request);
         if (request.getRefereeId() != null) {
             RaceReferee referee = raceRefereeRepository.findById(request.getRefereeId())
                     .orElseThrow(() -> new RuntimeException("Referee not found"));
@@ -211,6 +213,65 @@ public class RaceServiceImpl implements RaceService {
         return mapToResponse(saved);
     }
 
+    private void validateRaceTimeUpdate(Race race, CreateRaceRequest request) {
+        Instant now = Instant.now();
+
+        // Không cho sửa khi race đã ONGOING hoặc FINISHED
+        if (race.getStatus() == RaceStatus.ONGOING ||
+                race.getStatus() == RaceStatus.FINISHED) {
+            throw new RuntimeException("Cannot edit a race that is ongoing or finished");
+        }
+
+        // startTime phải sau thời điểm hiện tại
+        if (request.getStartTime() != null &&
+                request.getStartTime().isBefore(now)) {
+            throw new RuntimeException("Start time must be in the future");
+        }
+
+        // registrationDeadline phải trước startTime
+        if (request.getRegistrationDeadline() != null &&
+                request.getStartTime() != null &&
+                request.getRegistrationDeadline().isAfter(request.getStartTime())) {
+            throw new RuntimeException("Registration deadline must be before start time");
+        }
+        // endTime phải sau startTime
+        if (request.getEndTime() != null &&
+                request.getStartTime() != null &&
+                request.getEndTime().isBefore(request.getStartTime())) {
+            throw new RuntimeException("End time must be after start time");
+        }
+
+        // Nếu đã CLOSED_REGISTRATION mà đổi deadline về tương lai
+        // → gợi ý reopen registration thay vì tự đổi
+        if (race.getStatus() == RaceStatus.CLOSED_REGISTRATION &&
+                request.getRegistrationDeadline() != null &&
+                request.getRegistrationDeadline().isAfter(now)) {
+            throw new RuntimeException(
+                    "Race is already CLOSED_REGISTRATION. To reopen, use the reopen endpoint instead.");
+        }
+    }
+    @Override
+    public RaceResponse reopenRace(Long raceId) {
+        Race race = raceRepository.findById(raceId)
+                .orElseThrow(() -> new RuntimeException("Race not found"));
+
+        if (race.getStatus() != RaceStatus.CLOSED_REGISTRATION) {
+            throw new RuntimeException("Only CLOSED_REGISTRATION race can be reopened");
+        }
+
+        race.setStatus(RaceStatus.OPEN_REGISTRATION);
+        raceRepository.save(race);
+
+        wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
+                .raceId(race.getId())
+                .raceName(race.getRaceName())
+                .status("OPEN_REGISTRATION")
+                .message("Registration reopened!")
+                .updatedAt(Instant.now())
+                .build());
+
+        return mapToResponse(race);
+    }
 
 
 

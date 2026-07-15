@@ -17,4 +17,5 @@ public interface RaceService {
     RaceResponse startRace(Long id);
 
     RaceResponse finishRace(Long id);
+    RaceResponse reopenRace(Long raceId);
 }

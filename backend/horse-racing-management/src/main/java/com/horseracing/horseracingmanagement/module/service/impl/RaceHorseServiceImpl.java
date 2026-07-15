@@ -13,6 +13,7 @@ import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
 import com.horseracing.horseracingmanagement.module.service.NotificationService;
 import com.horseracing.horseracingmanagement.module.service.RaceHorseService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -429,48 +430,148 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                 .collect(Collectors.toList());
     }
 
+
+    // ============ HorseOwner xin rút khỏi race ============
     @Override
-    public RaceHorseResponse SendWithdrawalApplication(WithdrawalRequest request, Long userId) {
+    @Transactional
+    public RaceHorseResponse requestWithdrawal(WithdrawalRequest request, Long userId) {
         HorseOwner owner = horseOwnerRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
 
-        Race race = raceRepository.findById(request.getRaceId())
-                .orElseThrow(() -> new RuntimeException("Race not found"));
+        RaceHorse raceHorse = raceHorseRepository.findById(request.getRaceHorseId())
+                .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
 
-        Horse horse = horseRepository.findById(request.getHorseId())
-                .orElseThrow(() -> new RuntimeException("Horse not found"));
-
-        if (!horse.getOwnerId().equals(owner.getId())) {
+        // Check đúng owner không
+        if (!raceHorse.getHorse().getOwnerId().equals(owner.getId())) {
             throw new RuntimeException("You are not the owner of this horse");
         }
-        Jockey jockey = jockeyRepository.findById(request.getJockeyId())
-                .orElseThrow(() -> new RuntimeException("Jockey not found"));
 
+        // Chỉ cho rút khi race chưa bắt đầu
+        Race race = raceHorse.getRace();
+        if (race.getStatus() == RaceStatus.ONGOING ||
+                race.getStatus() == RaceStatus.FINISHED ||
+                race.getStatus() == RaceStatus.CANCELLED) {
+            throw new RuntimeException(
+                    "Cannot withdraw after race has started or finished");
+        }
 
-        RaceHorse raceHorse = RaceHorse.builder()
-                .race(race)
-                .horse(horse)
-                .jockey(jockey)  // ← thêm
-                .status("Withdrawal")
-                .build();
+        // Check status hợp lệ để rút
+        if (raceHorse.getStatus().equals("Withdrawn") ||
+                raceHorse.getStatus().equals("Rejected")) {
+            throw new RuntimeException("This registration is already withdrawn or rejected");
+        }
 
+        // ← Đánh dấu đang chờ duyệt rút
+        raceHorse.setStatus("WithdrawPending");
+        raceHorse.setWithdrawReason(request.getReason());
+        RaceHorse saved = raceHorseRepository.save(raceHorse);
 
+        // Notify Admin
         notificationService.sendToAllAdmins(
-                "Withdrawal Request",
-                String.format("Horse '%s' requested to withdrawal race '%s'",
-                        horse.getHorseName(), race.getRaceName()),
-                NotificationType.RACE_WITHDRAWAL,  // ← truyền enum trực tiếp
-                raceHorse.getId()
+                "⚠️ Withdrawal Request",
+                String.format("Owner '%s' requested to withdraw horse '%s' from race '%s'. Reason: %s",
+                        owner.getName(),
+                        raceHorse.getHorse().getHorseName(),
+                        race.getRaceName(),
+                        request.getReason()),
+                NotificationType.RACE_WITHDRAWAL,
+                saved.getId()
         );
 
-        return mapToResponse(raceHorseRepository.save(raceHorse));
+        return mapToResponse(saved);
+    }
+
+    // ============ Admin duyệt rút ============
+    @Override
+    @Transactional
+    public RaceHorseResponse approveWithdrawal(Long raceHorseId) {
+        RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
+                .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
+
+        if (!raceHorse.getStatus().equals("WithdrawPending")) {
+            throw new RuntimeException("No pending withdrawal request");
+        }
+
+        Race race = raceHorse.getRace();
+        HorseOwner owner = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
+                .orElseThrow(() -> new RuntimeException("Owner not found"));
+
+        // ← Hoàn 50% phí tham gia
+        if (race.getEntryFee() != null && race.getEntryFee() > 0) {
+            BigDecimal refund = BigDecimal.valueOf(race.getEntryFee())
+                    .multiply(BigDecimal.valueOf(0.5));  // hoàn 50%
+
+            Wallet ownerWallet = walletRepository.findByUser_Id(owner.getUser().getId())
+                    .orElseThrow(() -> new RuntimeException("Owner wallet not found"));
+            ownerWallet.setBalance(ownerWallet.getBalance().add(refund));
+            walletRepository.save(ownerWallet);
+
+            notificationService.sendToUser(
+                    owner.getUser().getId(),
+                    "✅ Withdrawal Approved",
+                    String.format("Your withdrawal for horse '%s' from race '%s' was approved. 50%% entry fee (%s) refunded.",
+                            raceHorse.getHorse().getHorseName(),
+                            race.getRaceName(),
+                            refund),
+                    NotificationType.RACE_WITHDRAWAL,
+                    raceHorseId
+            );
+        } else {
+            notificationService.sendToUser(
+                    owner.getUser().getId(),
+                    "✅ Withdrawal Approved",
+                    String.format("Your withdrawal for horse '%s' from race '%s' was approved.",
+                            raceHorse.getHorse().getHorseName(),
+                            race.getRaceName()),
+                    NotificationType.RACE_WITHDRAWAL,
+                    raceHorseId
+            );
+        }
+
+        // ← Xóa horse khỏi race
+        raceHorseRepository.deleteById(raceHorseId);
+
+        return mapToResponse(raceHorse);
+    }
+
+    // ============ Admin từ chối rút ============
+    @Override
+    public RaceHorseResponse rejectWithdrawal(Long raceHorseId) {
+        RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
+                .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
+
+        if (!raceHorse.getStatus().equals("WithdrawPending")) {
+            throw new RuntimeException("No pending withdrawal request");
+        }
+
+        // Khôi phục status trước đó
+        raceHorse.setStatus("Approved");
+        raceHorse.setWithdrawReason(null);
+        RaceHorse saved = raceHorseRepository.save(raceHorse);
+
+        HorseOwner owner = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
+                .orElseThrow();
+
+        notificationService.sendToUser(
+                owner.getUser().getId(),
+                "❌ Withdrawal Rejected",
+                String.format("Your withdrawal request for horse '%s' was rejected. Horse remains in race '%s'.",
+                        raceHorse.getHorse().getHorseName(),
+                        raceHorse.getRace().getRaceName()),
+                NotificationType.RACE_WITHDRAWAL,
+                raceHorseId
+        );
+
+        return mapToResponse(saved);
     }
 
     @Override
-    public RaceHorseResponse withdrawal(Long RaceHorseId) {
-        return null;
+    public List<RaceHorseResponse> getWithdrawPending() {
+        return raceHorseRepository.findByStatus("WithdrawPending")
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
-
 
     @Override
     public RaceHorseResponse setOddsForOne(SetOddsRequest request) {

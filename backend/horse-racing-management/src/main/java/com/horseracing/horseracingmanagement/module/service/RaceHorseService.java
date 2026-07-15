@@ -23,12 +23,15 @@ public interface RaceHorseService {
     RaceHorseResponse setOddsForOne(SetOddsRequest request);
     List<RaceHorseResponse> getPendingHorses(); // Admin lấy danh sách chờ duyệt
     List<JockeyResponse> getAvaiableJockeyList(Long raceId);
-    RaceHorseResponse SendWithdrawalApplication (WithdrawalRequest with, Long userId);
-    RaceHorseResponse withdrawal(Long RaceHorseId);
+
     RaceHorseResponse jockeyDecline(Long raceHorseId, Long userId);
     RaceHorseResponse jockeyAccept(Long raceHorseId, Long userId);
     RaceHorseResponse sendJockeyRequest(JockeyRequestDto request, Long userId);
     void cleanupPendingOnClose(Long raceId);
     List<RaceHorseResponse> getJockeyRequests(Long userId);
+    RaceHorseResponse requestWithdrawal(WithdrawalRequest request, Long userId);
+    RaceHorseResponse approveWithdrawal(Long raceHorseId);
+    RaceHorseResponse rejectWithdrawal(Long raceHorseId);
+    List<RaceHorseResponse> getWithdrawPending();
 
 }
