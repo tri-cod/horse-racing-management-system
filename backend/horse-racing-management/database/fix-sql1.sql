@@ -79,3 +79,11 @@ ALTER TABLE jockey ADD COLUMN IF NOT EXISTS cover_image_url VARCHAR(255);
 -- Trainer
 ALTER TABLE trainer ADD COLUMN IF NOT EXISTS cover_image_url VARCHAR(255);
 
+ALTER TABLE race ADD COLUMN IF NOT EXISTS entry_fee BIGINT DEFAULT 0;
+
+
+ALTER TABLE race_horse
+    ADD COLUMN IF NOT EXISTS jockey_revenue_percent NUMERIC(5,2) DEFAULT 10.00,
+    ADD COLUMN IF NOT EXISTS owner_revenue_percent  NUMERIC(5,2) DEFAULT 90.00;
+
+ALTER TABLE race_horse ADD COLUMN IF NOT EXISTS withdraw_reason TEXT;

@@ -6,6 +6,7 @@ import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseRaceHistor
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseRequest;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.UpdateHorse;
+import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.WithdrawalRequest;
 import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
 import com.horseracing.horseracingmanagement.module.service.HorseOwnerService;
@@ -259,6 +260,13 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .currentRaceStatus(currentRaceHorse.map(rh -> rh.getRace().getStatus().name()).orElse(null))
                 .registrationStatus(currentRaceHorse.map(RaceHorse::getStatus).orElse(null))
                 .build();
+    }
+
+    @Override
+    public void SendWithdrawalApplication(WithdrawalRequest with, Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
+
     }
 
     @Override

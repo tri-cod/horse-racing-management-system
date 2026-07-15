@@ -5,7 +5,8 @@ public enum NotificationType {
     // Race Horse
     RACE_REGISTRATION,      // HorseOwner đăng ký horse vào race → gửi Admin
     RACE_APPROVED,          // Admin duyệt horse → gửi HorseOwner
-    RACE_REJECTED,          // Admin từ chối horse → gửi HorseOwner
+    RACE_REJECTED,     // Admin từ chối horse → gửi HorseOwner
+    RACE_WITHDRAWAL,
 
     // Race
     RACE_CREATED,           // Admin tạo race mới → gửi tất cả

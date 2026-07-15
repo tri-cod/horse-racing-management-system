@@ -1,6 +1,8 @@
 package com.horseracing.horseracingmanagement.module.controller;
 
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
+import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.WithdrawalRequest;
+import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyRequestDto;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RegisterRaceHorseRequest;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetAllOddsRequest;
@@ -98,4 +100,80 @@ public class RaceHorseController {
         return ResponseEntity.ok(ApiResponse.success("Odds set successfully",
                 raceHorseService.setOddsForOne(new SetOddsRequest(id, odds))));
     }
+
+    // HorseOwner gửi request cho Jockey
+    @PostMapping("/jockey-request")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<RaceHorseResponse>> sendJockeyRequest(
+            @RequestBody JockeyRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Jockey request sent",
+                raceHorseService.sendJockeyRequest(request, userDetails.getId())));
+    }
+
+    // Jockey xem các request đang chờ mình
+    @GetMapping("/jockey-requests")
+    @PreAuthorize("hasAuthority('JOCKEY')")
+    public ResponseEntity<ApiResponse<List<RaceHorseResponse>>> getJockeyRequests(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                raceHorseService.getJockeyRequests(userDetails.getId())));
+    }
+
+    // Jockey chấp nhận
+    @PutMapping("/{id}/jockey-accept")
+    @PreAuthorize("hasAuthority('JOCKEY')")
+    public ResponseEntity<ApiResponse<RaceHorseResponse>> jockeyAccept(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Request accepted",
+                raceHorseService.jockeyAccept(id, userDetails.getId())));
+    }
+
+    // Jockey từ chối
+    @PutMapping("/{id}/jockey-decline")
+    @PreAuthorize("hasAuthority('JOCKEY')")
+    public ResponseEntity<ApiResponse<RaceHorseResponse>> jockeyDecline(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Request declined",
+                raceHorseService.jockeyDecline(id, userDetails.getId())));
+    }
+
+    // HorseOwner xin rút
+    @PostMapping("/withdraw")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<RaceHorseResponse>> requestWithdrawal(
+            @Valid @RequestBody WithdrawalRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Withdrawal request sent",
+                raceHorseService.requestWithdrawal(request, userDetails.getId())));
+    }
+
+    // Admin duyệt rút
+    @PutMapping("/{id}/approve-withdrawal")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<RaceHorseResponse>> approveWithdrawal(
+            @PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Withdrawal approved",
+                raceHorseService.approveWithdrawal(id)));
+    }
+
+    // Admin từ chối rút
+    @PutMapping("/{id}/reject-withdrawal")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<RaceHorseResponse>> rejectWithdrawal(
+            @PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Withdrawal rejected",
+                raceHorseService.rejectWithdrawal(id)));
+    }
+
+    // Admin xem danh sách đang chờ duyệt rút
+    @GetMapping("/withdraw-pending")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<List<RaceHorseResponse>>> getWithdrawPending() {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                raceHorseService.getWithdrawPending()));
+    }
+
 }

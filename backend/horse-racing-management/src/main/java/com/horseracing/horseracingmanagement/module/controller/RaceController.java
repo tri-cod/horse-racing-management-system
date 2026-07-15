@@ -47,6 +47,13 @@ public class RaceController {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 raceService.getRaceList(status, pageable)));
     }
+    // Mở lại đăng ký (ví dụ admin lỡ close sớm)
+    @PutMapping("/{id}/reopen")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<RaceResponse>> reopenRace(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Race reopened",
+                raceService.reopenRace(id)));
+    }
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")  // ← chỉ ADMIN
