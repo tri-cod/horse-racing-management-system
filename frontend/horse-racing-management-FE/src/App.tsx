@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import AppLayout from '@/components/layout/AppLayout';
 import { ProtectedRoute } from '@/router/ProtectedRoute';
@@ -63,7 +63,6 @@ const AdminEditRacePage = lazy(() => import('@/pages/admin/AdminEditRacePage'));
 const AdminApproveHorsesPage = lazy(() => import('@/pages/admin/AdminApproveHorsesPage'));
 const AdminWithdrawalRequestsPage = lazy(() => import('@/pages/admin/AdminWithdrawalRequestsPage'));
 const AdminSetOddsPage = lazy(() => import('@/pages/admin/AdminSetOddsPage'));
-const AdminDepositPage = lazy(() => import('@/pages/admin/AdminDepositPage'));
 const AdminWalletPage = lazy(() => import('@/pages/admin/AdminWalletPage'));
 
 function RouteFallback() {
@@ -246,11 +245,9 @@ export default function App() {
               <AppLayout><AdminSetOddsPage /></AppLayout>
             </ProtectedRoute>
           } />
-          <Route path="/admin/deposits" element={
-            <ProtectedRoute allowedRoles={['ADMIN']}>
-              <AppLayout><AdminDepositPage /></AppLayout>
-            </ProtectedRoute>
-          } />
+          {/* Deposit Requests merged into System Wallet as a tab — keep the old
+              URL working by redirecting straight into that tab. */}
+          <Route path="/admin/deposits" element={<Navigate to="/admin/wallet?tab=deposits" replace />} />
           <Route path="/admin/wallet" element={
             <ProtectedRoute allowedRoles={['ADMIN']}>
               <AppLayout><AdminWalletPage /></AppLayout>

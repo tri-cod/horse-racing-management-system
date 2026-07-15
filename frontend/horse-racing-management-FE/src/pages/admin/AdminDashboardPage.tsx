@@ -252,7 +252,7 @@ export default function AdminDashboardPage() {
             error={depositsError}
             emptyIcon={BadgeDollarSign}
             emptyLabel="No pending deposits"
-            viewAllTo="/admin/deposits"
+            viewAllTo="/admin/wallet?tab=deposits"
           />
           <ActivityList
             icon={ArrowDownLeft}
@@ -272,7 +272,7 @@ export default function AdminDashboardPage() {
             { icon: Plus, label: 'Create Race', description: 'Set up a new race event', to: '/admin/races/create' },
             { icon: ClipboardCheck, label: 'Approve Horses', description: 'Review pending horse registrations', to: '/admin/approve-horses' },
             { icon: TrendingUp, label: 'Set Odds', description: 'Update morning-line odds for a race', to: '/admin/set-odds' },
-            { icon: BadgeDollarSign, label: 'Deposit Requests', description: 'Verify VietQR deposit transfers', to: '/admin/deposits' },
+            { icon: BadgeDollarSign, label: 'Deposit Requests', description: 'Verify VietQR deposit transfers', to: '/admin/wallet?tab=deposits' },
             { icon: Landmark, label: 'System Wallet', description: 'Review balance and withdrawal requests', to: '/admin/wallet' },
           ]}
         />

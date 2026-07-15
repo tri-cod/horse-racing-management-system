@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
- LayoutDashboard, ClipboardCheck, Plus, BadgeDollarSign, Flag,
+ LayoutDashboard, ClipboardCheck, Plus, Flag,
  Shield, ClipboardList, Ticket, Wallet, UserCog, TrendingUp,
  User, LogOut, Landmark, PencilLine, FlagTriangleRight, Send, Undo2, type LucideIcon,
 } from 'lucide-react';
@@ -17,7 +17,6 @@ const ROLE_ITEMS: Partial<Record<UserRole, NavItem[]>> = {
  { icon: ClipboardCheck, label: 'Approve Horses', href: '/admin/approve-horses' },
  { icon: Undo2, label: 'Horse Withdrawals', href: '/admin/withdrawal-requests' },
  { icon: Plus, label: 'Create Race', href: '/admin/races/create' },
- { icon: BadgeDollarSign, label: 'Deposit Requests', href: '/admin/deposits' },
  { icon: PencilLine, label: 'Manage Races', href: '/admin/races', end: true },
  { icon: TrendingUp, label: 'Set Odds', href: '/admin/set-odds' },
  { icon: Landmark, label: 'System Wallet', href: '/admin/wallet' },

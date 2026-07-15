@@ -1,11 +1,28 @@
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, Rabbit, Trophy, Flag, Wallet, MapPin, Calendar, Award, Sparkles } from 'lucide-react';
+import {
+  ChevronLeft, Rabbit, Trophy, Flag, Wallet, MapPin, Calendar, Award, Sparkles,
+  Venus, Mars, Weight, Gauge, GraduationCap, Palette,
+} from 'lucide-react';
 import { useHorseProfile } from '@/hooks/useHorseProfile';
 import { useHorseRaceHistory } from '@/hooks/useHorseRaceHistory';
+import { getHorseById } from '@/api/horseOwnerApi';
 import Container from '@/components/ui/Container';
 import Seo from '@/components/seo/Seo';
 import StatCard from '@/components/shared/StatCard';
-import type { HorseRaceHistoryItem } from '@/types';
+import type { HorseRaceHistoryItem, Horse } from '@/types';
+
+function DetailFact({ icon: Icon, label, value }: { icon: typeof Rabbit; label: string; value: string }) {
+  return (
+    <div className="flex items-center gap-2.5 px-4 py-3">
+      <Icon size={15} className="shrink-0 text-ink-4" />
+      <div className="min-w-0">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-4">{label}</p>
+        <p className="truncate text-sm font-medium text-ink">{value}</p>
+      </div>
+    </div>
+  );
+}
 
 function fmtMoney(n?: number) {
   if (n == null) return '—';
@@ -124,6 +141,29 @@ export default function HorseProfilePage() {
   const { horse, loading: profileLoading, error: profileError } = useHorseProfile(horseId);
   const { history, best, totalRewards, wins, racesRun, loading: historyLoading } = useHorseRaceHistory(horseId);
 
+  // The public horse-list endpoint only carries name/breed/avatar/status — age,
+  // gender, weight, speed rating, class and trainer live on the richer horse-owner
+  // endpoint. It requires a logged-in session, so this silently yields nothing
+  // extra for anonymous visitors instead of breaking the page.
+  const [detail, setDetail] = useState<Horse | null>(null);
+  useEffect(() => {
+    setDetail(null);
+    if (!horseId) return;
+    getHorseById(horseId).then(setDetail).catch(() => {});
+  }, [horseId]);
+
+  const detailFacts = detail
+    ? [
+        detail.gender && { icon: detail.gender.toLowerCase() === 'female' ? Venus : Mars, label: 'Gender', value: detail.gender },
+        detail.age != null && { icon: Calendar, label: 'Age', value: `${detail.age} years old` },
+        detail.weight != null && { icon: Weight, label: 'Weight', value: `${detail.weight} kg` },
+        detail.speedRating != null && { icon: Gauge, label: 'Speed Rating', value: String(detail.speedRating) },
+        detail.historyRank && { icon: GraduationCap, label: 'Achievement', value: detail.historyRank },
+        detail.color && { icon: Palette, label: 'Color', value: detail.color },
+        detail.trainerName && { icon: Award, label: 'Trainer', value: detail.trainerName },
+      ].filter((f): f is { icon: typeof Rabbit; label: string; value: string } => !!f)
+    : [];
+
   return (
     <div className="min-h-screen bg-surface pb-20">
       <Seo title={horse?.horseName ?? 'Horse Profile'} description="Full race history and career stats." />
@@ -176,6 +216,13 @@ export default function HorseProfilePage() {
               <h1 className="font-serif text-3xl font-bold uppercase leading-tight text-ink sm:text-4xl">{horse.horseName}</h1>
               {horse.breed && <p className="mt-1 text-sm text-ink-3">{horse.breed}</p>}
             </div>
+
+            {/* Horse details — gender/age/weight/speed/class/trainer, only for fields that exist */}
+            {detailFacts.length > 0 && (
+              <div className="grid grid-cols-2 divide-x divide-y divide-rim border border-t-0 border-rim bg-surface-raised sm:grid-cols-3 sm:divide-y-0">
+                {detailFacts.map((f) => <DetailFact key={f.label} {...f} />)}
+              </div>
+            )}
 
             {/* Stat strip */}
             <div className="grid grid-cols-2 gap-3 pt-6 sm:grid-cols-4">

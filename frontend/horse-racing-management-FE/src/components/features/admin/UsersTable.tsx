@@ -5,11 +5,10 @@ import type { User } from '@/types';
 
 interface UsersTableProps {
  users: User[];
- onEditRole: (user: User) => void;
- onEditStatus: (user: User) => void;
+ onManage: (user: User) => void;
 }
 
-export default function UsersTable({ users, onEditRole, onEditStatus }: UsersTableProps) {
+export default function UsersTable({ users, onManage }: UsersTableProps) {
  if (users.length === 0) {
  return <EmptyState icon={Users} title="No users found" subtitle="Try adjusting your search or filter criteria." />;
  }
@@ -26,7 +25,7 @@ export default function UsersTable({ users, onEditRole, onEditStatus }: UsersTab
  </thead>
  <tbody className="divide-y divide-rim">
  {users.map((u) => (
- <UserRow key={u.id} user={u} onEditRole={onEditRole} onEditStatus={onEditStatus} />
+ <UserRow key={u.id} user={u} onManage={onManage} />
  ))}
  </tbody>
  </table>
