@@ -2,6 +2,8 @@ package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
+import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.WithdrawalRequest;
+import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyRequestDto;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RegisterRaceHorseRequest;
@@ -31,6 +33,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
     private final HorseOwnerRepository horseOwnerRepository;
     private final JockeyRepository jockeyRepository;
     private final BetItemRepository betItemRepository;
+    private final WalletRepository walletRepository;
 
     private final NotificationService notificationService;
     @Override
@@ -41,16 +44,15 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         Race race = raceRepository.findById(request.getRaceId())
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
-        Long countHorseInRace = raceHorseRepository.countByRace_IdAndStatus(request.getRaceId(),"Approve");
-
-        if (race.getStatus() != RaceStatus.UPCOMING && race.getStatus() != RaceStatus.OPEN_REGISTRATION) {
+        if (race.getStatus() != RaceStatus.UPCOMING &&
+                race.getStatus() != RaceStatus.OPEN_REGISTRATION) {
             throw new RuntimeException("Race is not open for registration");
         }
 
-        if(countHorseInRace>=race.getCapacity()){
-            throw new RuntimeException("Race capacity exceeded");
+        if (race.getRegistrationDeadline() != null &&
+                Instant.now().isAfter(race.getRegistrationDeadline())) {
+            throw new RuntimeException("Registration deadline has passed");
         }
-
 
         Horse horse = horseRepository.findById(request.getHorseId())
                 .orElseThrow(() -> new RuntimeException("Horse not found"));
@@ -63,28 +65,11 @@ public class RaceHorseServiceImpl implements RaceHorseService {
             throw new RuntimeException("Horse must have a trainer before registering");
         }
 
-        // ← lấy jockey
-        Jockey jockey = jockeyRepository.findById(request.getJockeyId())
-                .orElseThrow(() -> new RuntimeException("Jockey not found"));
-
         if (raceHorseRepository.existsByRace_IdAndHorse_Id(race.getId(), horse.getId())) {
             throw new RuntimeException("Horse already registered in this race");
         }
 
-        // Check jockey đã tham gia race này chưa
-        if (raceHorseRepository.existsByRace_IdAndJockey_Id(race.getId(), jockey.getId())) {
-            throw new RuntimeException("Jockey already assigned in this race");
-        }
-
-        if (race.getRegistrationDeadline() != null &&
-                Instant.now().isAfter(race.getRegistrationDeadline())) {
-            throw new RuntimeException("Registration deadline has passed");
-        }
-
-        long registered = raceHorseRepository.countByRace_IdAndStatus(race.getId(), "Approved");
-        if (race.getCapacity() != null && registered >= race.getCapacity()) {
-            throw new RuntimeException("Race is full");
-        }
+        // Check cùng ngày
         if (race.getStartTime() != null) {
             List<Long> horsesOnSameDay = raceHorseRepository.findHorseIdsOnSameDay(
                     race.getId(), race.getStartTime());
@@ -94,24 +79,178 @@ public class RaceHorseServiceImpl implements RaceHorseService {
             }
         }
 
-        RaceHorse raceHorse = RaceHorse.builder()
+        // ← Trừ phí tham gia khỏi ví HorseOwner
+        if (race.getEntryFee() != null && race.getEntryFee() > 0) {
+            Wallet ownerWallet = walletRepository.findByUser_Id(owner.getUser().getId())
+                    .orElseThrow(() -> new RuntimeException("Owner wallet not found"));
+
+            if (ownerWallet.getBalance().compareTo(
+                    BigDecimal.valueOf(race.getEntryFee())) < 0) {
+                throw new RuntimeException("Insufficient balance to pay entry fee");
+            }
+
+            ownerWallet.setBalance(ownerWallet.getBalance()
+                    .subtract(BigDecimal.valueOf(race.getEntryFee())));
+            walletRepository.save(ownerWallet);
+        }
+
+        // ← Tạo RaceHorse với status "PendingJockey" — chưa gắn jockey
+        RaceHorse raceHorse = raceHorseRepository.save(RaceHorse.builder()
                 .race(race)
                 .horse(horse)
-                .jockey(jockey)  // ← thêm
-                .status("Pending")
-                .build();
+                .jockey(null)  // ← chưa có jockey
+                .status("PendingJockey")
+                .build());
 
+        // Notify admin
         notificationService.sendToAllAdmins(
                 "New Race Registration",
-                String.format("Horse '%s' requested to join race '%s'",
+                String.format("Horse '%s' registered to race '%s'. Waiting for jockey.",
                         horse.getHorseName(), race.getRaceName()),
-                NotificationType.RACE_REGISTRATION,  // ← truyền enum trực tiếp
+                NotificationType.RACE_REGISTRATION,
+                raceHorse.getId()  // ← save trước rồi mới lấy id
+        );
+
+        return mapToResponse(raceHorse);
+    }
+
+    // ============ STEP 2 — HorseOwner gửi request cho Jockey ============
+    @Override
+    public RaceHorseResponse sendJockeyRequest(JockeyRequestDto request, Long userId) {
+        RaceHorse raceHorse = raceHorseRepository.findById(request.getRaceHorseId())
+                .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
+
+        // Check owner đúng không
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Owner not found"));
+        if (!raceHorse.getHorse().getOwnerId().equals(owner.getId())) {
+            throw new RuntimeException("You are not the owner of this horse");
+        }
+
+        if (!raceHorse.getStatus().equals("PendingJockey") &&
+                !raceHorse.getStatus().equals("JockeyRejected")) {
+            throw new RuntimeException("Cannot send jockey request at this stage");
+        }
+
+        Jockey jockey = jockeyRepository.findById(request.getJockeyId())
+                .orElseThrow(() -> new RuntimeException("Jockey not found"));
+
+        // Check jockey đã trong race này chưa
+        if (raceHorseRepository.existsByRace_IdAndJockey_Id(
+                raceHorse.getRace().getId(), jockey.getId())) {
+            throw new RuntimeException("Jockey already assigned in this race");
+        }
+
+        raceHorse.setJockey(jockey);
+        raceHorse.setStatus("PendingJockey");
+        raceHorseRepository.save(raceHorse);
+
+        // Notify Jockey
+        notificationService.sendToUser(
+                jockey.getUser().getId(),
+                "🏇 Jockey Request!",
+                String.format("You have been invited to ride horse '%s' in race '%s'. Please accept or decline.",
+                        raceHorse.getHorse().getHorseName(),
+                        raceHorse.getRace().getRaceName()),
+                NotificationType.RACE_REGISTRATION,
                 raceHorse.getId()
         );
 
-        return mapToResponse(raceHorseRepository.save(raceHorse));
+        return mapToResponse(raceHorse);
     }
 
+    // ============ STEP 3A — Jockey chấp nhận ============
+    @Override
+    public RaceHorseResponse jockeyAccept(Long raceHorseId, Long userId) {
+        RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
+                .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
+
+        // Check đúng jockey không
+        Jockey jockey = jockeyRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Jockey not found"));
+
+        if (!raceHorse.getJockey().getId().equals(jockey.getId())) {
+            throw new RuntimeException("You are not the assigned jockey");
+        }
+
+        if (!raceHorse.getStatus().equals("PendingJockey")) {
+            throw new RuntimeException("No pending jockey request");
+        }
+
+        // ← Jockey chấp nhận → chuyển sang chờ Admin duyệt
+        raceHorse.setStatus("PendingAdmin");
+        raceHorseRepository.save(raceHorse);
+
+        // Notify Admin
+        notificationService.sendToAllAdmins(
+                "Horse Ready for Approval",
+                String.format("Jockey accepted. Horse '%s' is waiting for admin approval in race '%s'.",
+                        raceHorse.getHorse().getHorseName(),
+                        raceHorse.getRace().getRaceName()),
+                NotificationType.RACE_REGISTRATION,
+                raceHorseId
+        );
+
+        // Notify HorseOwner
+        HorseOwner owner = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
+                .orElseThrow();
+        notificationService.sendToUser(
+                owner.getUser().getId(),
+                "✅ Jockey Accepted!",
+                String.format("Jockey accepted your request for horse '%s'. Waiting for admin approval.",
+                        raceHorse.getHorse().getHorseName()),
+                NotificationType.RACE_APPROVED,
+                raceHorseId
+        );
+
+        return mapToResponse(raceHorse);
+    }
+
+    @Override
+    public RaceHorseResponse jockeyDecline(Long raceHorseId, Long userId) {
+        RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
+                .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
+
+        Jockey jockey = jockeyRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Jockey not found"));
+
+        if (!raceHorse.getJockey().getId().equals(jockey.getId())) {
+            throw new RuntimeException("You are not the assigned jockey");
+        }
+
+        // ← Jockey từ chối → HorseOwner chọn jockey khác
+        raceHorse.setStatus("JockeyRejected");
+        raceHorse.setJockey(null);  // ← xóa jockey, cho chọn lại
+        raceHorseRepository.save(raceHorse);
+
+        // Notify HorseOwner
+        HorseOwner owner = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
+                .orElseThrow();
+        notificationService.sendToUser(
+                owner.getUser().getId(),
+                "❌ Jockey Declined",
+                String.format("Jockey declined your request for horse '%s'. Please choose another jockey.",
+                        raceHorse.getHorse().getHorseName()),
+                NotificationType.RACE_REJECTED,
+                raceHorseId
+        );
+
+        return mapToResponse(raceHorse);
+    }
+
+
+    @Override
+    public List<RaceHorseResponse> getJockeyRequests(Long userId) {
+        // Tìm Jockey từ userId
+        Jockey jockey = jockeyRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Jockey profile not found"));
+
+        // Lấy các RaceHorse đang chờ jockey này xác nhận
+        return raceHorseRepository.findByJockey_IdAndStatus(jockey.getId(), "PendingJockey")
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public List<RaceHorseResponse> getRaceHorseList(Long raceId) {
@@ -134,47 +273,106 @@ public class RaceHorseServiceImpl implements RaceHorseService {
 
     @Override
     public RaceHorseResponse approveHorse(Long raceHorseId) {
-
-
         RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
+
+        if (!raceHorse.getStatus().equals("PendingAdmin")) {
+            throw new RuntimeException("Horse must be PendingAdmin to approve");
+        }
+
         raceHorse.setStatus("Approved");
+        RaceHorse saved = raceHorseRepository.save(raceHorse);  // ← save trước
 
         HorseOwner ho = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
-                .orElseThrow(() -> new RuntimeException("User of owner not found"));
+                .orElseThrow(() -> new RuntimeException("Owner not found"));
 
-        User user = userRepository.findById(ho.getUser().getId())
-                .orElseThrow(() -> new RuntimeException("User of owner not found"));
-
-        notificationService.sendToUser(user.getId(),
-                "Registration Approved!",
-                String.format("Your horse '%s' has been approved!",
-                        raceHorse.getHorse().getHorseName()),
-                NotificationType.RACE_APPROVED,  // ← truyền enum trực tiếp
+        notificationService.sendToUser(
+                ho.getUser().getId(),
+                "🎉 Registration Approved!",
+                String.format("Your horse '%s' has been approved for race '%s'!",
+                        raceHorse.getHorse().getHorseName(),
+                        raceHorse.getRace().getRaceName()),
+                NotificationType.RACE_APPROVED,
                 raceHorseId
         );
-        return mapToResponse(raceHorseRepository.save(raceHorse));
+
+        return mapToResponse(saved);
     }
 
     @Override
     public RaceHorseResponse rejectHorse(Long raceHorseId) {
         RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
-        raceHorse.setStatus("Rejected");
 
-      HorseOwner ho =  horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
-              .orElseThrow(() -> new RuntimeException("Owner not found"));
+        HorseOwner ho = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
+                .orElseThrow(() -> new RuntimeException("Owner not found"));
 
+        // ← Hoàn phí tham gia nếu có
+        Race race = raceHorse.getRace();
+        if (race.getEntryFee() != null && race.getEntryFee() > 0) {
+            Wallet ownerWallet = walletRepository.findByUser_Id(ho.getUser().getId())
+                    .orElseThrow(() -> new RuntimeException("Owner wallet not found"));
+            ownerWallet.setBalance(ownerWallet.getBalance()
+                    .add(BigDecimal.valueOf(race.getEntryFee())));
+            walletRepository.save(ownerWallet);
+        }
+
+        // Notify HorseOwner
         notificationService.sendToUser(
                 ho.getUser().getId(),
-                "Registration Rejected",
-                String.format("Your horse '%s' has been rejected",
-                        raceHorse.getHorse().getHorseName()),
+                "❌ Registration Rejected",
+                String.format("Your horse '%s' has been rejected from race '%s'. Entry fee refunded.",
+                        raceHorse.getHorse().getHorseName(),
+                        raceHorse.getRace().getRaceName()),
                 NotificationType.RACE_REJECTED,
                 raceHorseId
         );
-        return mapToResponse(raceHorseRepository.save(raceHorse));
+
+        // ← xóa hẳn khỏi race (fix bug: trước đây save sau delete tạo lại record)
+        raceHorseRepository.deleteById(raceHorseId);
+
+        return mapToResponse(raceHorse);  // trả về thông tin trước khi xóa
     }
+
+
+    public void cleanupPendingOnClose(Long raceId) {
+        List<RaceHorse> pendingList = raceHorseRepository
+                .findByRace_IdAndStatusIn(raceId,
+                        List.of("PendingJockey", "JockeyRejected"));
+
+        pendingList.forEach(raceHorse -> {
+            // Hoàn phí nếu có
+            Race race = raceHorse.getRace();
+            if (race.getEntryFee() != null && race.getEntryFee() > 0) {
+                HorseOwner owner = horseOwnerRepository
+                        .findById(raceHorse.getHorse().getOwnerId()).orElse(null);
+                if (owner != null) {
+                    Wallet wallet = walletRepository
+                            .findByUser_Id(owner.getUser().getId()).orElse(null);
+                    if (wallet != null) {
+                        wallet.setBalance(wallet.getBalance()
+                                .add(BigDecimal.valueOf(race.getEntryFee())));
+                        walletRepository.save(wallet);
+                    }
+
+                    // Notify HorseOwner
+                    notificationService.sendToUser(
+                            owner.getUser().getId(),
+                            "Registration Cancelled",
+                            String.format("Registration for horse '%s' was cancelled because race '%s' closed. Entry fee refunded.",
+                                    raceHorse.getHorse().getHorseName(),
+                                    race.getRaceName()),
+                            NotificationType.RACE_REJECTED,
+                            raceHorse.getId()
+                    );
+                }
+            }
+        });
+
+        // ← Xóa tất cả Pending chưa hoàn tất
+        raceHorseRepository.deleteAll(pendingList);
+    }
+
 
     @Override
     public void setOdds(SetAllOddsRequest request) {
@@ -231,6 +429,47 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public RaceHorseResponse SendWithdrawalApplication(WithdrawalRequest request, Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
+
+        Race race = raceRepository.findById(request.getRaceId())
+                .orElseThrow(() -> new RuntimeException("Race not found"));
+
+        Horse horse = horseRepository.findById(request.getHorseId())
+                .orElseThrow(() -> new RuntimeException("Horse not found"));
+
+        if (!horse.getOwnerId().equals(owner.getId())) {
+            throw new RuntimeException("You are not the owner of this horse");
+        }
+        Jockey jockey = jockeyRepository.findById(request.getJockeyId())
+                .orElseThrow(() -> new RuntimeException("Jockey not found"));
+
+
+        RaceHorse raceHorse = RaceHorse.builder()
+                .race(race)
+                .horse(horse)
+                .jockey(jockey)  // ← thêm
+                .status("Withdrawal")
+                .build();
+
+
+        notificationService.sendToAllAdmins(
+                "Withdrawal Request",
+                String.format("Horse '%s' requested to withdrawal race '%s'",
+                        horse.getHorseName(), race.getRaceName()),
+                NotificationType.RACE_WITHDRAWAL,  // ← truyền enum trực tiếp
+                raceHorse.getId()
+        );
+
+        return mapToResponse(raceHorseRepository.save(raceHorse));
+    }
+
+    @Override
+    public RaceHorseResponse withdrawal(Long RaceHorseId) {
+        return null;
+    }
 
 
     @Override

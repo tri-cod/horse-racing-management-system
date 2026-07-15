@@ -1,5 +1,7 @@
 package com.horseracing.horseracingmanagement.module.service;
 
+import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.WithdrawalRequest;
+import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyRequestDto;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RegisterRaceHorseRequest;
@@ -20,4 +22,13 @@ public interface RaceHorseService {
     void setOdds(SetAllOddsRequest request);        // set odds cho tất cả horse
     RaceHorseResponse setOddsForOne(SetOddsRequest request);
     List<RaceHorseResponse> getPendingHorses(); // Admin lấy danh sách chờ duyệt
-    List<JockeyResponse> getAvaiableJockeyList(Long raceId);}
+    List<JockeyResponse> getAvaiableJockeyList(Long raceId);
+    RaceHorseResponse SendWithdrawalApplication (WithdrawalRequest with, Long userId);
+    RaceHorseResponse withdrawal(Long RaceHorseId);
+    RaceHorseResponse jockeyDecline(Long raceHorseId, Long userId);
+    RaceHorseResponse jockeyAccept(Long raceHorseId, Long userId);
+    RaceHorseResponse sendJockeyRequest(JockeyRequestDto request, Long userId);
+    void cleanupPendingOnClose(Long raceId);
+    List<RaceHorseResponse> getJockeyRequests(Long userId);
+
+}

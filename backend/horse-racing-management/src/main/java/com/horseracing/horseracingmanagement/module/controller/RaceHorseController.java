@@ -1,6 +1,7 @@
 package com.horseracing.horseracingmanagement.module.controller;
 
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
+import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyRequestDto;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RegisterRaceHorseRequest;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetAllOddsRequest;
@@ -98,4 +99,44 @@ public class RaceHorseController {
         return ResponseEntity.ok(ApiResponse.success("Odds set successfully",
                 raceHorseService.setOddsForOne(new SetOddsRequest(id, odds))));
     }
+
+    // HorseOwner gửi request cho Jockey
+    @PostMapping("/jockey-request")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<RaceHorseResponse>> sendJockeyRequest(
+            @RequestBody JockeyRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Jockey request sent",
+                raceHorseService.sendJockeyRequest(request, userDetails.getId())));
+    }
+
+    // Jockey xem các request đang chờ mình
+    @GetMapping("/jockey-requests")
+    @PreAuthorize("hasAuthority('JOCKEY')")
+    public ResponseEntity<ApiResponse<List<RaceHorseResponse>>> getJockeyRequests(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                raceHorseService.getJockeyRequests(userDetails.getId())));
+    }
+
+    // Jockey chấp nhận
+    @PutMapping("/{id}/jockey-accept")
+    @PreAuthorize("hasAuthority('JOCKEY')")
+    public ResponseEntity<ApiResponse<RaceHorseResponse>> jockeyAccept(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Request accepted",
+                raceHorseService.jockeyAccept(id, userDetails.getId())));
+    }
+
+    // Jockey từ chối
+    @PutMapping("/{id}/jockey-decline")
+    @PreAuthorize("hasAuthority('JOCKEY')")
+    public ResponseEntity<ApiResponse<RaceHorseResponse>> jockeyDecline(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Request declined",
+                raceHorseService.jockeyDecline(id, userDetails.getId())));
+    }
+
 }

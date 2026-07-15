@@ -5,6 +5,7 @@ import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseRaceHistor
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseRequest;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.UpdateHorse;
+import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.WithdrawalRequest;
 import com.horseracing.horseracingmanagement.module.entity.Horse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,5 @@ public interface HorseOwnerService {
     SignHorseResponse updateHorse(Long horseId, UpdateHorse request, Long userId);
     void deleteHorse(Long horseId, Long userId);
     HorseCurrentStatusResponse mapToCurrentStatusResponse(Horse horse);
-
-    
+    void SendWithdrawalApplication (WithdrawalRequest with, Long userId);
 }

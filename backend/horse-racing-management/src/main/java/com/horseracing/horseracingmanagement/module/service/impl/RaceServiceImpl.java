@@ -14,6 +14,7 @@ import com.horseracing.horseracingmanagement.module.responsitory.RaceHorseReposi
 import com.horseracing.horseracingmanagement.module.responsitory.RaceRefereeRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.RaceRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.RaceResultRepository;
+import com.horseracing.horseracingmanagement.module.service.RaceHorseService;
 import jakarta.transaction.Transactional;
 import com.horseracing.horseracingmanagement.module.service.RaceService;
 import lombok.AllArgsConstructor;
@@ -36,6 +37,7 @@ public class RaceServiceImpl implements RaceService {
     private final BetRepository betRepository;
     private final RaceResultRepository raceResultRepository;
     private final RaceHorseRepository raceHorseRepository;
+    private final RaceHorseService raceHorseService;
 
 
     // Admin start race → đóng bet
@@ -116,15 +118,15 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     public RaceResponse closeRace(Long raceId) {
-
         Race race = raceRepository.findById(raceId)
-                .orElseThrow();
+                .orElseThrow(() -> new RuntimeException("Race not found"));
 
         race.setStatus(RaceStatus.CLOSED_REGISTRATION);
-
         raceRepository.save(race);
 
-        // [WS] Push status update — FE cần biết ngay để hiển thị nút Bet
+        // ← Xóa các đơn Pending chưa hoàn tất + hoàn phí
+        raceHorseService.cleanupPendingOnClose(raceId);
+
         wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
                 .raceId(race.getId())
                 .raceName(race.getRaceName())
