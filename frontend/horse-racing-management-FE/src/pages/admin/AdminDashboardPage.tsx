@@ -148,6 +148,7 @@ export default function AdminDashboardPage() {
         title={`Welcome back, ${user?.fullName ?? user?.username ?? 'Admin'}`}
         subtitle="Here's what's happening across the platform today"
         initial={(user?.fullName ?? user?.username ?? 'A').charAt(0).toUpperCase()}
+        avatarUrl={user?.avatarUrl}
       />
 
       <div className="px-8">

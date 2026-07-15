@@ -2,7 +2,27 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bell, Trophy, Target, CheckCircle, Wallet, Info, ArrowRight } from 'lucide-react';
 import { getMyNotifications, countUnread, markAsRead } from '@/api/notificationApi';
-import type { Notification } from '@/types';
+import { useAuth } from '@/context/AuthContext';
+import type { Notification, UserRole } from '@/types';
+
+// These notification types carry a RaceHorse id as `referenceId`, not a Race id
+// (see backend RaceHorseServiceImpl — sendJockeyRequest/jockeyAccept/jockeyDecline/
+// approveHorse/rejectHorse/requestWithdrawal/approveWithdrawal/rejectWithdrawal all
+// pass raceHorse.getId()). Linking to /races/{referenceId} for these would 500 or
+// land on an unrelated race, so route to the relevant list page per role instead.
+const RACE_HORSE_ENTITY_TYPES = new Set(['RACE_REGISTRATION', 'RACE_APPROVED', 'RACE_REJECTED', 'RACE_WITHDRAWAL']);
+
+function resolveNotificationPath(notif: Notification, role?: UserRole): string {
+  const type = notif.type ?? '';
+  if (RACE_HORSE_ENTITY_TYPES.has(type)) {
+    if (role === 'JOCKEY') return '/jockey/race-requests';
+    if (role === 'HORSE_OWNER') return '/horse-owner/race-registrations';
+    if (role === 'ADMIN') return type === 'RACE_WITHDRAWAL' ? '/admin/withdrawal-requests' : '/admin/races';
+    return '/notifications';
+  }
+  // Other types (RACE_CREATED, RACE_STARTED, RACE_RESULT_PUBLISHED, ...) carry a real race id.
+  return notif.referenceId ? `/races/${notif.referenceId}` : '/notifications';
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -29,6 +49,7 @@ function NotifIcon({ type }: { type?: string }) {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function NotificationBell() {
+ const { user } = useAuth();
  const [open, setOpen] = useState(false);
  const [unreadCount, setUnreadCount] = useState(0);
  const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -72,7 +93,7 @@ export default function NotificationBell() {
  setUnreadCount((c) => Math.max(0, c - 1));
  }
  setOpen(false);
- navigate(notif.referenceId ?`/races/${notif.referenceId}` : '/notifications');
+ navigate(resolveNotificationPath(notif, user?.role));
  };
 
  return (

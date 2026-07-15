@@ -9,8 +9,14 @@ export function useMyRaceRegistrations() {
  queryFn: getMyRaceRegistrations,
  });
 
+ const registrations = [...(data ?? [])].sort((a, b) => {
+ const at = a.registerAt ? new Date(a.registerAt).getTime() : 0;
+ const bt = b.registerAt ? new Date(b.registerAt).getTime() : 0;
+ return bt - at;
+ });
+
  return {
- registrations: data ?? [],
+ registrations,
  loading: isLoading,
  error: error ? getErrorMessage(error, 'Unable to load race registrations. Please try again.') : null,
  refetch,

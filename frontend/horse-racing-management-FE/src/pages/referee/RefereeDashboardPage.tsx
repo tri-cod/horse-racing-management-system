@@ -85,6 +85,7 @@ export default function RefereeDashboardPage() {
         title={`Welcome back, ${user?.fullName ?? user?.username ?? 'Referee'}`}
         subtitle="Here's what needs your attention on the track"
         initial={(user?.fullName ?? user?.username ?? 'R').charAt(0).toUpperCase()}
+        avatarUrl={user?.avatarUrl}
       />
 
       <div className="px-8">

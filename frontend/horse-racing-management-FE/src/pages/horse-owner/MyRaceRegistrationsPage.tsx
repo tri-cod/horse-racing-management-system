@@ -1,12 +1,16 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Flag } from 'lucide-react';
 import { useMyRaceRegistrations } from '@/hooks/useMyRaceRegistrations';
 import MyRegistrationsTable from '@/components/features/race-horse/MyRegistrationsTable';
+import AssignJockeyModal from '@/components/features/race-horse/AssignJockeyModal';
+import WithdrawRaceHorseModal from '@/components/features/race-horse/WithdrawRaceHorseModal';
+import { useToast } from '@/components/ui/ToastProvider';
 import EmptyState from '@/components/ui/EmptyState';
 import Button from '@/components/ui/Button';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
+import type { RaceHorse } from '@/types';
 
 function TableSkeleton() {
   return (
@@ -28,12 +32,22 @@ function TableSkeleton() {
   );
 }
 
+const PENDING_STATUSES = new Set(['PendingJockey', 'PendingAdmin', 'WithdrawPending']);
+
 export default function MyRaceRegistrationsPage() {
   const { registrations, loading, error, refetch } = useMyRaceRegistrations();
+  const addToast = useToast();
+  const [assigning, setAssigning] = useState<RaceHorse | null>(null);
+  const [withdrawing, setWithdrawing] = useState<RaceHorse | null>(null);
 
-  const approved = useMemo(() => registrations.filter((r) => r.status?.toLowerCase() === 'approved').length, [registrations]);
-  const pending  = useMemo(() => registrations.filter((r) => r.status?.toLowerCase() === 'pending').length,  [registrations]);
-  const rejected = useMemo(() => registrations.filter((r) => r.status?.toLowerCase() === 'rejected').length, [registrations]);
+  const approved = useMemo(() => registrations.filter((r) => r.status === 'Approved').length, [registrations]);
+  const pending  = useMemo(() => registrations.filter((r) => PENDING_STATUSES.has(r.status)).length, [registrations]);
+  const rejected = useMemo(() => registrations.filter((r) => r.status === 'JockeyRejected').length, [registrations]);
+
+  const handleActionSuccess = (msg: string) => {
+    addToast(msg, 'success');
+    refetch();
+  };
 
   return (
     <div className="px-8 py-6">
@@ -43,6 +57,9 @@ export default function MyRaceRegistrationsPage() {
         title="Race Registrations"
         subtitle={pending > 0 ? `${pending} pending approval` : 'All registrations'}
       />
+
+      <AssignJockeyModal raceHorse={assigning} onClose={() => setAssigning(null)} onSuccess={handleActionSuccess} />
+      <WithdrawRaceHorseModal raceHorse={withdrawing} onClose={() => setWithdrawing(null)} onSuccess={handleActionSuccess} />
 
       {error && (
         <div className="mb-5 flex items-center justify-between border border-fail/20 bg-fail-subtle px-4 py-3 text-sm text-fail">
@@ -99,7 +116,11 @@ export default function MyRaceRegistrationsPage() {
                 {registrations.length} Registration{registrations.length !== 1 ? 's' : ''}
               </h2>
             </div>
-            <MyRegistrationsTable registrations={registrations} />
+            <MyRegistrationsTable
+              registrations={registrations}
+              onAssignJockey={setAssigning}
+              onWithdraw={setWithdrawing}
+            />
           </div>
         </>
       )}

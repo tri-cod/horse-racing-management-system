@@ -123,6 +123,7 @@ export default function HorseOwnerDashboardPage() {
         title={`Welcome back, ${user?.fullName ?? user?.username ?? 'Owner'}`}
         subtitle="Here's an overview of your stable"
         initial={(user?.fullName ?? user?.username ?? 'O').charAt(0).toUpperCase()}
+        avatarUrl={user?.avatarUrl}
       />
 
       <div className="px-8">

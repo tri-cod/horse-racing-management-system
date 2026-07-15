@@ -281,7 +281,7 @@ export default function Header() {
                       <div className="py-1">
                         <Link to="/profile"
                           className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-ink-2 hover:bg-surface-overlay hover:text-ink transition-colors">
-                          <User size={14} className="shrink-0 text-ink-4" /> Profile
+                          <User size={14} className="shrink-0 text-ink-4" /> Account
                         </Link>
                         {roleItems.map(({ icon: Icon, label, href }) => (
                           <Link key={href} to={href}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Trophy } from 'lucide-react';
 import { getHorsesByRace, setRaceResult } from '@/api/refereeApi';
 import { assignLanes } from '@/utils/laneUtils';
@@ -6,7 +6,7 @@ import { getErrorMessage } from '@/utils/errors';
 import Modal from '@/components/ui/Modal';
 import type { Race, RaceHorse } from '@/types';
 
-interface Ranks { [raceHorseId: number]: { rank: string; completionTimeSeconds: string } }
+interface Times { [raceHorseId: number]: string }
 
 interface SetResultModalProps {
   race: Race;
@@ -19,7 +19,7 @@ export default function SetResultModal({ race, onClose, onSuccess }: SetResultMo
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [ranks, setRanks] = useState<Ranks>({});
+  const [times, setTimes] = useState<Times>({});
 
   useEffect(() => {
     (async () => {
@@ -27,22 +27,35 @@ export default function SetResultModal({ race, onClose, onSuccess }: SetResultMo
       try {
         const data = await getHorsesByRace(race.id);
         setHorses(assignLanes(data ?? []) as RaceHorse[]);
-        const init: Ranks = {};
-        (data ?? []).forEach((rh) => { init[rh.id] = { rank: '', completionTimeSeconds: '' }; });
-        setRanks(init);
+        const init: Times = {};
+        (data ?? []).forEach((rh) => { init[rh.id] = ''; });
+        setTimes(init);
       } catch { setError('Unable to load horse list.'); }
       finally { setLoading(false); }
     })();
   }, [race.id]);
 
-  const setField = (id: number, field: 'rank' | 'completionTimeSeconds', value: string) =>
-    setRanks((prev) => ({ ...prev, [id]: { ...prev[id], [field]: value } }));
+  const setTime = (id: number, value: string) =>
+    setTimes((prev) => ({ ...prev, [id]: value }));
+
+  // Rank is derived live from completion time — fastest (lowest) time = rank 1.
+  // Ties keep the horses' original list order relative to each other.
+  const ranks = useMemo(() => {
+    const withTime = horses
+      .map((rh) => ({ id: rh.id, seconds: Number(times[rh.id]) }))
+      .filter((h) => times[h.id] !== '' && !isNaN(h.seconds) && h.seconds > 0)
+      .sort((a, b) => a.seconds - b.seconds);
+    const map: { [raceHorseId: number]: number } = {};
+    withTime.forEach((h, i) => { map[h.id] = i + 1; });
+    return map;
+  }, [horses, times]);
 
   const validate = () => {
-    const vals = horses.map((rh) => Number(ranks[rh.id]?.rank));
-    if (vals.some((r) => !r || r < 1)) return 'Please enter a rank for every horse.';
-    if (new Set(vals).size !== vals.length) return 'Ranks must be unique.';
-    if (vals.some((r) => r > horses.length)) return `Rank must be between 1 and ${horses.length}.`;
+    const missing = horses.some((rh) => {
+      const v = times[rh.id];
+      return v === '' || v === undefined || isNaN(Number(v)) || Number(v) <= 0;
+    });
+    if (missing) return 'Please enter a valid completion time for every horse.';
     return null;
   };
 
@@ -55,10 +68,8 @@ export default function SetResultModal({ race, onClose, onSuccess }: SetResultMo
         raceId: race.id,
         results: horses.map((rh) => ({
           raceHorseId: rh.id,
-          rank: Number(ranks[rh.id].rank),
-          completionTimeSeconds: ranks[rh.id].completionTimeSeconds
-            ? Number(ranks[rh.id].completionTimeSeconds)
-            : null,
+          rank: ranks[rh.id],
+          completionTimeSeconds: Number(times[rh.id]),
         })),
       });
       onSuccess();
@@ -120,13 +131,13 @@ export default function SetResultModal({ race, onClose, onSuccess }: SetResultMo
           ) : (
             <>
               <p className="mb-4 text-sm text-ink-3">
-                Enter rank (1 = 1st place) and completion time for each horse.
+                Enter each horse&apos;s completion time — rank is calculated automatically (fastest time = 1st place).
               </p>
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[500px]">
                   <thead>
                     <tr className="border-b border-rim bg-surface-overlay">
-                      {['Lane', 'Horse', 'Jockey', 'Rank *', 'Time'].map((h) => (
+                      {['Lane', 'Horse', 'Jockey', 'Time (sec) *', 'Rank'].map((h) => (
                         <th key={h} className="px-3 py-2.5 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">
                           {h}
                         </th>
@@ -146,24 +157,24 @@ export default function SetResultModal({ race, onClose, onSuccess }: SetResultMo
                         <td className="px-3 py-2.5">
                           <input
                             type="number"
-                            min={1}
-                            max={horses.length}
-                            placeholder="1"
-                            value={ranks[rh.id]?.rank ?? ''}
-                            onChange={(e) => setField(rh.id, 'rank', e.target.value)}
-                            className={`${inputCls} w-16 text-center`}
-                          />
-                        </td>
-                        <td className="px-3 py-2.5">
-                          <input
-                            type="number"
                             min={0}
                             step="0.01"
                             placeholder="e.g. 92.45"
-                            value={ranks[rh.id]?.completionTimeSeconds ?? ''}
-                            onChange={(e) => setField(rh.id, 'completionTimeSeconds', e.target.value)}
+                            value={times[rh.id] ?? ''}
+                            onChange={(e) => setTime(rh.id, e.target.value)}
                             className={`${inputCls} w-28`}
                           />
+                        </td>
+                        <td className="px-3 py-2.5">
+                          {ranks[rh.id] ? (
+                            <span className={`tnum inline-flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
+                              ranks[rh.id] === 1 ? 'bg-gold text-on-gold' : 'bg-surface-overlay text-ink-3'
+                            }`}>
+                              {ranks[rh.id]}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-ink-4">—</span>
+                          )}
                         </td>
                       </tr>
                     ))}

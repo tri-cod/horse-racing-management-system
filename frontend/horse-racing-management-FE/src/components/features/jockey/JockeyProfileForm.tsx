@@ -1,16 +1,20 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { Camera, Loader2 } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import { uploadAvatar } from '@/api/authApi';
+import { getErrorMessage } from '@/utils/errors';
 import type { Jockey } from '@/types';
 
 interface FormData {
   age: string;
   experienceYear: string;
   description: string;
+  avatarUrl: string;
 }
 
 interface JockeyProfileFormProps {
   initialValues?: Partial<Jockey>;
-  onSubmit: (payload: { age: number; experienceYear: number; description: string }) => void;
+  onSubmit: (payload: { age: number; experienceYear: number; description: string; avatarUrl: string | null }) => void;
   loading?: boolean;
 }
 
@@ -23,8 +27,29 @@ export default function JockeyProfileForm({ initialValues = {}, onSubmit, loadin
     age: initialValues.age?.toString() ?? '',
     experienceYear: initialValues.experienceYear?.toString() ?? '',
     description: initialValues.description ?? '',
+    avatarUrl: initialValues.avatarUrl ?? '',
   });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const fileRef = useRef<HTMLInputElement>(null);
+  const initials = (initialValues.name ?? 'J').charAt(0).toUpperCase();
+
+  const handleAvatarChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploading(true);
+      setUploadError('');
+      const url = await uploadAvatar(file);
+      setForm((prev) => ({ ...prev, avatarUrl: url }));
+    } catch (err: unknown) {
+      setUploadError(getErrorMessage(err, 'Upload failed. Please try again.'));
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  };
 
   const set = (field: keyof FormData) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -48,11 +73,44 @@ export default function JockeyProfileForm({ initialValues = {}, onSubmit, loadin
       age: Number(form.age),
       experienceYear: Number(form.experienceYear),
       description: form.description,
+      avatarUrl: form.avatarUrl || null,
     });
   };
 
   return (
     <form onSubmit={handleSubmit} noValidate className="divide-y divide-rim">
+
+      {/* Avatar */}
+      <div className="flex items-center gap-4 px-6 py-5">
+        <div className="relative shrink-0">
+          <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-rim-hi bg-gold/10">
+            {form.avatarUrl ? (
+              <img src={form.avatarUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <span className="font-serif text-xl font-bold text-gold">{initials}</span>
+            )}
+          </div>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={handleAvatarChange}
+            id="jf-avatar-file"
+          />
+          <label
+            htmlFor="jf-avatar-file"
+            className="absolute -bottom-1 -right-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-2 border-surface-raised bg-gold text-on-gold transition-colors hover:bg-gold-hi"
+          >
+            {uploading ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
+          </label>
+        </div>
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-4">Photo</p>
+          <p className="mt-0.5 text-xs text-ink-3">Shown on your public jockey profile.</p>
+          {uploadError && <p className="mt-1 text-xs text-fail">{uploadError}</p>}
+        </div>
+      </div>
 
       {/* Age */}
       <div className="px-6 py-5">

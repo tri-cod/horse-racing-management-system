@@ -27,3 +27,7 @@ export const updateRace = (id: number, payload: UpdateRacePayload) =>
 
 export const deleteRace = (id: number) =>
  axiosInstance.delete<ApiResponse<null>>(`/races/${id}`).then((r) => r.data.data);
+
+// Admin only; backend only allows CLOSED_REGISTRATION -> OPEN_REGISTRATION.
+export const reopenRace = (id: number) =>
+ axiosInstance.put<ApiResponse<Race>>(`/races/${id}/reopen`).then((r) => r.data.data);

@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, ClipboardCheck, Plus, BadgeDollarSign, Flag,
   Shield, ClipboardList, Ticket, Wallet, UserCog, TrendingUp,
-  Landmark, PencilLine, FlagTriangleRight, type LucideIcon,
+  Landmark, PencilLine, FlagTriangleRight, Undo2, Send, type LucideIcon,
 } from 'lucide-react';
 import type { UserRole } from '@/types';
 
@@ -12,6 +12,7 @@ export const ROLE_MENU: Partial<Record<UserRole, NavItem[]>> = {
     { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
     { icon: UserCog, label: 'Manage Users', href: '/admin/users' },
     { icon: ClipboardCheck, label: 'Approve Horses', href: '/admin/approve-horses' },
+    { icon: Undo2, label: 'Horse Withdrawals', href: '/admin/withdrawal-requests' },
     { icon: Plus, label: 'Create Race', href: '/admin/races/create' },
     { icon: BadgeDollarSign, label: 'Deposit Requests', href: '/admin/deposits' },
     { icon: PencilLine, label: 'Manage Races', href: '/admin/races' },
@@ -41,5 +42,10 @@ export const ROLE_MENU: Partial<Record<UserRole, NavItem[]>> = {
     { icon: Ticket, label: 'My Bets', href: '/my-bets' },
     { icon: Wallet, label: 'My Wallet', href: '/my-wallet' },
   ],
-  JOCKEY: [{ icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
+  JOCKEY: [
+    { icon: LayoutDashboard, label: 'Dashboard', href: '/jockey/dashboard' },
+    { icon: UserCog, label: 'My Profile', href: '/jockey/profile' },
+    { icon: Send, label: 'Race Requests', href: '/jockey/race-requests' },
+    { icon: Wallet, label: 'My Wallet', href: '/my-wallet' },
+  ],
 };

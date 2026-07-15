@@ -47,6 +47,7 @@ const TrainerProfilePage = lazy(() => import('@/pages/trainer/TrainerProfilePage
 // Jockey
 const JockeyDashboardPage = lazy(() => import('@/pages/jockey/JockeyDashboardPage'));
 const JockeyMyProfilePage = lazy(() => import('@/pages/jockey/JockeyMyProfilePage'));
+const JockeyRaceRequestsPage = lazy(() => import('@/pages/jockey/JockeyRaceRequestsPage'));
 
 // Referee
 const RefereeDashboardPage = lazy(() => import('@/pages/referee/RefereeDashboardPage'));
@@ -60,6 +61,7 @@ const AdminRaceDetailPage = lazy(() => import('@/pages/admin/AdminRaceDetailPage
 const AdminCreateRacePage = lazy(() => import('@/pages/admin/AdminCreateRacePage'));
 const AdminEditRacePage = lazy(() => import('@/pages/admin/AdminEditRacePage'));
 const AdminApproveHorsesPage = lazy(() => import('@/pages/admin/AdminApproveHorsesPage'));
+const AdminWithdrawalRequestsPage = lazy(() => import('@/pages/admin/AdminWithdrawalRequestsPage'));
 const AdminSetOddsPage = lazy(() => import('@/pages/admin/AdminSetOddsPage'));
 const AdminDepositPage = lazy(() => import('@/pages/admin/AdminDepositPage'));
 const AdminWalletPage = lazy(() => import('@/pages/admin/AdminWalletPage'));
@@ -180,6 +182,11 @@ export default function App() {
               <AppLayout><JockeyMyProfilePage /></AppLayout>
             </ProtectedRoute>
           } />
+          <Route path="/jockey/race-requests" element={
+            <ProtectedRoute allowedRoles={['JOCKEY']}>
+              <AppLayout><JockeyRaceRequestsPage /></AppLayout>
+            </ProtectedRoute>
+          } />
 
           {/* Bet & Wallet */}
           <Route path="/my-bets" element={
@@ -227,6 +234,11 @@ export default function App() {
           <Route path="/admin/approve-horses" element={
             <ProtectedRoute allowedRoles={['ADMIN']}>
               <AppLayout><AdminApproveHorsesPage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/withdrawal-requests" element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AppLayout><AdminWithdrawalRequestsPage /></AppLayout>
             </ProtectedRoute>
           } />
           <Route path="/admin/set-odds" element={

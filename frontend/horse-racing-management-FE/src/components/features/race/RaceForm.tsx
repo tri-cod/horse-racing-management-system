@@ -24,14 +24,14 @@ interface FormData {
  raceName: string; startTime: string; registrationDeadline: string;
  trackName: string; trackCondition: string; surfaceType: string;
  totalprizepool: string; distance: string; location: string; capacity: string;
- bannerImageurl: string; refereeId: string;
+ bannerImageurl: string; refereeId: string; entryFee: string;
 }
 
 type Errors = Partial<Record<keyof FormData | 'submit', string>>;
 
 const EMPTY: FormData = {
  raceName: '', startTime: '', registrationDeadline: '', trackName: '', trackCondition: 'Dry',
- surfaceType: 'Turf', totalprizepool: '', distance: '', location: '', capacity: '', bannerImageurl: '', refereeId: '',
+ surfaceType: 'Turf', totalprizepool: '', distance: '', location: '', capacity: '', bannerImageurl: '', refereeId: '', entryFee: '',
 };
 
 function Field({ id, label, required, optional, hint, error, children }: { id: string; label: string; required?: boolean; optional?: boolean; hint?: string; error?: string; children: ReactNode }) {
@@ -96,7 +96,7 @@ interface RaceFormProps {
 export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit, loading }: RaceFormProps) {
  const [form, setForm] = useState<FormData>(() => {
  const base = { ...EMPTY, ...initialValues };
- return { ...base, startTime: toLocalDatetime(base.startTime), registrationDeadline: toLocalDatetime(base.registrationDeadline), totalprizepool: base.totalprizepool ?? '', capacity: base.capacity ?? '', refereeId: base.refereeId ?? '' };
+ return { ...base, startTime: toLocalDatetime(base.startTime), registrationDeadline: toLocalDatetime(base.registrationDeadline), totalprizepool: base.totalprizepool ?? '', capacity: base.capacity ?? '', refereeId: base.refereeId ?? '', entryFee: base.entryFee ?? '' };
  });
  const [errors, setErrors] = useState<Errors>({});
  const [uploading, setUploading] = useState(false);
@@ -152,6 +152,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  if (s === 3) {
  if (!form.totalprizepool || isNaN(Number(form.totalprizepool)) || Number(form.totalprizepool) < 0) errs.totalprizepool = 'Prize pool must be a positive number.';
  if (!form.capacity || isNaN(Number(form.capacity)) || Number(form.capacity) < 1) errs.capacity = 'Capacity must be at least 1.';
+ if (form.entryFee !== '' && (isNaN(Number(form.entryFee)) || Number(form.entryFee) < 0)) errs.entryFee = 'Entry fee must be a positive number.';
  }
  if (s === 4) {
  if (!form.bannerImageurl.trim()) errs.bannerImageurl = 'Banner image is required.';
@@ -180,6 +181,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  status: mode === 'create' ? 'OPEN_REGISTRATION' : (initialValues?.status ?? 'UPCOMING'),
  };
  if (form.refereeId !== '') payload.refereeId = Number(form.refereeId);
+ if (mode === 'create' && form.entryFee !== '') payload.entryFee = Number(form.entryFee);
  try { await onSubmit(payload); }
  catch (err: unknown) {
  const e = err as { response?: { data?: { message?: string } }; message?: string };
@@ -232,6 +234,11 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  <div className="flex flex-col gap-4">
  <Field id="rf-prize" label="Prize Pool (VND)" required error={errors.totalprizepool}>{inp('rf-prize', 'totalprizepool', 'number', { placeholder: 'e.g. 500000000', min: 0 })}</Field>
  <Field id="rf-capacity" label="Capacity (horses)" required error={errors.capacity}>{inp('rf-capacity', 'capacity', 'number', { placeholder: 'e.g. 12', min: 1 })}</Field>
+ {mode === 'create' && (
+ <Field id="rf-entry-fee" label="Entry Fee (VND)" optional error={errors.entryFee} hint="Charged to the horse owner's wallet on registration. Leave blank for a free race.">
+ {inp('rf-entry-fee', 'entryFee', 'number', { placeholder: 'e.g. 100000', min: 0 })}
+ </Field>
+ )}
  </div>
  </section>
  )}
