@@ -32,8 +32,8 @@ export default function HomePage() {
       <Seo title="Royal Derby — Horse Racing Management" description="Welcome to Royal Derby — the premier platform for managing horse races, jockeys, results and betting." type="website" />
       <HeroSection />
       <RacesSection />
-      <SeasonStatsSection />
       <JockeysSection />
+      <SeasonStatsSection />
       <AboutSection />
       <GallerySection />
       <NewsSection />

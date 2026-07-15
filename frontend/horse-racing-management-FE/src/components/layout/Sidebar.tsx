@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
  LayoutDashboard, ClipboardCheck, Plus, BadgeDollarSign, Flag,
  Shield, ClipboardList, Ticket, Wallet, UserCog, TrendingUp,
- User, LogOut, Landmark, PencilLine, FlagTriangleRight, type LucideIcon,
+ User, LogOut, Landmark, PencilLine, FlagTriangleRight, Send, Undo2, type LucideIcon,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import UserAvatar from '@/components/features/admin/UserAvatar';
@@ -15,6 +15,7 @@ const ROLE_ITEMS: Partial<Record<UserRole, NavItem[]>> = {
  { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
  { icon: UserCog, label: 'Manage Users', href: '/admin/users' },
  { icon: ClipboardCheck, label: 'Approve Horses', href: '/admin/approve-horses' },
+ { icon: Undo2, label: 'Horse Withdrawals', href: '/admin/withdrawal-requests' },
  { icon: Plus, label: 'Create Race', href: '/admin/races/create' },
  { icon: BadgeDollarSign, label: 'Deposit Requests', href: '/admin/deposits' },
  { icon: PencilLine, label: 'Manage Races', href: '/admin/races', end: true },
@@ -42,6 +43,7 @@ const ROLE_ITEMS: Partial<Record<UserRole, NavItem[]>> = {
     JOCKEY: [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/jockey/dashboard' },
         { icon: UserCog, label: 'My Profile', href: '/jockey/profile' },
+        { icon: Send, label: 'Race Requests', href: '/jockey/race-requests' },
         { icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
 STAFF: [
  { icon: TrendingUp, label: 'Set Odds', href: '/admin/set-odds' },

@@ -1,8 +1,10 @@
+import type { ReactNode } from 'react';
+
 type Align = 'left' | 'center' | 'right';
 
 interface SectionHeaderProps {
  eyebrow?: string;
- title?: string;
+ title?: ReactNode;
  subtitle?: string;
  align?: Align;
  invert?: boolean; /* true = nền tối (navy), dùng màu trắng */

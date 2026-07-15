@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
-  ChevronLeft, Pencil, Trash2, Lock, TrendingUp, MapPin, Calendar,
+  ChevronLeft, Pencil, Trash2, Lock, LockOpen, TrendingUp, MapPin, Calendar,
   Trophy, Users, CheckCircle2, XCircle, Flag,
 } from 'lucide-react';
 import { useRaceDetail } from '@/hooks/useRaceDetail';
 import { useHorsesByRace } from '@/hooks/useHorsesByRace';
 import { useRaceResults } from '@/hooks/useRaceResults';
-import { approveRaceHorse, rejectRaceHorse } from '@/api/raceHorseApi';
-import { updateRace, deleteRace } from '@/api/raceApi';
+import { approveRaceHorse, rejectRaceHorse, approveWithdrawal, rejectWithdrawal } from '@/api/raceHorseApi';
+import { updateRace, deleteRace, reopenRace } from '@/api/raceApi';
 import { useToast } from '@/components/ui/ToastProvider';
 import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
 import RaceHorseStatusBadge from '@/components/features/race-horse/RaceHorseStatusBadge';
@@ -17,6 +17,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Seo from '@/components/seo/Seo';
 
 const CLOSEABLE = new Set(['UPCOMING', 'OPEN_REGISTRATION']);
+const REOPENABLE = new Set(['CLOSED_REGISTRATION']);
 
 const fmtPrize = (n?: number) =>
   n != null
@@ -47,6 +48,7 @@ export default function AdminRaceDetailPage() {
 
   const [actionId, setActionId] = useState<number | null>(null);
   const [closing, setClosing] = useState(false);
+  const [reopening, setReopening] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const handleApprove = async (entryId: number, horseName?: string) => {
@@ -71,6 +73,43 @@ export default function AdminRaceDetailPage() {
       const err = e as { response?: { data?: { message?: string } } };
       addToast(err?.response?.data?.message ?? 'Rejection failed.', 'error');
     } finally { setActionId(null); }
+  };
+
+  const handleApproveWithdrawal = async (entryId: number, horseName?: string) => {
+    setActionId(entryId);
+    try {
+      await approveWithdrawal(entryId);
+      addToast(`Withdrawal approved for "${horseName ?? 'horse'}".`, 'success');
+      refetchEntries();
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      addToast(err?.response?.data?.message ?? 'Failed to approve withdrawal.', 'error');
+    } finally { setActionId(null); }
+  };
+
+  const handleRejectWithdrawal = async (entryId: number, horseName?: string) => {
+    setActionId(entryId);
+    try {
+      await rejectWithdrawal(entryId);
+      addToast(`Withdrawal rejected for "${horseName ?? 'horse'}".`, 'success');
+      refetchEntries();
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      addToast(err?.response?.data?.message ?? 'Failed to reject withdrawal.', 'error');
+    } finally { setActionId(null); }
+  };
+
+  const handleReopenRegistration = async () => {
+    if (!race) return;
+    setReopening(true);
+    try {
+      await reopenRace(race.id);
+      addToast('Registration reopened.', 'success');
+      refetchRace();
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      addToast(err?.response?.data?.message ?? 'Failed to reopen registration.', 'error');
+    } finally { setReopening(false); }
   };
 
   const handleCloseRegistration = async () => {
@@ -117,7 +156,8 @@ export default function AdminRaceDetailPage() {
     );
   }
 
-const pendingCount = entries.filter((e) => (e.status as string) === 'Pending').length;
+const pendingCount = entries.filter((e) => (e.status as string) === 'PendingAdmin').length;
+const withdrawCount = entries.filter((e) => (e.status as string) === 'WithdrawPending').length;
 
   return (
     <div className="px-8 py-6">
@@ -141,6 +181,16 @@ const pendingCount = entries.filter((e) => (e.status as string) === 'Pending').l
                 className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-warn-subtle hover:text-warn disabled:opacity-50"
               >
                 <Lock size={13} /> {closing ? 'Closing…' : 'Close Registration'}
+              </button>
+            )}
+            {REOPENABLE.has(race.status) && (
+              <button
+                type="button"
+                disabled={reopening}
+                onClick={handleReopenRegistration}
+                className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-ok-subtle hover:text-ok disabled:opacity-50"
+              >
+                <LockOpen size={13} /> {reopening ? 'Reopening…' : 'Reopen Registration'}
               </button>
             )}
             <Link
@@ -207,7 +257,10 @@ const pendingCount = entries.filter((e) => (e.status as string) === 'Pending').l
         <div className="mb-4 flex items-center justify-between">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">
-              {pendingCount > 0 ? `${pendingCount} awaiting approval` : 'Entries'}
+              {[
+                pendingCount > 0 ? `${pendingCount} awaiting approval` : null,
+                withdrawCount > 0 ? `${withdrawCount} awaiting withdrawal review` : null,
+              ].filter(Boolean).join(' · ') || 'Entries'}
             </p>
             <h2 className="font-serif text-lg font-bold text-ink">Race Entries</h2>
           </div>
@@ -270,7 +323,7 @@ const pendingCount = entries.filter((e) => (e.status as string) === 'Pending').l
                         <td className="px-5 py-3.5"><RaceHorseStatusBadge status={e.status} /></td>
                         <td className="tnum px-5 py-3.5 text-sm font-semibold text-ink">{e.odds != null ? `×${Number(e.odds).toFixed(2)}` : '—'}</td>
                         <td className="px-5 py-3.5">
-{(e.status as string) === 'Pending' ? (
+                          {(e.status as string) === 'PendingAdmin' ? (
                             <div className="flex gap-2">
                               <button
                                 type="button"
@@ -287,6 +340,25 @@ const pendingCount = entries.filter((e) => (e.status as string) === 'Pending').l
                                 className="inline-flex items-center gap-1 border border-fail/30 bg-fail-subtle px-2.5 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail hover:text-white disabled:opacity-50"
                               >
                                 <XCircle size={12} /> Reject
+                              </button>
+                            </div>
+                          ) : (e.status as string) === 'WithdrawPending' ? (
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                disabled={isLoading}
+                                onClick={() => handleApproveWithdrawal(e.id, e.horseName)}
+                                className="inline-flex items-center gap-1 border border-ok/30 bg-ok-subtle px-2.5 py-1.5 text-xs font-semibold text-ok transition-colors hover:bg-ok hover:text-white disabled:opacity-50"
+                              >
+                                <CheckCircle2 size={12} /> Approve Withdrawal
+                              </button>
+                              <button
+                                type="button"
+                                disabled={isLoading}
+                                onClick={() => handleRejectWithdrawal(e.id, e.horseName)}
+                                className="inline-flex items-center gap-1 border border-fail/30 bg-fail-subtle px-2.5 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail hover:text-white disabled:opacity-50"
+                              >
+                                <XCircle size={12} /> Reject Withdrawal
                               </button>
                             </div>
                           ) : (

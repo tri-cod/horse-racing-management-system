@@ -118,7 +118,10 @@ export default function AdminSetOddsPage() {
     setLoadingHorsesFor(raceId);
     try {
       const data = await getHorsesByRace(raceId);
-      const list = data ?? [];
+      // Only horses cleared through the full jockey-accept + admin-approve flow
+      // should be eligible for betting odds — exclude PendingJockey/JockeyRejected/
+      // PendingAdmin/WithdrawPending entries.
+      const list = (data ?? []).filter((rh) => rh.status === 'Approved');
       setHorsesCache((prev) => ({ ...prev, [raceId]: list }));
       const updates: Record<string, string> = {};
       list.forEach((rh) => { if (rh.odds != null) updates[`${raceId}-${rh.id}`] = String(rh.odds); });
