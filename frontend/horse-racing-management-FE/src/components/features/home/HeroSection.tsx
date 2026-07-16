@@ -149,8 +149,9 @@ export default function HeroSection() {
  className="absolute inset-0 h-full w-full object-cover"
  autoPlay loop muted playsInline aria-hidden="true"
  />
- {/* Gradient overlay — ivory tint for text readability */}
- <div className="absolute inset-0 bg-gradient-to-r from-surface/95 via-surface/55 to-transparent" />
+ {/* Gradient overlay — dark navy tint (left-anchored, under the copy) so the video stays visible */}
+ <div className="absolute inset-0 bg-gradient-to-r from-navy-deep/85 via-navy-deep/45 to-transparent" />
+ <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/50 via-transparent to-transparent" />
 
  <Container className="relative z-10 py-24">
  <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
@@ -163,16 +164,16 @@ export default function HeroSection() {
  {/* Eyebrow */}
  <motion.div variants={fadeUp} className="mb-6 flex items-center gap-4">
  <div className="h-px w-12 bg-gold" />
- <span className="eyebrow tracking-[0.2em]">Royal Derby 2026</span>
+ <span className="eyebrow tracking-[0.2em] !text-gold">Royal Derby 2026</span>
  </motion.div>
 
  {/* h1 — Cormorant Garamond at large display scale */}
- <motion.h1 variants={fadeUp} className="font-serif text-6xl font-bold leading-[1.05] text-ink sm:text-7xl lg:text-8xl">
+ <motion.h1 variants={fadeUp} className="font-serif text-6xl font-bold leading-[1.05] text-on-blue sm:text-7xl lg:text-8xl">
  Glory On<br />
  <em className="not-italic text-gold">The Racetrack</em>
  </motion.h1>
 
- <motion.p variants={fadeUp} className="mt-8 max-w-lg text-xl leading-relaxed text-ink-2">
+ <motion.p variants={fadeUp} className="mt-8 max-w-lg text-xl leading-relaxed text-on-blue/70">
  Where the proudest steeds and the most talented jockeys compete for
  glory in the world-class Royal Derby tournament.
  </motion.p>

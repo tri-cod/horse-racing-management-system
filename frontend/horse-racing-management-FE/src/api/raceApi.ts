@@ -27,3 +27,15 @@ export const updateRace = (id: number, payload: UpdateRacePayload) =>
 
 export const deleteRace = (id: number) =>
  axiosInstance.delete<ApiResponse<null>>(`/races/${id}`).then((r) => r.data.data);
+
+// Admin only; backend only allows CLOSED_REGISTRATION -> OPEN_REGISTRATION.
+export const reopenRace = (id: number) =>
+ axiosInstance.put<ApiResponse<Race>>(`/races/${id}/reopen`).then((r) => r.data.data);
+
+// Admin/Referee only; backend requires CLOSED_REGISTRATION before a race can start.
+export const startRace = (id: number) =>
+ axiosInstance.put<ApiResponse<Race>>(`/races/${id}/start`).then((r) => r.data.data);
+
+// Admin/Referee only; marks the race FINISHED.
+export const finishRace = (id: number) =>
+ axiosInstance.put<ApiResponse<Race>>(`/races/${id}/finish`).then((r) => r.data.data);

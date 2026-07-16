@@ -12,4 +12,8 @@ public interface JockeyService {
     JockeyProfileResponse getMyProfile(Long userId);
     JockeyProfileResponse getJockeyProfile(Long jockeyId);  // public — user click xem
     List<JockeyProfileResponse> getAllJockeys();
+    List getMyRaceHistory(Long userId); // lịch sử đua
+    List getUpcomingRaces(Long userId); // trận sắp tới
+    List getCurrentRaces(Long userId); // trận đang diễn ra
+
 }

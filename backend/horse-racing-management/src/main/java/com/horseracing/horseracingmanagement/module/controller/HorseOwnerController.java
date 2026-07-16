@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -108,7 +109,7 @@ public class HorseOwnerController {
     @PatchMapping("/horses/{horseId}")
     public ResponseEntity<ApiResponse<SignHorseResponse>> updateHorse(
             @PathVariable Long horseId,
-            @RequestBody UpdateHorse request,
+            @Valid @RequestBody UpdateHorse request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Long userId = userDetails.getId();
@@ -125,4 +126,26 @@ public class HorseOwnerController {
         horseOwnerService.deleteHorse(horseId, userId);
         return ResponseEntity.ok(ApiResponse.success("Horse deleted successfully", null));
     }
+    @GetMapping("/race-history")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<List>> getOwnerRaceHistory(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getOwnerRaceHistory(userDetails.getId())));
+    }
+    @GetMapping("/upcoming-races")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<List>> getOwnerUpcomingRaces(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getOwnerUpcomingRaces(userDetails.getId())));
+    }
+    @GetMapping("/current-races")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<List>> getOwnerCurrentRaces(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getOwnerCurrentRaces(userDetails.getId())));
+    }
+
 }

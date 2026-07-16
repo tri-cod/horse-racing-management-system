@@ -15,6 +15,10 @@ export interface User {
  email: string;
  fullName?: string;
  phoneNumber?: string;
+ // Admin user-list endpoint (GET /admin/users) returns this field as `phone`,
+ // not `phoneNumber` — kept separate rather than renaming `phoneNumber` since
+ // other endpoints (register, update-info) really do use `phoneNumber`.
+ phone?: string;
  avatarUrl?: string;
  role: UserRole;
  status: UserStatus;

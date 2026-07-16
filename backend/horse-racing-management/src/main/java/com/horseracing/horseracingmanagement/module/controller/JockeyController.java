@@ -79,6 +79,28 @@ public class JockeyController {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 raceHorseService.getAvaiableJockeyList(raceId)));
     }
+    @GetMapping("/my-race-history")
+    @PreAuthorize("hasAuthority('JOCKEY')")
+    public ResponseEntity<ApiResponse<List>> getMyRaceHistory(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                jockeyService.getMyRaceHistory(userDetails.getId())));
+    }
+    @GetMapping("/my-upcoming-races")
+    @PreAuthorize("hasAuthority('JOCKEY')")
+    public ResponseEntity<ApiResponse<List>> getUpcomingRaces(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                jockeyService.getUpcomingRaces(userDetails.getId())));
+    }
+    @GetMapping("/my-current-races")
+    @PreAuthorize("hasAuthority('JOCKEY')")
+    public ResponseEntity<ApiResponse<List>> getCurrentRaces(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                jockeyService.getCurrentRaces(userDetails.getId())));
+    }
+
 
 
 }

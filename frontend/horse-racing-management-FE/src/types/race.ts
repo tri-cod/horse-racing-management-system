@@ -6,7 +6,14 @@ export type RaceStatus =
  | 'FINISHED'
  | 'CANCELLED';
 
-export type RaceHorseStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+// Real status strings written by the backend (RaceHorseServiceImpl) — mixed-case, not an uppercase enum.
+export type RaceHorseStatus =
+ | 'PendingJockey'   // registered, no jockey assigned yet / jockey not yet responded
+ | 'JockeyRejected'  // jockey declined, owner must pick another
+ | 'PendingAdmin'    // jockey accepted, awaiting admin approval
+ | 'Approved'        // admin approved
+ | 'WithdrawPending' // owner requested withdrawal, awaiting admin
+ | string;           // fallback for any other/legacy value
 
 export interface Race {
  id: number;
@@ -21,6 +28,7 @@ export interface Race {
  location?: string;
  capacity?: number;
  bannerImageurl?: string;
+ entryFee?: number;
  registrationDeadline?: string;
  refereeId?: number | null;
  status: RaceStatus;
@@ -30,6 +38,7 @@ export interface Race {
 export interface RaceHorse {
  id: number;
  raceId: number;
+ raceName?: string;
  horseId: number;
  horseName?: string;
  horseAvatarUrl?: string;
@@ -39,6 +48,7 @@ export interface RaceHorse {
  odds?: number;
  finalPosition?: number;
  status: RaceHorseStatus;
+ registerAt?: string;
 }
 
 export interface RaceResult {
@@ -111,6 +121,8 @@ export interface CreateRacePayload {
  bannerImageurl?: string;
  registrationDeadline?: string;
  refereeId?: number | null;
+ /** Only applied on race creation — the backend does not read this field on update. */
+ entryFee?: number;
 }
 
 export type UpdateRacePayload = CreateRacePayload & { status?: RaceStatus };
@@ -118,7 +130,17 @@ export type UpdateRacePayload = CreateRacePayload & { status?: RaceStatus };
 export interface RegisterHorseToRacePayload {
  raceId: number;
  horseId: number;
- jockeyId?: number;
+}
+
+export interface SendJockeyRequestPayload {
+ raceHorseId: number;
+ jockeyId: number;
+ jockeyRevenuePercent: number;
+}
+
+export interface WithdrawRaceHorsePayload {
+ raceHorseId: number;
+ reason: string;
 }
 
 export interface SetOddsPayload {

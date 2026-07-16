@@ -3,9 +3,10 @@ interface DashboardHeroProps {
   title: string;
   subtitle: string;
   initial?: string;
+  avatarUrl?: string;
 }
 
-export default function DashboardHero({ eyebrow, title, subtitle, initial }: DashboardHeroProps) {
+export default function DashboardHero({ eyebrow, title, subtitle, initial, avatarUrl }: DashboardHeroProps) {
   return (
     <div className="relative overflow-hidden bg-navy px-6 py-9 sm:px-9 sm:py-10">
       {/* Silk-stripe decorative accents — echoes jockey silk swatches used elsewhere in the app */}
@@ -27,8 +28,12 @@ export default function DashboardHero({ eyebrow, title, subtitle, initial }: Das
           <p className="mt-2 max-w-md text-sm text-on-blue/65">{subtitle}</p>
         </div>
         {initial && (
-          <div className="hidden h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-gold/40 bg-gold font-serif text-2xl font-bold text-on-gold sm:flex">
-            {initial}
+          <div className="hidden h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-gold/40 bg-gold font-serif text-2xl font-bold text-on-gold sm:flex">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              initial
+            )}
           </div>
         )}
       </div>
