@@ -1,83 +1,74 @@
-import { useState } from 'react';
-import { Flag } from 'lucide-react';
-import { useRaces } from '@/hooks/useRaces';
-import RaceCard from '@/components/features/race/RaceCard';
-import RaceFilterTabs from '@/components/features/race/RaceFilterTabs';
-import Pagination from '@/components/ui/Pagination';
-import EmptyState from '@/components/ui/EmptyState';
+import { useLayoutEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Flag, Plus } from 'lucide-react';
+import RacesPanel from '@/components/features/admin/RacesPanel';
+import CreateRacePanel from '@/components/features/admin/CreateRacePanel';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
 
-function RaceGridSkeleton() {
+type Tab = 'races' | 'create';
+
+const TABS: { value: Tab; label: string; icon: typeof Flag; subtitle: string }[] = [
+  { value: 'races', label: 'Races', icon: Flag, subtitle: 'Browse and manage every race on the calendar' },
+  { value: 'create', label: 'Create Race', icon: Plus, subtitle: 'Set up a new race for the upcoming season' },
+];
+
+/* ── Toggle switch — sliding pill measures each button's real width/position
+ * instead of assuming equal slots, since "Races" and "Create Race" differ in length. */
+function TabSwitch({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
+  const btnRefs = useRef<Partial<Record<Tab, HTMLButtonElement>>>({});
+  const [indicator, setIndicator] = useState({ left: 0, width: 0 });
+
+  useLayoutEffect(() => {
+    const el = btnRefs.current[tab];
+    if (el) setIndicator({ left: el.offsetLeft, width: el.offsetWidth });
+  }, [tab]);
+
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-      {[...Array(9)].map((_, i) => (
-        <div key={i} className="overflow-hidden border border-rim bg-surface-raised">
-          <div className="h-40 animate-pulse bg-surface-overlay" />
-          <div className="space-y-2 px-4 py-4">
-            <div className="h-4 w-3/4 animate-pulse rounded-full bg-surface-overlay" />
-            <div className="h-3 w-1/2 animate-pulse rounded-full bg-surface-overlay" />
-            <div className="h-3 w-2/5 animate-pulse rounded-full bg-surface-overlay" />
-          </div>
-          <div className="flex gap-1 border-t border-rim px-3 py-2">
-            <div className="h-6 w-20 animate-pulse rounded bg-surface-overlay" />
-            <div className="h-6 w-14 animate-pulse rounded bg-surface-overlay" />
-            <div className="h-6 w-16 animate-pulse rounded bg-surface-overlay" />
-          </div>
-        </div>
+    <div className="relative inline-flex items-center border border-rim bg-surface-overlay p-1">
+      <div
+        className="absolute inset-y-1 bg-navy transition-all duration-200 ease-out"
+        style={{ left: indicator.left, width: indicator.width }}
+      />
+      {TABS.map((t) => (
+        <button
+          key={t.value}
+          ref={(el) => { if (el) btnRefs.current[t.value] = el; }}
+          type="button"
+          onClick={() => onChange(t.value)}
+          className={`relative z-10 flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors ${
+            tab === t.value ? 'text-on-blue' : 'text-ink-3 hover:text-ink'
+          }`}
+        >
+          <t.icon size={13} /> {t.label}
+        </button>
       ))}
     </div>
   );
 }
 
-const PAGE_SIZE = 9;
-
 export default function AdminRaceListPage() {
-  const [activeTab, setActiveTab] = useState('');
-  const [page, setPage] = useState(0);
-  const { races, loading, error, refetch } = useRaces({ page: 0, size: 100 });
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requested = searchParams.get('tab');
+  const tab: Tab = TABS.some((t) => t.value === requested) ? (requested as Tab) : 'races';
+  const active = TABS.find((t) => t.value === tab)!;
 
-  const filtered = activeTab ? races.filter((r) => r.status === activeTab) : races;
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const setTab = (t: Tab) => {
+    setSearchParams(t === 'races' ? {} : { tab: t }, { replace: true });
+  };
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Admin - Races" />
+      <Seo title="Manage Races" />
       <DashboardPageHeader
         eyebrow="Admin"
-        title="Race Management"
-        subtitle={`${races.length} total races`}
+        title="Manage Races"
+        subtitle={active.subtitle}
+        action={<TabSwitch tab={tab} onChange={setTab} />}
       />
 
-      <div className="mb-5">
-        <RaceFilterTabs active={activeTab} onChange={(v) => { setActiveTab(v); setPage(0); }} />
-      </div>
-
-      {error && (
-        <div className="mb-5 flex items-center justify-between rounded border border-fail/20 bg-fail-subtle px-4 py-3 text-sm text-fail">
-          <span>{error}</span>
-          <button type="button" onClick={() => refetch()} className="font-semibold underline hover:no-underline">
-            Retry
-          </button>
-        </div>
-      )}
-
-      {loading ? (
-        <RaceGridSkeleton />
-      ) : paginated.length === 0 ? (
-        <EmptyState icon={Flag} title="No races found" subtitle="Try a different status filter." />
-      ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {paginated.map((r) => <RaceCard key={r.id} race={r} isAdmin onRefetch={refetch} />)}
-        </div>
-      )}
-
-      {totalPages > 1 && (
-        <div className="mt-6 flex justify-center">
-          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
-        </div>
-      )}
+      {tab === 'races' && <RacesPanel />}
+      {tab === 'create' && <CreateRacePanel />}
     </div>
   );
 }

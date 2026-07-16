@@ -5,8 +5,6 @@ import { getRaces } from '@/api/raceApi';
 import { getHorsesByRace, setOddsForOne, setOdds } from '@/api/raceHorseApi';
 import { getHorseById } from '@/api/horseOwnerApi';
 import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
-import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import type { Race, RaceHorse, SetOddsPayload, Horse } from '@/types';
 
 const fmtDate = (iso?: string) => {
@@ -78,7 +76,7 @@ function SectionHeader({
   );
 }
 
-export default function AdminSetOddsPage() {
+export default function SetOddsPanel() {
   const addToast = useToast();
   const [races, setRaces] = useState<Race[]>([]);
   const [loadingRaces, setLoadingRaces] = useState(true);
@@ -518,68 +516,57 @@ export default function AdminSetOddsPage() {
     );
   };
 
-  return (
-    <div className="px-8 py-6">
-      <Seo title="Set Odds" />
-      <DashboardPageHeader
-        eyebrow="Admin"
-        title="Set Race Odds"
-        subtitle="Expand a race to configure odds for each horse"
-      />
-
-      {loadingRaces ? (
-        <RaceListSkeleton />
-      ) : races.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
-          <TrendingUp size={32} className="text-ink-4" />
-          <p className="font-serif text-lg font-bold text-ink">No races found</p>
-          <p className="text-sm text-ink-3">There are no races available to set odds for.</p>
+  return loadingRaces ? (
+    <RaceListSkeleton />
+  ) : races.length === 0 ? (
+    <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
+      <TrendingUp size={32} className="text-ink-4" />
+      <p className="font-serif text-lg font-bold text-ink">No races found</p>
+      <p className="text-sm text-ink-3">There are no races available to set odds for.</p>
+    </div>
+  ) : (
+    <div className="space-y-6">
+      {/* Upcoming / open / closed-registration races — the only ones odds can still be set for */}
+      {groupedRaces.upcoming.length > 0 && (
+        <div>
+          <SectionHeader label="Upcoming" count={groupedRaces.upcoming.length} dotClassName="bg-gold" />
+          <div className="space-y-2">
+            {groupedRaces.upcoming.map((race) => renderRaceCard(race))}
+          </div>
         </div>
-      ) : (
-        <div className="space-y-6">
-          {/* Upcoming / open / closed-registration races — the only ones odds can still be set for */}
-          {groupedRaces.upcoming.length > 0 && (
-            <div>
-              <SectionHeader label="Upcoming" count={groupedRaces.upcoming.length} dotClassName="bg-gold" />
-              <div className="space-y-2">
-                {groupedRaces.upcoming.map((race) => renderRaceCard(race))}
-              </div>
-            </div>
-          )}
+      )}
 
-          {/* Live races — race has started, odds are locked */}
-          {groupedRaces.live.length > 0 && (
-            <div>
-              <SectionHeader label="Live now" count={groupedRaces.live.length} dotClassName="bg-ok" />
-              <div className="space-y-2">
-                {groupedRaces.live.map((race) => renderRaceCard(race))}
-              </div>
-            </div>
-          )}
+      {/* Live races — race has started, odds are locked */}
+      {groupedRaces.live.length > 0 && (
+        <div>
+          <SectionHeader label="Live now" count={groupedRaces.live.length} dotClassName="bg-ok" />
+          <div className="space-y-2">
+            {groupedRaces.live.map((race) => renderRaceCard(race))}
+          </div>
+        </div>
+      )}
 
-          {/* Finished / cancelled races — collapsed by default */}
-          {groupedRaces.closed.length > 0 && (
-            <div>
-              <button
-                type="button"
-                onClick={() => setShowClosed((v) => !v)}
-                className="flex w-full items-center justify-between border-t border-rim py-3 text-left"
-              >
-                <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink-3">
-                  <Lock size={12} className="text-ink-4" />
-                  Finished / Cancelled
-                  <span className="font-normal normal-case text-ink-4">({groupedRaces.closed.length})</span>
-                </span>
-                <ChevronDown
-                  size={16}
-                  className={`text-ink-4 transition-transform duration-200 ${showClosed ? 'rotate-180' : ''}`}
-                />
-              </button>
-              {showClosed && (
-                <div className="space-y-2 pt-2">
-                  {groupedRaces.closed.map((race) => renderRaceCard(race))}
-                </div>
-              )}
+      {/* Finished / cancelled races — collapsed by default */}
+      {groupedRaces.closed.length > 0 && (
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowClosed((v) => !v)}
+            className="flex w-full items-center justify-between border-t border-rim py-3 text-left"
+          >
+            <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink-3">
+              <Lock size={12} className="text-ink-4" />
+              Finished / Cancelled
+              <span className="font-normal normal-case text-ink-4">({groupedRaces.closed.length})</span>
+            </span>
+            <ChevronDown
+              size={16}
+              className={`text-ink-4 transition-transform duration-200 ${showClosed ? 'rotate-180' : ''}`}
+            />
+          </button>
+          {showClosed && (
+            <div className="space-y-2 pt-2">
+              {groupedRaces.closed.map((race) => renderRaceCard(race))}
             </div>
           )}
         </div>

@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard, ClipboardCheck, Plus, Flag,
+  LayoutDashboard, Flag,
   Shield, ClipboardList, Ticket, Wallet, UserCog, TrendingUp,
   Landmark, PencilLine, FlagTriangleRight, Undo2, Send, type LucideIcon,
 } from 'lucide-react';
@@ -11,15 +11,12 @@ export const ROLE_MENU: Partial<Record<UserRole, NavItem[]>> = {
   ADMIN: [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
     { icon: UserCog, label: 'Manage Users', href: '/admin/users' },
-    { icon: ClipboardCheck, label: 'Approve Horses', href: '/admin/approve-horses' },
     { icon: Undo2, label: 'Horse Withdrawals', href: '/admin/withdrawal-requests' },
-    { icon: Plus, label: 'Create Race', href: '/admin/races/create' },
     { icon: PencilLine, label: 'Manage Races', href: '/admin/races' },
-    { icon: TrendingUp, label: 'Set Odds', href: '/admin/set-odds' },
     { icon: Landmark, label: 'System Wallet', href: '/admin/wallet' },
   ],
   STAFF: [
-    { icon: TrendingUp, label: 'Set Odds', href: '/admin/set-odds' },
+    { icon: TrendingUp, label: 'Set Odds', href: '/admin/races' },
   ],
   REFEREE: [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/referee/dashboard' },

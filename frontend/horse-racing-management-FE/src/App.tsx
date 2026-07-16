@@ -58,11 +58,8 @@ const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage')
 const AdminUsersPage = lazy(() => import('@/pages/admin/AdminUsersPage'));
 const AdminRaceListPage = lazy(() => import('@/pages/admin/AdminRaceListPage'));
 const AdminRaceDetailPage = lazy(() => import('@/pages/admin/AdminRaceDetailPage'));
-const AdminCreateRacePage = lazy(() => import('@/pages/admin/AdminCreateRacePage'));
 const AdminEditRacePage = lazy(() => import('@/pages/admin/AdminEditRacePage'));
-const AdminApproveHorsesPage = lazy(() => import('@/pages/admin/AdminApproveHorsesPage'));
 const AdminWithdrawalRequestsPage = lazy(() => import('@/pages/admin/AdminWithdrawalRequestsPage'));
-const AdminSetOddsPage = lazy(() => import('@/pages/admin/AdminSetOddsPage'));
 const AdminWalletPage = lazy(() => import('@/pages/admin/AdminWalletPage'));
 
 function RouteFallback() {
@@ -210,8 +207,10 @@ export default function App() {
               <AppLayout><AdminUsersPage /></AppLayout>
             </ProtectedRoute>
           } />
+          {/* Create Race, Set Odds and Approve Horses merged into Manage Races as
+              tabs — keep the old URLs working by redirecting into the right tab. */}
           <Route path="/admin/races" element={
-            <ProtectedRoute allowedRoles={['ADMIN']}>
+            <ProtectedRoute allowedRoles={['ADMIN', 'STAFF']}>
               <AppLayout><AdminRaceListPage /></AppLayout>
             </ProtectedRoute>
           } />
@@ -220,31 +219,19 @@ export default function App() {
               <AppLayout><AdminRaceDetailPage /></AppLayout>
             </ProtectedRoute>
           } />
-          <Route path="/admin/races/create" element={
-            <ProtectedRoute allowedRoles={['ADMIN']}>
-              <AppLayout><AdminCreateRacePage /></AppLayout>
-            </ProtectedRoute>
-          } />
+          <Route path="/admin/races/create" element={<Navigate to="/admin/races?tab=create" replace />} />
           <Route path="/admin/races/:id/edit" element={
             <ProtectedRoute allowedRoles={['ADMIN']}>
               <AppLayout><AdminEditRacePage /></AppLayout>
             </ProtectedRoute>
           } />
-          <Route path="/admin/approve-horses" element={
-            <ProtectedRoute allowedRoles={['ADMIN']}>
-              <AppLayout><AdminApproveHorsesPage /></AppLayout>
-            </ProtectedRoute>
-          } />
+          <Route path="/admin/approve-horses" element={<Navigate to="/admin/races?tab=approve" replace />} />
           <Route path="/admin/withdrawal-requests" element={
             <ProtectedRoute allowedRoles={['ADMIN']}>
               <AppLayout><AdminWithdrawalRequestsPage /></AppLayout>
             </ProtectedRoute>
           } />
-          <Route path="/admin/set-odds" element={
-            <ProtectedRoute allowedRoles={['ADMIN', 'STAFF']}>
-              <AppLayout><AdminSetOddsPage /></AppLayout>
-            </ProtectedRoute>
-          } />
+          <Route path="/admin/set-odds" element={<Navigate to="/admin/races?tab=odds" replace />} />
           {/* Deposit Requests merged into System Wallet as a tab — keep the old
               URL working by redirecting straight into that tab. */}
           <Route path="/admin/deposits" element={<Navigate to="/admin/wallet?tab=deposits" replace />} />

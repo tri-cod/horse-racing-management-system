@@ -4,8 +4,6 @@ import { getPendingHorses, approveRaceHorse, rejectRaceHorse } from '@/api/raceH
 import { getHorseById } from '@/api/horseOwnerApi';
 import { useToast } from '@/components/ui/ToastProvider';
 import EmptyState from '@/components/ui/EmptyState';
-import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import type { RaceHorse, Horse } from '@/types';
 
 type FullRaceHorse = RaceHorse & { raceName?: string; registerAt?: string };
@@ -68,7 +66,7 @@ function RaceListSkeleton() {
   );
 }
 
-export default function AdminApproveHorsesPage() {
+export default function ApproveHorsesPanel() {
   const addToast = useToast();
   const [horses, setHorses] = useState<FullRaceHorse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -80,7 +78,13 @@ export default function AdminApproveHorsesPage() {
 
   const fetchPending = useCallback(async () => {
     setLoading(true); setError(null);
-    try { const data = await getPendingHorses(); setHorses((data ?? []) as FullRaceHorse[]); }
+    try {
+      const data = await getPendingHorses();
+      // Only show entries the jockey has already accepted — a horse still
+      // awaiting the jockey's response (PendingJockey) isn't admin's call yet.
+      const confirmed = ((data ?? []) as FullRaceHorse[]).filter((h) => (h.status as string) === 'PendingAdmin');
+      setHorses(confirmed);
+    }
     catch { setError('Unable to load list. Please try again.'); }
     finally { setLoading(false); }
   }, []);
@@ -88,7 +92,7 @@ export default function AdminApproveHorsesPage() {
   useEffect(() => { fetchPending(); }, [fetchPending]);
 
   // Pending entries don't carry breed/age/speed/rank — fetch per unique horse
-  // (same N+1 pattern used in AdminSetOddsPage / AdminRaceDetailPage), deduped
+  // (same N+1 pattern used in SetOddsPanel / AdminRaceDetailPage), deduped
   // via a ref so switching between races never re-fetches a horse already loaded.
   useEffect(() => {
     const toFetch = [...new Set(horses.map((h) => h.horseId))].filter((hid) => !fetchedHorseIdsRef.current.has(hid));
@@ -142,21 +146,20 @@ export default function AdminApproveHorsesPage() {
     } finally { setActionLoading(null); }
   };
 
-  return (
-    <div className="px-8 py-6">
-      <Seo title="Approve Horses" />
-      <DashboardPageHeader
-        eyebrow="Admin"
-        title="Approve Horse Registrations"
-        subtitle={
-          loading
-            ? 'Loading…'
-            : selectedGroup
-              ? `${selectedGroup.entries.length} pending in ${selectedGroup.raceName}`
-              : `${horses.length} pending across ${raceGroups.length} race${raceGroups.length === 1 ? '' : 's'}`
-        }
-      />
+  if (loading) return selectedRaceId === null ? <RaceListSkeleton /> : <TableSkeleton />;
 
+  if (horses.length === 0) {
+    return (
+      <EmptyState
+        icon={ClipboardCheck}
+        title="No pending registrations"
+        subtitle="All horse registrations have been reviewed."
+      />
+    );
+  }
+
+  return (
+    <>
       {error && (
         <div className="mb-5 flex items-center justify-between border border-fail/20 bg-fail-subtle px-4 py-3 text-sm text-fail">
           <span>{error}</span>
@@ -166,15 +169,7 @@ export default function AdminApproveHorsesPage() {
         </div>
       )}
 
-      {loading ? (
-        selectedRaceId === null ? <RaceListSkeleton /> : <TableSkeleton />
-      ) : horses.length === 0 ? (
-        <EmptyState
-          icon={ClipboardCheck}
-          title="No pending registrations"
-          subtitle="All horse registrations have been reviewed."
-        />
-      ) : selectedRaceId === null || !selectedGroup ? (
+      {selectedRaceId === null || !selectedGroup ? (
         /* ── Step 1: pick a race ─────────────────────────────────────── */
         <div className="divide-y divide-rim border border-rim bg-surface-raised">
           {raceGroups.map((group) => (
@@ -300,6 +295,6 @@ export default function AdminApproveHorsesPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

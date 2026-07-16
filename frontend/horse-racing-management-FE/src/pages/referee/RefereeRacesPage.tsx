@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Flag, Play, StopCircle, Lock, ChevronDown, ChevronUp, Calendar, MapPin } from 'lucide-react';
-import { startRace, finishRace, closeRegistration } from '@/api/refereeApi';
+import { Flag, Play, Lock, ChevronDown, ChevronUp, Calendar, MapPin } from 'lucide-react';
+import { startRace, closeRegistration } from '@/api/refereeApi';
 import { getRaces } from '@/api/raceApi';
 import SetResultModal from '@/components/features/referee/SetResultModal';
 import RegisteredHorsesList from '@/components/features/race-horse/RegisteredHorsesList';
@@ -139,23 +139,13 @@ export default function RefereeRacesPage() {
                       </button>
                     )}
                     {race.status === 'ONGOING' && (
-                      <>
-                        <button
-                          type="button"
-                          disabled={isActing}
-                          onClick={() => doAction(race.id, finishRace, `Race "${race.raceName}" finished!`)}
-                          className="inline-flex items-center gap-1.5 border border-fail/30 bg-fail-subtle px-3 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail/20 disabled:opacity-50"
-                        >
-                          <StopCircle size={12} /> Finish
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setResultRace(race)}
-                          className="inline-flex items-center gap-1.5 border border-gold/40 bg-gold/10 px-3 py-1.5 text-xs font-semibold text-gold-hi transition-colors hover:bg-gold/20"
-                        >
-                          Set Result
-                        </button>
-                      </>
+                      <button
+                        type="button"
+                        onClick={() => setResultRace(race)}
+                        className="inline-flex items-center gap-1.5 border border-gold/40 bg-gold/10 px-3 py-1.5 text-xs font-semibold text-gold-hi transition-colors hover:bg-gold/20"
+                      >
+                        Set Result
+                      </button>
                     )}
                     <button
                       type="button"

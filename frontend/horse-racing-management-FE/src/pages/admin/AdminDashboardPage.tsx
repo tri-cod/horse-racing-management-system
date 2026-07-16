@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import {
-  Users, ClipboardCheck, ArrowDownLeft, Landmark, BadgeDollarSign,
-  Flag, UserPlus, Plus, TrendingUp,
+  Users, ClipboardCheck, ArrowDownLeft, Landmark, BadgeDollarSign, Flag,
 } from 'lucide-react';
 import { getUsers } from '@/api/adminApi';
 import { getPendingHorses } from '@/api/raceHorseApi';
@@ -11,7 +10,6 @@ import { useAuth } from '@/context/AuthContext';
 import DashboardHero from '@/components/shared/DashboardHero';
 import StatCard from '@/components/shared/StatCard';
 import ActivityList, { type ActivityItem } from '@/components/shared/ActivityList';
-import QuickActions from '@/components/shared/QuickActions';
 import { FadeInStagger, FadeInItem } from '@/components/shared/FadeIn';
 import UserGrowthChart from '@/components/shared/UserGrowthChart';
 import Seo from '@/components/seo/Seo';
@@ -242,7 +240,7 @@ export default function AdminDashboardPage() {
             error={horsesError}
             emptyIcon={ClipboardCheck}
             emptyLabel="No pending horse approvals"
-            viewAllTo="/admin/approve-horses"
+            viewAllTo="/admin/races?tab=approve"
           />
           <ActivityList
             icon={BadgeDollarSign}
@@ -265,17 +263,6 @@ export default function AdminDashboardPage() {
             viewAllTo="/admin/wallet"
           />
         </div>
-
-        <QuickActions
-          actions={[
-            { icon: UserPlus, label: 'Manage Users', description: 'Change roles and account status', to: '/admin/users' },
-            { icon: Plus, label: 'Create Race', description: 'Set up a new race event', to: '/admin/races/create' },
-            { icon: ClipboardCheck, label: 'Approve Horses', description: 'Review pending horse registrations', to: '/admin/approve-horses' },
-            { icon: TrendingUp, label: 'Set Odds', description: 'Update morning-line odds for a race', to: '/admin/set-odds' },
-            { icon: BadgeDollarSign, label: 'Deposit Requests', description: 'Verify VietQR deposit transfers', to: '/admin/wallet?tab=deposits' },
-            { icon: Landmark, label: 'System Wallet', description: 'Review balance and withdrawal requests', to: '/admin/wallet' },
-          ]}
-        />
       </div>
     </div>
   );
