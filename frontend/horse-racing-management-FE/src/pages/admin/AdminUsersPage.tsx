@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Search } from 'lucide-react';
 import { useAdminUsers } from '@/hooks/useAdminUsers';
 import UsersTable from '@/components/features/admin/UsersTable';
-import ManageUserModal from '@/components/features/admin/ManageUserModal';
+import ChangeRoleModal from '@/components/features/admin/ChangeRoleModal';
+import ChangeStatusModal from '@/components/features/admin/ChangeStatusModal';
 import Pagination from '@/components/ui/Pagination';
 import { useToast } from '@/components/ui/ToastProvider';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
@@ -55,7 +56,8 @@ export default function AdminUsersPage() {
   const [keyword, setKeyword] = useState('');
   const [role, setRole] = useState<UserRole | ''>('');
   const [status, setStatus] = useState<UserStatus | ''>('');
-  const [manageUser, setManageUser] = useState<User | null>(null);
+  const [roleUser, setRoleUser] = useState<User | null>(null);
+  const [statusUser, setStatusUser] = useState<User | null>(null);
 
   const { users, totalPages, currentPage, setCurrentPage, loading, error, refetch } = useAdminUsers({
     keyword, role, status, size: 10,
@@ -107,7 +109,7 @@ export default function AdminUsersPage() {
         <TableSkeleton />
       ) : (
         <div className="overflow-hidden border border-rim bg-surface-raised">
-          <UsersTable users={users} onManage={setManageUser} />
+          <UsersTable users={users} onChangeRole={setRoleUser} onChangeStatus={setStatusUser} />
         </div>
       )}
 
@@ -117,7 +119,8 @@ export default function AdminUsersPage() {
         </div>
       )}
 
-      <ManageUserModal user={manageUser} onClose={() => setManageUser(null)} onSuccess={handleSuccess} />
+      <ChangeRoleModal user={roleUser} onClose={() => setRoleUser(null)} onSuccess={handleSuccess} />
+      <ChangeStatusModal user={statusUser} onClose={() => setStatusUser(null)} onSuccess={handleSuccess} />
     </div>
   );
 }

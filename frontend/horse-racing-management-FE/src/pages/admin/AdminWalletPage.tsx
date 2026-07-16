@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, type ReactNode } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   Landmark, RefreshCw, TrendingUp, ArrowUpCircle, ArrowDownCircle,
@@ -13,7 +13,8 @@ import EmptyState from '@/components/ui/EmptyState';
 import Seo from '@/components/seo/Seo';
 import type { PendingTransaction } from '@/types';
 
-type Tab = 'deposits' | 'wallet';
+/* Toggle chỉ đổi bảng bên dưới — 'withdrawals' = Pending Requests, 'deposits' = Deposit Requests */
+type TableTab = 'withdrawals' | 'deposits';
 
 const fmt = (n: number | null | undefined) =>
   n != null
@@ -28,34 +29,140 @@ const fmtDate = (iso?: string) =>
       })
     : '—';
 
-/* ── Toggle switch — gạt trái = Deposit Requests, gạt phải = System Wallet ── */
-function TabSwitch({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
+/* ── Segmented toggle — 2 ô rộng bằng nhau nên pill trượt canh chuẩn, không lệch ── */
+function TableToggle({ tab, onChange }: { tab: TableTab; onChange: (t: TableTab) => void }) {
   return (
-    <div className="relative inline-flex items-center border border-rim bg-surface-overlay p-1">
-      <div
-        className={`absolute inset-y-1 w-[calc(50%-4px)] bg-navy transition-transform duration-200 ease-out ${
-          tab === 'wallet' ? 'translate-x-[calc(100%+8px)]' : 'translate-x-0'
+    <div className="relative grid grid-cols-2 border border-rim bg-surface-overlay p-1">
+      {/* pill trượt — cùng width với mỗi ô */}
+      <span
+        aria-hidden
+        className={`pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-navy shadow-[0_1px_4px_rgba(0,0,0,0.18)] transition-transform duration-300 ease-out ${
+          tab === 'deposits' ? 'translate-x-full' : 'translate-x-0'
         }`}
       />
       <button
         type="button"
-        onClick={() => onChange('deposits')}
-        className={`relative z-10 flex items-center gap-1.5 px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${
-          tab === 'deposits' ? 'text-on-blue' : 'text-ink-3 hover:text-ink'
+        onClick={() => onChange('withdrawals')}
+        className={`relative z-10 flex items-center justify-center gap-1.5 whitespace-nowrap px-5 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${
+          tab === 'withdrawals' ? 'text-on-blue' : 'text-ink-3 hover:text-ink'
         }`}
       >
-        <BadgeDollarSign size={13} /> Deposit Requests
+        <ArrowDownLeft size={13} /> Withdrawals
       </button>
       <button
         type="button"
-        onClick={() => onChange('wallet')}
-        className={`relative z-10 flex items-center gap-1.5 px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${
-          tab === 'wallet' ? 'text-on-blue' : 'text-ink-3 hover:text-ink'
+        onClick={() => onChange('deposits')}
+        className={`relative z-10 flex items-center justify-center gap-1.5 whitespace-nowrap px-5 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${
+          tab === 'deposits' ? 'text-on-blue' : 'text-ink-3 hover:text-ink'
         }`}
       >
-        <Landmark size={13} /> System Wallet
+        <BadgeDollarSign size={13} /> Deposits
       </button>
     </div>
+  );
+}
+
+/* ══════════════════════════ System stats — luôn hiển thị ở trên ══════════════════════════ */
+
+function SystemStats({
+  reloadKey, balanceKey, onRefresh,
+}: { reloadKey: number; balanceKey: number; onRefresh: () => void }) {
+  const [balance, setBalance] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const fetchBalance = useCallback(async () => {
+    setLoading(true); setError('');
+    try {
+      const data = await getSystemBalance();
+      setBalance((data as unknown as { balance?: number }).balance ?? (data as unknown as number));
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      setError(err?.response?.data?.message ?? 'Failed to load system wallet.');
+    } finally { setLoading(false); }
+  }, []);
+
+  // refetch khi bấm Refresh (reloadKey) HOẶC sau khi duyệt 1 giao dịch (balanceKey)
+  useEffect(() => { fetchBalance(); }, [fetchBalance, reloadKey, balanceKey]);
+
+  return (
+    <>
+      <div className="mb-6 flex justify-end">
+        <button
+          type="button"
+          onClick={onRefresh}
+          disabled={loading}
+          className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-surface-overlay hover:text-ink disabled:opacity-50"
+        >
+          <RefreshCw size={13} className={loading ? 'animate-spin' : ''} /> Refresh
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {/* System Balance */}
+        <div className="group relative overflow-hidden border border-rim bg-surface-raised">
+          <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gold transition-transform group-hover:scale-x-100" />
+          <div className="flex items-center gap-4 px-5 py-5">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center bg-navy text-gold">
+              <Landmark size={22} />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">System Balance</p>
+              {loading ? (
+                <div className="mt-2 h-7 w-40 animate-pulse bg-surface-overlay" />
+              ) : error ? (
+                <p className="mt-1 text-sm text-fail">{error}</p>
+              ) : (
+                <p className="tnum mt-1 text-2xl font-bold text-ink">{fmt(balance)}</p>
+              )}
+            </div>
+          </div>
+          <div className="border-t border-rim bg-surface-overlay/50 px-5 py-2.5">
+            <p className="flex items-center gap-1.5 text-xs text-ink-3">
+              <TrendingUp size={11} /> Total funds held by Royal Derby
+            </p>
+          </div>
+        </div>
+
+        {/* Total Deposits (placeholder) */}
+        <div className="group relative overflow-hidden border border-rim bg-surface-raised opacity-60">
+          <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gold transition-transform group-hover:scale-x-100" />
+          <div className="flex items-center gap-4 px-5 py-5">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center bg-ok-subtle text-ok">
+              <ArrowUpCircle size={22} />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Total Deposits</p>
+              <p className="tnum mt-1 text-2xl font-bold text-ink">—</p>
+            </div>
+          </div>
+          <div className="border-t border-rim bg-surface-overlay/50 px-5 py-2.5">
+            <p className="flex items-center gap-1.5 text-xs text-ink-3">
+              <ArrowUpCircle size={11} /> Cumulative approved deposits
+            </p>
+          </div>
+        </div>
+
+        {/* Total Payouts (placeholder) */}
+        <div className="group relative overflow-hidden border border-rim bg-surface-raised opacity-60">
+          <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gold transition-transform group-hover:scale-x-100" />
+          <div className="flex items-center gap-4 px-5 py-5">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center bg-fail-subtle text-fail">
+              <ArrowDownCircle size={22} />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Total Payouts</p>
+              <p className="tnum mt-1 text-2xl font-bold text-ink">—</p>
+            </div>
+          </div>
+          <div className="border-t border-rim bg-surface-overlay/50 px-5 py-2.5">
+            <p className="flex items-center gap-1.5 text-xs text-ink-3">
+              <ArrowDownCircle size={11} /> Cumulative winnings paid out
+            </p>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -88,7 +195,7 @@ function DepositsTableSkeleton() {
   );
 }
 
-function DepositsPanel() {
+function DepositsPanel({ reloadKey, onBalanceChange, toggle }: { reloadKey: number; onBalanceChange: () => void; toggle?: ReactNode }) {
   const [deposits, setDeposits] = useState<PendingTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionId, setActionId] = useState<number | null>(null);
@@ -107,7 +214,7 @@ function DepositsPanel() {
     finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { fetchDeposits(); }, [fetchDeposits]);
+  useEffect(() => { fetchDeposits(); }, [fetchDeposits, reloadKey]);
 
   const handleCopy = (id: number, code: string) => {
     navigator.clipboard.writeText(code);
@@ -121,110 +228,125 @@ function DepositsPanel() {
     try {
       if (action === 'approve') await approveDeposit(id, note);
       else await rejectDeposit(id, note);
-      setDeposits((prev) => prev.filter((d) => d.id !== id));
+      setDeposits((prev) => prev.filter((d) => d.id !== id));   // optimistic — không flash skeleton
       setNotes((prev) => { const next = { ...prev }; delete next[id]; return next; });
+      onBalanceChange();                                        // approve/reject đổi số dư → refetch balance
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
       setError(err?.response?.data?.message ?? `Failed to ${action}.`);
     } finally { setActionId(null); }
   };
 
-  if (loading) return <DepositsTableSkeleton />;
-
-  if (deposits.length === 0) {
-    return (
-      <EmptyState
-        icon={Wallet}
-        title="No pending deposits"
-        subtitle="All deposit requests have been processed."
-      />
-    );
-  }
-
   return (
     <>
-      {error && <div className="mb-4 border border-fail/20 bg-fail-subtle px-4 py-3 text-sm text-fail">{error}</div>}
-      <div className="overflow-hidden border border-rim bg-surface-raised">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px]">
-            <thead>
-              <tr className="border-b border-rim bg-surface-overlay">
-                {['User', 'Amount', 'Ref. Code', 'Submitted', 'Note', 'Actions'].map((h) => (
-                  <th key={h} className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-rim">
-              {deposits.map((d) => (
-                <tr key={d.id} className="transition-colors hover:bg-surface-overlay/40">
-                  <td className="px-5 py-3.5">
-                    <span className="text-sm font-semibold text-ink">
-                      {d.user?.username ?? `#${d.user?.id ?? d.id}`}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <span className="tnum text-sm font-bold text-gold">{fmt(d.amount)}</span>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    {d.referenceCode ? (
-                      <div className="flex items-center gap-1.5">
-                        <code className="text-xs font-semibold text-ink">{d.referenceCode}</code>
-                        <button
-                          type="button"
-                          title="Copy reference code"
-                          onClick={() => handleCopy(d.id, d.referenceCode!)}
-                          className="flex shrink-0 items-center gap-1 border border-rim px-1.5 py-1 text-[10px] font-medium text-ink-3 transition-colors hover:border-rim-hi hover:text-ink"
-                        >
-                          {copiedId === d.id ? <CheckCircle2 size={11} className="text-ok" /> : <Copy size={11} />}
-                        </button>
-                      </div>
-                    ) : (
-                      <span className="text-sm text-ink-4">—</span>
-                    )}
-                  </td>
-                  <td className="tnum px-5 py-3.5 text-sm text-ink-3">{fmtDate(d.createdAt)}</td>
-                  <td className="px-5 py-3.5">
-                    <input
-                      type="text"
-                      placeholder="Add a note (optional)"
-                      value={notes[d.id] ?? ''}
-                      onChange={(e) => setNotes((prev) => ({ ...prev, [d.id]: e.target.value }))}
-                      className="w-48 border border-rim bg-surface-input px-2.5 py-1.5 text-xs text-ink placeholder:text-ink-4 outline-none transition-colors focus:border-gold"
-                    />
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        disabled={actionId === d.id}
-                        onClick={() => handle(d.id, 'approve')}
-                        className="inline-flex items-center gap-1.5 border border-ok/30 bg-ok-subtle px-3 py-1.5 text-xs font-semibold text-ok transition-colors hover:bg-ok/20 disabled:opacity-50"
-                      >
-                        <CheckCircle2 size={12} /> Approve
-                      </button>
-                      <button
-                        type="button"
-                        disabled={actionId === d.id}
-                        onClick={() => handle(d.id, 'reject')}
-                        className="inline-flex items-center gap-1.5 border border-fail/30 bg-fail-subtle px-3 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail/20 disabled:opacity-50"
-                      >
-                        <XCircle size={12} /> Reject
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Deposits</p>
+          <h2 className="font-serif text-lg font-bold text-ink">Deposit Requests</h2>
+        </div>
+        <div className="flex items-center gap-3">
+          {!loading && deposits.length > 0 && (
+            <span className="inline-flex items-center gap-1.5 border border-warn/30 bg-warn-subtle px-3 py-1 text-xs font-bold text-warn">
+              <BadgeDollarSign size={12} /> {deposits.length} pending
+            </span>
+          )}
+          {toggle}
         </div>
       </div>
+
+      {error && <div className="mb-4 border border-fail/20 bg-fail-subtle px-4 py-3 text-sm text-fail">{error}</div>}
+
+      {loading ? (
+        <DepositsTableSkeleton />
+      ) : deposits.length === 0 ? (
+        <EmptyState
+          icon={Wallet}
+          title="No pending deposits"
+          subtitle="All deposit requests have been processed."
+        />
+      ) : (
+        <div className="overflow-hidden border border-rim bg-surface-raised">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px]">
+              <thead>
+                <tr className="border-b border-rim bg-surface-overlay">
+                  {['User', 'Amount', 'Ref. Code', 'Submitted', 'Note', 'Actions'].map((h) => (
+                    <th key={h} className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-rim">
+                {deposits.map((d) => (
+                  <tr key={d.id} className="transition-colors hover:bg-surface-overlay/40">
+                    <td className="px-5 py-3.5">
+                      <span className="text-sm font-semibold text-ink">
+                        {d.user?.username ?? `#${d.user?.id ?? d.id}`}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <span className="tnum text-sm font-bold text-gold">{fmt(d.amount)}</span>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      {d.referenceCode ? (
+                        <div className="flex items-center gap-1.5">
+                          <code className="text-xs font-semibold text-ink">{d.referenceCode}</code>
+                          <button
+                            type="button"
+                            title="Copy reference code"
+                            onClick={() => handleCopy(d.id, d.referenceCode!)}
+                            className="flex shrink-0 items-center gap-1 border border-rim px-1.5 py-1 text-[10px] font-medium text-ink-3 transition-colors hover:border-rim-hi hover:text-ink"
+                          >
+                            {copiedId === d.id ? <CheckCircle2 size={11} className="text-ok" /> : <Copy size={11} />}
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-ink-4">—</span>
+                      )}
+                    </td>
+                    <td className="tnum px-5 py-3.5 text-sm text-ink-3">{fmtDate(d.createdAt)}</td>
+                    <td className="px-5 py-3.5">
+                      <input
+                        type="text"
+                        placeholder="Add a note (optional)"
+                        value={notes[d.id] ?? ''}
+                        onChange={(e) => setNotes((prev) => ({ ...prev, [d.id]: e.target.value }))}
+                        className="w-48 border border-rim bg-surface-input px-2.5 py-1.5 text-xs text-ink placeholder:text-ink-4 outline-none transition-colors focus:border-gold"
+                      />
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          disabled={actionId === d.id}
+                          onClick={() => handle(d.id, 'approve')}
+                          className="inline-flex items-center gap-1.5 border border-ok/30 bg-ok-subtle px-3 py-1.5 text-xs font-semibold text-ok transition-colors hover:bg-ok/20 disabled:opacity-50"
+                        >
+                          <CheckCircle2 size={12} /> Approve
+                        </button>
+                        <button
+                          type="button"
+                          disabled={actionId === d.id}
+                          onClick={() => handle(d.id, 'reject')}
+                          className="inline-flex items-center gap-1.5 border border-fail/30 bg-fail-subtle px-3 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail/20 disabled:opacity-50"
+                        >
+                          <XCircle size={12} /> Reject
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </>
   );
 }
 
-/* ══════════════════════════ System Wallet panel ══════════════════════════ */
+/* ══════════════════════════ Pending Withdrawals panel ══════════════════════════ */
 
 function WithdrawTableSkeleton() {
   return (
@@ -251,44 +373,27 @@ function WithdrawTableSkeleton() {
 
 interface ActionState { id: number; action: 'approve' | 'reject'; note: string; username?: string; amount?: number }
 
-function WalletPanel() {
-  const [balance, setBalance] = useState<number | null>(null);
-  const [balanceLoading, setBalanceLoading] = useState(true);
-  const [balanceError, setBalanceError] = useState('');
-
+function WithdrawalsPanel({ reloadKey, onBalanceChange, toggle }: { reloadKey: number; onBalanceChange: () => void; toggle?: ReactNode }) {
   const [withdraws, setWithdraws] = useState<PendingTransaction[]>([]);
-  const [withdrawLoading, setWithdrawLoading] = useState(true);
-  const [withdrawError, setWithdrawError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const [actionState, setActionState] = useState<ActionState | null>(null);
   const [processing, setProcessing] = useState(false);
   const [actionError, setActionError] = useState('');
 
-  const fetchBalance = useCallback(async () => {
-    setBalanceLoading(true); setBalanceError('');
-    try {
-      const data = await getSystemBalance();
-      setBalance((data as unknown as { balance?: number }).balance ?? data as unknown as number);
-    } catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string } } };
-      setBalanceError(err?.response?.data?.message ?? 'Failed to load system wallet.');
-    } finally { setBalanceLoading(false); }
-  }, []);
-
   const fetchWithdraws = useCallback(async () => {
-    setWithdrawLoading(true); setWithdrawError('');
+    setLoading(true); setError('');
     try {
       const data = await getPendingWithdraws();
       setWithdraws(data ?? []);
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
-      setWithdrawError(err?.response?.data?.message ?? 'Failed to load withdrawal requests.');
-    } finally { setWithdrawLoading(false); }
+      setError(err?.response?.data?.message ?? 'Failed to load withdrawal requests.');
+    } finally { setLoading(false); }
   }, []);
 
-  const refresh = useCallback(() => { fetchBalance(); fetchWithdraws(); }, [fetchBalance, fetchWithdraws]);
-
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => { fetchWithdraws(); }, [fetchWithdraws, reloadKey]);
 
   const handleAction = async () => {
     if (!actionState) return;
@@ -300,8 +405,8 @@ function WalletPanel() {
         await rejectWithdraw(actionState.id, actionState.note || 'Rejected');
       }
       setActionState(null);
-      fetchWithdraws();
-      fetchBalance();
+      fetchWithdraws();       // reload danh sách withdraw
+      onBalanceChange();      // đổi số dư → refetch balance ở SystemStats
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
       setActionError(err?.response?.data?.message ?? 'Action failed.');
@@ -310,155 +415,81 @@ function WalletPanel() {
 
   return (
     <>
-      <div className="mb-6 flex justify-end">
-        <button
-          type="button"
-          onClick={refresh}
-          disabled={balanceLoading || withdrawLoading}
-          className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-surface-overlay hover:text-ink disabled:opacity-50"
-        >
-          <RefreshCw size={13} className={(balanceLoading || withdrawLoading) ? 'animate-spin' : ''} /> Refresh
-        </button>
-      </div>
-
-      {/* Stat cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="group relative overflow-hidden border border-rim bg-surface-raised">
-          <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gold transition-transform group-hover:scale-x-100" />
-          <div className="flex items-center gap-4 px-5 py-5">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center bg-navy text-gold">
-              <Landmark size={22} />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">System Balance</p>
-              {balanceLoading ? (
-                <div className="mt-2 h-7 w-40 animate-pulse bg-surface-overlay" />
-              ) : balanceError ? (
-                <p className="mt-1 text-sm text-fail">{balanceError}</p>
-              ) : (
-                <p className="tnum mt-1 text-2xl font-bold text-ink">{fmt(balance)}</p>
-              )}
-            </div>
-          </div>
-          <div className="border-t border-rim bg-surface-overlay/50 px-5 py-2.5">
-            <p className="flex items-center gap-1.5 text-xs text-ink-3">
-              <TrendingUp size={11} /> Total funds held by Royal Derby
-            </p>
-          </div>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Withdrawals</p>
+          <h2 className="font-serif text-lg font-bold text-ink">Pending Requests</h2>
         </div>
-
-        <div className="group relative overflow-hidden border border-rim bg-surface-raised opacity-60">
-          <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gold transition-transform group-hover:scale-x-100" />
-          <div className="flex items-center gap-4 px-5 py-5">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center bg-ok-subtle text-ok">
-              <ArrowUpCircle size={22} />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Total Deposits</p>
-              <p className="tnum mt-1 text-2xl font-bold text-ink">—</p>
-            </div>
-          </div>
-          <div className="border-t border-rim bg-surface-overlay/50 px-5 py-2.5">
-            <p className="flex items-center gap-1.5 text-xs text-ink-3">
-              <ArrowUpCircle size={11} /> Cumulative approved deposits
-            </p>
-          </div>
-        </div>
-
-        <div className="group relative overflow-hidden border border-rim bg-surface-raised opacity-60">
-          <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gold transition-transform group-hover:scale-x-100" />
-          <div className="flex items-center gap-4 px-5 py-5">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center bg-fail-subtle text-fail">
-              <ArrowDownCircle size={22} />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Total Payouts</p>
-              <p className="tnum mt-1 text-2xl font-bold text-ink">—</p>
-            </div>
-          </div>
-          <div className="border-t border-rim bg-surface-overlay/50 px-5 py-2.5">
-            <p className="flex items-center gap-1.5 text-xs text-ink-3">
-              <ArrowDownCircle size={11} /> Cumulative winnings paid out
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Pending Withdrawals */}
-      <div className="mt-8">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Withdrawals</p>
-            <h2 className="font-serif text-lg font-bold text-ink">Pending Requests</h2>
-          </div>
-          {!withdrawLoading && withdraws.length > 0 && (
+        <div className="flex items-center gap-3">
+          {!loading && withdraws.length > 0 && (
             <span className="inline-flex items-center gap-1.5 border border-warn/30 bg-warn-subtle px-3 py-1 text-xs font-bold text-warn">
               <ArrowDownLeft size={12} /> {withdraws.length} pending
             </span>
           )}
+          {toggle}
         </div>
-
-        {withdrawError && (
-          <div className="mb-4 border border-fail/20 bg-fail-subtle px-4 py-3 text-sm text-fail">{withdrawError}</div>
-        )}
-
-        {withdrawLoading ? (
-          <WithdrawTableSkeleton />
-        ) : withdraws.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 border border-rim bg-surface-raised py-12 text-center">
-            <ArrowDownLeft size={24} className="text-ink-4" />
-            <p className="text-sm font-semibold text-ink-2">No pending withdrawals</p>
-            <p className="text-xs text-ink-4">All withdrawal requests have been processed.</p>
-          </div>
-        ) : (
-          <div className="overflow-hidden border border-rim bg-surface-raised">
-            <table className="w-full min-w-[640px]">
-              <thead>
-                <tr className="border-b border-rim bg-surface-overlay">
-                  {['User', 'Amount', 'Bank Info', 'Submitted', 'Actions'].map((h) => (
-                    <th key={h} className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-rim">
-                {withdraws.map((w) => (
-                  <tr key={w.id} className="transition-colors hover:bg-surface-overlay/40">
-                    <td className="px-5 py-4">
-                      <p className="text-sm font-semibold text-ink">{w.user?.username ?? '—'}</p>
-                      {w.user?.fullName && <p className="text-xs text-ink-3">{w.user.fullName}</p>}
-                    </td>
-                    <td className="tnum px-5 py-4 text-sm font-bold text-ink">{fmt(w.amount)}</td>
-                    <td className="px-5 py-4 text-xs text-ink-3 max-w-[200px]">
-                      <span className="break-words">{w.verifyNote ?? '—'}</span>
-                    </td>
-                    <td className="tnum px-5 py-4 text-xs text-ink-3">{fmtDate(w.createdAt)}</td>
-                    <td className="px-5 py-4">
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={() => { setActionState({ id: w.id, action: 'approve', note: '', username: w.user?.username, amount: w.amount }); setActionError(''); }}
-                          className="inline-flex items-center gap-1 border border-ok/30 bg-ok-subtle px-3 py-1.5 text-xs font-semibold text-ok transition-colors hover:bg-ok hover:text-white"
-                        >
-                          <CheckCircle2 size={12} /> Approve
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => { setActionState({ id: w.id, action: 'reject', note: '', username: w.user?.username, amount: w.amount }); setActionError(''); }}
-                          className="inline-flex items-center gap-1 border border-fail/30 bg-fail-subtle px-3 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail hover:text-white"
-                        >
-                          <XCircle size={12} /> Reject
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
       </div>
+
+      {error && (
+        <div className="mb-4 border border-fail/20 bg-fail-subtle px-4 py-3 text-sm text-fail">{error}</div>
+      )}
+
+      {loading ? (
+        <WithdrawTableSkeleton />
+      ) : withdraws.length === 0 ? (
+        <div className="flex flex-col items-center gap-2 border border-rim bg-surface-raised py-12 text-center">
+          <ArrowDownLeft size={24} className="text-ink-4" />
+          <p className="text-sm font-semibold text-ink-2">No pending withdrawals</p>
+          <p className="text-xs text-ink-4">All withdrawal requests have been processed.</p>
+        </div>
+      ) : (
+        <div className="overflow-hidden border border-rim bg-surface-raised">
+          <table className="w-full min-w-[640px]">
+            <thead>
+              <tr className="border-b border-rim bg-surface-overlay">
+                {['User', 'Amount', 'Bank Info', 'Submitted', 'Actions'].map((h) => (
+                  <th key={h} className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-rim">
+              {withdraws.map((w) => (
+                <tr key={w.id} className="transition-colors hover:bg-surface-overlay/40">
+                  <td className="px-5 py-4">
+                    <p className="text-sm font-semibold text-ink">{w.user?.username ?? '—'}</p>
+                    {w.user?.fullName && <p className="text-xs text-ink-3">{w.user.fullName}</p>}
+                  </td>
+                  <td className="tnum px-5 py-4 text-sm font-bold text-ink">{fmt(w.amount)}</td>
+                  <td className="px-5 py-4 text-xs text-ink-3 max-w-[200px]">
+                    <span className="break-words">{w.verifyNote ?? '—'}</span>
+                  </td>
+                  <td className="tnum px-5 py-4 text-xs text-ink-3">{fmtDate(w.createdAt)}</td>
+                  <td className="px-5 py-4">
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => { setActionState({ id: w.id, action: 'approve', note: '', username: w.user?.username, amount: w.amount }); setActionError(''); }}
+                        className="inline-flex items-center gap-1 border border-ok/30 bg-ok-subtle px-3 py-1.5 text-xs font-semibold text-ok transition-colors hover:bg-ok hover:text-white"
+                      >
+                        <CheckCircle2 size={12} /> Approve
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setActionState({ id: w.id, action: 'reject', note: '', username: w.user?.username, amount: w.amount }); setActionError(''); }}
+                        className="inline-flex items-center gap-1 border border-fail/30 bg-fail-subtle px-3 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail hover:text-white"
+                      >
+                        <XCircle size={12} /> Reject
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Confirm action modal */}
       {actionState && (
@@ -527,15 +558,22 @@ function WalletPanel() {
   );
 }
 
-/* ══════════════════════════ Page shell — toggle wired to ?tab= ══════════════════════════ */
+/* ══════════════════════════ Page shell — stats luôn hiển thị, toggle chỉ đổi bảng ══════════════════════════ */
 
 export default function AdminWalletPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const tab: Tab = searchParams.get('tab') === 'deposits' ? 'deposits' : 'wallet';
+  const tab: TableTab = searchParams.get('tab') === 'deposits' ? 'deposits' : 'withdrawals';
 
-  const setTab = (t: Tab) => {
-    setSearchParams(t === 'wallet' ? {} : { tab: t }, { replace: true });
+  const setTab = (t: TableTab) => {
+    setSearchParams(t === 'withdrawals' ? {} : { tab: t }, { replace: true });
   };
+
+  // reloadKey = nút Refresh (reload cả balance + bảng đang mở)
+  // balanceKey = sau khi approve/reject (chỉ refetch balance, không flash skeleton bảng)
+  const [reloadKey, setReloadKey] = useState(0);
+  const [balanceKey, setBalanceKey] = useState(0);
+  const reloadAll = () => setReloadKey((k) => k + 1);
+  const bumpBalance = () => setBalanceKey((k) => k + 1);
 
   return (
     <div className="px-8 py-6">
@@ -543,11 +581,18 @@ export default function AdminWalletPage() {
       <DashboardPageHeader
         eyebrow="Admin"
         title="System Wallet"
-        subtitle={tab === 'deposits' ? 'Verify VietQR deposit transfers' : 'Platform balance and pending withdrawal requests'}
-        action={<TabSwitch tab={tab} onChange={setTab} />}
+        subtitle="Platform balance, deposit and withdrawal requests"
       />
 
-      {tab === 'deposits' ? <DepositsPanel /> : <WalletPanel />}
+      {/* Phần trên — giữ nguyên, luôn hiển thị (không có toggle) */}
+      <SystemStats reloadKey={reloadKey} balanceKey={balanceKey} onRefresh={reloadAll} />
+
+      {/* Phần bảng — toggle nằm ngay cạnh heading, gạt qua lại đổi bảng */}
+      <div className="mt-8">
+        {tab === 'withdrawals'
+          ? <WithdrawalsPanel reloadKey={reloadKey} onBalanceChange={bumpBalance} toggle={<TableToggle tab={tab} onChange={setTab} />} />
+          : <DepositsPanel reloadKey={reloadKey} onBalanceChange={bumpBalance} toggle={<TableToggle tab={tab} onChange={setTab} />} />}
+      </div>
     </div>
   );
 }

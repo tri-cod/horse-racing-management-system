@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
- LayoutDashboard, ClipboardCheck, Plus, Flag,
+ LayoutDashboard, Flag,
  Shield, ClipboardList, Ticket, Wallet, UserCog, TrendingUp,
  User, LogOut, Landmark, PencilLine, FlagTriangleRight, Send, Undo2, type LucideIcon,
 } from 'lucide-react';
@@ -14,11 +14,8 @@ const ROLE_ITEMS: Partial<Record<UserRole, NavItem[]>> = {
  ADMIN: [
  { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
  { icon: UserCog, label: 'Manage Users', href: '/admin/users' },
- { icon: ClipboardCheck, label: 'Approve Horses', href: '/admin/approve-horses' },
  { icon: Undo2, label: 'Horse Withdrawals', href: '/admin/withdrawal-requests' },
- { icon: Plus, label: 'Create Race', href: '/admin/races/create' },
  { icon: PencilLine, label: 'Manage Races', href: '/admin/races', end: true },
- { icon: TrendingUp, label: 'Set Odds', href: '/admin/set-odds' },
  { icon: Landmark, label: 'System Wallet', href: '/admin/wallet' },
  ],
  REFEREE: [
@@ -45,7 +42,7 @@ const ROLE_ITEMS: Partial<Record<UserRole, NavItem[]>> = {
         { icon: Send, label: 'Race Requests', href: '/jockey/race-requests' },
         { icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
 STAFF: [
- { icon: TrendingUp, label: 'Set Odds', href: '/admin/set-odds' },
+ { icon: TrendingUp, label: 'Set Odds', href: '/admin/races' },
 ],
 };
 
