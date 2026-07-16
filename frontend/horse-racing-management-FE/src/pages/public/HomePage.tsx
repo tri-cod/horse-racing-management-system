@@ -3,6 +3,7 @@ import HeroSection from '@/components/features/home/HeroSection';
 import AboutSection from '@/components/features/home/AboutSection';
 import RacesSection from '@/components/features/home/RacesSection';
 import JockeysSection from '@/components/features/home/JockeysSection';
+import HorsesSection from '@/components/features/home/HorsesSection';
 import SeasonStatsSection from '@/components/features/home/SeasonStatsSection';
 import GallerySection from '@/components/features/home/GallerySection';
 import NewsSection from '@/components/features/home/NewsSection';
@@ -33,6 +34,7 @@ export default function HomePage() {
       <HeroSection />
       <RacesSection />
       <JockeysSection />
+      <HorsesSection />
       <SeasonStatsSection />
       <AboutSection />
       <GallerySection />

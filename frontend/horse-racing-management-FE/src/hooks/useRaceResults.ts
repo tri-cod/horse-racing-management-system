@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { getRaceResults } from '@/api/refereeApi';
-import type { RaceResultNested } from '@/types';
+import { getHorsesByRace } from '@/api/raceHorseApi';
+import type { RaceResultFlat } from '@/types';
 
 export interface NormalizedRaceResult {
   id: number;
@@ -18,27 +19,42 @@ function fmtSeconds(seconds?: number): string | undefined {
   return m > 0 ? `${m}m ${s}s` : `${s}s`;
 }
 
-function normalize(r: RaceResultNested): NormalizedRaceResult {
+// GET /race-results/race/{raceId} returns a FLAT DTO (horseName/jockeyName directly
+// on the object, no `raceHorse.horse.*` nesting, and no `odds`) — odds is backfilled
+// by cross-referencing the race's entries (/race-horse/race/{raceId}) by horseId.
+function normalize(r: RaceResultFlat, oddsByHorseId: Map<number, number>): NormalizedRaceResult {
   return {
     id: r.id,
-    position: r.finishPosition ?? r.rank ?? 0,
-    horseName: r.raceHorse?.horse?.horseName ?? '—',
-    jockeyName: r.raceHorse?.jockey?.user?.fullName ?? '—',
-    time: fmtSeconds(r.completionTimeSeconds),
-    odds: r.raceHorse?.odds,
+    position: r.rank ?? 0,
+    horseName: r.horseName ?? '—',
+    jockeyName: r.jockeyName ?? '—',
+    time: r.completionTimeFormatted ?? fmtSeconds(r.completionTimeSeconds),
+    odds: r.horseId != null ? oddsByHorseId.get(r.horseId) : undefined,
   };
 }
 
 export function useRaceResults(raceId: number | undefined) {
-  const { data, isLoading, error } = useQuery<RaceResultNested[]>({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['race-results', raceId],
-    queryFn: () => getRaceResults(raceId!) as unknown as Promise<RaceResultNested[]>,
+    queryFn: async () => {
+      const [results, raceHorses] = await Promise.all([
+        getRaceResults(raceId!) as unknown as Promise<RaceResultFlat[]>,
+        getHorsesByRace(raceId!),
+      ]);
+      return { results: results ?? [], raceHorses: raceHorses ?? [] };
+    },
     enabled: !!raceId,
     staleTime: 60_000,
   });
 
-  const normalized = (data ?? [])
-    .map(normalize)
+  const oddsByHorseId = new Map(
+    (Array.isArray(data?.raceHorses) ? data.raceHorses : [])
+      .filter((e) => e.odds != null)
+      .map((e) => [e.horseId, e.odds as number]),
+  );
+
+  const normalized = (data?.results ?? [])
+    .map((r) => normalize(r, oddsByHorseId))
     .sort((a, b) => a.position - b.position);
 
   return {

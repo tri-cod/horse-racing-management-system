@@ -68,7 +68,6 @@ function fmtBalance(n: number | null) {
   return n != null ? fmtVnd(n) : '—';
 }
 
-type FilterKey = 'all' | 'open' | 'upcoming';
 type BetAmounts = Record<number, string>; /* raceHorseId → raw input string */
 
 /* ── Race Selector Card ────────────────────────────────────────── */
@@ -462,7 +461,6 @@ export default function BetRacesPage() {
   const { user } = useAuth();
   const addToast = useToast();
   const [searchParams] = useSearchParams();
-  const [filter, setFilter] = useState<FilterKey>('all');
   const [selectedRaceId, setSelectedRaceId] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -475,27 +473,13 @@ export default function BetRacesPage() {
   const { balance, loading: balanceLoading } = useWalletBalance(!!canBet);
   const invalidateBalance = useInvalidateWalletBalance();
 
-  /* Sorted + filtered races */
-  const sortedRaces = useMemo(() =>
+  /* Only Upcoming races are shown on the betting board */
+  const filteredRaces = useMemo(() =>
     [...races]
-      .filter(r => !NON_BETTABLE.has(r.status))
+      .filter(r => r.status === 'UPCOMING')
       .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()),
     [races]
   );
-
-  const FILTERS: { key: FilterKey; label: string }[] = [
-    { key: 'all', label: 'All Races' },
-    { key: 'open', label: 'Open for Betting' },
-    { key: 'upcoming', label: 'Upcoming' },
-  ];
-
-  const filteredRaces = useMemo(() => {
-    switch (filter) {
-      case 'open': return sortedRaces.filter(r => r.status === 'OPEN_REGISTRATION' || r.status === 'CLOSED_REGISTRATION');
-      case 'upcoming': return sortedRaces.filter(r => r.status === 'UPCOMING');
-      default: return sortedRaces;
-    }
-  }, [sortedRaces, filter]);
 
   const initialRaceId = useMemo(() => {
     const date = searchParams.get('date');
@@ -569,7 +553,6 @@ export default function BetRacesPage() {
     }
   };
 
-  const handleFilterChange = (k: FilterKey) => { setFilter(k); setSelectedRaceId(null); };
   const scrollBy = (dir: number) => scrollRef.current?.scrollBy({ left: dir * 240, behavior: 'smooth' });
 
   return (
@@ -584,16 +567,9 @@ export default function BetRacesPage() {
               <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gold-hi">Royal Derby · 2026 Season</p>
               <h1 className="mt-0.5 font-serif text-2xl font-bold text-ink">Wagering Board</h1>
             </div>
-            <div className="flex items-center gap-1">
-              {FILTERS.map(f => (
-                <button key={f.key} type="button" onClick={() => handleFilterChange(f.key)}
-                  className={`rounded px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide transition-all active:scale-95 ${
-                    filter === f.key ? 'bg-gold text-on-gold' : 'text-ink-3 hover:bg-surface-overlay hover:text-ink'
-                  }`}>
-                  {f.label}
-                </button>
-              ))}
-            </div>
+            <span className="rounded bg-gold px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-on-gold">
+              Upcoming
+            </span>
           </div>
         </div>
       </FadeInItem>

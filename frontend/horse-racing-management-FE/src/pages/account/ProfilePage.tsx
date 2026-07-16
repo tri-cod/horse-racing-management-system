@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { updateInfo, uploadAvatar } from '@/api/authApi';
 import { getErrorMessage } from '@/utils/errors';
 import UserAvatar from '@/components/features/admin/UserAvatar';
+import ImageCropModal from '@/components/ui/ImageCropModal';
 import Seo from '@/components/seo/Seo';
 
 const val = (v?: string | null) => v || '—';
@@ -48,6 +49,7 @@ export default function ProfilePage() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleLogout = () => {
@@ -69,19 +71,27 @@ export default function ProfilePage() {
     setSaveError('');
   };
 
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setCropSrc(reader.result as string);
+    reader.readAsDataURL(file);
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
+  const handleCropConfirm = async (blob: Blob) => {
+    setCropSrc(null);
+    setUploading(true);
+    setUploadError('');
     try {
-      setUploading(true);
-      setUploadError('');
-      const url = await uploadAvatar(file);
+      const croppedFile = new File([blob], 'avatar.png', { type: 'image/png' });
+      const url = await uploadAvatar(croppedFile);
       setForm((p) => ({ ...p, avatarUrl: url }));
     } catch (err: unknown) {
       setUploadError(getErrorMessage(err, 'Upload failed. Please try again.'));
     } finally {
       setUploading(false);
-      if (fileRef.current) fileRef.current.value = '';
     }
   };
 
@@ -125,6 +135,14 @@ export default function ProfilePage() {
   return (
     <div className="px-8 py-6">
       <Seo title="My Profile" description="Manage your Royal Derby account." />
+
+      {cropSrc && (
+        <ImageCropModal
+          imageSrc={cropSrc}
+          onCancel={() => setCropSrc(null)}
+          onConfirm={handleCropConfirm}
+        />
+      )}
 
       <div className="mx-auto max-w-2xl space-y-3">
 

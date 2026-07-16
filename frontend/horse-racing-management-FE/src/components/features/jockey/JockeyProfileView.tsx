@@ -17,6 +17,19 @@ export default function JockeyProfileView({ profile }: { profile: Jockey }) {
         </Badge>
       </div>
 
+      {(profile.experienceYear != null || profile.age != null) && (
+        <div className="grid grid-cols-2 divide-x divide-rim px-6 py-5 text-center">
+          <div>
+            <p className="tnum text-2xl font-bold text-ink">{profile.experienceYear ?? '—'}</p>
+            <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-ink-4">Yrs Experience</p>
+          </div>
+          <div>
+            <p className="tnum text-2xl font-bold text-ink">{profile.age ?? '—'}</p>
+            <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-ink-4">Age</p>
+          </div>
+        </div>
+      )}
+
       {hasStats && (
         <div className="grid grid-cols-3 divide-x divide-rim px-6 py-5 text-center">
           <div>

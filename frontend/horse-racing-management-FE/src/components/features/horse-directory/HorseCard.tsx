@@ -13,7 +13,7 @@ export default function HorseCard({ horse, onClick }: HorseCardProps) {
 
   return (
     <motion.div
-      className="group relative h-64 cursor-pointer overflow-hidden rounded-md border border-on-blue/10 shadow-lg shadow-navy-deep/25"
+      className="group flex h-full min-h-[340px] cursor-pointer flex-col overflow-hidden rounded-md border border-rim bg-surface-raised shadow-lg shadow-navy-deep/10"
       onClick={() => onClick?.(horse)}
       role="button"
       tabIndex={0}
@@ -22,33 +22,37 @@ export default function HorseCard({ horse, onClick }: HorseCardProps) {
       whileTap={reduce ? undefined : { scale: 0.98 }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
     >
-      {/* Photo or silhouette, full-bleed */}
-      {horse.avatarUrl ? (
-        <img src={horse.avatarUrl} alt={horse.horseName} loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-      ) : (
-        <div className="absolute inset-0 flex items-center justify-center bg-surface-overlay">
-          <Rabbit size={72} strokeWidth={0.6} className="text-navy/10" />
+      {/* Header — name / breed / status, F1 team-card style */}
+      <div className="flex items-start justify-between gap-3 px-6 pb-3 pt-6">
+        <div className="min-w-0">
+          <h3 className="truncate font-serif text-3xl font-bold uppercase leading-tight text-ink transition-colors group-hover:text-gold-hi">
+            {horse.horseName}
+          </h3>
+          {horse.breed && <p className="mt-1 text-sm text-ink-3">{horse.breed}</p>}
         </div>
-      )}
-
-      {/* Gradient scrim for legible text */}
-      <div className="absolute inset-0 bg-gradient-to-t from-navy/95 via-navy/45 to-navy/5" />
-
-      {/* Racing-silk number tab, top-right */}
-      <div className="absolute right-0 top-4 z-10 flex h-8 items-center rounded-l-full bg-navy/80 py-1 pl-3 pr-4 backdrop-blur-sm">
-        <span className="tnum text-xs font-bold text-gold">#{horse.horseId}</span>
+        <div className="flex shrink-0 flex-col items-center gap-2">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gold/40 bg-surface-overlay">
+            <span className="tnum text-xs font-bold text-gold-hi">#{horse.horseId}</span>
+          </div>
+          <span className="inline-block whitespace-nowrap rounded-full bg-gold/15 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-gold-hi">
+            {horse.status ?? 'Active'}
+          </span>
+        </div>
       </div>
 
-      {/* Content, bottom */}
-      <div className="absolute inset-x-0 bottom-0 z-10 p-5">
-        <h3 className="font-serif text-2xl font-bold uppercase leading-tight text-on-blue group-hover:text-gold transition-colors">
-          {horse.horseName}
-        </h3>
-        {horse.breed && <p className="mt-1 text-sm text-on-blue/60">{horse.breed}</p>}
+      {/* Photo — fills the lower portion, like the car image on F1 team cards */}
+      <div className="relative flex-1 overflow-hidden">
+        {horse.avatarUrl ? (
+          <img src={horse.avatarUrl} alt={horse.horseName} loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover object-top transition duration-500 group-hover:scale-105" />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-surface-overlay">
+            <Rabbit size={72} strokeWidth={0.6} className="text-navy/10" />
+          </div>
+        )}
 
         {horse.currentRaceName && (
-          <div className="mt-2 flex items-center gap-1.5 border-t border-on-blue/15 pt-2 text-xs text-on-blue/50">
+          <div className="absolute inset-x-0 bottom-0 flex items-center gap-1.5 bg-gradient-to-t from-navy-deep/90 to-transparent px-5 pb-3 pt-8 text-xs text-on-blue/70">
             <Flag size={11} className="shrink-0 text-gold/70" /> <span className="truncate">{horse.currentRaceName}</span>
           </div>
         )}
