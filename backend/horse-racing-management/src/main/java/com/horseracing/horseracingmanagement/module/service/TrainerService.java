@@ -7,3 +7,4 @@ public interface TrainerService {
     TrainerProfileResponse completeProfile(CompleteTrainerProfileRequest request, Long userId);
     TrainerProfileResponse getProfile(Long userId);
 }
+    
