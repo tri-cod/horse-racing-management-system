@@ -65,7 +65,7 @@ public class JockeyServiceImpl implements JockeyService {
                 .collect(Collectors.toList());
     }
     @Override
-    public List getMyRaceHistory(Long userId) {
+    public List<RaceParticipationResponse> getMyRaceHistory(Long userId) {
         Jockey jockey = jockeyRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("Jockey not found"));
         return raceHorseRepository.findByJockey_Id(jockey.getId())
@@ -79,7 +79,7 @@ public class JockeyServiceImpl implements JockeyService {
     }
     // Trận sắp tới — UPCOMING, OPEN_REGISTRATION, CLOSED_REGISTRATION, OPEN_BETTING
     @Override
-    public List getUpcomingRaces(Long userId) {
+    public List<RaceParticipationResponse> getUpcomingRaces(Long userId) {
         Jockey jockey = jockeyRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("Jockey not found"));
         return raceHorseRepository.findByJockey_Id(jockey.getId())

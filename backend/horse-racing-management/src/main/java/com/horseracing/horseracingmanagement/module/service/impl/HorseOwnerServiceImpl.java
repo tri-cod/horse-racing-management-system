@@ -319,7 +319,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
         horseRepository.delete(horse);
     }
     @Override
-    public List getOwnerRaceHistory(Long userId) {
+    public List<RaceParticipationResponse> getOwnerRaceHistory(Long userId) {
         HorseOwner owner = horseOwnerRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Horse owner not found"));
         List<Horse> myHorses = horseRepository.findByOwnerId(owner.getId());
@@ -335,7 +335,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
     }
     // Trận sắp tới — tất cả ngựa owner đã đăng ký nhưng chưa đua
     @Override
-    public List getOwnerUpcomingRaces(Long userId) {
+    public List<RaceParticipationResponse> getOwnerUpcomingRaces(Long userId) {
         HorseOwner owner = horseOwnerRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Horse owner not found"));
         List<Horse> myHorses = horseRepository.findByOwnerId(owner.getId());
@@ -353,7 +353,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
     }
     // Trận đang diễn ra
     @Override
-    public List getOwnerCurrentRaces(Long userId) {
+    public List<RaceParticipationResponse> getOwnerCurrentRaces(Long userId) {
         HorseOwner owner = horseOwnerRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Horse owner not found"));
         List<Horse> myHorses = horseRepository.findByOwnerId(owner.getId());

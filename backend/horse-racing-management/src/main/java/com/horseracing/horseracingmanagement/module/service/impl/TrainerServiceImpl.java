@@ -14,7 +14,6 @@ import com.horseracing.horseracingmanagement.module.responsitory.RaceResultRepos
 import com.horseracing.horseracingmanagement.module.responsitory.TrainerRepository;
 import com.horseracing.horseracingmanagement.module.service.TrainerService;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -22,7 +21,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.apache.catalina.manager.StatusTransformer.formatTime;
 
 @Service
 @AllArgsConstructor
@@ -57,7 +55,7 @@ public class TrainerServiceImpl implements TrainerService {
         return mapToResponse(trainer);
     }
     @Override
-    public List getMyRaceHistory(Long userId) {
+    public List<RaceParticipationResponse> getMyRaceHistory(Long userId) {
         Trainer trainer = trainerRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("Trainer not found"));
 // Tìm tất cả horse mà trainer này đang/đã huấn luyện
@@ -73,7 +71,7 @@ public class TrainerServiceImpl implements TrainerService {
                 .collect(Collectors.toList());
     }
     @Override
-    public List getUpcomingRaces(Long userId) {
+    public List<RaceParticipationResponse> getUpcomingRaces(Long userId) {
         Trainer trainer = trainerRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("Trainer not found"));
         List<Horse> myHorses = horseRepository.findByTrainerId(trainer.getId());
@@ -89,7 +87,7 @@ public class TrainerServiceImpl implements TrainerService {
                 .collect(Collectors.toList());
     }
     @Override
-    public List getCurrentRaces(Long userId) {
+    public List<RaceParticipationResponse> getCurrentRaces(Long userId) {
         Trainer trainer = trainerRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("Trainer not found"));
         List<Horse> myHorses = horseRepository.findByTrainerId(trainer.getId());
