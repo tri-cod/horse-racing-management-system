@@ -41,11 +41,6 @@ public class BetServiceImpl implements BetService {
             throw new RuntimeException("Race is not open for betting");
         }
 
-        // Check deadline
-        if (race.getRegistrationDeadline() != null &&
-                Instant.now().isAfter(race.getRegistrationDeadline())) {
-            throw new RuntimeException("Registration deadline has passed");
-        }
 
         // Tính tổng tiền bet
         long totalAmount = request.getBetItems().stream()
@@ -156,6 +151,9 @@ public class BetServiceImpl implements BetService {
             bet.setStatus(hasWon ? "WON" : "LOST");
             betRepository.save(bet);
 
+            if (totalLost.compareTo(BigDecimal.ZERO) > 0) {
+                adminWallet.setBalance(adminWallet.getBalance().add(totalLost));
+            }
             if (hasWon && totalPayout.compareTo(BigDecimal.ZERO) > 0) {
                 Wallet wallet = walletRepository.findByUser_Id(bet.getUser().getId()).orElseThrow();
                 wallet.setBalance(wallet.getBalance().add(totalPayout));

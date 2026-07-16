@@ -105,7 +105,7 @@ public class RaceHorseController {
     @PostMapping("/jockey-request")
     @PreAuthorize("hasAuthority('HORSE_OWNER')")
     public ResponseEntity<ApiResponse<RaceHorseResponse>> sendJockeyRequest(
-            @RequestBody JockeyRequestDto request,
+            @Valid @RequestBody JockeyRequestDto request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(ApiResponse.success("Jockey request sent",
                 raceHorseService.sendJockeyRequest(request, userDetails.getId())));

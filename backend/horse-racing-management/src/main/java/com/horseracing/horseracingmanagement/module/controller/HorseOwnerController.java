@@ -1,9 +1,11 @@
 package com.horseracing.horseracingmanagement.module.controller;
 
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
+import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.OwnerStatsResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseRequest;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.UpdateHorse;
+import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
 import com.horseracing.horseracingmanagement.module.service.HorseOwnerService;
 import com.horseracing.horseracingmanagement.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -128,24 +130,53 @@ public class HorseOwnerController {
     }
     @GetMapping("/race-history")
     @PreAuthorize("hasAuthority('HORSE_OWNER')")
-    public ResponseEntity<ApiResponse<List>> getOwnerRaceHistory(
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getOwnerRaceHistory(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 horseOwnerService.getOwnerRaceHistory(userDetails.getId())));
     }
     @GetMapping("/upcoming-races")
     @PreAuthorize("hasAuthority('HORSE_OWNER')")
-    public ResponseEntity<ApiResponse<List>> getOwnerUpcomingRaces(
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getOwnerUpcomingRaces(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 horseOwnerService.getOwnerUpcomingRaces(userDetails.getId())));
     }
     @GetMapping("/current-races")
     @PreAuthorize("hasAuthority('HORSE_OWNER')")
-    public ResponseEntity<ApiResponse<List>> getOwnerCurrentRaces(
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getOwnerCurrentRaces(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 horseOwnerService.getOwnerCurrentRaces(userDetails.getId())));
+    }
+
+
+    @GetMapping("/{ownerId}/race-history")
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getOwnerRaceHistoryPublic(
+            @PathVariable Long ownerId) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getOwnerRaceHistoryById(ownerId)));
+    }
+
+    @GetMapping("/{ownerId}/upcoming-races")
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getOwnerUpcomingRacesPublic(
+            @PathVariable Long ownerId) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getOwnerUpcomingRacesById(ownerId)));
+    }
+
+    @GetMapping("/{ownerId}/horses")
+    public ResponseEntity<ApiResponse<List<SignHorseResponse>>> getOwnerHorsesPublic(
+            @PathVariable Long ownerId) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getHorsesByOwnerId(ownerId)));
+    }
+
+    @GetMapping("/{ownerId}/stats")
+    public ResponseEntity<ApiResponse<OwnerStatsResponse>> getOwnerStats(
+            @PathVariable Long ownerId) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getStats(ownerId)));
     }
 
 }

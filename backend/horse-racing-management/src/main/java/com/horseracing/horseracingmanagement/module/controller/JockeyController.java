@@ -4,6 +4,8 @@ import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.CompleteJockeyProfileRequest;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyProfileResponse;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyResponse;
+import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyStatsResponse;
+import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
 import com.horseracing.horseracingmanagement.module.entity.Jockey;
 import com.horseracing.horseracingmanagement.module.responsitory.JockeyRepository;
 import com.horseracing.horseracingmanagement.module.service.JockeyService;
@@ -68,6 +70,9 @@ public class JockeyController {
                         .age(j.getAge())
                         .experienceYear(j.getExperienceYear())
                         .status(j.getStatus())
+                        .avatarUrl(j.getAvatarUrl())
+                        .coverImageUrl(j.getCoverImageUrl())
+                        .description(j.getDescription())
                         .build())
                 .collect(Collectors.toList());
         return ResponseEntity.ok(ApiResponse.success("Success", response));
@@ -81,24 +86,47 @@ public class JockeyController {
     }
     @GetMapping("/my-race-history")
     @PreAuthorize("hasAuthority('JOCKEY')")
-    public ResponseEntity<ApiResponse<List>> getMyRaceHistory(
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getMyRaceHistory(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 jockeyService.getMyRaceHistory(userDetails.getId())));
     }
     @GetMapping("/my-upcoming-races")
     @PreAuthorize("hasAuthority('JOCKEY')")
-    public ResponseEntity<ApiResponse<List>> getUpcomingRaces(
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getUpcomingRaces(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 jockeyService.getUpcomingRaces(userDetails.getId())));
     }
     @GetMapping("/my-current-races")
     @PreAuthorize("hasAuthority('JOCKEY')")
-    public ResponseEntity<ApiResponse<List>> getCurrentRaces(
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getCurrentRaces(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 jockeyService.getCurrentRaces(userDetails.getId())));
+    }
+
+
+    // Public — xem lịch sử đua của 1 jockey cụ thể (ai cũng xem được)
+    @GetMapping("/{jockeyId}/race-history")
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getJockeyRaceHistory(
+            @PathVariable Long jockeyId) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                jockeyService.getRaceHistoryById(jockeyId)));
+    }
+
+    @GetMapping("/{jockeyId}/upcoming-races")
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getJockeyUpcomingRaces(
+            @PathVariable Long jockeyId) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                jockeyService.getUpcomingRacesById(jockeyId)));
+    }
+
+    @GetMapping("/{jockeyId}/stats")
+    public ResponseEntity<ApiResponse<JockeyStatsResponse>> getJockeyStats(
+            @PathVariable Long jockeyId) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                jockeyService.getStats(jockeyId)));
     }
 
 

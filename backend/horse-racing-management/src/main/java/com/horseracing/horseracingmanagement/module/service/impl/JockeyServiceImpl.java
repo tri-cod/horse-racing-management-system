@@ -1,8 +1,10 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
+import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.CompleteJockeyProfileRequest;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyProfileResponse;
+import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyStatsResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
 import com.horseracing.horseracingmanagement.module.entity.Jockey;
 import com.horseracing.horseracingmanagement.module.entity.RaceHorse;
@@ -13,8 +15,11 @@ import com.horseracing.horseracingmanagement.module.responsitory.RaceResultRepos
 import com.horseracing.horseracingmanagement.module.responsitory.TrainerRepository;
 import com.horseracing.horseracingmanagement.module.service.JockeyService;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
@@ -94,7 +99,7 @@ public class JockeyServiceImpl implements JockeyService {
     }
     // Trận đang diễn ra — ONGOING
     @Override
-    public List getCurrentRaces(Long userId) {
+    public List<RaceParticipationResponse> getCurrentRaces(Long userId) {
         Jockey jockey = jockeyRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("Jockey not found"));
         return raceHorseRepository.findByJockey_Id(jockey.getId())
@@ -133,7 +138,7 @@ public class JockeyServiceImpl implements JockeyService {
                 .completionTimeFormatted(result != null
                         ? formatTime(result.getCompletionTimeSeconds()) : null)
                 .rewards(result != null ? result.getRewards() : null)
-                .registrationStatus(rh.getStatus())
+                .registrationStatus(rh.getStatus().name())
                 .registerAt(rh.getRegisterAt())
                 .build();
     }
@@ -144,12 +149,106 @@ public class JockeyServiceImpl implements JockeyService {
         return String.format("%d:%05.2f", minutes, remaining);
     }
 
+    // Public — lấy theo jockeyId (không cần userId)
+    @Override
+    public List<RaceParticipationResponse> getRaceHistoryById(Long jockeyId) {
+        Jockey jockey = jockeyRepository.findById(jockeyId)
+                .orElseThrow(() -> new RuntimeException("Jockey not found"));
+
+        return raceHorseRepository.findByJockey_Id(jockey.getId())
+                .stream()
+                .filter(rh -> rh.getRace().getStatus() == RaceStatus.FINISHED)
+                .map(rh -> buildParticipationResponse(rh, jockeyId))
+                .sorted(Comparator.comparing(
+                        r -> r.getStartTime() != null ? r.getStartTime() : Instant.EPOCH,
+                        Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RaceParticipationResponse> getUpcomingRacesById(Long jockeyId) {
+        Jockey jockey = jockeyRepository.findById(jockeyId)
+                .orElseThrow(() -> new RuntimeException("Jockey not found"));
+
+        return raceHorseRepository.findByJockey_Id(jockey.getId())
+                .stream()
+                .filter(rh -> rh.getRace().getStatus() != RaceStatus.FINISHED
+                        && rh.getRace().getStatus() != RaceStatus.ONGOING
+                        && rh.getRace().getStatus() != RaceStatus.CANCELLED)
+                .map(rh -> buildParticipationResponse(rh, jockeyId))
+                .sorted(Comparator.comparing(
+                        r -> r.getStartTime() != null ? r.getStartTime() : Instant.MAX))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public JockeyStatsResponse getStats(Long jockeyId) {
+        Jockey jockey = jockeyRepository.findById(jockeyId)
+                .orElseThrow(() -> new RuntimeException("Jockey not found"));
+
+        List<RaceHorse> allRaceHorses = raceHorseRepository.findByJockey_Id(jockeyId);
+        List<RaceHorse> finishedRaces = allRaceHorses.stream()
+                .filter(rh -> rh.getRace().getStatus() == RaceStatus.FINISHED)
+                .collect(Collectors.toList());
+
+        long totalRaces = finishedRaces.size();
+        long totalWins = 0L;
+        long totalTop3 = 0L;
+        long totalRewards = 0L;
+
+        for (RaceHorse rh : finishedRaces) {
+            RaceResult result = raceResultRepository.findByRaceHorse_Id(rh.getId()).orElse(null);
+            if (result != null) {
+                if (result.getRank() == 1L) totalWins++;
+                if (result.getRank() <= 3L) totalTop3++;
+                if (result.getRewards() != null) {
+                    // Jockey nhận % từ rewards
+                    BigDecimal jockeyPercent = rh.getJockeyRevenuePercent() != null
+                            ? rh.getJockeyRevenuePercent()
+                            : BigDecimal.valueOf(10);
+                    totalRewards += BigDecimal.valueOf(result.getRewards())
+                            .multiply(jockeyPercent)
+                            .divide(BigDecimal.valueOf(100), 0, RoundingMode.FLOOR)
+                            .longValue();
+                }
+            }
+        }
+
+        double winRate = totalRaces > 0
+                ? Math.round((double) totalWins / totalRaces * 100.0) : 0.0;
+
+        // 5 trận gần nhất
+        List<RaceParticipationResponse> recentHistory = finishedRaces.stream()
+                .map(rh -> buildParticipationResponse(rh, jockeyId))
+                .sorted(Comparator.comparing(
+                        r -> r.getStartTime() != null ? r.getStartTime() : Instant.EPOCH,
+                        Comparator.reverseOrder()))
+                .limit(5)
+                .collect(Collectors.toList());
+
+        return JockeyStatsResponse.builder()
+                .jockeyId(jockeyId)
+                .name(jockey.getUser().getFullName() != null
+                        ? jockey.getUser().getFullName()
+                        : jockey.getUser().getUsername())
+                .avatarUrl(jockey.getAvatarUrl())
+                .coverImageUrl(jockey.getCoverImageUrl())
+                .age(jockey.getAge())
+                .experienceYear(jockey.getExperienceYear())
+                .description(jockey.getDescription())
+                .totalRaces(totalRaces)
+                .totalWins(totalWins)
+                .totalTop3(totalTop3)
+                .winRate(winRate)
+                .totalRewards(totalRewards)
+                .recentHistory(recentHistory)
+                .build();
+    }
+
 
     private JockeyProfileResponse mapToProfileResponse(Jockey jockey) {
         // Tính thống kê race
-        List<RaceHorse> raceHorses = raceHorseRepository
-                .findByJockey_IdAndStatus(jockey.getId(), "Approved");
-
+        List<RaceHorse> raceHorses = getCollect(jockey);
         long totalRaces = raceHorses.size();
         long totalWins = raceHorses.stream()
                 .filter(rh -> {
@@ -178,5 +277,13 @@ public class JockeyServiceImpl implements JockeyService {
                 .totalWins(totalWins)
                 .winRate(winRate)
                 .build();
+    }
+
+    private @NonNull List<RaceHorse> getCollect(Jockey jockey) {
+        return raceHorseRepository
+                .findByJockey_IdAndStatus(jockey.getId(), RaceHorseStatus.APPROVED)
+                .stream()
+                .filter(rh -> rh.getRace().getStatus() == RaceStatus.FINISHED)
+                .collect(Collectors.toList());
     }
 }

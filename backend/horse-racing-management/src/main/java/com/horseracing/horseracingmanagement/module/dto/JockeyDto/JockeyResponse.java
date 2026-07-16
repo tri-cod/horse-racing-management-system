@@ -11,4 +11,7 @@ public class JockeyResponse {
     private Long age;
     private Long experienceYear;
     private String status;
+    private String avatarUrl;
+    private String coverImageUrl;
+    private String description;
 }

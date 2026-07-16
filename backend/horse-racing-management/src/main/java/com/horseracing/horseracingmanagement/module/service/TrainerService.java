@@ -3,6 +3,7 @@ package com.horseracing.horseracingmanagement.module.service;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.CompleteTrainerProfileRequest;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.TrainerProfileResponse;
+import com.horseracing.horseracingmanagement.module.dto.Trainer.TrainerStatsResponse;
 
 import java.util.List;
 
@@ -13,5 +14,8 @@ public interface TrainerService {
     List<RaceParticipationResponse> getUpcomingRaces(Long userId); // trận sắp tới
     List<RaceParticipationResponse> getCurrentRaces(Long userId);
 
+    List<RaceParticipationResponse> getRaceHistoryById(Long trainerId);
+    List<RaceParticipationResponse> getUpcomingRacesById(Long trainerId);
+    TrainerStatsResponse getStats(Long trainerId);
 }
     

@@ -14,5 +14,6 @@ public class RegisterRaceHorseRequest {
     @NotNull
     private Long horseId;
 
+
     private Long entryFee;
 }

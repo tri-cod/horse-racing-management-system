@@ -1,6 +1,7 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
+import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.WithdrawalRequest;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyRequestDto;
@@ -20,19 +21,19 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
+
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RaceHorseServiceImpl implements RaceHorseService {
 
-    private final UserRepository userRepository;
     private final RaceHorseRepository raceHorseRepository;
     private final RaceRepository raceRepository;
     private final HorseRepository horseRepository;
     private final HorseOwnerRepository horseOwnerRepository;
     private final JockeyRepository jockeyRepository;
+    private final TrainerRepository trainerRepository;
     private final BetItemRepository betItemRepository;
     private final WalletRepository walletRepository;
 
@@ -100,7 +101,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                 .race(race)
                 .horse(horse)
                 .jockey(null)  // ← chưa có jockey
-                .status("PendingJockey")
+                .status(RaceHorseStatus.PENDING_JOCKEY)
                 .build());
 
         // Notify admin
@@ -128,8 +129,8 @@ public class RaceHorseServiceImpl implements RaceHorseService {
             throw new RuntimeException("You are not the owner of this horse");
         }
 
-        if (!raceHorse.getStatus().equals("PendingJockey") &&
-                !raceHorse.getStatus().equals("JockeyRejected")) {
+        if (!raceHorse.getStatus().equals(RaceHorseStatus.PENDING_JOCKEY) &&
+                !raceHorse.getStatus().equals(RaceHorseStatus.JOCKEY_REJECTED)) {
             throw new RuntimeException("Cannot send jockey request at this stage");
         }
 
@@ -143,7 +144,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         }
 
         raceHorse.setJockey(jockey);
-        raceHorse.setStatus("PendingJockey");
+        raceHorse.setStatus(RaceHorseStatus.PENDING_JOCKEY);
         raceHorseRepository.save(raceHorse);
 
         // Notify Jockey
@@ -174,12 +175,12 @@ public class RaceHorseServiceImpl implements RaceHorseService {
             throw new RuntimeException("You are not the assigned jockey");
         }
 
-        if (!raceHorse.getStatus().equals("PendingJockey")) {
+        if (!raceHorse.getStatus().equals(RaceHorseStatus.PENDING_JOCKEY)) {
             throw new RuntimeException("No pending jockey request");
         }
 
         // ← Jockey chấp nhận → chuyển sang chờ Admin duyệt
-        raceHorse.setStatus("PendingAdmin");
+        raceHorse.setStatus(RaceHorseStatus.PENDING_ADMIN);
         raceHorseRepository.save(raceHorse);
 
         // Notify Admin
@@ -220,7 +221,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         }
 
         // ← Jockey từ chối → HorseOwner chọn jockey khác
-        raceHorse.setStatus("JockeyRejected");
+        raceHorse.setStatus(RaceHorseStatus.JOCKEY_REJECTED);
         raceHorse.setJockey(null);  // ← xóa jockey, cho chọn lại
         raceHorseRepository.save(raceHorse);
 
@@ -247,7 +248,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                 .orElseThrow(() -> new RuntimeException("Jockey profile not found"));
 
         // Lấy các RaceHorse đang chờ jockey này xác nhận
-        return raceHorseRepository.findByJockey_IdAndStatus(jockey.getId(), "PendingJockey")
+        return raceHorseRepository.findByJockey_IdAndStatus(jockey.getId(), RaceHorseStatus.PENDING_JOCKEY)
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -277,11 +278,11 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
 
-        if (!raceHorse.getStatus().equals("PendingAdmin")) {
+        if (!raceHorse.getStatus().equals(RaceHorseStatus.PENDING_ADMIN)) {
             throw new RuntimeException("Horse must be PendingAdmin to approve");
         }
 
-        raceHorse.setStatus("Approved");
+        raceHorse.setStatus(RaceHorseStatus.APPROVED);
         RaceHorse saved = raceHorseRepository.save(raceHorse);  // ← save trước
 
         HorseOwner ho = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
@@ -305,6 +306,10 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
 
+        if (!raceHorse.getStatus().equals(RaceHorseStatus.PENDING_ADMIN)) {
+            throw new RuntimeException("Horse must be PendingAdmin to reject");
+        }
+
         HorseOwner ho = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
                 .orElseThrow(() -> new RuntimeException("Owner not found"));
 
@@ -317,7 +322,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                     .add(BigDecimal.valueOf(race.getEntryFee())));
             walletRepository.save(ownerWallet);
         }
-        raceHorse.setStatus("Rejected");
+        raceHorse.setStatus(RaceHorseStatus.REJECTED);
         RaceHorse saved = raceHorseRepository.save(raceHorse);
         // Notify HorseOwner
         notificationService.sendToUser(
@@ -338,10 +343,11 @@ public class RaceHorseServiceImpl implements RaceHorseService {
     }
 
 
+
     public void cleanupPendingOnClose(Long raceId) {
         List<RaceHorse> pendingList = raceHorseRepository
                 .findByRace_IdAndStatusIn(raceId,
-                        List.of("PendingJockey", "JockeyRejected"));
+                        List.of(RaceHorseStatus.PENDING_JOCKEY, RaceHorseStatus.JOCKEY_REJECTED));
 
         pendingList.forEach(raceHorse -> {
             // Hoàn phí nếu có
@@ -404,7 +410,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
 
     @Override
     public List<RaceHorseResponse> getPendingHorses() {
-        return raceHorseRepository.findByStatus("Pending")
+        return raceHorseRepository.findByStatus(RaceHorseStatus.PENDING_ADMIN)
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -458,13 +464,13 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         }
 
         // Check status hợp lệ để rút
-        if (raceHorse.getStatus().equals("Withdrawn") ||
-                raceHorse.getStatus().equals("Rejected")) {
+        if (raceHorse.getStatus().equals(RaceHorseStatus.WITHDRAWN) ||
+                raceHorse.getStatus().equals(RaceHorseStatus.REJECTED)) {
             throw new RuntimeException("This registration is already withdrawn or rejected");
         }
 
         // ← Đánh dấu đang chờ duyệt rút
-        raceHorse.setStatus("WithdrawPending");
+        raceHorse.setStatus(RaceHorseStatus.WITHDRAW_PENDING);
         raceHorse.setWithdrawReason(request.getReason());
         RaceHorse saved = raceHorseRepository.save(raceHorse);
 
@@ -490,7 +496,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
 
-        if (!raceHorse.getStatus().equals("WithdrawPending")) {
+        if (!raceHorse.getStatus().equals(RaceHorseStatus.WITHDRAW_PENDING)) {
             throw new RuntimeException("No pending withdrawal request");
         }
 
@@ -542,12 +548,12 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
 
-        if (!raceHorse.getStatus().equals("WithdrawPending")) {
+        if (!raceHorse.getStatus().equals(RaceHorseStatus.WITHDRAW_PENDING)) {
             throw new RuntimeException("No pending withdrawal request");
         }
 
         // Khôi phục status trước đó
-        raceHorse.setStatus("Approved");
+        raceHorse.setStatus(RaceHorseStatus.APPROVED);
         raceHorse.setWithdrawReason(null);
         RaceHorse saved = raceHorseRepository.save(raceHorse);
 
@@ -569,7 +575,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
 
     @Override
     public List<RaceHorseResponse> getWithdrawPending() {
-        return raceHorseRepository.findByStatus("WithdrawPending")
+        return raceHorseRepository.findByStatus(RaceHorseStatus.WITHDRAW_PENDING)
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -594,18 +600,47 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         Long totalCount = betItemRepository
                 .getTotalBetCountByRaceHorse(raceHorse.getId());
 
+        Race race = raceHorse.getRace();
+        Horse horse = raceHorse.getHorse();
+
+        // Chủ ngựa
+        HorseOwner owner = horse.getOwnerId() != null
+                ? horseOwnerRepository.findById(horse.getOwnerId()).orElse(null)
+                : null;
+
+        // Trainer
+        Trainer trainer = horse.getTrainerId() != null
+                ? trainerRepository.findById(horse.getTrainerId()).orElse(null)
+                : null;
+
         return RaceHorseResponse.builder()
                 .id(raceHorse.getId())
-                .raceId(raceHorse.getRace().getId())
-                .raceName(raceHorse.getRace().getRaceName())
-                .horseId(raceHorse.getHorse().getId())
-                .horseName(raceHorse.getHorse().getHorseName())
+                .raceId(race.getId())
+                .raceName(race.getRaceName())
+                .raceStatus(race.getStatus() != null ? race.getStatus().name() : null)
+                .trackName(race.getTrackName())
+                .location(race.getLocation())
+                .raceDate(race.getRaceDate())
+                .startTime(race.getStartTime())
+                .registrationDeadline(race.getRegistrationDeadline())
+                .entryFee(race.getEntryFee())
+                .totalPrizePool(race.getTotalprizepool())
+                .horseId(horse.getId())
+                .horseName(horse.getHorseName())
+                .ownerId(owner != null ? owner.getId() : null)
+                .ownerName(owner != null ? owner.getName() : null)
+                .trainerId(trainer != null ? trainer.getId() : null)
+                .trainerName(trainer != null && trainer.getUser() != null
+                        ? trainer.getUser().getFullName() : null)
                 .jockeyId(raceHorse.getJockey() != null ? raceHorse.getJockey().getId() : null)
                 .jockeyName(raceHorse.getJockey() != null ? raceHorse.getJockey().getUser().getFullName() : null)
+                .jockeyRevenuePercent(raceHorse.getJockeyRevenuePercent())
+                .ownerRevenuePercent(raceHorse.getOwnerRevenuePercent())
                 .laneNumber(raceHorse.getLaneNumber())
                 .startPosition(raceHorse.getStartPosition())
-                .status(raceHorse.getStatus())
+                .status(raceHorse.getStatus().name())
                 .registerAt(raceHorse.getRegisterAt())
+                .withdrawReason(raceHorse.getWithdrawReason())
                 .totalBetAmount(totalBet != null ? totalBet : BigDecimal.ZERO)
                 .totalBetCount(totalCount != null ? totalCount : 0L)
                 // FIX: trước đây bị hardcode là BigDecimal.valueOf(2.0) — odds thực tế trong DB không bao giờ được trả về.

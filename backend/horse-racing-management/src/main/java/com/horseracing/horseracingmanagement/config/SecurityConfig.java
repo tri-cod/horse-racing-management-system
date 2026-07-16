@@ -35,6 +35,8 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_URLS = {
             "/error",
+            "/api/jockeys/**",
+            "/api/trainer/**",
             "/uploads/**",
             "/v3/api-docs.yaml",
             "/api/auth/**",
