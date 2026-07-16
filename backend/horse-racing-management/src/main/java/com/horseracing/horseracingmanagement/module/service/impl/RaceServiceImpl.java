@@ -69,9 +69,9 @@ public class RaceServiceImpl implements RaceService {
         Race race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
-        race.setStatus(RaceStatus.FINISHED);
-        raceRepository.save(race);
-
+        if (race.getStatus() != RaceStatus.ONGOING) {
+            throw new RuntimeException("Race must be ONGOING to finish");
+        }
 
 
         // ← Push WebSocket → FE load kết quả

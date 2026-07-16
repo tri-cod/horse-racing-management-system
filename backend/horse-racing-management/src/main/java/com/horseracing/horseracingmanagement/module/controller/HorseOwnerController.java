@@ -1,9 +1,11 @@
 package com.horseracing.horseracingmanagement.module.controller;
 
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
+import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.OwnerStatsResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseRequest;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.UpdateHorse;
+import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
 import com.horseracing.horseracingmanagement.module.service.HorseOwnerService;
 import com.horseracing.horseracingmanagement.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -108,7 +111,7 @@ public class HorseOwnerController {
     @PatchMapping("/horses/{horseId}")
     public ResponseEntity<ApiResponse<SignHorseResponse>> updateHorse(
             @PathVariable Long horseId,
-            @RequestBody UpdateHorse request,
+            @Valid @RequestBody UpdateHorse request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Long userId = userDetails.getId();
@@ -125,4 +128,55 @@ public class HorseOwnerController {
         horseOwnerService.deleteHorse(horseId, userId);
         return ResponseEntity.ok(ApiResponse.success("Horse deleted successfully", null));
     }
+    @GetMapping("/race-history")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getOwnerRaceHistory(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getOwnerRaceHistory(userDetails.getId())));
+    }
+    @GetMapping("/upcoming-races")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getOwnerUpcomingRaces(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getOwnerUpcomingRaces(userDetails.getId())));
+    }
+    @GetMapping("/current-races")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getOwnerCurrentRaces(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getOwnerCurrentRaces(userDetails.getId())));
+    }
+
+
+    @GetMapping("/{ownerId}/race-history")
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getOwnerRaceHistoryPublic(
+            @PathVariable Long ownerId) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getOwnerRaceHistoryById(ownerId)));
+    }
+
+    @GetMapping("/{ownerId}/upcoming-races")
+    public ResponseEntity<ApiResponse<List<RaceParticipationResponse>>> getOwnerUpcomingRacesPublic(
+            @PathVariable Long ownerId) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getOwnerUpcomingRacesById(ownerId)));
+    }
+
+    @GetMapping("/{ownerId}/horses")
+    public ResponseEntity<ApiResponse<List<SignHorseResponse>>> getOwnerHorsesPublic(
+            @PathVariable Long ownerId) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getHorsesByOwnerId(ownerId)));
+    }
+
+    @GetMapping("/{ownerId}/stats")
+    public ResponseEntity<ApiResponse<OwnerStatsResponse>> getOwnerStats(
+            @PathVariable Long ownerId) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getStats(ownerId)));
+    }
+
 }

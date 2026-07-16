@@ -1,16 +1,24 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'motion/react';
-import { ChevronLeft, User } from 'lucide-react';
+import { ChevronLeft, User, Flag, Trophy, Percent, type LucideIcon } from 'lucide-react';
 import { useJockeyProfile } from '@/hooks/useJockeyProfile';
 import { silkColor } from '@/utils/jockeySilks';
 import Container from '@/components/ui/Container';
 import Seo from '@/components/seo/Seo';
 import type { Jockey } from '@/types';
 
-// Chiều cao header cố định của site (Header.tsx: pt-[113px]) — các section trong
-// trang này cần trừ hao khoảng này khi cuộn tới, kẻo bị header + sub-nav che mất.
+// Chiều cao header cố định của site (Layout.tsx: pt-[113px]).
+const HEADER_HEIGHT = 113;
+// Header + sub-nav — các section trong trang này cần trừ hao khoảng này khi
+// cuộn tới, kẻo bị header + sub-nav che mất.
 const SCROLL_OFFSET = 172;
+
+const STAT_ICONS: Record<string, LucideIcon> = {
+  'Races Entered': Flag,
+  'Career Wins': Trophy,
+  'Win Rate': Percent,
+};
 
 function splitName(full: string) {
   const parts = full.trim().split(/\s+/);
@@ -161,7 +169,7 @@ export default function JockeyProfilePage() {
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_28%,rgba(255,255,255,0.18),transparent_55%)]" />
         )}
 
-        <Container className="relative z-10 py-10 sm:py-16">
+        <Container className="relative z-10 pt-10 sm:pt-16">
           <Link to="/jockeys" className="mb-8 inline-flex items-center gap-1.5 text-sm font-medium text-white/75 transition-colors hover:text-white">
             <ChevronLeft size={14} /> All Jockeys
           </Link>
@@ -172,13 +180,22 @@ export default function JockeyProfilePage() {
             transition={{ duration: 0.5, ease: 'easeOut' }}
             className="flex flex-col items-center gap-8 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left"
           >
-            <div>
-              <span className="mb-3 block text-[11px] font-bold uppercase tracking-[0.25em] text-white/65">Royal Derby Jockey</span>
+            {/* Portrait — real photo or a large monogram badge in the jockey's silk color */}
+            <div className="flex h-64 w-64 shrink-0 items-center justify-center overflow-hidden sm:h-80 sm:w-80 sm:ml-[10px]">
+              {jockey.avatarUrl ? (
+                <img src={jockey.avatarUrl} alt={jockey.name} className="h-full w-full object-cover" />
+              ) : (
+                <span className="font-serif text-7xl font-bold text-white/90 sm:text-8xl">{initial}</span>
+              )}
+            </div>
 
-              {first && <p className="font-serif text-2xl italic leading-tight text-white/70">{first}</p>}
-              <h1 className="font-serif text-5xl font-bold uppercase leading-[0.95] text-white sm:text-7xl">{last}</h1>
+            <div className="sm:self-center">
+              <span className="mb-3 block text-xs font-bold uppercase tracking-[0.25em] text-white/65">Royal Derby Jockey</span>
 
-              <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm font-medium text-white/85 sm:justify-start">
+              {first && <p className="font-serif text-3xl italic leading-tight text-white/70">{first}</p>}
+              <h1 className="font-serif text-6xl font-bold uppercase leading-[0.95] text-white sm:text-8xl">{last}</h1>
+
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-base font-medium text-white/85 sm:justify-start">
                 {jockey.age != null && <span>{jockey.age} yrs old</span>}
                 {jockey.age != null && jockey.experienceYear != null && <span className="text-white/40">•</span>}
                 {jockey.experienceYear != null && <span>{pluralize(jockey.experienceYear, 'yr')} experience</span>}
@@ -186,25 +203,13 @@ export default function JockeyProfilePage() {
                 <span className="tnum">№{jockey.id}</span>
               </div>
             </div>
-
-            {/* Portrait — real photo or a large monogram badge in the jockey's silk color */}
-            <div
-              className="flex h-40 w-40 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-white/25 bg-white/10 shadow-2xl sm:h-52 sm:w-52"
-              style={{ boxShadow: `0 20px 60px -12px rgba(0,0,0,0.5), 0 0 0 8px rgba(255,255,255,0.06)` }}
-            >
-              {jockey.avatarUrl ? (
-                <img src={jockey.avatarUrl} alt={jockey.name} className="h-full w-full object-cover" />
-              ) : (
-                <span className="font-serif text-7xl font-bold text-white/90 sm:text-8xl">{initial}</span>
-              )}
-            </div>
           </motion.div>
         </Container>
       </section>
 
       {/* ── Sub-nav — sticky section jumper, F1-profile style ───────────── */}
       {sections.length > 1 && (
-        <div className="sticky z-20 border-b border-rim bg-surface/95 backdrop-blur-sm" style={{ top: SCROLL_OFFSET - 44 }}>
+        <div className="sticky z-20 border-b border-rim bg-surface/95 backdrop-blur-sm" style={{ top: HEADER_HEIGHT }}>
           <Container>
             <nav className="flex gap-6">
               {sections.map((s) => (
@@ -224,32 +229,34 @@ export default function JockeyProfilePage() {
         </div>
       )}
 
-      <Container className="py-12">
-        <div className="mx-auto max-w-2xl space-y-16">
+      <Container className="py-14">
+        <div className="mx-auto max-w-3xl space-y-16">
 
-          {/* ── Career Stats ─────────────────────────────────────────── */}
+          {/* ── Career Stats — F1-driver-page style: label left, value right, thin dividers ── */}
           {statRows.length > 0 && (
             <section id="stats" style={{ scrollMarginTop: SCROLL_OFFSET }}>
-              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-gold-hi">Performance</span>
-              <h2 className="mt-1 font-serif text-3xl font-bold uppercase tracking-tight text-ink">Career Statistics</h2>
+              <h2 className="font-serif text-3xl font-bold uppercase tracking-tight text-ink">Career Statistics</h2>
 
-              <div className="relative mt-6 overflow-hidden border border-navy-deep bg-navy">
-                <span className="absolute inset-y-0 left-0 w-1" style={{ backgroundColor: silk ?? undefined }} />
-                <div className="divide-y divide-white/10 px-6 sm:px-8">
-                  {statRows.map((row, i) => (
+              <div className="mt-6 border-t border-rim">
+                {statRows.map((row, i) => {
+                  const Icon = STAT_ICONS[row.label] ?? Flag;
+                  return (
                     <motion.div
                       key={row.label}
-                      initial={reduce ? undefined : { opacity: 0, x: -12 }}
-                      whileInView={{ opacity: 1, x: 0 }}
+                      initial={reduce ? undefined : { opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: '-80px' }}
                       transition={{ duration: 0.4, delay: i * 0.06 }}
-                      className="flex items-center justify-between py-5"
+                      className="flex items-center justify-between border-b border-rim py-4"
                     >
-                      <span className="text-sm text-on-blue/60">{row.label}</span>
-                      <span className="tnum text-4xl font-bold text-on-blue sm:text-5xl">{row.value}</span>
+                      <span className="flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-ink-3">
+                        <Icon size={14} className="shrink-0 text-ink-4" style={{ color: silk ?? undefined }} />
+                        {row.label}
+                      </span>
+                      <span className="tnum text-2xl font-bold text-ink sm:text-3xl">{row.value}</span>
                     </motion.div>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
             </section>
           )}
@@ -265,10 +272,9 @@ export default function JockeyProfilePage() {
               {jockey.id}
             </span>
 
-            <span className="relative text-[11px] font-bold uppercase tracking-[0.2em] text-gold-hi">About</span>
-            <h2 className="relative mt-1 font-serif text-3xl font-bold uppercase tracking-tight text-ink">Biography</h2>
+            <h2 className="relative font-serif text-3xl font-bold uppercase tracking-tight text-ink">Biography</h2>
 
-            <div className="relative mt-6 space-y-4">
+            <div className="relative mt-6 max-w-prose space-y-4">
               {(jockey.description ? [jockey.description] : bio).map((p, i) => (
                 <p key={i} className={i === 0 ? 'text-lg font-medium leading-relaxed text-ink' : 'text-[15px] leading-relaxed text-ink-2'}>
                   {p}

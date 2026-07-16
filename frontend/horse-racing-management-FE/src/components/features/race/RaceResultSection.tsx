@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Trophy } from 'lucide-react';
 import { getRaceResults } from '@/api/refereeApi';
-import type { RaceResultNested } from '@/types';
+import { getHorsesByRace } from '@/api/raceHorseApi';
+import type { RaceResultFlat } from '@/types';
 
 function formatOdds(odds?: number) {
   if (odds == null) return '—';
@@ -28,24 +29,33 @@ const MEDAL_STYLE: Record<number, string> = {
 };
 
 export default function RaceResultSection({ raceId }: { raceId: number }) {
-  const [results, setResults] = useState<RaceResultNested[]>([]);
+  const [results, setResults] = useState<RaceResultFlat[]>([]);
+  const [oddsByHorseId, setOddsByHorseId] = useState<Map<number, number>>(new Map());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!raceId) return;
     setLoading(true);
-    getRaceResults(raceId)
-      .then((data) => {
-        const typed = data as unknown as RaceResultNested[];
-        setResults([...(typed ?? [])].sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99)));
+    Promise.all([
+      getRaceResults(raceId) as unknown as Promise<RaceResultFlat[]>,
+      getHorsesByRace(raceId),
+    ])
+      .then(([data, entries]) => {
+        setResults([...(data ?? [])].sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99)));
+        setOddsByHorseId(
+          new Map((entries ?? []).filter((e) => e.odds != null).map((e) => [e.horseId, e.odds as number])),
+        );
       })
-      .catch(() => setResults([]))
+      .catch(() => {
+        setResults([]);
+        setOddsByHorseId(new Map());
+      })
       .finally(() => setLoading(false));
   }, [raceId]);
 
   if (!loading && results.length === 0) return null;
 
-  const hasReward = results.some((r) => r.rewards != null || r.prizeMoney != null);
+  const hasReward = results.some((r) => r.rewards != null);
 
   return (
     <section className="border-t border-rim bg-surface-overlay/30">
@@ -79,7 +89,8 @@ export default function RaceResultSection({ raceId }: { raceId: number }) {
                   const rowBg = isWinner
                     ? 'bg-gold/8'
                     : idx % 2 === 0 ? 'bg-surface-raised' : 'bg-transparent';
-                  const reward = formatReward(r.rewards ?? r.prizeMoney);
+                  const reward = formatReward(r.rewards);
+                  const odds = r.horseId != null ? oddsByHorseId.get(r.horseId) : undefined;
 
                   return (
                     <tr key={r.id} className={`${rowBg} border-b border-rim/60 last:border-0 transition-colors hover:bg-gold/10`}>
@@ -97,22 +108,22 @@ export default function RaceResultSection({ raceId }: { raceId: number }) {
                       <td className="py-3 pl-3">
                         <div className="flex items-center gap-2">
                           <p className={`text-sm font-bold uppercase tracking-wide ${isWinner ? 'text-gold-hi' : 'text-ink'}`}>
-                            {r.raceHorse?.horse?.horseName ?? '—'}
+                            {r.horseName ?? '—'}
                           </p>
                           {isWinner && <Trophy size={13} className="shrink-0 text-gold" />}
                         </div>
                         <p className="mt-0.5 text-xs text-ink-3">
-                          {r.raceHorse?.jockey?.user?.fullName ?? '—'}
-                          {r.raceHorse?.horse?.breed && <span className="text-ink-4"> · {r.raceHorse.horse.breed}</span>}
+                          {r.jockeyName ?? '—'}
+                          {r.breed && <span className="text-ink-4"> · {r.breed}</span>}
                         </p>
                       </td>
                       {/* Time */}
                       <td className="tnum py-3 px-3 text-center text-sm text-ink-3">
-                        {formatTime(r.completionTimeSeconds)}
+                        {r.completionTimeFormatted ?? formatTime(r.completionTimeSeconds)}
                       </td>
                       {/* Odds */}
                       <td className="tnum py-3 px-3 text-center text-sm font-medium text-ink-2">
-                        {formatOdds(r.raceHorse?.odds)}
+                        {formatOdds(odds)}
                       </td>
                       {/* Reward */}
                       {hasReward && (

@@ -1,6 +1,7 @@
 package com.horseracing.horseracingmanagement.module.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -57,8 +58,10 @@ public class RaceHorse {
     @Column(name = "register_at", updatable = false)
     private Instant registerAt;
 
-    @Column(name = "status", length = 20)
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private RaceHorseStatus status;
 
     @Column(name = "odds", precision = 10, scale = 2)
     private BigDecimal odds;

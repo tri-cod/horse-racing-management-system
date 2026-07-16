@@ -1,5 +1,7 @@
 package com.horseracing.horseracingmanagement.module.dto.JockeyDto;
 
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,10 +14,13 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class JockeyRequestDto {
     @NotNull
-    private Long raceHorseId;
+    private Long raceHorseId; // ← id của RaceHorse đang Pending
 
     @NotNull
-    private BigDecimal jockeyRevenuePercent; // ← id của RaceHorse đang Pending
+    @DecimalMin(value = "0", inclusive = true)
+    @DecimalMax(value = "100", inclusive = true)
+    private BigDecimal jockeyRevenuePercent; // % jockey được hưởng khi có giải, phần còn lại là của owner
+
     @NotNull
     private Long jockeyId;
 }

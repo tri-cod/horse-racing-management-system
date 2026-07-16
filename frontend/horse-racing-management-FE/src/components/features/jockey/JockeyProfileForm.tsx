@@ -1,6 +1,7 @@
 import { useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Camera, Loader2 } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import ImageCropModal from '@/components/ui/ImageCropModal';
 import { uploadAvatar } from '@/api/authApi';
 import { getErrorMessage } from '@/utils/errors';
 import type { Jockey } from '@/types';
@@ -32,22 +33,31 @@ export default function JockeyProfileForm({ initialValues = {}, onSubmit, loadin
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const initials = (initialValues.name ?? 'J').charAt(0).toUpperCase();
 
-  const handleAvatarChange = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setCropSrc(reader.result as string);
+    reader.readAsDataURL(file);
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
+  const handleCropConfirm = async (blob: Blob) => {
+    setCropSrc(null);
+    setUploading(true);
+    setUploadError('');
     try {
-      setUploading(true);
-      setUploadError('');
-      const url = await uploadAvatar(file);
+      const croppedFile = new File([blob], 'avatar.png', { type: 'image/png' });
+      const url = await uploadAvatar(croppedFile);
       setForm((prev) => ({ ...prev, avatarUrl: url }));
     } catch (err: unknown) {
       setUploadError(getErrorMessage(err, 'Upload failed. Please try again.'));
     } finally {
       setUploading(false);
-      if (fileRef.current) fileRef.current.value = '';
     }
   };
 
@@ -78,6 +88,14 @@ export default function JockeyProfileForm({ initialValues = {}, onSubmit, loadin
   };
 
   return (
+    <>
+    {cropSrc && (
+      <ImageCropModal
+        imageSrc={cropSrc}
+        onCancel={() => setCropSrc(null)}
+        onConfirm={handleCropConfirm}
+      />
+    )}
     <form onSubmit={handleSubmit} noValidate className="divide-y divide-rim">
 
       {/* Avatar */}
@@ -95,7 +113,7 @@ export default function JockeyProfileForm({ initialValues = {}, onSubmit, loadin
             type="file"
             accept="image/*"
             className="sr-only"
-            onChange={handleAvatarChange}
+            onChange={handleFileSelect}
             id="jf-avatar-file"
           />
           <label
@@ -151,5 +169,6 @@ export default function JockeyProfileForm({ initialValues = {}, onSubmit, loadin
         </Button>
       </div>
     </form>
+    </>
   );
 }
