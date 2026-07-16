@@ -109,7 +109,7 @@ public class HorseOwnerController {
     @PatchMapping("/horses/{horseId}")
     public ResponseEntity<ApiResponse<SignHorseResponse>> updateHorse(
             @PathVariable Long horseId,
-            @RequestBody UpdateHorse request,
+            @Valid @RequestBody UpdateHorse request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Long userId = userDetails.getId();

@@ -3,6 +3,7 @@ package com.horseracing.horseracingmanagement.module.dto.AuthDto;
 
 import com.horseracing.horseracingmanagement.common.constant.RoleName;
 import com.horseracing.horseracingmanagement.common.validation.FieldsNotEqual;
+import com.horseracing.horseracingmanagement.common.validation.NoSpecialCharacters;
 import com.horseracing.horseracingmanagement.common.validation.ValidPassword;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -17,6 +18,8 @@ public class RegisterRequest {
     private RoleName role;
 
     @NotBlank(message = "Full name is required")
+    @Size(min = 2, max = 150, message = "Full name must be between 2 and 150 characters")
+    @NoSpecialCharacters(message = "Full name must not contain special characters")
     private String fullName;
 
 
