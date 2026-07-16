@@ -10,17 +10,19 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Button from '@/components/ui/Button';
 import Seo from '@/components/seo/Seo';
 
-/* Inline avatar — larger size than the badge shown elsewhere */
-function HeaderAvatar({ url, name }: { url?: string; name?: string }) {
+/* Portrait photo — fixed box, the user already framed it via the crop-on-upload modal. */
+function HeaderPortrait({ url, name }: { url?: string; name?: string }) {
   const initials = name
     ? name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
     : 'J';
   return (
-    <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full ring-4 ring-gold/30">
+    <div className="h-56 w-56 shrink-0 overflow-hidden rounded-md bg-navy">
       {url ? (
+        // bg-navy behind the img matches the banner, so a transparent
+        // (background-removed) photo blends in instead of showing through white/black.
         <img src={url} alt={name ?? 'Jockey'} className="h-full w-full object-cover" />
       ) : (
-        <div className="flex h-full w-full items-center justify-center bg-gold text-2xl font-bold text-on-gold">
+        <div className="flex h-full w-full items-center justify-center bg-gold text-5xl font-bold text-on-gold">
           {initials}
         </div>
       )}
@@ -62,78 +64,39 @@ export default function JockeyMyProfilePage() {
     </div>
   );
 
-  const hasStats = !isNew && (profile?.age != null || profile?.experienceYear != null);
-
   return (
     <div>
       <Seo title="Jockey Profile" description="Manage your Royal Derby jockey profile." />
 
       {/* ── Identity header band ──────────────────────────────────── */}
       <div className="border-b border-on-blue/10 bg-navy">
-        <div className="mx-auto max-w-4xl px-8 py-10">
+        <div className="mx-auto max-w-4xl px-8">
           <motion.div
             initial={reduce ? false : { opacity: 0, y: -14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col sm:flex-row sm:items-stretch"
           >
-            {/* Left: avatar + name + status */}
-            <div className="flex items-center gap-5">
-              <HeaderAvatar url={profile?.avatarUrl} name={profile?.name} />
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gold/55">
-                  Royal Derby · Jockey
-                </p>
-                <h1 className="mt-0.5 font-serif text-2xl font-bold text-on-blue sm:text-3xl">
-                  {profile?.name ?? 'My Profile'}
-                </h1>
-                {profile?.status && (
-                  <span className={`mt-2 inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${
-                    profile.status === 'APPROVED' || profile.status === 'Active'
-                      ? 'bg-ok/15 text-ok'
-                      : profile.status === 'REJECTED'
-                      ? 'bg-fail/15 text-fail'
-                      : 'bg-on-blue/10 text-on-blue/50'
-                  }`}>
-                    {profile.status}
-                  </span>
-                )}
-              </div>
-            </div>
+            {/* Left: full-bleed portrait photo, matches banner height */}
+            <HeaderPortrait url={profile?.avatarUrl} name={profile?.name} />
 
-            {/* Right: display stats */}
-            {hasStats && (
-              <motion.div
-                initial={reduce ? false : { opacity: 0, x: 16 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="flex items-center gap-8 sm:border-l sm:border-on-blue/15 sm:pl-8"
-              >
-                {profile?.experienceYear != null && (
-                  <div>
-                    <p className="tnum text-4xl font-bold leading-none text-gold">
-                      {profile.experienceYear}
-                    </p>
-                    <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-widest text-on-blue/35">
-                      Yrs Exp.
-                    </p>
-                  </div>
-                )}
-                {profile?.experienceYear != null && profile?.age != null && (
-                  <div className="h-10 w-px self-center bg-on-blue/12" />
-                )}
-                {profile?.age != null && (
-                  <div>
-                    <p className="tnum text-4xl font-bold leading-none text-on-blue">
-                      {profile.age}
-                    </p>
-                    <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-widest text-on-blue/35">
-                      Age
-                    </p>
-                  </div>
-                )}
-              </motion.div>
-            )}
+            {/* Right: name + status */}
+            <div className="flex flex-col justify-center gap-3 py-10 sm:flex-1 sm:pl-8">
+              <h1 className="font-serif text-3xl font-bold text-on-blue sm:text-5xl">
+                {profile?.name ?? 'My Profile'}
+              </h1>
+              {profile?.status && (
+                <span className={`inline-flex w-fit items-center rounded-full px-3 py-1 text-sm font-semibold uppercase tracking-wide ${
+                  profile.status === 'APPROVED' || profile.status === 'Active'
+                    ? 'bg-ok/15 text-ok'
+                    : profile.status === 'REJECTED'
+                    ? 'bg-fail/15 text-fail'
+                    : 'bg-on-blue/10 text-on-blue/50'
+                }`}>
+                  {profile.status}
+                </span>
+              )}
+            </div>
           </motion.div>
         </div>
       </div>

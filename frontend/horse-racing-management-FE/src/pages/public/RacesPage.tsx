@@ -128,13 +128,13 @@ function MiniCalendar({ raceDates, selected, onSelect }: CalendarProps) {
 
 /* ── Position badge — matches home page Leaderboard ─────────────────── */
 function PosBadge({ pos }: { pos: number }) {
-  const gold   = 'bg-gold text-on-gold';
-  const silver = 'bg-on-blue/20 text-on-blue/70';
-  const bronze = 'bg-amber-700/40 text-amber-300';
-  const muted  = 'bg-on-blue/10 text-on-blue/35';
+  const gold   = 'text-gold-hi';
+  const silver = 'text-ink-2';
+  const bronze = 'text-[#a8703f]';
+  const muted  = 'text-ink-3';
   const cls = pos === 1 ? gold : pos === 2 ? silver : pos === 3 ? bronze : muted;
   return (
-    <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${cls}`}>
+    <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center text-2xl font-bold ${cls}`}>
       {pos}
     </span>
   );
@@ -143,47 +143,47 @@ function PosBadge({ pos }: { pos: number }) {
 /* ── Finished Race Results ──────────────────────────────────────────── */
 function FinishedResults({ results }: { results: NormalizedRaceResult[] }) {
   return (
-    <div className="bg-navy py-14">
+    <div className="bg-surface-overlay py-14">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
 
         {/* Header row */}
         <div className="mb-8 flex items-end justify-between">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gold/60">Race Results</p>
-            <h2 className="mt-1 font-serif text-3xl font-bold text-on-blue sm:text-4xl">Final Standings</h2>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gold-hi">Race Results</p>
+            <h2 className="mt-1 font-serif text-3xl font-bold text-ink sm:text-4xl">Final Standings</h2>
           </div>
         </div>
 
         {results.length === 0 ? (
-          <p className="text-sm text-on-blue/35">Official results not yet published.</p>
+          <p className="text-sm text-ink-4">Official results not yet published.</p>
         ) : (
-          <div className="overflow-hidden rounded-sm border border-on-blue/10">
+          <div className="overflow-hidden rounded-sm border border-rim bg-surface-raised">
             {/* Table header */}
-            <div className="grid grid-cols-[2.5rem_1fr_1fr_auto] gap-4 border-b border-on-blue/10 bg-on-blue/5 px-5 py-2.5 sm:grid-cols-[2.5rem_1fr_1fr_1fr_auto]">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-on-blue/35">Pos.</span>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-on-blue/35">Horse</span>
-              <span className="hidden text-[10px] font-bold uppercase tracking-widest text-on-blue/35 sm:block">Jockey</span>
-              <span className="hidden text-[10px] font-bold uppercase tracking-widest text-on-blue/35 sm:block">Time</span>
-              <span className="text-right text-[10px] font-bold uppercase tracking-widest text-on-blue/35">Odds</span>
+            <div className="grid grid-cols-[2.5rem_1fr_1fr_auto] gap-4 border-b border-rim bg-surface-overlay px-5 py-2.5 sm:grid-cols-[2.5rem_1fr_1fr_1fr_auto]">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-ink-3">Rank</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-ink-3">Horse</span>
+              <span className="hidden text-[10px] font-bold uppercase tracking-widest text-ink-3 sm:block">Jockey</span>
+              <span className="hidden text-[10px] font-bold uppercase tracking-widest text-ink-3 sm:block">Time</span>
+              <span className="text-right text-[10px] font-bold uppercase tracking-widest text-ink-3">Odds</span>
             </div>
 
             {/* Rows */}
-            <div className="divide-y divide-on-blue/[0.07]">
+            <div className="divide-y divide-rim">
               {results.map((r) => {
                 const isFirst = r.position === 1;
                 return (
                   <div key={r.id}
-                    className={`grid grid-cols-[2.5rem_1fr_1fr_auto] items-center gap-4 px-5 py-4 transition-colors hover:bg-on-blue/[0.05] sm:grid-cols-[2.5rem_1fr_1fr_1fr_auto] ${isFirst ? 'bg-gold/[0.04]' : ''}`}>
+                    className={`grid grid-cols-[2.5rem_1fr_1fr_auto] items-center gap-4 px-5 py-4 transition-colors hover:bg-gold/5 sm:grid-cols-[2.5rem_1fr_1fr_1fr_auto] ${isFirst ? 'bg-gold/[0.06]' : ''}`}>
                     <PosBadge pos={r.position} />
                     <div>
-                      <p className={`font-semibold leading-tight ${isFirst ? 'text-gold' : 'text-on-blue'}`}>
+                      <p className={`font-semibold leading-tight ${isFirst ? 'text-gold-hi' : 'text-ink'}`}>
                         {r.horseName}
                       </p>
-                      <p className="mt-0.5 text-xs text-on-blue/40 sm:hidden">{r.jockeyName}</p>
+                      <p className="mt-0.5 text-xs text-ink-3 sm:hidden">{r.jockeyName}</p>
                     </div>
-                    <span className="hidden text-sm text-on-blue/55 sm:block">{r.jockeyName}</span>
-                    <span className="hidden tnum text-sm text-on-blue/35 sm:block">{r.time ?? '—'}</span>
-                    <span className={`tnum text-right text-sm font-semibold ${isFirst ? 'text-gold' : r.odds != null ? 'text-on-blue/70' : 'text-on-blue/25'}`}>
+                    <span className="hidden text-sm text-ink-2 sm:block">{r.jockeyName}</span>
+                    <span className="hidden tnum text-sm text-ink-3 sm:block">{r.time ?? '—'}</span>
+                    <span className={`tnum text-right text-sm font-semibold ${isFirst ? 'text-gold-hi' : r.odds != null ? 'text-ink-2' : 'text-ink-4'}`}>
                       {r.odds != null ? `×${Number(r.odds).toFixed(2)}` : '—'}
                     </span>
                   </div>

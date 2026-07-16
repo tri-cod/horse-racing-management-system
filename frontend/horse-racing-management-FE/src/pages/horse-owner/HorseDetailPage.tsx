@@ -130,13 +130,13 @@ export default function HorseDetailPage() {
                 <img
                   src={h.avatarUrl}
                   alt={h.horseName}
-                  className="absolute inset-0 h-full w-full object-cover opacity-50"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
               )}
               {!h.avatarUrl && (
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_25%_60%,rgba(168,132,59,0.18),transparent_55%)]" />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/55 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-navy to-transparent" />
 
               <div className="absolute inset-x-0 bottom-0 flex items-end gap-4 px-6 pb-6">
                 {h.avatarUrl ? (
