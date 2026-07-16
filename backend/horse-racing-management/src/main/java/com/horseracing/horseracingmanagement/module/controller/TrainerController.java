@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,5 +68,27 @@ public class TrainerController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(ApiResponse.success("Success", response));
     }
+    @GetMapping("/my-race-history")
+    @PreAuthorize("hasAuthority('TRAINER')")
+    public ResponseEntity<ApiResponse<List>> getMyRaceHistory(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                trainerService.getMyRaceHistory(userDetails.getId())));
+    }
+    @GetMapping("/my-upcoming-races")
+    @PreAuthorize("hasAuthority('TRAINER')")
+    public ResponseEntity<ApiResponse<List>> getUpcomingRaces(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                trainerService.getUpcomingRaces(userDetails.getId())));
+    }
+    @GetMapping("/my-current-races")
+    @PreAuthorize("hasAuthority('TRAINER')")
+    public ResponseEntity<ApiResponse<List>> getCurrentRaces(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                trainerService.getCurrentRaces(userDetails.getId())));
+    }
+
 
 }

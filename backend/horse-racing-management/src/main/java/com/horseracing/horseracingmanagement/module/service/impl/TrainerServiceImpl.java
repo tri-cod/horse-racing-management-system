@@ -1,19 +1,38 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
+import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
+import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.CompleteTrainerProfileRequest;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.TrainerProfileResponse;
+import com.horseracing.horseracingmanagement.module.entity.Horse;
+import com.horseracing.horseracingmanagement.module.entity.RaceHorse;
+import com.horseracing.horseracingmanagement.module.entity.RaceResult;
 import com.horseracing.horseracingmanagement.module.entity.Trainer;
+import com.horseracing.horseracingmanagement.module.responsitory.HorseRepository;
+import com.horseracing.horseracingmanagement.module.responsitory.RaceHorseRepository;
+import com.horseracing.horseracingmanagement.module.responsitory.RaceResultRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.TrainerRepository;
 import com.horseracing.horseracingmanagement.module.service.TrainerService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.apache.catalina.manager.StatusTransformer.formatTime;
+
 @Service
 @AllArgsConstructor
 public class TrainerServiceImpl implements TrainerService {
 
     private final TrainerRepository trainerRepository;
+    private final HorseRepository horseRepository;
+    private final RaceHorseRepository raceHorseRepository;
+    private final RaceResultRepository raceResultRepository;
+
 
 
     @Override
@@ -37,6 +56,81 @@ public class TrainerServiceImpl implements TrainerService {
                 .orElseThrow(() -> new RuntimeException("Trainer profile not found"));
         return mapToResponse(trainer);
     }
+    @Override
+    public List getMyRaceHistory(Long userId) {
+        Trainer trainer = trainerRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Trainer not found"));
+// Tìm tất cả horse mà trainer này đang/đã huấn luyện
+        List<Horse> myHorses = horseRepository.findByTrainerId(trainer.getId());
+
+        return myHorses.stream()
+                .flatMap(horse -> raceHorseRepository.findByHorse_Id(horse.getId()).stream())
+                .filter(rh -> rh.getRace().getStatus() == RaceStatus.FINISHED)
+                .map(this::buildTrainerParticipationResponse)
+                .sorted(Comparator.comparing(
+                        r -> r.getStartTime() != null ? r.getStartTime() : Instant.EPOCH,
+                        Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List getUpcomingRaces(Long userId) {
+        Trainer trainer = trainerRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Trainer not found"));
+        List<Horse> myHorses = horseRepository.findByTrainerId(trainer.getId());
+
+        return myHorses.stream()
+                .flatMap(horse -> raceHorseRepository.findByHorse_Id(horse.getId()).stream())
+                .filter(rh -> rh.getRace().getStatus() != RaceStatus.FINISHED
+                        && rh.getRace().getStatus() != RaceStatus.ONGOING
+                        && rh.getRace().getStatus() != RaceStatus.CANCELLED)
+                .map(this::buildTrainerParticipationResponse)
+                .sorted(Comparator.comparing(
+                        r -> r.getStartTime() != null ? r.getStartTime() : Instant.MAX))
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List getCurrentRaces(Long userId) {
+        Trainer trainer = trainerRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Trainer not found"));
+        List<Horse> myHorses = horseRepository.findByTrainerId(trainer.getId());
+
+        return myHorses.stream()
+                .flatMap(horse -> raceHorseRepository.findByHorse_Id(horse.getId()).stream())
+                .filter(rh -> rh.getRace().getStatus() == RaceStatus.ONGOING)
+                .map(this::buildTrainerParticipationResponse)
+                .collect(Collectors.toList());
+    }
+    private RaceParticipationResponse buildTrainerParticipationResponse(RaceHorse rh) {
+        RaceResult result = raceResultRepository.findByRaceHorse_Id(rh.getId()).orElse(null);
+        return RaceParticipationResponse.builder()
+                .raceId(rh.getRace().getId())
+                .raceName(rh.getRace().getRaceName())
+                .raceStatus(rh.getRace().getStatus().name())
+                .location(rh.getRace().getLocation())
+                .startTime(rh.getRace().getStartTime())
+                .horseId(rh.getHorse().getId())
+                .horseName(rh.getHorse().getHorseName())
+                .horseAvatarUrl(rh.getHorse().getAvatarUrl())
+                .jockeyId(rh.getJockey() != null ? rh.getJockey().getId() : null)
+                .jockeyName(rh.getJockey() != null
+                        ? rh.getJockey().getUser().getFullName() : null)
+                .rank(result != null ? result.getRank() : null)
+                .completionTimeSeconds(result != null ? result.getCompletionTimeSeconds() : null)
+                .completionTimeFormatted(result != null
+                        ? formatTime(result.getCompletionTimeSeconds()) : null)
+                .rewards(result != null ? result.getRewards() : null)
+                .registrationStatus(rh.getStatus())
+                .registerAt(rh.getRegisterAt())
+                .build();
+    }
+
+    private String formatTime(Double seconds) {
+        if (seconds == null) return null;
+        int minutes = (int) (seconds / 60);
+        double remaining = seconds % 60;
+        return String.format("%d:%05.2f", minutes, remaining);
+    }
+
 
     private TrainerProfileResponse mapToResponse(Trainer trainer) {
         return TrainerProfileResponse.builder()

@@ -17,6 +17,7 @@ import java.util.List;
 public interface HorseRepository extends JpaRepository<Horse, Long> {
     List<Horse> findByOwnerId(Long ownerId);
 
+
     // Search + filter horse theo tên, breed, status (cho admin xem toàn bộ)
     @Query("""
         SELECT DISTINCT h
@@ -36,4 +37,6 @@ public interface HorseRepository extends JpaRepository<Horse, Long> {
     // Lấy danh sách horseId đã đăng ký trong 1 race cụ thể (để loại khi chọn ngựa khác cho race đó)
     @Query("SELECT rh.horse.id FROM RaceHorse rh WHERE rh.race.id = :raceId")
     List<Long> findHorseIdsByRaceId(@Param("raceId") Long raceId);
+
+    List<Horse> findByTrainerId(Long id);
 }

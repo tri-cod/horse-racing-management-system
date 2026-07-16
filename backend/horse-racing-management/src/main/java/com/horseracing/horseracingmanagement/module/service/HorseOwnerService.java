@@ -31,4 +31,9 @@ public interface HorseOwnerService {
     void deleteHorse(Long horseId, Long userId);
     HorseCurrentStatusResponse mapToCurrentStatusResponse(Horse horse);
     void SendWithdrawalApplication (WithdrawalRequest with, Long userId);
+    List getOwnerRaceHistory(Long userId); // lịch sử đua
+    List getOwnerUpcomingRaces(Long userId); // trận sắp tới
+    List getOwnerCurrentRaces(Long userId); // trận đang diễn ra
+// Lịch sử đua của tất cả ngựa owner này sở hữu
+
 }
