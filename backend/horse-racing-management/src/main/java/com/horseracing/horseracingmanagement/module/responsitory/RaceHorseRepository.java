@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +23,9 @@ public interface RaceHorseRepository extends JpaRepository<RaceHorse, Long> {
     List<RaceHorse> findByRace_Id(Long raceId);
 
     List<RaceHorse> findByHorse_OwnerId(Long ownerId);
+
     boolean existsByRace_IdAndJockey_Id(Long raceId, Long jockeyId);
+
     void deleteByRace_Id(Long raceId);
 
     List<RaceHorse> findByStatus(String status);
@@ -36,7 +39,8 @@ public interface RaceHorseRepository extends JpaRepository<RaceHorse, Long> {
     List<RaceHorse> findByHorse_Id(Long horseId);
 
     @Query("""
-    SELECT rh.horse.id FROM RaceHorse rh
+
+            SELECT rh.horse.id FROM RaceHorse rh
     WHERE rh.status IN ('Pending', 'Approved')
     AND rh.race.id != :raceId
     AND CAST(rh.race.startTime AS date) = CAST(:raceDate AS date)
@@ -70,4 +74,6 @@ public interface RaceHorseRepository extends JpaRepository<RaceHorse, Long> {
 
     @Query("SELECT rh.horse.id FROM RaceHorse rh WHERE rh.race.id = :raceId")
     List<Long> findHorseIdsByRaceId(@Param("raceId") Long raceId);
-}
+
+    List<RaceHorse> findByJockey_Id(Long jockeyId);
+    }// ← thêm (bỏ filter status để lấy hết)}

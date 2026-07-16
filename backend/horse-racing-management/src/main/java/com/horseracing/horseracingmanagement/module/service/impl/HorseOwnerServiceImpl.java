@@ -7,6 +7,7 @@ import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseR
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SignHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.UpdateHorse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.WithdrawalRequest;
+import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
 import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
 import com.horseracing.horseracingmanagement.module.service.HorseOwnerService;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -315,6 +318,91 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
 
         horseRepository.delete(horse);
     }
+    @Override
+    public List getOwnerRaceHistory(Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Horse owner not found"));
+        List<Horse> myHorses = horseRepository.findByOwnerId(owner.getId());
+
+        return myHorses.stream()
+                .flatMap(horse -> raceHorseRepository.findByHorse_Id(horse.getId()).stream())
+                .filter(rh -> rh.getRace().getStatus() == RaceStatus.FINISHED)
+                .map(this::buildOwnerParticipationResponse)
+                .sorted(Comparator.comparing(
+                        r -> r.getStartTime() != null ? r.getStartTime() : Instant.EPOCH,
+                        Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+    }
+    // Trận sắp tới — tất cả ngựa owner đã đăng ký nhưng chưa đua
+    @Override
+    public List getOwnerUpcomingRaces(Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Horse owner not found"));
+        List<Horse> myHorses = horseRepository.findByOwnerId(owner.getId());
+
+        return myHorses.stream()
+                .flatMap(horse -> raceHorseRepository.findByHorse_Id(horse.getId()).stream())
+                .filter(rh -> rh.getRace().getStatus() != RaceStatus.FINISHED
+                        && rh.getRace().getStatus() != RaceStatus.ONGOING
+                        && rh.getRace().getStatus() != RaceStatus.CANCELLED
+                        && rh.getStatus().equals("Approved"))  // ← chỉ lấy đã được duyệt
+                .map(this::buildOwnerParticipationResponse)
+                .sorted(Comparator.comparing(
+                        r -> r.getStartTime() != null ? r.getStartTime() : Instant.MAX))
+                .collect(Collectors.toList());
+    }
+    // Trận đang diễn ra
+    @Override
+    public List getOwnerCurrentRaces(Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Horse owner not found"));
+        List<Horse> myHorses = horseRepository.findByOwnerId(owner.getId());
+
+        return myHorses.stream()
+                .flatMap(horse -> raceHorseRepository.findByHorse_Id(horse.getId()).stream())
+                .filter(rh -> rh.getRace().getStatus() == RaceStatus.ONGOING)
+                .map(this::buildOwnerParticipationResponse)
+                .collect(Collectors.toList());
+    }
+    private RaceParticipationResponse buildOwnerParticipationResponse(RaceHorse rh) {
+        RaceResult result = raceResultRepository.findByRaceHorse_Id(rh.getId()).orElse(null);
+        String trainerName = null;
+        Long trainerId = rh.getHorse().getTrainerId();
+        if (trainerId != null) {
+            trainerName = trainerRepository.findById(trainerId)
+                    .map(t -> t.getUser().getFullName()).orElse(null);
+        }
+
+        return RaceParticipationResponse.builder()
+                .raceId(rh.getRace().getId())
+                .raceName(rh.getRace().getRaceName())
+                .raceStatus(rh.getRace().getStatus().name())
+                .location(rh.getRace().getLocation())
+                .startTime(rh.getRace().getStartTime())
+                .horseId(rh.getHorse().getId())
+                .horseName(rh.getHorse().getHorseName())
+                .horseAvatarUrl(rh.getHorse().getAvatarUrl())
+                .jockeyId(rh.getJockey() != null ? rh.getJockey().getId() : null)
+                .jockeyName(rh.getJockey() != null
+                        ? rh.getJockey().getUser().getFullName() : null)
+                .trainerId(trainerId)
+                .trainerName(trainerName)
+                .rank(result != null ? result.getRank() : null)
+                .completionTimeSeconds(result != null ? result.getCompletionTimeSeconds() : null)
+                .completionTimeFormatted(result != null
+                        ? formatTime(result.getCompletionTimeSeconds()) : null)
+                .rewards(result != null ? result.getRewards() : null)
+                .registrationStatus(rh.getStatus())
+                .registerAt(rh.getRegisterAt())
+                .build();
+    }
+    private String formatTime(Double seconds) {
+        if (seconds == null) return null;
+        int minutes = (int) (seconds / 60);
+        double remaining = seconds % 60;
+        return String.format("%d:%05.2f", minutes, remaining);
+    }
+
 
 
 

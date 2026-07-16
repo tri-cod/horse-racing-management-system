@@ -1,17 +1,22 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
+import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.CompleteJockeyProfileRequest;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyProfileResponse;
+import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
 import com.horseracing.horseracingmanagement.module.entity.Jockey;
 import com.horseracing.horseracingmanagement.module.entity.RaceHorse;
 import com.horseracing.horseracingmanagement.module.entity.RaceResult;
 import com.horseracing.horseracingmanagement.module.responsitory.JockeyRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.RaceHorseRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.RaceResultRepository;
+import com.horseracing.horseracingmanagement.module.responsitory.TrainerRepository;
 import com.horseracing.horseracingmanagement.module.service.JockeyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,7 +28,7 @@ public class JockeyServiceImpl implements JockeyService {
     private final JockeyRepository jockeyRepository;
     private final RaceHorseRepository raceHorseRepository;
     private final RaceResultRepository raceResultRepository;
-
+    private final TrainerRepository trainerRepository;
     @Override
     public JockeyProfileResponse completeProfile(CompleteJockeyProfileRequest request, Long userId) {
         Jockey jockey = jockeyRepository.findByUser_Id(userId)
@@ -59,6 +64,86 @@ public class JockeyServiceImpl implements JockeyService {
                 .map(this::mapToProfileResponse)
                 .collect(Collectors.toList());
     }
+    @Override
+    public List getMyRaceHistory(Long userId) {
+        Jockey jockey = jockeyRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Jockey not found"));
+        return raceHorseRepository.findByJockey_Id(jockey.getId())
+                .stream()
+                .filter(rh -> rh.getRace().getStatus() == RaceStatus.FINISHED)
+                .map(rh -> buildParticipationResponse(rh, jockey.getId()))
+                .sorted(Comparator.comparing(
+                        r -> r.getStartTime() != null ? r.getStartTime() : Instant.EPOCH,
+                        Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+    }
+    // Trận sắp tới — UPCOMING, OPEN_REGISTRATION, CLOSED_REGISTRATION, OPEN_BETTING
+    @Override
+    public List getUpcomingRaces(Long userId) {
+        Jockey jockey = jockeyRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Jockey not found"));
+        return raceHorseRepository.findByJockey_Id(jockey.getId())
+                .stream()
+                .filter(rh -> rh.getRace().getStatus() != RaceStatus.FINISHED
+                        && rh.getRace().getStatus() != RaceStatus.ONGOING
+                        && rh.getRace().getStatus() != RaceStatus.CANCELLED)
+                .map(rh -> buildParticipationResponse(rh, jockey.getId()))
+                .sorted(Comparator.comparing(
+                        r -> r.getStartTime() != null ? r.getStartTime() : Instant.MAX))
+                .collect(Collectors.toList());
+    }
+    // Trận đang diễn ra — ONGOING
+    @Override
+    public List getCurrentRaces(Long userId) {
+        Jockey jockey = jockeyRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Jockey not found"));
+        return raceHorseRepository.findByJockey_Id(jockey.getId())
+                .stream()
+                .filter(rh -> rh.getRace().getStatus() == RaceStatus.ONGOING)
+                .map(rh -> buildParticipationResponse(rh, jockey.getId()))
+                .collect(Collectors.toList());
+    }
+    private RaceParticipationResponse buildParticipationResponse(RaceHorse rh, Long jockeyId) {
+// Lấy kết quả nếu race đã FINISHED
+        RaceResult result = raceResultRepository.findByRaceHorse_Id(rh.getId()).orElse(null);
+// Lấy tên trainer của con ngựa
+        String trainerName = null;
+        Long trainerId = rh.getHorse().getTrainerId();
+        if (trainerId != null) {
+            trainerName = trainerRepository.findById(trainerId)
+                    .map(t -> t.getUser().getFullName()).orElse(null);
+        }
+
+        return RaceParticipationResponse.builder()
+                .raceId(rh.getRace().getId())
+                .raceName(rh.getRace().getRaceName())
+                .raceStatus(rh.getRace().getStatus().name())
+                .location(rh.getRace().getLocation())
+                .startTime(rh.getRace().getStartTime())
+                .horseId(rh.getHorse().getId())
+                .horseName(rh.getHorse().getHorseName())
+                .horseAvatarUrl(rh.getHorse().getAvatarUrl())
+                .jockeyId(rh.getJockey() != null ? rh.getJockey().getId() : null)
+                .jockeyName(rh.getJockey() != null
+                        ? rh.getJockey().getUser().getFullName() : null)
+                .trainerId(trainerId)
+                .trainerName(trainerName)
+                .rank(result != null ? result.getRank() : null)
+                .completionTimeSeconds(result != null ? result.getCompletionTimeSeconds() : null)
+                .completionTimeFormatted(result != null
+                        ? formatTime(result.getCompletionTimeSeconds()) : null)
+                .rewards(result != null ? result.getRewards() : null)
+                .registrationStatus(rh.getStatus())
+                .registerAt(rh.getRegisterAt())
+                .build();
+    }
+    private String formatTime(Double seconds) {
+        if (seconds == null) return null;
+        int minutes = (int) (seconds / 60);
+        double remaining = seconds % 60;
+        return String.format("%d:%05.2f", minutes, remaining);
+    }
+
 
     private JockeyProfileResponse mapToProfileResponse(Jockey jockey) {
         // Tính thống kê race
