@@ -5,6 +5,7 @@ import { useHorses } from '@/hooks/useHorses';
 import HorseCard from '@/components/features/horse-directory/HorseCard';
 import Container from '@/components/ui/Container';
 import Button from '@/components/ui/Button';
+import Reveal from '@/components/ui/Reveal';
 import Seo from '@/components/seo/Seo';
 
 const inputCls =
@@ -18,7 +19,8 @@ export default function HorsesPage() {
 
   const filtered = useMemo(() => {
     const kw = search.trim().toLowerCase();
-    return kw ? horses.filter((h) => h.horseName.toLowerCase().includes(kw)) : horses;
+    const list = kw ? horses.filter((h) => h.horseName.toLowerCase().includes(kw)) : horses;
+    return [...list].sort((a, b) => a.horseId - b.horseId);
   }, [horses, search]);
 
   return (
@@ -27,15 +29,17 @@ export default function HorsesPage() {
 
       <Container className="py-10">
         {/* Toolbar */}
-        <div className="mb-8 flex flex-col gap-4 border-b border-rim pb-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative w-full sm:max-w-xs">
-            <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-4" />
-            <label htmlFor="horses-search" className="sr-only">Search by horse name</label>
-            <input id="horses-search" type="text" placeholder="Search by horse name..." value={search} onChange={(e) => setSearch(e.target.value)}
-              className={`${inputCls} pl-9`} />
+        <Reveal distance={-20}>
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="relative w-full sm:max-w-xs">
+              <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-4" />
+              <label htmlFor="horses-search" className="sr-only">Search by horse name</label>
+              <input id="horses-search" type="text" placeholder="Search by horse name..." value={search} onChange={(e) => setSearch(e.target.value)}
+                className={`${inputCls} pl-9`} />
+            </div>
+            <p className="text-sm text-ink-3 whitespace-nowrap">{filtered.length} / {horses.length} horses</p>
           </div>
-          <p className="text-sm text-ink-3 whitespace-nowrap">{filtered.length} / {horses.length} horses</p>
-        </div>
+        </Reveal>
 
         {error && (
           <div className="mb-8 flex items-center justify-between gap-4 border border-fail/30 bg-fail-subtle px-5 py-4 text-sm text-fail">
@@ -46,9 +50,9 @@ export default function HorsesPage() {
         )}
 
         {loading && (
-          <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="flex h-64 animate-pulse flex-col justify-between rounded-md bg-surface-overlay p-5">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex h-[340px] animate-pulse flex-col justify-between rounded-md bg-surface-overlay p-6">
                 <div className="space-y-2">
                   <div className="h-3 w-1/3 rounded bg-rim" />
                   <div className="h-6 w-2/3 rounded bg-rim" />
@@ -78,8 +82,12 @@ export default function HorsesPage() {
         )}
 
         {!loading && !error && filtered.length > 0 && (
-          <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
-            {filtered.map((h, i) => <HorseCard key={h.horseId} horse={h} index={i} onClick={() => navigate(`/horses/${h.horseId}`)} />)}
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {filtered.map((h, i) => (
+              <Reveal key={h.horseId} distance={-24} delay={Math.floor(i / 2) * 90}>
+                <HorseCard horse={h} index={i} onClick={() => navigate(`/horses/${h.horseId}`)} />
+              </Reveal>
+            ))}
           </div>
         )}
       </Container>

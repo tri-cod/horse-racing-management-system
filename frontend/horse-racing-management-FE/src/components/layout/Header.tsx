@@ -10,7 +10,7 @@ import Container from '@/components/ui/Container';
 import NotificationBell from '@/components/NotificationBell';
 import UserAvatar from '@/components/features/admin/UserAvatar';
 import { getRaces } from '@/api/raceApi';
-import { getJockeyList } from '@/api/jockeyApi';
+import { getJockeyList, getJockeyProfile } from '@/api/jockeyApi';
 import { getAllHorses } from '@/api/horseApi';
 import type { Race, Jockey, UserRole, HorseCurrentStatusResponse } from '@/types';
 import { ROLE_MENU } from '@/config/roleMenu';
@@ -78,7 +78,12 @@ export default function Header() {
 
   useEffect(() => {
     if (!user) { setAllJockeys([]); return; }
-    getJockeyList().then((d) => setAllJockeys(Array.isArray(d) ? d : [])).catch(() => { });
+    // GET /jockeys has no avatarUrl — fetch each profile (capped to what the
+    // menu actually shows) so the dropdown can render real photos.
+    getJockeyList()
+      .then((d) => Promise.all((Array.isArray(d) ? d : []).slice(0, 16).map((j) => getJockeyProfile(j.id))))
+      .then(setAllJockeys)
+      .catch(() => { });
   }, [user]);
 
   useEffect(() => {
@@ -192,7 +197,11 @@ export default function Header() {
                         const color = colors[j.id % colors.length];
                         return (
                           <Link key={j.id} to="/jockeys" className="flex items-center gap-3 py-2.5 transition hover:bg-on-blue/10">
-                            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-on-gold ${color}`}>{initial}</div>
+                            <div className={`flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full text-sm font-bold text-on-gold ${j.avatarUrl ? 'bg-navy' : color}`}>
+                              {j.avatarUrl ? (
+                                <img src={j.avatarUrl} alt="" className="h-full w-full object-cover" />
+                              ) : initial}
+                            </div>
                             <span className="text-sm font-medium text-on-blue/85">{j.name}</span>
                           </Link>
                         );
@@ -216,7 +225,11 @@ export default function Header() {
                         const color = colors[h.horseId % colors.length];
                         return (
                           <Link key={h.horseId} to="/horses" className="flex items-center gap-3 py-2.5 transition hover:bg-on-blue/10">
-                            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-on-gold ${color}`}>{initial}</div>
+                            <div className={`flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full text-sm font-bold text-on-gold ${h.avatarUrl ? 'bg-navy' : color}`}>
+                              {h.avatarUrl ? (
+                                <img src={h.avatarUrl} alt="" className="h-full w-full object-cover" />
+                              ) : initial}
+                            </div>
                             <span className="text-sm font-medium text-on-blue/85">{h.horseName}</span>
                           </Link>
                         );

@@ -124,7 +124,7 @@ export default function JockeysSection() {
         {!loading && !error && selected && (
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-5">
             {/* Left — portrait of the selected jockey, stretched to the section's full height */}
-            <div className="relative mx-auto w-full self-stretch overflow-hidden rounded-md border border-rim shadow-modal lg:col-span-2" style={{ minHeight: PORTRAIT_HEIGHT }}>
+            <div className="relative mx-auto w-full self-stretch overflow-hidden rounded-md lg:col-span-2" style={{ minHeight: PORTRAIT_HEIGHT }}>
               <AnimatePresence initial={false}>
                 {selected.avatarUrl ? (
                   <motion.img
