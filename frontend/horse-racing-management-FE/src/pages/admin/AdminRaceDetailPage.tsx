@@ -196,7 +196,8 @@ export default function AdminRaceDetailPage() {
   };
 
   const startEdit = () => {
-    if (!race) return;
+    // A finished race is frozen — its fields can no longer be edited.
+    if (!race || race.status === 'FINISHED') return;
     setEditForm({
       raceName: race.raceName ?? '',
       startTime: toLocalDatetime(race.startTime),
@@ -287,7 +288,8 @@ export default function AdminRaceDetailPage() {
   };
 
   const handleDelete = async () => {
-    if (!race) return;
+    // A race that's currently running must not be deleted mid-run.
+    if (!race || race.status === 'ONGOING') return;
     if (!window.confirm(`Delete race "${race.raceName}"? This cannot be undone.`)) return;
     setDeleting(true);
     try {
@@ -318,15 +320,28 @@ export default function AdminRaceDetailPage() {
 
   const pendingCount = entries.filter((e) => isStatus(e.status, 'PENDING_ADMIN')).length;
   const withdrawCount = entries.filter((e) => isStatus(e.status, 'WITHDRAW_PENDING')).length;
+  // A finished race is a closed historical record — none of its information
+  // (fields, odds, or entry decisions) may be changed anymore. This flag freezes
+  // every mutating control below.
+  const isFinished = race.status === 'FINISHED';
+  // An ONGOING race is mid-run — deleting it now would wipe a race in progress,
+  // so the Delete action is withheld until the race is no longer running.
+  const isOngoing = race.status === 'ONGOING';
   // Odds can only be set once registration is closed — before that the field is
   // still open to new entries, so pricing them early would be premature.
   const registrationClosed = !CLOSEABLE.has(race.status);
   // Hide entries still waiting on the jockey to accept — they aren't a real part
   // of the field yet, so they shouldn't clutter admin's approval queue.
-  const visibleEntries = entries.filter((e) => !isStatus(e.status, 'PENDING_JOCKEY'));
+  // Then sort by odds ascending (smallest first); horses without odds set (null)
+  // fall to the bottom. odds is a BigDecimal → may arrive as a string over JSON,
+  // so coerce to Number before comparing. .filter() already returns a fresh array,
+  // so .sort() here never mutates the original `entries`.
+  const visibleEntries = entries
+    .filter((e) => !isStatus(e.status, 'PENDING_JOCKEY'))
+    .sort((a, b) => (a.odds != null ? Number(a.odds) : Infinity) - (b.odds != null ? Number(b.odds) : Infinity));
 
   const { invalid: invalidOdds, changed: changedOdds } = oddsDiff();
-  const settableCount = registrationClosed
+  const settableCount = registrationClosed && !isFinished
     ? visibleEntries.filter((e) => isStatus(e.status, 'APPROVED')).length
     : 0;
 
@@ -394,21 +409,29 @@ export default function AdminRaceDetailPage() {
                   <PlayCircle size={13} /> {starting ? 'Starting…' : 'Start Race'}
                 </button>
               )}
-              <button
-                type="button"
-                onClick={startEdit}
-                className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-surface-overlay hover:text-gold"
-              >
-                <Pencil size={13} /> Edit
-              </button>
-              <button
-                type="button"
-                disabled={deleting}
-                onClick={handleDelete}
-                className="inline-flex items-center gap-1.5 border border-fail/30 px-3 py-2 text-xs font-semibold text-fail transition-colors hover:bg-fail-subtle disabled:opacity-50"
-              >
-                <Trash2 size={13} /> {deleting ? 'Deleting…' : 'Delete'}
-              </button>
+              {isFinished ? (
+                <span className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-4">
+                  <Lock size={13} /> Finished · read-only
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={startEdit}
+                  className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-surface-overlay hover:text-gold"
+                >
+                  <Pencil size={13} /> Edit
+                </button>
+              )}
+              {!isOngoing && (
+                <button
+                  type="button"
+                  disabled={deleting}
+                  onClick={handleDelete}
+                  className="inline-flex items-center gap-1.5 border border-fail/30 px-3 py-2 text-xs font-semibold text-fail transition-colors hover:bg-fail-subtle disabled:opacity-50"
+                >
+                  <Trash2 size={13} /> {deleting ? 'Deleting…' : 'Delete'}
+                </button>
+              )}
             </div>
           )
         }
@@ -567,9 +590,9 @@ export default function AdminRaceDetailPage() {
                     const isLoading = actionId === e.id;
                     const initial = e.horseName?.charAt(0)?.toUpperCase() ?? '?';
                     const detail = horseDetails[e.horseId];
-                    const canApprove = isStatus(e.status, 'PENDING_ADMIN');
-                    const canReviewWithdrawal = isStatus(e.status, 'WITHDRAW_PENDING');
-                    const canSetOdds = isStatus(e.status, 'APPROVED') && registrationClosed;
+                    const canApprove = isStatus(e.status, 'PENDING_ADMIN') && !isFinished;
+                    const canReviewWithdrawal = isStatus(e.status, 'WITHDRAW_PENDING') && !isFinished;
+                    const canSetOdds = isStatus(e.status, 'APPROVED') && registrationClosed && !isFinished;
                     return (
                       <tr key={e.id} className="transition-colors hover:bg-surface-overlay/40">
                         <td className="px-5 py-3.5">
