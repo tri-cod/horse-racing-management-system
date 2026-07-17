@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Flag } from 'lucide-react';
 import { useRaces } from '@/hooks/useRaces';
 import RaceCard from '@/components/features/race/RaceCard';
-import RaceFilterTabs from '@/components/features/race/RaceFilterTabs';
+import RaceFilterTabs, { STATUSES_FOR_TAB } from '@/components/features/race/RaceFilterTabs';
 import Pagination from '@/components/ui/Pagination';
 import EmptyState from '@/components/ui/EmptyState';
 
@@ -35,7 +35,13 @@ export default function RacesPanel() {
   const [page, setPage] = useState(0);
   const { races, loading, error, refetch } = useRaces({ page: 0, size: 100 });
 
-  const filtered = activeTab ? races.filter((r) => r.status === activeTab) : races;
+  // "Upcoming" covers more than the literal UPCOMING status — a race open (or
+  // closed) for registration, or open for betting, is still upcoming. Match the
+  // tab against its whole status set (defined in RaceFilterTabs) instead of one
+  // exact string, which is why the Upcoming tab was previously coming up empty.
+  const filtered = activeTab
+    ? races.filter((r) => (STATUSES_FOR_TAB[activeTab] ?? []).includes(r.status))
+    : races;
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
