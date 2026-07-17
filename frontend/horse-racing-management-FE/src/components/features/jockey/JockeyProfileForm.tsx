@@ -70,7 +70,6 @@ export default function JockeyProfileForm({ initialValues = {}, onSubmit, loadin
     if (!form.age || isNaN(age) || age < 14 || age > 70) errs.age = 'Age must be between 14 and 70.';
     const exp = Number(form.experienceYear);
     if (form.experienceYear === '' || isNaN(exp) || exp < 0 || exp > 50) errs.experienceYear = 'Experience must be between 0 and 50.';
-    if (form.description.length > 1000) errs.description = 'Maximum 1000 characters.';
     return errs;
   };
 
@@ -156,9 +155,8 @@ export default function JockeyProfileForm({ initialValues = {}, onSubmit, loadin
           Description
         </label>
         <textarea id="jf-desc" className={`${inputCls(errors.description)} resize-none`}
-          value={form.description} onChange={set('description')} rows={5} maxLength={1000}
+          value={form.description} onChange={set('description')} rows={5}
           placeholder="Tell horse owners about your riding style and achievements…" />
-        <div className="mt-1.5 text-right text-[11px] text-ink-4">{form.description.length} / 1000</div>
         {errors.description && <p className="mt-1 text-xs text-fail">{errors.description}</p>}
       </div>
 

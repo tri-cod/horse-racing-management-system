@@ -50,7 +50,7 @@ export default function JockeyProfileView({ profile }: { profile: Jockey }) {
       {profile.description ? (
         <div className="px-6 py-6">
           <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-4">About</p>
-          <p className="max-w-prose text-sm leading-relaxed text-ink-2">{profile.description}</p>
+          <p className="max-w-prose text-justify text-sm leading-relaxed text-ink-2">{profile.description}</p>
         </div>
       ) : (
         <div className="px-6 py-12 text-center">
