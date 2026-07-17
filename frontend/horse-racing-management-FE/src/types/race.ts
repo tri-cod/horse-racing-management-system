@@ -6,15 +6,18 @@ export type RaceStatus =
  | 'FINISHED'
  | 'CANCELLED';
 
-// Real status strings written by the backend (RaceHorseServiceImpl) — mixed-case, not an uppercase enum.
+// Backend enum RaceHorseStatus (SCREAMING_SNAKE), serialized as a plain string.
 export type RaceHorseStatus =
- | 'PendingJockey'   // registered, no jockey assigned yet / jockey not yet responded
- | 'JockeyRejected'  // jockey declined, owner must pick another
- | 'PendingAdmin'    // jockey accepted, awaiting admin approval
- | 'Approved'        // admin approved
- | 'WithdrawPending' // owner requested withdrawal, awaiting admin
- | string;           // fallback for any other/legacy value
-
+  | 'PENDING'
+  | 'PENDING_JOCKEY'     // registered, jockey hasn't responded yet
+  | 'JOCKEY_REJECTED'    // jockey declined, owner must pick another
+  | 'PENDING_ADMIN'      // jockey accepted, awaiting admin approval
+  | 'APPROVED'           // admin approved
+  | 'REJECTED'
+  | 'WITHDRAW_PENDING'   // owner requested withdrawal, awaiting admin
+  | 'WITHDRAW_REJECTED'
+  | 'WITHDRAWN'
+  | string;              // fallback for any other/legacy value
 export interface Race {
  id: number;
  raceName: string;

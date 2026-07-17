@@ -1,20 +1,24 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Flag, Plus } from 'lucide-react';
+import { Flag, Plus, ClipboardCheck, TrendingUp } from 'lucide-react';
 import RacesPanel from '@/components/features/admin/RacesPanel';
 import CreateRacePanel from '@/components/features/admin/CreateRacePanel';
+import ApproveHorsesPanel from '@/components/features/admin/ApproveHorsesPanel';
+import SetOddsPanel from '@/components/features/admin/SetOddsPanel';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
 
-type Tab = 'races' | 'create';
+type Tab = 'races' | 'create' | 'approve' | 'odds';
 
 const TABS: { value: Tab; label: string; icon: typeof Flag; subtitle: string }[] = [
   { value: 'races', label: 'Races', icon: Flag, subtitle: 'Browse and manage every race on the calendar' },
   { value: 'create', label: 'Create Race', icon: Plus, subtitle: 'Set up a new race for the upcoming season' },
+  { value: 'approve', label: 'Approve', icon: ClipboardCheck, subtitle: 'Review horse registrations awaiting approval' },
+  { value: 'odds', label: 'Set Odds', icon: TrendingUp, subtitle: 'Price the field before each race starts' },
 ];
 
 /* ── Toggle switch — sliding pill measures each button's real width/position
- * instead of assuming equal slots, since "Races" and "Create Race" differ in length. */
+ * instead of assuming equal slots, since the tab labels differ in length. */
 function TabSwitch({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
   const btnRefs = useRef<Partial<Record<Tab, HTMLButtonElement>>>({});
   const [indicator, setIndicator] = useState({ left: 0, width: 0 });
@@ -69,6 +73,8 @@ export default function AdminRaceListPage() {
 
       {tab === 'races' && <RacesPanel />}
       {tab === 'create' && <CreateRacePanel />}
+      {tab === 'approve' && <ApproveHorsesPanel />}
+      {tab === 'odds' && <SetOddsPanel />}
     </div>
   );
 }

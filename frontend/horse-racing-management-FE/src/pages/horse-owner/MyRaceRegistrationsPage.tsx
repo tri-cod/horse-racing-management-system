@@ -10,6 +10,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import Button from '@/components/ui/Button';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
+import { isStatus, isAnyStatus, type RaceHorseStatusKey } from '@/utils/raceHorseStatus';
 import type { RaceHorse } from '@/types';
 
 function TableSkeleton() {
@@ -32,7 +33,7 @@ function TableSkeleton() {
   );
 }
 
-const PENDING_STATUSES = new Set(['PendingJockey', 'PendingAdmin', 'WithdrawPending']);
+const PENDING_STATUSES: RaceHorseStatusKey[] = ['PENDING_JOCKEY', 'PENDING_ADMIN', 'WITHDRAW_PENDING'];
 
 export default function MyRaceRegistrationsPage() {
   const { registrations, loading, error, refetch } = useMyRaceRegistrations();
@@ -40,9 +41,9 @@ export default function MyRaceRegistrationsPage() {
   const [assigning, setAssigning] = useState<RaceHorse | null>(null);
   const [withdrawing, setWithdrawing] = useState<RaceHorse | null>(null);
 
-  const approved = useMemo(() => registrations.filter((r) => r.status === 'Approved').length, [registrations]);
-  const pending  = useMemo(() => registrations.filter((r) => PENDING_STATUSES.has(r.status)).length, [registrations]);
-  const rejected = useMemo(() => registrations.filter((r) => r.status === 'JockeyRejected').length, [registrations]);
+ const approved = useMemo(() => registrations.filter((r) => isStatus(r.status, 'APPROVED')).length, [registrations]);
+  const pending  = useMemo(() => registrations.filter((r) => isAnyStatus(r.status, PENDING_STATUSES)).length, [registrations]);
+  const rejected = useMemo(() => registrations.filter((r) => isStatus(r.status, 'JOCKEY_REJECTED')).length, [registrations]);
 
   const handleActionSuccess = (msg: string) => {
     addToast(msg, 'success');

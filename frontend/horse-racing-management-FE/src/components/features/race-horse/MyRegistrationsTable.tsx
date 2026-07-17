@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import RaceHorseStatusBadge from './RaceHorseStatusBadge';
+import { isAnyStatus, type RaceHorseStatusKey } from '@/utils/raceHorseStatus';
 import type { RaceHorse } from '@/types';
 
 function formatDate(iso?: string) {
@@ -9,8 +10,8 @@ function formatDate(iso?: string) {
   });
 }
 
-const JOCKEY_ACTIONABLE = new Set(['PendingJockey', 'JockeyRejected']);
-const WITHDRAWABLE = new Set(['PendingJockey', 'JockeyRejected', 'PendingAdmin', 'Approved']);
+const JOCKEY_ACTIONABLE: RaceHorseStatusKey[] = ['PENDING_JOCKEY', 'JOCKEY_REJECTED'];
+const WITHDRAWABLE: RaceHorseStatusKey[] = ['PENDING_JOCKEY', 'JOCKEY_REJECTED', 'PENDING_ADMIN', 'APPROVED'];
 
 export default function MyRegistrationsTable({
   registrations,
@@ -38,8 +39,8 @@ export default function MyRegistrationsTable({
         </thead>
         <tbody className="divide-y divide-rim">
           {registrations.map((r) => {
-            const canAssignJockey = JOCKEY_ACTIONABLE.has(r.status);
-            const canWithdraw = WITHDRAWABLE.has(r.status);
+            const canAssignJockey = isAnyStatus(r.status, JOCKEY_ACTIONABLE);
+            const canWithdraw = isAnyStatus(r.status, WITHDRAWABLE);
             return (
               <tr key={r.id} className="transition-colors hover:bg-surface-overlay/40">
                 <td className="px-5 py-3.5">

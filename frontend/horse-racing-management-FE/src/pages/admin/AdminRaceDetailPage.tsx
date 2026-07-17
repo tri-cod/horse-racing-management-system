@@ -15,6 +15,7 @@ import RaceHorseStatusBadge from '@/components/features/race-horse/RaceHorseStat
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Seo from '@/components/seo/Seo';
+import { isStatus } from '@/utils/raceHorseStatus';
 import type { Horse } from '@/types';
 
 const CLOSEABLE = new Set(['UPCOMING', 'OPEN_REGISTRATION']);
@@ -141,7 +142,7 @@ export default function AdminRaceDetailPage() {
   const collectOddsRows = () => {
     if (!race || CLOSEABLE.has(race.status)) return [];
     return entries
-      .filter((e) => (e.status as string) === 'Approved')
+      .filter((e) => isStatus(e.status, 'APPROVED'))
       .map((e) => {
         const raw = (oddsInputs[e.id] ?? (e.odds != null ? String(e.odds) : '')).trim();
         return { entry: e, raw, odds: parseFloat(raw) };
@@ -315,18 +316,18 @@ export default function AdminRaceDetailPage() {
     );
   }
 
-  const pendingCount = entries.filter((e) => (e.status as string) === 'PendingAdmin').length;
-  const withdrawCount = entries.filter((e) => (e.status as string) === 'WithdrawPending').length;
+  const pendingCount = entries.filter((e) => isStatus(e.status, 'PENDING_ADMIN')).length;
+  const withdrawCount = entries.filter((e) => isStatus(e.status, 'WITHDRAW_PENDING')).length;
   // Odds can only be set once registration is closed — before that the field is
   // still open to new entries, so pricing them early would be premature.
   const registrationClosed = !CLOSEABLE.has(race.status);
   // Hide entries still waiting on the jockey to accept — they aren't a real part
   // of the field yet, so they shouldn't clutter admin's approval queue.
-  const visibleEntries = entries.filter((e) => (e.status as string) !== 'PendingJockey');
+  const visibleEntries = entries.filter((e) => !isStatus(e.status, 'PENDING_JOCKEY'));
 
   const { invalid: invalidOdds, changed: changedOdds } = oddsDiff();
   const settableCount = registrationClosed
-    ? visibleEntries.filter((e) => (e.status as string) === 'Approved').length
+    ? visibleEntries.filter((e) => isStatus(e.status, 'APPROVED')).length
     : 0;
 
   return (
@@ -566,6 +567,9 @@ export default function AdminRaceDetailPage() {
                     const isLoading = actionId === e.id;
                     const initial = e.horseName?.charAt(0)?.toUpperCase() ?? '?';
                     const detail = horseDetails[e.horseId];
+                    const canApprove = isStatus(e.status, 'PENDING_ADMIN');
+                    const canReviewWithdrawal = isStatus(e.status, 'WITHDRAW_PENDING');
+                    const canSetOdds = isStatus(e.status, 'APPROVED') && registrationClosed;
                     return (
                       <tr key={e.id} className="transition-colors hover:bg-surface-overlay/40">
                         <td className="px-5 py-3.5">
@@ -608,7 +612,7 @@ export default function AdminRaceDetailPage() {
                         <td className="px-5 py-3.5">
                           <div className="flex flex-wrap items-center gap-2">
                             {/* Approve/Reject — only while awaiting admin approval */}
-                            {(e.status as string) === 'PendingAdmin' && (
+                            {canApprove && (
                               <div className="flex gap-1.5">
                                 <button
                                   type="button"
@@ -630,7 +634,7 @@ export default function AdminRaceDetailPage() {
                             )}
 
                             {/* Withdrawal review — only while a withdrawal request is pending */}
-                            {(e.status as string) === 'WithdrawPending' && (
+                            {canReviewWithdrawal && (
                               <div className="flex gap-1.5">
                                 <button
                                   type="button"
@@ -653,7 +657,7 @@ export default function AdminRaceDetailPage() {
 
                             {/* Odds input — only once approved AND registration has closed.
                                 Saving is handled by the single "Set Odds" button above the table. */}
-                            {(e.status as string) === 'Approved' && registrationClosed && (
+                            {canSetOdds && (
                               <div className="relative">
                                 <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs font-semibold text-ink-4">×</span>
                                 <input
@@ -677,10 +681,8 @@ export default function AdminRaceDetailPage() {
                             )}
 
                             {/* Nothing actionable right now (e.g. still open for registration, or jockey hasn't confirmed yet) */}
-                            {(e.status as string) !== 'PendingAdmin' &&
-                              (e.status as string) !== 'WithdrawPending' &&
-                              !((e.status as string) === 'Approved' && registrationClosed) && (
-                                <span className="text-xs text-ink-4">—</span>
+                            {!canApprove && !canReviewWithdrawal && !canSetOdds && (
+                              <span className="text-xs text-ink-4">—</span>
                             )}
                           </div>
                         </td>
