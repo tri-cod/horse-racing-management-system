@@ -60,7 +60,7 @@ public class TrainerController {
                     return TrainerListItemResponse.builder()
                             .id(t.getId())
                             .name(displayName)
-                            .age(t.getAge())
+                            .dateOfBirth(t.getDateOfBirth())
                             .experienceYears(t.getExperienceYears())
                             .description(t.getDescription())
                             .avatarUrl(t.getAvatarUrl())

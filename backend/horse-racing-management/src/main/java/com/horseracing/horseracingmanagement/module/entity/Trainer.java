@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDate;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,8 +28,9 @@ public class Trainer {
     @Column(name = "name", length = 150)
     private String name;
 
-    @Column(name = "age")
-    private Integer age;
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
+
 
     @Column(name = "experience_years")
     private Integer experienceYears;

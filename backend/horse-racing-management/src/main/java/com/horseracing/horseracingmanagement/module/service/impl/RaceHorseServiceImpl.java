@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
+import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
@@ -83,19 +84,19 @@ public class RaceHorseServiceImpl implements RaceHorseService {
 
         // ← Trừ phí tham gia khỏi ví HorseOwner
         if (race.getEntryFee() != null && race.getEntryFee() > 0) {
-            Wallet ownerWallet = walletRepository.findByUser_Id(owner.getUser().getId())
+            // ← Dùng findByUserId thay vì owner.getUser().getId() để tránh lazy load issue
+            Wallet ownerWallet = walletRepository.findByUser_Id(userId)  // ← dùng userId trực tiếp từ JWT
                     .orElseThrow(() -> new RuntimeException("Owner wallet not found"));
 
-            if (ownerWallet.getBalance().compareTo(
-                    BigDecimal.valueOf(race.getEntryFee())) < 0) {
-                throw new RuntimeException("Insufficient balance to pay entry fee");
+            if (ownerWallet.getBalance().compareTo(BigDecimal.valueOf(race.getEntryFee())) < 0) {
+                throw new RuntimeException("Insufficient balance to pay entry fee. Required: "
+                        + race.getEntryFee());
             }
 
             ownerWallet.setBalance(ownerWallet.getBalance()
                     .subtract(BigDecimal.valueOf(race.getEntryFee())));
             walletRepository.save(ownerWallet);
         }
-
         // ← Tạo RaceHorse với status "PendingJockey" — chưa gắn jockey
         RaceHorse saved = raceHorseRepository.save(RaceHorse.builder()
                 .race(race)
@@ -145,18 +146,46 @@ public class RaceHorseServiceImpl implements RaceHorseService {
 
         raceHorse.setJockey(jockey);
         raceHorse.setStatus(RaceHorseStatus.PENDING_JOCKEY);
+
+        if (request.getJockeyRevenuePercent() != null) {
+            raceHorse.setJockeyRevenuePercent(request.getJockeyRevenuePercent());
+            raceHorse.setOwnerRevenuePercent(
+                    BigDecimal.valueOf(100).subtract(request.getJockeyRevenuePercent()));
+        }
+
         raceHorseRepository.save(raceHorse);
 
         // Notify Jockey
+        Race race = raceHorse.getRace();
+        HorseOwner owner1 = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId()).orElse(null);
+        Trainer trainer = raceHorse.getHorse().getTrainerId() != null
+                ? trainerRepository.findById(raceHorse.getHorse().getTrainerId()).orElse(null)
+                : null;
+
         notificationService.sendToUser(
                 jockey.getUser().getId(),
                 "🏇 Jockey Request!",
-                String.format("You have been invited to ride horse '%s' in race '%s'. Please accept or decline.",
+                String.format("""
+                You have been invited to ride horse '%s' in race '%s'.
+                👤 Owner: %s
+                🎓 Trainer: %s
+                🏆 Prize Pool: %s
+                💰 Your Share: %s%%
+                📅 Race Date: %s
+                Please accept or decline.""",
                         raceHorse.getHorse().getHorseName(),
-                        raceHorse.getRace().getRaceName()),
+                        race.getRaceName(),
+                        owner1 != null ? owner1.getName() : "N/A",
+                        trainer != null && trainer.getUser() != null
+                                ? trainer.getUser().getFullName() : "N/A",
+                        race.getTotalprizepool(),
+                        request.getJockeyRevenuePercent() != null
+                                ? request.getJockeyRevenuePercent() : "10",
+                        race.getStartTime()),
                 NotificationType.RACE_REGISTRATION,
                 raceHorse.getId()
         );
+
 
         return mapToResponse(raceHorse);
     }
@@ -283,7 +312,12 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         }
 
         raceHorse.setStatus(RaceHorseStatus.APPROVED);
-        RaceHorse saved = raceHorseRepository.save(raceHorse);  // ← save trước
+        RaceHorse saved = raceHorseRepository.save(raceHorse);
+
+        // ← Đổi status Horse → RACING
+        Horse horse = raceHorse.getHorse();
+        horse.setStatus(HorseStatus.RACING);
+        horseRepository.save(horse);  // ← inject HorseRepository
 
         HorseOwner ho = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
                 .orElseThrow(() -> new RuntimeException("Owner not found"));
@@ -291,7 +325,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         notificationService.sendToUser(
                 ho.getUser().getId(),
                 "🎉 Registration Approved!",
-                String.format("Your horse '%s' has been approved for race '%s'!",
+                String.format("Your horse '%s' has been approved for race '%s'! Status changed to RACING.",
                         raceHorse.getHorse().getHorseName(),
                         raceHorse.getRace().getRaceName()),
                 NotificationType.RACE_APPROVED,
@@ -300,7 +334,6 @@ public class RaceHorseServiceImpl implements RaceHorseService {
 
         return mapToResponse(saved);
     }
-
     @Override
     public RaceHorseResponse rejectHorse(Long raceHorseId) {
         RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
@@ -312,6 +345,10 @@ public class RaceHorseServiceImpl implements RaceHorseService {
 
         HorseOwner ho = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
                 .orElseThrow(() -> new RuntimeException("Owner not found"));
+
+        Horse horse = raceHorse.getHorse();
+        horse.setStatus(HorseStatus.ACTIVE);  // ← trả về ACTIVE
+        horseRepository.save(horse);
 
         // ← Hoàn phí tham gia nếu có
         Race race = raceHorse.getRace();
@@ -431,7 +468,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                         .name(j.getUser().getFullName() != null
                                 ? j.getUser().getFullName()
                                 : j.getUser().getUsername())
-                        .age(j.getAge())
+                        .dateOfBirth(j.getDateOfBirth())
                         .experienceYear(j.getExperienceYear())
                         .status(j.getStatus())
                         .build())
@@ -503,6 +540,10 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         Race race = raceHorse.getRace();
         HorseOwner owner = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
                 .orElseThrow(() -> new RuntimeException("Owner not found"));
+
+        Horse horse = raceHorse.getHorse();
+        horse.setStatus(HorseStatus.ACTIVE);  // ← trả về ACTIVE
+        horseRepository.save(horse);
 
         // ← Hoàn 50% phí tham gia
         if (race.getEntryFee() != null && race.getEntryFee() > 0) {

@@ -67,7 +67,7 @@ public class JockeyController {
                         .name(j.getUser().getFullName() != null
                                 ? j.getUser().getFullName()
                                 : j.getUser().getUsername())
-                        .age(j.getAge())
+                        .dateOfBirth(j.getDateOfBirth())
                         .experienceYear(j.getExperienceYear())
                         .status(j.getStatus())
                         .avatarUrl(j.getAvatarUrl())

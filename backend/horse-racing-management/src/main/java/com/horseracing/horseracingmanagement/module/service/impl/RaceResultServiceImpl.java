@@ -1,6 +1,8 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
+import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
+import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.RaceStatusUpdate;
 import com.horseracing.horseracingmanagement.module.dto.RaceResult.RaceHistoryResponse;
@@ -34,6 +36,9 @@ public class RaceResultServiceImpl implements RaceResultService {
     private final WebSocketNotificationService wsService;
     private final WalletRepository walletRepository;
     private final HorseOwnerRepository horseOwnerRepository;
+    private final HorseRepository horseRepository;  // ← thêm
+    private final TrainerRepository trainerRepository;  // ← thêm (dùng trong distributeRewards)
+    private final PenaltyRepository penaltyRepository;
 
     @Override
     @Transactional
@@ -54,18 +59,41 @@ public class RaceResultServiceImpl implements RaceResultService {
                     "Two horses cannot have the same completion time. Please check again.");
         }
 
+
+        List<RaceResultItemRequest> adjustedResults = request.getResults().stream()
+                .map(item -> {
+                    // Tìm time penalty của horse này trong race
+                    Double timePenalty = penaltyRepository
+                            .findByRaceHorse_Id(item.getRaceHorseId())
+                            .stream()
+                            .filter(p -> p.getTimePenaltySeconds() != null)
+                            .mapToDouble(Penalty::getTimePenaltySeconds)
+                            .sum();
+
+                    // Cộng penalty vào thời gian
+                    return new RaceResultItemRequest(
+                            item.getRaceHorseId(),
+                            item.getCompletionTimeSeconds() + timePenalty
+                    );
+                })
+                .collect(Collectors.toList());
+
         // ← Sort theo giây tăng dần → tự tính rank (fix bug hạng 2 nhanh hơn hạng 1)
-        List<RaceResultItemRequest> sorted = request.getResults().stream()
+        List<RaceResultItemRequest> sorted = adjustedResults.stream()
+                .filter(item -> {
+                    // Loại bỏ horse bị DISQUALIFY
+                    RaceHorse rh = raceHorseRepository.findById(item.getRaceHorseId()).orElse(null);
+                    return rh != null && rh.getStatus() != RaceHorseStatus.DISQUALIFIED;
+                })
                 .sorted(Comparator.comparingDouble(RaceResultItemRequest::getCompletionTimeSeconds))
                 .collect(Collectors.toList());
 
         for (int i = 0; i < sorted.size(); i++) {
             RaceResultItemRequest item = sorted.get(i);
-            long rank = i + 1;  // tự tính rank 1, 2, 3...
+            long rank = i + 1;
 
             RaceHorse raceHorse = raceHorseRepository.findById(item.getRaceHorseId())
-                    .orElseThrow(() -> new RuntimeException("RaceHorse not found with id: "
-                            + item.getRaceHorseId()));
+                    .orElseThrow(() -> new RuntimeException("RaceHorse not found: " + item.getRaceHorseId()));
 
             Long rewards = calculateRewards(race.getTotalprizepool(), rank, sorted.size());
 
@@ -77,7 +105,15 @@ public class RaceResultServiceImpl implements RaceResultService {
                     .rewards(rewards)
                     .build());
 
-            // ← Chia tiền giải thưởng cho HorseOwner và Jockey theo %
+            // ← Đổi status RaceHorse → FINISHED
+            raceHorse.setStatus(RaceHorseStatus.FINISHED);
+            raceHorseRepository.save(raceHorse);
+
+            // ← Đổi status Horse → FINISHED (đã từng đua xong ít nhất 1 race)
+            Horse horse = raceHorse.getHorse();
+            horse.setStatus(HorseStatus.FINISHED);
+            horseRepository.save(horse);  // ← inject HorseRepository vào RaceResultServiceImpl
+
             if (rewards > 0) {
                 distributeRewards(raceHorse, race, rank, rewards);
             }

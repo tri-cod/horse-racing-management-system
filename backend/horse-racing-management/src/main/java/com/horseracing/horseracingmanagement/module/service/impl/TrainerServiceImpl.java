@@ -40,7 +40,7 @@ public class TrainerServiceImpl implements TrainerService {
         Trainer trainer = trainerRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("Trainer profile not found"));
 
-        if (request.getAge() != null) trainer.setAge(request.getAge());
+        if (request.getDateOfBirth() != null) trainer.setDateOfBirth(request.getDateOfBirth());
         if (request.getExperienceYears() != null) trainer.setExperienceYears(request.getExperienceYears());
         if (request.getDescription() != null) trainer.setDescription(request.getDescription());
         if (request.getAvatarUrl() != null) trainer.setAvatarUrl(request.getAvatarUrl());            // ← thêm
@@ -175,7 +175,7 @@ public class TrainerServiceImpl implements TrainerService {
                         : trainer.getUser().getUsername())
                 .avatarUrl(trainer.getAvatarUrl())
                 .coverImageUrl(trainer.getCoverImageUrl())
-                .age(trainer.getAge())
+                .dateOfBirth(trainer.getDateOfBirth())
                 .experienceYears(trainer.getExperienceYears())
                 .description(trainer.getDescription())
                 .totalHorses((long) myHorses.size())
@@ -228,7 +228,7 @@ public class TrainerServiceImpl implements TrainerService {
                         : trainer.getUser().getUsername())
                 .avatarUrl(trainer.getAvatarUrl())        // ← thêm
                 .coverImageUrl(trainer.getCoverImageUrl())
-                .age(trainer.getAge())
+                .dateOfBirth(trainer.getDateOfBirth())
                 .experienceYears(trainer.getExperienceYears())
                 .description(trainer.getDescription())
                 .avatarUrl(trainer.getAvatarUrl())

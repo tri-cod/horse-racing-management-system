@@ -23,14 +23,19 @@ public class RaceReferee {
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 
-    @NotNull
-    @ColumnDefault("nextval('race_referee_experienceyears_seq')")
-    @Column(name = "experienceyears", nullable = false)
+    @Column(name = "experienceyears")  // ← bỏ @NotNull + @ColumnDefault sequence
     private Long experienceyears;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;  // ← thêm
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;  // ← thêm
+
+    @Column(name = "cover_image_url")
+    private String coverImageUrl;  // ← thêm
 
     @Size(max = 20)
     @Column(name = "status", length = 20)
     private String status;
-
-
 }

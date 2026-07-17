@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -18,7 +19,7 @@ public class TrainerStatsResponse {
     private String name;
     private String avatarUrl;
     private String coverImageUrl;
-    private Integer age;
+    private LocalDate dateOfBirth;
     private Integer experienceYears;
     private String description;
     private Long totalHorses;    // tổng số ngựa đang huấn luyện

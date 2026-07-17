@@ -87,3 +87,43 @@ ALTER TABLE race_horse
     ADD COLUMN IF NOT EXISTS owner_revenue_percent  NUMERIC(5,2) DEFAULT 90.00;
 
 ALTER TABLE race_horse ADD COLUMN IF NOT EXISTS withdraw_reason TEXT;
+
+-- HorseStatus: thêm RACING, FINISHED, sửa RETIRE → RETIRED
+UPDATE horse SET status = 'ACTIVE' WHERE status = 'Active';
+UPDATE horse SET status = 'INACTIVE' WHERE status = 'Inactive';
+UPDATE horse SET status = 'RETIRED' WHERE status = 'RETIRE';
+
+-- HorseHorse status column đã dùng ENUM STRING nên tự động khi thêm vào Java enum
+ALTER TABLE race_horse
+    DROP CONSTRAINT IF EXISTS race_horse_status_check;
+
+-- Fix Penalty table
+DROP TABLE IF EXISTS penalty CASCADE;
+CREATE TABLE penalty (
+                         penalty_id          BIGSERIAL PRIMARY KEY,
+                         race_horse_id       BIGINT NOT NULL REFERENCES race_horse(id),
+                         referee_id          BIGINT NOT NULL REFERENCES race_referee(id),
+                         reason              VARCHAR(255),
+                         penalty_type        VARCHAR(50),  -- FINE, DISQUALIFY, TIME_PENALTY, WARNING
+                         amount              BIGINT,
+                         time_penalty_seconds DOUBLE PRECISION,
+                         is_disqualified     BOOLEAN DEFAULT FALSE,
+                         created_at          TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE race_referee ALTER COLUMN experienceyears DROP NOT NULL;
+ALTER TABLE race_referee ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE race_referee ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(255);
+ALTER TABLE race_referee ADD COLUMN IF NOT EXISTS cover_image_url VARCHAR(255);
+
+ALTER TABLE jockey
+    DROP COLUMN IF EXISTS age;
+
+ALTER TABLE jockey
+    ADD COLUMN date_of_birth DATE;
+
+ALTER TABLE trainer
+    DROP COLUMN IF EXISTS age;
+
+ALTER TABLE trainer
+    ADD COLUMN date_of_birth DATE;

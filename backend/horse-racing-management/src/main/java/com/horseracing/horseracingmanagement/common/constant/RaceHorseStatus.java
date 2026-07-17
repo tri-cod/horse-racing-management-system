@@ -10,4 +10,6 @@ public enum RaceHorseStatus {
     WITHDRAW_PENDING,
     WITHDRAW_REJECTED,
     WITHDRAWN,
+    FINISHED,
+    DISQUALIFIED
 }

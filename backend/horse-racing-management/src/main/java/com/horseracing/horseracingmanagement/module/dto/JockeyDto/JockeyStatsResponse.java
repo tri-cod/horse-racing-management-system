@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -17,7 +18,7 @@ public class JockeyStatsResponse {
     private String name;
     private String avatarUrl;
     private String coverImageUrl;
-    private Long age;
+    private LocalDate dateOfBirth;
     private Long experienceYear;
     private String description;
     private Long totalRaces;     // tổng số trận

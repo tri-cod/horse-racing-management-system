@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDate;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,8 +25,8 @@ public class Jockey {
     @JoinColumn(name = "user_id", unique = true)
     private User user;  // ← thêm
 
-    @Column(name = "age")
-    private Long age;
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;

@@ -39,7 +39,7 @@ public class JockeyServiceImpl implements JockeyService {
         Jockey jockey = jockeyRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("Jockey profile not found"));
 
-        if (request.getAge() != null) jockey.setAge(request.getAge());
+        if(request.getDateOfBirth()!=null)jockey.setDateOfBirth(request.getDateOfBirth());
         if (request.getExperienceYear() != null) jockey.setExperienceYear(request.getExperienceYear());
         if (request.getDescription() != null) jockey.setDescription(request.getDescription());
         if (request.getAvatarUrl() != null) jockey.setAvatarUrl(request.getAvatarUrl());          // ← thêm
@@ -233,7 +233,7 @@ public class JockeyServiceImpl implements JockeyService {
                         : jockey.getUser().getUsername())
                 .avatarUrl(jockey.getAvatarUrl())
                 .coverImageUrl(jockey.getCoverImageUrl())
-                .age(jockey.getAge())
+                .dateOfBirth(jockey.getDateOfBirth())
                 .experienceYear(jockey.getExperienceYear())
                 .description(jockey.getDescription())
                 .totalRaces(totalRaces)
@@ -269,7 +269,7 @@ public class JockeyServiceImpl implements JockeyService {
                         : jockey.getUser().getUsername())
                 .avatarUrl(jockey.getAvatarUrl())        // ← thêm
                 .coverImageUrl(jockey.getCoverImageUrl())
-                .age(jockey.getAge())
+                .dateOfBirth(jockey.getDateOfBirth())
                 .experienceYear(jockey.getExperienceYear())
                 .description(jockey.getDescription())
                 .status(jockey.getStatus())
