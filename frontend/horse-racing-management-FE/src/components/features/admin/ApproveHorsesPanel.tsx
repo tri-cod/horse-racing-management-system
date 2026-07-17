@@ -4,6 +4,7 @@ import { getPendingHorses, approveRaceHorse, rejectRaceHorse } from '@/api/raceH
 import { getHorseById } from '@/api/horseOwnerApi';
 import { useToast } from '@/components/ui/ToastProvider';
 import EmptyState from '@/components/ui/EmptyState';
+import { isStatus } from '@/utils/raceHorseStatus';
 import type { RaceHorse, Horse } from '@/types';
 
 type FullRaceHorse = RaceHorse & { raceName?: string; registerAt?: string };
@@ -81,8 +82,8 @@ export default function ApproveHorsesPanel() {
     try {
       const data = await getPendingHorses();
       // Only show entries the jockey has already accepted — a horse still
-      // awaiting the jockey's response (PendingJockey) isn't admin's call yet.
-      const confirmed = ((data ?? []) as FullRaceHorse[]).filter((h) => (h.status as string) === 'PendingAdmin');
+      // awaiting the jockey's response (PENDING_JOCKEY) isn't admin's call yet.
+      const confirmed = ((data ?? []) as FullRaceHorse[]).filter((h) => isStatus(h.status, 'PENDING_ADMIN'));
       setHorses(confirmed);
     }
     catch { setError('Unable to load list. Please try again.'); }

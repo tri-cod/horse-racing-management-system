@@ -16,8 +16,7 @@ export const ROLE_MENU: Partial<Record<UserRole, NavItem[]>> = {
     { icon: Landmark, label: 'System Wallet', href: '/admin/wallet' },
   ],
   STAFF: [
-    { icon: TrendingUp, label: 'Set Odds', href: '/admin/races' },
-  ],
+    { icon: TrendingUp, label: 'Set Odds', href: '/admin/races?tab=odds' },],
   REFEREE: [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/referee/dashboard' },
     { icon: Flag, label: 'Race Control', href: '/referee/races' },

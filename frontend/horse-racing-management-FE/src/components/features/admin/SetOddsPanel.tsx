@@ -6,6 +6,7 @@ import { getHorsesByRace, setOddsForOne, setOdds } from '@/api/raceHorseApi';
 import { getHorseById } from '@/api/horseOwnerApi';
 import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
 import type { Race, RaceHorse, SetOddsPayload, Horse } from '@/types';
+import { isStatus } from '@/utils/raceHorseStatus';
 
 const fmtDate = (iso?: string) => {
   if (!iso) return '—';
@@ -95,7 +96,7 @@ export default function SetOddsPanel() {
   useEffect(() => {
     getRaces({ size: 50 })
       .then((d) => setRaces(d.content ?? []))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoadingRaces(false));
   }, []);
 
@@ -119,8 +120,7 @@ export default function SetOddsPanel() {
       // Only horses cleared through the full jockey-accept + admin-approve flow
       // should be eligible for betting odds — exclude PendingJockey/JockeyRejected/
       // PendingAdmin/WithdrawPending entries.
-      const list = (data ?? []).filter((rh) => rh.status === 'Approved');
-      setHorsesCache((prev) => ({ ...prev, [raceId]: list }));
+      const list = (data ?? []).filter((rh) => isStatus(rh.status, 'APPROVED')); setHorsesCache((prev) => ({ ...prev, [raceId]: list }));
       const updates: Record<string, string> = {};
       list.forEach((rh) => { if (rh.odds != null) updates[`${raceId}-${rh.id}`] = String(rh.odds); });
       setOddsMap((prev) => ({ ...prev, ...updates }));
@@ -260,9 +260,8 @@ export default function SetOddsPanel() {
     return (
       <div
         key={race.id}
-        className={`border border-l-[3px] bg-surface-raised transition-colors ${accentBorder} ${
-          isOpen ? 'border-gold/40' : 'border-rim'
-        } ${isLocked ? 'opacity-55' : ''}`}
+        className={`border border-l-[3px] bg-surface-raised transition-colors ${accentBorder} ${isOpen ? 'border-gold/40' : 'border-rim'
+          } ${isLocked ? 'opacity-55' : ''}`}
       >
         {/* Accordion header */}
         <button
@@ -361,9 +360,8 @@ export default function SetOddsPanel() {
                   {['Horse', 'Jockey', 'Current', 'New Odds', ''].map((h) => (
                     <span
                       key={h}
-                      className={`text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4 ${
-                        h === 'Current' ? 'text-center' : ''
-                      }`}
+                      className={`text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4 ${h === 'Current' ? 'text-center' : ''
+                        }`}
                     >
                       {h}
                     </span>
@@ -388,9 +386,8 @@ export default function SetOddsPanel() {
                     return (
                       <div
                         key={rh.id}
-                        className={`grid items-center gap-4 px-5 py-3 transition-colors ${
-                          isDirty ? 'bg-gold/[0.04]' : 'hover:bg-surface-overlay/40'
-                        }`}
+                        className={`grid items-center gap-4 px-5 py-3 transition-colors ${isDirty ? 'bg-gold/[0.04]' : 'hover:bg-surface-overlay/40'
+                          }`}
                         style={{ gridTemplateColumns: HORSES_GRID_COLS.split('_').join(' ') }}
                       >
                         {/* Horse — name plus a compact breed / age / speed / class line underneath */}
@@ -452,16 +449,14 @@ export default function SetOddsPanel() {
                                 setOddsMap((prev) => ({ ...prev, [key]: sanitizeOddsInput(e.target.value) }))
                               }
                               onKeyDown={(e) => { if (e.key === 'Enter') handleSaveOdds(race.id, rh); }}
-                              className={`tnum w-full border bg-surface-input py-1.5 pl-7 pr-3 text-sm font-semibold text-ink outline-none transition-colors ${
-                                isDirty ? 'border-gold' : 'border-rim focus:border-rim-hi'
-                              }`}
+                              className={`tnum w-full border bg-surface-input py-1.5 pl-7 pr-3 text-sm font-semibold text-ink outline-none transition-colors ${isDirty ? 'border-gold' : 'border-rim focus:border-rim-hi'
+                                }`}
                             />
                           </div>
                           {delta != null && Math.abs(delta) >= 0.005 && (
                             <span
-                              className={`flex shrink-0 items-center gap-0.5 text-[11px] font-bold tnum ${
-                                delta > 0 ? 'text-ok' : 'text-fail'
-                              }`}
+                              className={`flex shrink-0 items-center gap-0.5 text-[11px] font-bold tnum ${delta > 0 ? 'text-ok' : 'text-fail'
+                                }`}
                               title={`${delta > 0 ? 'Increase' : 'Decrease'} from current odds`}
                             >
                               {delta > 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
@@ -475,13 +470,12 @@ export default function SetOddsPanel() {
                           type="button"
                           disabled={isSaving || !isDirty}
                           onClick={() => handleSaveOdds(race.id, rh)}
-                          className={`flex items-center justify-center gap-1.5 border px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed ${
-                            justSaved
+                          className={`flex items-center justify-center gap-1.5 border px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed ${justSaved
                               ? 'border-ok/40 bg-ok/10 text-ok'
                               : isDirty
-                              ? 'border-gold bg-gold text-on-gold hover:bg-gold/90'
-                              : 'border-rim bg-transparent text-ink-4 disabled:opacity-60'
-                          }`}
+                                ? 'border-gold bg-gold text-on-gold hover:bg-gold/90'
+                                : 'border-rim bg-transparent text-ink-4 disabled:opacity-60'
+                            }`}
                         >
                           {isSaving ? (
                             '…'
