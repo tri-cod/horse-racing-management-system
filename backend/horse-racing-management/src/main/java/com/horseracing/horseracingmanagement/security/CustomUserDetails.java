@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.security;
 
+import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import com.horseracing.horseracingmanagement.module.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,6 +21,10 @@ public class CustomUserDetails implements UserDetails {
 
     public String getEmail() {
         return user.getEmail();
+    }
+
+    public UserStatus getStatus() {
+        return user.getStatus();
     }
 
     @Override
@@ -48,7 +53,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return user.getStatus() != UserStatus.BANNED;
     }
 
     @Override
