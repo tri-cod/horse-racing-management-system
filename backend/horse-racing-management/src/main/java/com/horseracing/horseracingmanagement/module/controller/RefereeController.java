@@ -135,4 +135,11 @@ public class RefereeController {
         refereeService.reportInspectionIssue(request, userDetails.getId());
         return ResponseEntity.ok(ApiResponse.success("Issue reported", null));
     }
+
+    // RefereeController — thêm endpoint (public)
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<RefereeProfileResponse>>> getAllReferees() {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                refereeService.getAllReferees()));
+    }
 }

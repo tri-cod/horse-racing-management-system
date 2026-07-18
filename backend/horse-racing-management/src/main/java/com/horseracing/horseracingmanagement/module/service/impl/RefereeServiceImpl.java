@@ -59,6 +59,15 @@ public class RefereeServiceImpl implements RefereeService {
         return mapToProfileResponse(referee);
     }
 
+    // RefereeServiceImpl — implement
+    @Override
+    public List<RefereeProfileResponse> getAllReferees() {
+        return raceRefereeRepository.findAll()
+                .stream()
+                .map(this::mapToProfileResponse)
+                .collect(Collectors.toList());
+    }
+
     // Race sắp tới mà referee này được assign
     @Override
     public List<RefereeRaceResponse> getMyUpcomingRaces(Long userId) {
