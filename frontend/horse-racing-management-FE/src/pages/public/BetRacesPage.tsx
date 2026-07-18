@@ -36,6 +36,7 @@ const STATUS_DOT: Record<string, string> = {
   UPCOMING: 'bg-gold/60',
   OPEN_REGISTRATION: 'bg-ok',
   CLOSED_REGISTRATION: 'bg-gold',
+  OPEN_BETTING: 'bg-gold',
   ONGOING: 'bg-fail animate-pulse',
   FINISHED: 'bg-ink-4',
   CANCELLED: 'bg-ink-4',
@@ -45,6 +46,7 @@ const STATUS_LABEL: Record<string, string> = {
   UPCOMING: 'Upcoming',
   OPEN_REGISTRATION: 'Open',
   CLOSED_REGISTRATION: 'Entries Closed',
+  OPEN_BETTING: 'Betting Open',
   ONGOING: 'Live',
   FINISHED: 'Finished',
   CANCELLED: 'Cancelled',
@@ -473,10 +475,10 @@ export default function BetRacesPage() {
   const { balance, loading: balanceLoading } = useWalletBalance(!!canBet);
   const invalidateBalance = useInvalidateWalletBalance();
 
-  /* Only Upcoming races are shown on the betting board */
+  /* Races still open for betting or on their way there — finished/cancelled/ongoing are excluded */
   const filteredRaces = useMemo(() =>
     [...races]
-      .filter(r => r.status === 'UPCOMING')
+      .filter(r => !NON_BETTABLE.has(r.status))
       .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()),
     [races]
   );

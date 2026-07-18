@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Menu, X, User, LogOut, LayoutDashboard, ChevronDown,
+  Menu, X, User, LogOut, ChevronDown,
   MapPin, Trophy, Users, Flag, ArrowRight, Wallet, Plus, Rabbit,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';

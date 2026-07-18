@@ -120,7 +120,8 @@ export default function SetOddsPanel() {
       // Only horses cleared through the full jockey-accept + admin-approve flow
       // should be eligible for betting odds — exclude PendingJockey/JockeyRejected/
       // PendingAdmin/WithdrawPending entries.
-      const list = (data ?? []).filter((rh) => isStatus(rh.status, 'APPROVED')); setHorsesCache((prev) => ({ ...prev, [raceId]: list }));
+      const list = (data ?? []).filter((rh) => isStatus(rh.status, 'APPROVED'));
+       setHorsesCache((prev) => ({ ...prev, [raceId]: list }));
       const updates: Record<string, string> = {};
       list.forEach((rh) => { if (rh.odds != null) updates[`${raceId}-${rh.id}`] = String(rh.odds); });
       setOddsMap((prev) => ({ ...prev, ...updates }));
