@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { Eye, EyeOff, ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { forgotPassword, verifyResetOtp, resetPassword } from '@/api/authApi';
+import { forgotPassword, resetPassword } from '@/api/authApi';
 import { Link, useNavigate } from 'react-router-dom';
 import Seo from '@/components/seo/Seo';
 import Button from '@/components/ui/Button';
 import OtpBoxes from '@/components/features/form/OtpBoxes';
 import AuthSplitLayout from '@/components/layout/AuthSplitLayout';
 
-const STEPS = ['Enter Email', 'Verify OTP', 'New Password'];
+const STEPS = ['Enter Email', 'Reset Password'];
 
 const inputCls =
  'w-full border border-rim bg-surface-input rounded px-4 py-3 text-sm text-ink ' +
@@ -54,22 +54,13 @@ export default function ForgotPasswordPage() {
  } finally { setLoading(false); }
  };
 
- const handleVerifyOtp = async (e: React.FormEvent) => {
- e.preventDefault();
- if (!otp) return setError('Please enter the OTP code.');
- clear(); setLoading(true);
- try {
- await verifyResetOtp(email, otp);
- setSuccess('OTP verified. Set your new password.');
- setStep(3);
- } catch (err: unknown) {
- const e = err as { response?: { data?: { message?: string } }; message?: string };
- setError(e.response?.data?.message ?? e.message ?? 'Invalid OTP.');
- } finally { setLoading(false); }
- };
-
+ // OTP is verified and consumed in this single call (backend treats verify+reset
+ // as one operation). We deliberately don't call verifyResetOtp separately first —
+ // the backend's OTP store is one-time-use, so a prior "verify" call would consume
+ // it and make this call always fail with "Invalid or expired OTP".
  const handleReset = async (e: React.FormEvent) => {
  e.preventDefault();
+ if (!otp) return setError('Please enter the OTP code.');
  if (!newPassword || !confirmPassword) return setError('Please fill in all fields.');
  if (newPassword.length < 8) return setError('Password must be at least 8 characters.');
  if (newPassword !== confirmPassword) return setError('Passwords do not match.');
@@ -95,12 +86,11 @@ export default function ForgotPasswordPage() {
  {/* Heading */}
  <div className="mb-8">
  <h1 className="font-serif text-4xl font-bold text-ink sm:text-5xl">
- {step === 1 ? 'Forgot Password?' : step === 2 ? 'Check Your Email' : 'Set New Password'}
+ {step === 1 ? 'Forgot Password?' : 'Set New Password'}
  </h1>
  <p className="mt-2 text-base text-ink-3">
  {step === 1 ?"Enter your email and we'll send you a reset code."
- : step === 2 ?`A 6-digit code was sent to ${email}`
- : 'Choose a strong password for your account.'}
+ : `Enter the 6-digit code sent to ${email} and choose a new password.`}
  </p>
  </div>
 
@@ -159,30 +149,15 @@ export default function ForgotPasswordPage() {
  </motion.form>
  )}
 
- {/* Step 2 — OTP */}
+ {/* Step 2 — OTP + New Password (combined so the OTP is only ever
+ verified once, by the final submit) */}
  {step === 2 && (
  <motion.form key="step2" {...stepVariants} transition={{ duration: 0.25 }}
- onSubmit={handleVerifyOtp} className="space-y-5" noValidate>
+ onSubmit={handleReset} className="space-y-5" noValidate>
  <div>
  <label className="mb-2 block text-center text-xs font-medium text-ink-3">OTP Code</label>
  <OtpBoxes value={otp} onChange={setOtp} hasError={!!error} />
  </div>
- <Button type="submit" variant="primary" size="lg" className="w-full" disabled={loading}>
- {loading ? spinner : <>Verify Code <ArrowRight size={15} /></>}
- </Button>
- <div className="text-center">
- <button type="button" onClick={() => { clear(); setStep(1); }}
- className="inline-flex items-center gap-1.5 text-sm text-navy hover:text-navy-hi transition-colors">
- <ArrowLeft size={14} /> Resend OTP
- </button>
- </div>
- </motion.form>
- )}
-
- {/* Step 3 — New Password */}
- {step === 3 && (
- <motion.form key="step3" {...stepVariants} transition={{ duration: 0.25 }}
- onSubmit={handleReset} className="space-y-5" noValidate>
  <div>
  <label htmlFor="fp-pw" className="mb-1.5 block text-xs font-medium text-ink-3">New Password</label>
  <div className="relative">
@@ -212,6 +187,12 @@ export default function ForgotPasswordPage() {
  <Button type="submit" variant="primary" size="lg" className="w-full" disabled={loading}>
  {loading ? spinner : <>Reset Password <ArrowRight size={15} /></>}
  </Button>
+ <div className="text-center">
+ <button type="button" onClick={() => { clear(); setStep(1); }}
+ className="inline-flex items-center gap-1.5 text-sm text-navy hover:text-navy-hi transition-colors">
+ <ArrowLeft size={14} /> Resend OTP
+ </button>
+ </div>
  </motion.form>
  )}
  </AnimatePresence>
