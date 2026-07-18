@@ -128,8 +128,6 @@ ALTER TABLE trainer
 ALTER TABLE trainer
     ADD COLUMN date_of_birth DATE;
 
-
---=========================================
 ALTER TABLE penalty DROP CONSTRAINT IF EXISTS penalty_race_horse_id_fkey;
 ALTER TABLE penalty ADD CONSTRAINT penalty_race_horse_id_fkey
     FOREIGN KEY (race_horse_id) REFERENCES race_horse(id) ON DELETE CASCADE;
