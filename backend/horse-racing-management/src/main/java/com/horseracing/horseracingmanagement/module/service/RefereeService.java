@@ -20,6 +20,7 @@ public interface    RefereeService {
     List<PenaltyResponse> getMyPenaltyHistory(Long userId);      // tất cả lần phạt của referee
     void cancelPenalty(Long penaltyId, Long userId);             // hủy phạt nếu nhầm
 
+    List<RefereeProfileResponse> getAllReferees();
 
     PreRaceInspectionResponse inspectRace(Long raceId, Long userId);
     void reportInspectionIssue(InspectionIssueRequest request, Long userId);
