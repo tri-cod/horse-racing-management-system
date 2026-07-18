@@ -36,14 +36,11 @@ function HorseRow({ horse, index }: { horse: HorseCurrentStatusResponse; index: 
 
         {/* Identity */}
         <div className={`flex flex-col justify-center ${imageFirst ? 'lg:order-2' : 'lg:order-1'}`}>
-          <div className="mb-3 flex items-center gap-3">
-            {horse.breed && (
+          {horse.breed && (
+            <div className="mb-3 flex items-center gap-3">
               <span className="text-xs font-semibold uppercase tracking-[0.2em] text-on-blue/40">{horse.breed}</span>
-            )}
-            <span className="rounded-full bg-gold/15 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-gold">
-              {horse.status ?? 'Active'}
-            </span>
-          </div>
+            </div>
+          )}
 
           <h3 className="font-serif text-5xl font-bold uppercase leading-none text-on-blue transition-colors group-hover:text-gold sm:text-6xl lg:text-7xl">
             {horse.horseName}

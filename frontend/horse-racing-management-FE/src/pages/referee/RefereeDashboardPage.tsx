@@ -1,16 +1,14 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Flag, PlayCircle, CalendarClock, Wallet } from 'lucide-react';
+import { PlayCircle, CalendarClock, Wallet } from 'lucide-react';
 import { getRaces } from '@/api/raceApi';
 import { getBalance } from '@/api/walletApi';
 import { useAuth } from '@/context/AuthContext';
 import DashboardHero from '@/components/shared/DashboardHero';
 import StatCard from '@/components/shared/StatCard';
 import ActivityList, { type ActivityItem } from '@/components/shared/ActivityList';
-import QuickActions from '@/components/shared/QuickActions';
 import { FadeInStagger, FadeInItem } from '@/components/shared/FadeIn';
 import Seo from '@/components/seo/Seo';
 import type { Race } from '@/types';
-
 const fmt = (n: number | null | undefined) =>
   n != null
     ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n)
@@ -152,13 +150,6 @@ export default function RefereeDashboardPage() {
             viewAllTo="/referee/races"
           />
         </div>
-
-        <QuickActions
-          actions={[
-            { icon: Flag, label: 'Race Control', description: 'Start, finish and set results for races', to: '/referee/races' },
-            { icon: Wallet, label: 'My Wallet', description: 'Deposit or withdraw funds', to: '/my-wallet' },
-          ]}
-        />
       </div>
     </div>
   );

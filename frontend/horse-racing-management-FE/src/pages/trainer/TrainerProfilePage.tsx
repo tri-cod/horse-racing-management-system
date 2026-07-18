@@ -8,6 +8,7 @@ import TrainerProfileView from '@/components/features/trainer/TrainerProfileView
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Button from '@/components/ui/Button';
 import Seo from '@/components/seo/Seo';
+import { calculateAge } from '@/utils/age';
 
 /* Inline avatar — larger size than the form's AvatarPreview */
 function HeaderAvatar({ url, name }: { url?: string; name?: string }) {
@@ -34,7 +35,7 @@ export default function TrainerProfilePage() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const isNew = !profile || (profile.age == null && profile.experienceYears == null);
+  const isNew = !profile || (profile.dateOfBirth == null && profile.experienceYears == null);
   const isEditing = editing || isNew;
 
   const handleSave = async (payload: Parameters<typeof save>[0]) => {
@@ -62,7 +63,8 @@ export default function TrainerProfilePage() {
     </div>
   );
 
-  const hasStats = !isNew && (profile?.age != null || profile?.experienceYears != null);
+  const age = calculateAge(profile?.dateOfBirth);
+  const hasStats = !isNew && (age != null || profile?.experienceYears != null);
 
   return (
     <div>
@@ -119,13 +121,13 @@ export default function TrainerProfilePage() {
                     </p>
                   </div>
                 )}
-                {profile?.experienceYears != null && profile?.age != null && (
+                {profile?.experienceYears != null && age != null && (
                   <div className="h-10 w-px self-center bg-on-blue/12" />
                 )}
-                {profile?.age != null && (
+                {age != null && (
                   <div>
                     <p className="tnum text-4xl font-bold leading-none text-on-blue">
-                      {profile.age}
+                      {age}
                     </p>
                     <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-widest text-on-blue/35">
                       Age

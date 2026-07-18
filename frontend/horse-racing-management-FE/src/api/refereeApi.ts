@@ -56,3 +56,49 @@ export const closeRegistration = (race: Race) => {
  };
  return updateRace(race.id, payload);
 };
+
+import type {
+  RefereeProfile,
+  CompleteRefereeProfilePayload,
+  RefereeRace,
+  Penalty,
+  IssuePenaltyPayload,
+} from '@/types';
+
+/* ── Profile ────────────────────────────────────────────── */
+
+export const completeRefereeProfile = (payload: CompleteRefereeProfilePayload) =>
+  axiosInstance
+    .put<ApiResponse<RefereeProfile>>('/referee/complete-profile', payload)
+    .then((r) => r.data.data);
+
+export const getMyRefereeProfile = () =>
+  axiosInstance.get<ApiResponse<RefereeProfile>>('/referee/me').then((r) => r.data.data);
+
+export const getRefereeProfile = (refereeId: number) =>
+  axiosInstance.get<ApiResponse<RefereeProfile>>(`/referee/${refereeId}`).then((r) => r.data.data);
+
+/* ── Races ──────────────────────────────────────────────── */
+
+export const getMyUpcomingRaces = () =>
+  axiosInstance.get<ApiResponse<RefereeRace[]>>('/referee/my-upcoming-races').then((r) => r.data.data);
+
+export const getMyCurrentRaces = () =>
+  axiosInstance.get<ApiResponse<RefereeRace[]>>('/referee/my-current-races').then((r) => r.data.data);
+
+export const getMyRaceHistory = () =>
+  axiosInstance.get<ApiResponse<RefereeRace[]>>('/referee/my-race-history').then((r) => r.data.data);
+
+/* ── Penalty ────────────────────────────────────────────── */
+
+export const issuePenalty = (payload: IssuePenaltyPayload) =>
+  axiosInstance.post<ApiResponse<Penalty>>('/referee/penalty', payload).then((r) => r.data.data);
+
+export const getPenaltiesByRace = (raceId: number) =>
+  axiosInstance.get<ApiResponse<Penalty[]>>(`/referee/penalty/race/${raceId}`).then((r) => r.data.data);
+
+export const getMyPenaltyHistory = () =>
+  axiosInstance.get<ApiResponse<Penalty[]>>('/referee/penalty/my-history').then((r) => r.data.data);
+
+export const cancelPenalty = (penaltyId: number) =>
+  axiosInstance.delete<ApiResponse<string>>(`/referee/penalty/${penaltyId}`).then((r) => r.data);

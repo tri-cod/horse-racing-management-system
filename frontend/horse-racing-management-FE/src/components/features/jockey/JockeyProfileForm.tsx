@@ -4,10 +4,16 @@ import Button from '@/components/ui/Button';
 import ImageCropModal from '@/components/ui/ImageCropModal';
 import { uploadAvatar } from '@/api/authApi';
 import { getErrorMessage } from '@/utils/errors';
+import { isoDateYearsAgo } from '@/utils/age';
 import type { Jockey } from '@/types';
 
+const MIN_AGE = 14;
+const MAX_AGE = 70;
+const MIN_DOB = isoDateYearsAgo(MAX_AGE);
+const MAX_DOB = isoDateYearsAgo(MIN_AGE);
+
 interface FormData {
-  age: string;
+  dateOfBirth: string;
   experienceYear: string;
   description: string;
   avatarUrl: string;
@@ -15,7 +21,7 @@ interface FormData {
 
 interface JockeyProfileFormProps {
   initialValues?: Partial<Jockey>;
-  onSubmit: (payload: { age: number; experienceYear: number; description: string; avatarUrl: string | null }) => void;
+  onSubmit: (payload: { dateOfBirth: string; experienceYear: number; description: string; avatarUrl: string | null }) => void;
   loading?: boolean;
 }
 
@@ -25,7 +31,7 @@ const inputCls = (err?: string) =>
 
 export default function JockeyProfileForm({ initialValues = {}, onSubmit, loading }: JockeyProfileFormProps) {
   const [form, setForm] = useState<FormData>({
-    age: initialValues.age?.toString() ?? '',
+    dateOfBirth: initialValues.dateOfBirth ?? '',
     experienceYear: initialValues.experienceYear?.toString() ?? '',
     description: initialValues.description ?? '',
     avatarUrl: initialValues.avatarUrl ?? '',
@@ -66,8 +72,9 @@ export default function JockeyProfileForm({ initialValues = {}, onSubmit, loadin
 
   const validate = () => {
     const errs: Partial<Record<keyof FormData, string>> = {};
-    const age = Number(form.age);
-    if (!form.age || isNaN(age) || age < 14 || age > 70) errs.age = 'Age must be between 14 and 70.';
+    if (!form.dateOfBirth || form.dateOfBirth < MIN_DOB || form.dateOfBirth > MAX_DOB) {
+      errs.dateOfBirth = `Age must be between ${MIN_AGE} and ${MAX_AGE}.`;
+    }
     const exp = Number(form.experienceYear);
     if (form.experienceYear === '' || isNaN(exp) || exp < 0 || exp > 50) errs.experienceYear = 'Experience must be between 0 and 50.';
     return errs;
@@ -79,7 +86,7 @@ export default function JockeyProfileForm({ initialValues = {}, onSubmit, loadin
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setErrors({});
     onSubmit({
-      age: Number(form.age),
+      dateOfBirth: form.dateOfBirth,
       experienceYear: Number(form.experienceYear),
       description: form.description,
       avatarUrl: form.avatarUrl || null,
@@ -129,14 +136,14 @@ export default function JockeyProfileForm({ initialValues = {}, onSubmit, loadin
         </div>
       </div>
 
-      {/* Age */}
+      {/* Date of Birth */}
       <div className="px-6 py-5">
-        <label htmlFor="jf-age" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-ink-4">
-          Age <span className="text-fail">*</span>
+        <label htmlFor="jf-dob" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-ink-4">
+          Date of Birth <span className="text-fail">*</span>
         </label>
-        <input id="jf-age" type="number" className={inputCls(errors.age)}
-          value={form.age} onChange={set('age')} min={14} max={70} placeholder="e.g. 24" />
-        {errors.age && <p className="mt-1.5 text-xs text-fail">{errors.age}</p>}
+        <input id="jf-dob" type="date" className={inputCls(errors.dateOfBirth)}
+          value={form.dateOfBirth} onChange={set('dateOfBirth')} min={MIN_DOB} max={MAX_DOB} />
+        {errors.dateOfBirth && <p className="mt-1.5 text-xs text-fail">{errors.dateOfBirth}</p>}
       </div>
 
       {/* Experience */}

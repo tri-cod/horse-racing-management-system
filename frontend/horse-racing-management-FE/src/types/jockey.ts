@@ -5,7 +5,7 @@ export interface Jockey {
  fullName?: string;
  avatarUrl?: string;
  coverImageUrl?: string;
- age?: number;
+ dateOfBirth?: string;
  weight?: number;
  experienceYear?: number;
  experience?: string;

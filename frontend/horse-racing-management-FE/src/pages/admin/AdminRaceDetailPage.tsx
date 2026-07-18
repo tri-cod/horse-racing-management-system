@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useRaceDetail } from '@/hooks/useRaceDetail';
 import { useHorsesByRace } from '@/hooks/useHorsesByRace';
+import { useRefereeProfile } from '@/hooks/useRefereeProfile';
 import { approveRaceHorse, rejectRaceHorse, approveWithdrawal, rejectWithdrawal, setOdds } from '@/api/raceHorseApi';
 import { updateRace, deleteRace, reopenRace, startRace } from '@/api/raceApi';
 import { getHorseById } from '@/api/horseOwnerApi';
@@ -56,6 +57,10 @@ export default function AdminRaceDetailPage() {
 
   const { race, loading: raceLoading, refetch: refetchRace } = useRaceDetail(raceId);
   const { entries, loading: entriesLoading, error: entriesError, refetch: refetchEntries } = useHorsesByRace(raceId);
+
+  // Resolve the officiating referee's name for display + link to their public profile.
+  // Passing undefined when no referee is assigned keeps the hook from fetching.
+  const { referee } = useRefereeProfile(race?.refereeId ?? undefined);
 
   const [actionId, setActionId] = useState<number | null>(null);
   const [closing, setClosing] = useState(false);
@@ -137,7 +142,7 @@ export default function AdminRaceDetailPage() {
     } finally { setActionId(null); }
   };
 
-  // ── Odds ────────────────────────────────────────────────────────────────────
+  // ── Odds ─────────────────────────────────────────────────────
   // Gom các entry đủ điều kiện set odds + giá trị đang nhập trong ô input.
   const collectOddsRows = () => {
     if (!race || CLOSEABLE.has(race.status)) return [];
@@ -522,7 +527,24 @@ export default function AdminRaceDetailPage() {
             <div className="text-sm"><span className="text-ink-4">Distance: </span><span className="text-ink-2">{race.distance ?? '—'}</span></div>
             <div className="text-sm"><span className="text-ink-4">Condition: </span><span className="text-ink-2">{race.trackCondition ?? '—'}</span></div>
             <div className="text-sm"><span className="text-ink-4">Reg. deadline: </span><span className="text-ink-2">{fmtDate(race.registrationDeadline)}</span></div>
-            <div className="text-sm"><span className="text-ink-4">Referee: </span><span className="text-ink-2">{race.refereeId ? `#${race.refereeId}` : 'Not assigned'}</span></div>
+
+            {/* Referee — name (resolved via useRefereeProfile) + link to public profile */}
+            <div className="text-sm">
+              <span className="text-ink-4">Referee: </span>
+              {race.refereeId ? (
+                <>
+                  <span className="text-ink-2">{referee?.name ?? `Referee #${race.refereeId}`}</span>{' '}
+<Link
+  to={`/referees/${race.refereeId}`}
+  className="rounded border border-gold px-2 py-0.5 text-xs font-semibold text-gold transition-colors hover:bg-gold hover:text-white"
+>
+  View
+</Link>
+                </>
+              ) : (
+                <span className="text-ink-4">Not assigned</span>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -696,9 +718,8 @@ export default function AdminRaceDetailPage() {
                                     }))
                                   }
                                   onKeyDown={(ev) => { if (ev.key === 'Enter') handleSaveAllOdds(); }}
-                                  className={`w-20 border bg-surface-input py-1.5 pl-5 pr-2 text-xs font-semibold text-ink outline-none transition-colors focus:border-gold disabled:opacity-50 ${
-                                    isOddsInvalid(e.id) ? 'border-fail' : 'border-rim'
-                                  }`}
+                                  className={`w-20 border bg-surface-input py-1.5 pl-5 pr-2 text-xs font-semibold text-ink outline-none transition-colors focus:border-gold disabled:opacity-50 ${isOddsInvalid(e.id) ? 'border-fail' : 'border-rim'
+                                    }`}
                                 />
                               </div>
                             )}

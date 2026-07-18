@@ -7,3 +7,4 @@ export * from './bet';
 export * from './wallet';
 export * from './notification';
 export * from './common';
+export * from './referee';

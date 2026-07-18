@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getAvailableJockeys } from '@/api/jockeyApi';
 import { sendJockeyRequest } from '@/api/raceHorseApi';
 import { getErrorMessage } from '@/utils/errors';
+import { calculateAge } from '@/utils/age';
 import Modal from '@/components/ui/Modal';
 import type { Jockey, RaceHorse } from '@/types';
 
@@ -107,7 +108,7 @@ export default function AssignJockeyModal({ raceHorse, onClose, onSuccess }: Pro
               />
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-ink">{j.name}</p>
-                <p className="text-xs text-ink-4">{j.experienceYear ?? 0} yr exp · Age {j.age ?? '—'}</p>
+                <p className="text-xs text-ink-4">{j.experienceYear ?? 0} yr exp · Age {calculateAge(j.dateOfBirth) ?? '—'}</p>
               </div>
             </label>
           ))}

@@ -24,7 +24,7 @@ export const FIELDS: FieldDef[] = [
  { name: 'history_rank', label: 'Achievements', type: 'text', placeholder: 'Champion 2024' },
  { name: 'avatar_url', label: 'Avatar', type: 'file', placeholder: '' },
  { name: 'weight', label: 'Weight (kg)', type: 'number', placeholder: '480' },
- { name: 'status', label: 'Status', type: 'select', options: ['ACTIVE', 'INACTIVE', 'RETIRE'] },
+ { name: 'status', label: 'Status', type: 'select', options: ['ACTIVE', 'INACTIVE', 'RETIRED'] },
 ];
 
 // ─── Types ────────────────────────────────────────────────────────────────────

@@ -6,7 +6,7 @@ import type { Jockey } from '@/types';
 export function useJockeys() {
  const { data, isLoading, error, refetch } = useQuery<Jockey[]>({
  queryKey: ['jockeys'],
- // GET /jockeys only returns { id, name, age, experienceYear, status } — no
+ // GET /jockeys only returns { id, name, dateOfBirth, experienceYear, status } — no
  // avatarUrl/stats. Fetch each profile too so cards can show a real photo and stats.
  queryFn: async () => {
  const list = await getJockeyList();

@@ -60,11 +60,6 @@ function JockeyThumb({ jockey, offset, onSelect, reduce }: {
       {/* Header */}
       <div className="mb-4 flex items-center justify-between gap-2">
         <span className="eyebrow whitespace-nowrap">Jockey</span>
-        <span className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider ${
-          active ? 'bg-gold/20 text-gold' : 'text-ink-4'
-        }`}>
-          {jockey.status ?? 'Active'}
-        </span>
       </div>
 
       {/* Identity */}

@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import { ChevronLeft, User, Flag, Trophy, Percent, type LucideIcon } from 'lucide-react';
 import { useJockeyProfile } from '@/hooks/useJockeyProfile';
 import { silkColor } from '@/utils/jockeySilks';
+import { calculateAge } from '@/utils/age';
 import Container from '@/components/ui/Container';
 import Seo from '@/components/seo/Seo';
 import type { Jockey } from '@/types';
@@ -35,7 +36,8 @@ function pluralize(n: number, word: string) {
 // cho jockey, khác với F1 driver).
 function buildBio(jockey: Jockey): string[] {
   const firstName = jockey.name.trim().split(/\s+/)[0];
-  const { age, experienceYear, totalRaces, totalWins, winRate, status } = jockey;
+  const { experienceYear, totalRaces, totalWins, winRate, status } = jockey;
+  const age = calculateAge(jockey.dateOfBirth);
   const paragraphs: string[] = [];
 
   const introParts: string[] = [];
@@ -75,6 +77,7 @@ export default function JockeyProfilePage() {
   const reduce = useReducedMotion();
 
   const { jockey, loading, error } = useJockeyProfile(jockeyId);
+  const age = useMemo(() => calculateAge(jockey?.dateOfBirth), [jockey]);
   const silk = useMemo(() => (jockey ? silkColor(jockey) : null), [jockey]);
   const { first, last } = jockey ? splitName(jockey.name) : { first: '', last: '' };
   const initial = (last || jockey?.name || 'J').charAt(0).toUpperCase();
@@ -196,8 +199,8 @@ export default function JockeyProfilePage() {
               <h1 className="font-serif text-6xl font-bold uppercase leading-[0.95] text-white sm:text-8xl">{last}</h1>
 
               <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-base font-medium text-white/85 sm:justify-start">
-                {jockey.age != null && <span>{jockey.age} yrs old</span>}
-                {jockey.age != null && jockey.experienceYear != null && <span className="text-white/40">•</span>}
+                {age != null && <span>{age} yrs old</span>}
+                {age != null && jockey.experienceYear != null && <span className="text-white/40">•</span>}
                 {jockey.experienceYear != null && <span>{pluralize(jockey.experienceYear, 'yr')} experience</span>}
                 <span className="text-white/40">•</span>
                 <span className="tnum">№{jockey.id}</span>

@@ -2,7 +2,8 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard, Flag,
     Shield, ClipboardList, Ticket, Wallet, UserCog, TrendingUp,
-    User, LogOut, Landmark, PencilLine, FlagTriangleRight, Send, Undo2, type LucideIcon,
+    User, LogOut, Landmark, PencilLine, FlagTriangleRight, Send, Undo2, Gavel,
+    type LucideIcon,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import UserAvatar from '@/components/features/admin/UserAvatar';
@@ -18,9 +19,14 @@ const ROLE_ITEMS: Partial<Record<UserRole, NavItem[]>> = {
         { icon: PencilLine, label: 'Manage Races', href: '/admin/races', end: true },
         { icon: Landmark, label: 'System Wallet', href: '/admin/wallet' },
     ],
-    REFEREE: [
+REFEREE: [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/referee/dashboard' },
-        { icon: Flag, label: 'Race Control', href: '/referee/races' }],
+        { icon: Flag, label: 'Race Control', href: '/referee/races' },
+        { icon: ClipboardList, label: 'My Races', href: '/referee/my-races' },
+        { icon: Gavel, label: 'Penalty History', href: '/referee/penalties' },
+        { icon: UserCog, label: 'My Profile', href: '/referee/profile' },
+        { icon: Wallet, label: 'My Wallet', href: '/my-wallet' },
+    ],
     HORSE_OWNER: [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/horse-owner/dashboard' },
         { icon: Shield, label: 'My Horses', href: '/horse-owner/horses' },

@@ -25,11 +25,11 @@ const fmtDate = (iso?: string) =>
   iso ? new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : '—';
 
 const HORSE_STATUS_LABEL: Record<string, string> = {
-  ACTIVE: 'Active', INACTIVE: 'Resting', RETIRE: 'Retired',
+  ACTIVE: 'Active', RACING: 'Racing', FINISHED: 'Finished', INACTIVE: 'Resting', RETIRED: 'Retired',
 };
 
 const STATUS_TONE: Record<string, 'ok' | 'warn' | 'fail' | 'neutral'> = {
-  ACTIVE: 'ok', INACTIVE: 'neutral', RETIRE: 'warn',
+  ACTIVE: 'ok', RACING: 'ok', FINISHED: 'neutral', INACTIVE: 'neutral', RETIRED: 'warn',
   APPROVED: 'ok', PENDING: 'warn', REJECTED: 'fail',
 };
 

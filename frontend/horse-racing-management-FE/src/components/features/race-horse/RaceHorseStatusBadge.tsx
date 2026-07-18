@@ -11,6 +11,8 @@ const CONFIG: Record<RaceHorseStatusKey, { label: string; cls: string }> = {
   WITHDRAW_PENDING:  { label: 'Withdrawal Pending', cls: 'bg-warn-subtle text-warn border-warn/30' },
   WITHDRAW_REJECTED: { label: 'Withdrawal Denied',  cls: 'bg-fail-subtle text-fail border-fail/30' },
   WITHDRAWN:         { label: 'Withdrawn',          cls: 'bg-surface-overlay text-ink-3 border-rim' },
+  FINISHED:          { label: 'Finished',           cls: 'bg-gold/10 text-gold border-gold/30' },
+  DISQUALIFIED:      { label: 'Disqualified',       cls: 'bg-fail-subtle text-fail border-fail/30' },
 };
 
 export default function RaceHorseStatusBadge({ status }: { status?: string }) {
