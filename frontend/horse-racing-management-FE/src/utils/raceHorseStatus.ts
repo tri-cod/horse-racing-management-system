@@ -8,7 +8,9 @@ export type RaceHorseStatusKey =
   | 'REJECTED'
   | 'WITHDRAW_PENDING'
   | 'WITHDRAW_REJECTED'
-  | 'WITHDRAWN';
+  | 'WITHDRAWN'
+  | 'FINISHED'
+  | 'DISQUALIFIED';
 
 /** "PENDING_ADMIN" | "PendingAdmin" | "pending admin" → "PENDINGADMIN" */
 const squash = (s?: string | null) => (s ?? '').toUpperCase().replace(/[\s_-]/g, '');
@@ -16,6 +18,7 @@ const squash = (s?: string | null) => (s ?? '').toUpperCase().replace(/[\s_-]/g,
 const KEYS: RaceHorseStatusKey[] = [
   'PENDING', 'PENDING_JOCKEY', 'JOCKEY_REJECTED', 'PENDING_ADMIN',
   'APPROVED', 'REJECTED', 'WITHDRAW_PENDING', 'WITHDRAW_REJECTED', 'WITHDRAWN',
+  'FINISHED', 'DISQUALIFIED',
 ];
 
 /**

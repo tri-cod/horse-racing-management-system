@@ -2,40 +2,27 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Pencil, X, Check, Camera, Loader2, AlertCircle,
-  Calendar, Award, CheckCircle, FileText, LogOut,
+  Award, CheckCircle, FileText, Flag, Gavel, LogOut, Image as ImageIcon,
 } from 'lucide-react';
-import { useMyJockeyProfile } from '@/hooks/useMyJockeyProfile';
+import { useMyRefereeProfile } from '@/hooks/useMyRefereeProfile';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { getErrorMessage } from '@/utils/errors';
 import { uploadAvatar } from '@/api/authApi';
-import { isoDateYearsAgo, calculateAge } from '@/utils/age';
 import UserAvatar from '@/components/features/admin/UserAvatar';
 import ImageCropModal from '@/components/ui/ImageCropModal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Seo from '@/components/seo/Seo';
 
-const MIN_AGE = 14;
-const MAX_AGE = 70;
-const MIN_DOB = isoDateYearsAgo(MAX_AGE);
-const MAX_DOB = isoDateYearsAgo(MIN_AGE);
-
 const val = (v?: string | number | null) =>
   v === null || v === undefined || v === '' ? '—' : v;
 
-const fieldCls = (err?: string) =>
-  'w-full border bg-surface-input px-3 py-2 text-sm text-ink outline-none placeholder:text-ink-4 transition-colors ' +
-  (err
-    ? 'border-fail focus:border-fail focus:ring-1 focus:ring-fail/20'
-    : 'border-rim focus:border-gold focus:ring-1 focus:ring-gold/20');
+const inputCls =
+  'w-full border border-rim bg-surface-input px-3 py-2 text-sm text-ink outline-none ' +
+  'placeholder:text-ink-4 focus:border-gold focus:ring-1 focus:ring-gold/20 transition-colors';
 
-interface FieldErrors {
-  dateOfBirth?: string;
-  experienceYear?: string;
-}
-
-export default function JockeyMyProfilePage() {
-  const { profile, loading, error, refetch, save } = useMyJockeyProfile();
+export default function RefereeMyProfilePage() {
+  const { profile, loading, error, refetch, save } = useMyRefereeProfile();
   const { logout } = useAuth();
   const navigate = useNavigate();
   const addToast = useToast();
@@ -48,11 +35,10 @@ export default function JockeyMyProfilePage() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [experienceYear, setExperienceYear] = useState('');
+  const [experienceYears, setExperienceYears] = useState('');
   const [description, setDescription] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
-  const [errors, setErrors] = useState<FieldErrors>({});
+  const [coverImageUrl, setCoverImageUrl] = useState('');
 
   // Avatar upload (crop-on-upload, same flow as the Horse Owner account page)
   const [cropSrc, setCropSrc] = useState<string | null>(null);
@@ -60,14 +46,18 @@ export default function JockeyMyProfilePage() {
   const [uploadError, setUploadError] = useState('');
   const avatarFileRef = useRef<HTMLInputElement>(null);
 
+  // Cover upload (direct upload, no crop — it's a wide banner)
+  const [coverUploading, setCoverUploading] = useState(false);
+  const coverFileRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
-    setDateOfBirth(profile?.dateOfBirth ?? '');
-    setExperienceYear(profile?.experienceYear != null ? String(profile.experienceYear) : '');
+    setExperienceYears(profile?.experienceYears != null ? String(profile.experienceYears) : '');
     setDescription(profile?.description ?? '');
     setAvatarUrl(profile?.avatarUrl ?? '');
+    setCoverImageUrl(profile?.coverImageUrl ?? '');
   }, [profile]);
 
-  const isNew = !profile || (profile.dateOfBirth == null && profile.experienceYear == null);
+  const isNew = !profile || profile.experienceYears == null;
   const isEditing = editing || isNew;
 
   const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,32 +84,30 @@ export default function JockeyMyProfilePage() {
     }
   };
 
-  const validate = (): FieldErrors => {
-    const errs: FieldErrors = {};
-    if (!dateOfBirth || dateOfBirth < MIN_DOB || dateOfBirth > MAX_DOB) {
-      errs.dateOfBirth = `Age must be between ${MIN_AGE} and ${MAX_AGE}.`;
+  const handleCoverSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCoverUploading(true);
+    setUploadError('');
+    try {
+      const url = await uploadAvatar(file);
+      setCoverImageUrl(url);
+    } catch (err: unknown) {
+      setUploadError(getErrorMessage(err, 'Upload failed. Please try again.'));
+    } finally {
+      setCoverUploading(false);
+      if (coverFileRef.current) coverFileRef.current.value = '';
     }
-    const exp = Number(experienceYear);
-    if (experienceYear === '' || isNaN(exp) || exp < 0 || exp > 50) {
-      errs.experienceYear = 'Experience must be between 0 and 50.';
-    }
-    return errs;
   };
 
   const handleSave = async () => {
-    const errs = validate();
-    if (Object.keys(errs).length) {
-      setErrors(errs);
-      return;
-    }
-    setErrors({});
     setSaving(true);
     try {
       await save({
-        dateOfBirth,
-        experienceYear: Number(experienceYear),
-        description: description.trim() || undefined,
+        experienceYears: experienceYears ? Number(experienceYears) : null,
+        description: description.trim() || null,
         avatarUrl: avatarUrl.trim() || null,
+        coverImageUrl: coverImageUrl.trim() || null,
       });
       addToast('Profile saved.', 'success');
       setEditing(false);
@@ -131,11 +119,11 @@ export default function JockeyMyProfilePage() {
   };
 
   const cancelEdit = () => {
-    setDateOfBirth(profile?.dateOfBirth ?? '');
-    setExperienceYear(profile?.experienceYear != null ? String(profile.experienceYear) : '');
+    // Revert local edits back to the loaded profile
+    setExperienceYears(profile?.experienceYears != null ? String(profile.experienceYears) : '');
     setDescription(profile?.description ?? '');
     setAvatarUrl(profile?.avatarUrl ?? '');
-    setErrors({});
+    setCoverImageUrl(profile?.coverImageUrl ?? '');
     setUploadError('');
     setEditing(false);
   };
@@ -166,16 +154,9 @@ export default function JockeyMyProfilePage() {
   const status = profile?.status;
   const statusOk = status === 'ACTIVE' || status === 'APPROVED' || status === 'Active';
 
-  const age = profile?.dateOfBirth ? calculateAge(profile.dateOfBirth) : null;
-  const dobDisplay = profile?.dateOfBirth
-    ? new Date(profile.dateOfBirth).toLocaleDateString('en-GB', {
-        day: 'numeric', month: 'long', year: 'numeric',
-      }) + (age != null ? ` · Age ${age}` : '')
-    : '—';
-
   return (
     <div className="px-8 py-6">
-      <Seo title="Jockey Profile" description="Manage your Royal Derby jockey profile." />
+      <Seo title="Referee Profile" description="Manage your Royal Derby referee profile." />
 
       {cropSrc && (
         <ImageCropModal
@@ -194,7 +175,7 @@ export default function JockeyMyProfilePage() {
             <div className="absolute inset-x-0 top-0 h-0.5 bg-gold" />
             <div className="flex items-center gap-5">
               <div className="relative shrink-0">
-                <UserAvatar name={profile?.name ?? 'Jockey'} avatarUrl={avatarUrl} size={64} />
+                <UserAvatar name={profile?.name ?? 'Referee'} avatarUrl={avatarUrl} size={64} />
                 {isEditing && (
                   <>
                     <input
@@ -203,10 +184,10 @@ export default function JockeyMyProfilePage() {
                       accept="image/*"
                       className="sr-only"
                       onChange={handleAvatarSelect}
-                      id="jockey-avatar-file"
+                      id="referee-avatar-file"
                     />
                     <label
-                      htmlFor="jockey-avatar-file"
+                      htmlFor="referee-avatar-file"
                       className="absolute -bottom-1 -right-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-2 border-navy bg-gold text-navy transition-colors hover:bg-gold-hi"
                     >
                       {uploading ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
@@ -217,14 +198,14 @@ export default function JockeyMyProfilePage() {
 
               <div className="min-w-0 flex-1">
                 <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-on-blue/60">
-                  Royal Derby Jockey
+                  Royal Derby Referee
                 </p>
                 <h2 className="font-serif text-xl font-bold text-on-blue">
                   {profile?.name ?? 'My Profile'}
                 </h2>
                 <div className="mt-2 flex flex-wrap gap-2">
                   <span className="border border-on-blue/20 bg-on-blue/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-on-blue/70">
-                    Jockey
+                    Referee
                   </span>
                   {status && (
                     <span className={`px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border ${
@@ -256,6 +237,28 @@ export default function JockeyMyProfilePage() {
             )}
           </div>
 
+          {/* Stats */}
+          <div className="grid grid-cols-2 divide-x divide-rim border-b border-rim">
+            <div className="flex items-center gap-3 px-6 py-4">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center text-ink-4">
+                <Flag size={16} />
+              </div>
+              <div>
+                <p className="tnum text-xl font-bold text-ink">{profile?.totalRacesRefereed ?? 0}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Races Refereed</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 px-6 py-4">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center text-ink-4">
+                <Gavel size={16} />
+              </div>
+              <div>
+                <p className="tnum text-xl font-bold text-ink">{profile?.totalPenaltiesGiven ?? 0}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Penalties Given</p>
+              </div>
+            </div>
+          </div>
+
           {/* Body */}
           {isEditing ? (
             <div className="border-t border-rim">
@@ -267,46 +270,24 @@ export default function JockeyMyProfilePage() {
               </div>
 
               <div className="divide-y divide-rim">
-                {/* Date of birth */}
-                <div className="flex items-start gap-4 px-6 py-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center text-gold">
-                    <Calendar size={16} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">
-                      Date of Birth <span className="text-fail">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      value={dateOfBirth}
-                      min={MIN_DOB}
-                      max={MAX_DOB}
-                      onChange={(e) => setDateOfBirth(e.target.value)}
-                      className={fieldCls(errors.dateOfBirth)}
-                    />
-                    {errors.dateOfBirth && <p className="mt-1.5 text-xs text-fail">{errors.dateOfBirth}</p>}
-                  </div>
-                </div>
-
                 {/* Experience */}
-                <div className="flex items-start gap-4 px-6 py-4">
+                <div className="flex items-center gap-4 px-6 py-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center text-gold">
                     <Award size={16} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">
-                      Experience Years <span className="text-fail">*</span>
+                      Years of Experience
                     </label>
                     <input
                       type="number"
                       min={0}
-                      max={50}
                       placeholder="e.g. 5"
-                      value={experienceYear}
-                      onChange={(e) => setExperienceYear(e.target.value)}
-                      className={fieldCls(errors.experienceYear)}
+                      value={experienceYears}
+                      onChange={(e) => setExperienceYears(e.target.value)}
+                      className={inputCls}
+                      autoFocus
                     />
-                    {errors.experienceYear && <p className="mt-1.5 text-xs text-fail">{errors.experienceYear}</p>}
                   </div>
                 </div>
 
@@ -321,11 +302,58 @@ export default function JockeyMyProfilePage() {
                     </label>
                     <textarea
                       rows={4}
-                      placeholder="Tell horse owners about your riding style and achievements…"
+                      placeholder="Tell others about your refereeing experience…"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      className={`${fieldCls()} resize-none`}
+                      className={`${inputCls} resize-none`}
                     />
+                  </div>
+                </div>
+
+                {/* Cover image — file upload, not a URL field */}
+                <div className="flex items-center gap-4 px-6 py-4">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center text-gold">
+                    <ImageIcon size={16} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">
+                      Cover Image
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 w-20 shrink-0 overflow-hidden border border-rim bg-surface-overlay">
+                        {coverImageUrl ? (
+                          <img src={coverImageUrl} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-ink-4">
+                            <ImageIcon size={16} />
+                          </div>
+                        )}
+                      </div>
+                      <input
+                        ref={coverFileRef}
+                        type="file"
+                        accept="image/*"
+                        className="sr-only"
+                        onChange={handleCoverSelect}
+                        id="referee-cover-file"
+                      />
+                      <label
+                        htmlFor="referee-cover-file"
+                        className="inline-flex cursor-pointer items-center gap-1.5 border border-rim px-3 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:bg-surface-overlay"
+                      >
+                        {coverUploading ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
+                        {coverImageUrl ? 'Change' : 'Upload'}
+                      </label>
+                      {coverImageUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setCoverImageUrl('')}
+                          className="text-xs font-medium text-ink-3 transition-colors hover:text-fail"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -345,7 +373,7 @@ export default function JockeyMyProfilePage() {
                 <button
                   type="button"
                   onClick={handleSave}
-                  disabled={saving || uploading}
+                  disabled={saving || uploading || coverUploading}
                   className="inline-flex flex-1 items-center justify-center gap-1.5 bg-gold py-2.5 text-xs font-bold uppercase tracking-widest text-navy transition-colors hover:bg-gold/80 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Check size={13} /> {saving ? 'Saving…' : 'Save Changes'}
@@ -354,16 +382,6 @@ export default function JockeyMyProfilePage() {
             </div>
           ) : (
             <div className="divide-y divide-rim border-t border-rim">
-              {/* Date of birth */}
-              <div className="flex items-center gap-4 px-6 py-3.5">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center text-ink-4">
-                  <Calendar size={16} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Date of Birth</p>
-                  <p className="mt-0.5 text-sm font-medium text-ink">{dobDisplay}</p>
-                </div>
-              </div>
               {/* Experience */}
               <div className="flex items-center gap-4 px-6 py-3.5">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center text-ink-4">
@@ -372,7 +390,7 @@ export default function JockeyMyProfilePage() {
                 <div className="min-w-0 flex-1">
                   <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Experience</p>
                   <p className="mt-0.5 text-sm font-medium text-ink">
-                    {profile?.experienceYear != null ? `${profile.experienceYear} years` : '—'}
+                    {profile?.experienceYears != null ? `${profile.experienceYears} years` : '—'}
                   </p>
                 </div>
               </div>

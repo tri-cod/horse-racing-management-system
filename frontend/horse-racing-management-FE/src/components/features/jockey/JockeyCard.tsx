@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { GOLD, GOLD_HAIRLINE, silkColor } from '@/utils/jockeySilks';
+import { calculateAge } from '@/utils/age';
 import type { Jockey } from '@/types';
 
 interface JockeyCardProps {
@@ -34,7 +35,8 @@ function buildStats(j: Jockey) {
   if (typeof j.totalRaces === 'number') stats.push({ value: String(j.totalRaces), label: 'Races' });
   if (typeof j.weight === 'number') stats.push({ value: `${j.weight}kg`, label: 'Weight' });
   if (typeof j.experienceYear === 'number') stats.push({ value: String(j.experienceYear), label: 'Yrs exp.' });
-  if (typeof j.age === 'number') stats.push({ value: String(j.age), label: 'Age' });
+  const age = calculateAge(j.dateOfBirth);
+  if (typeof age === 'number') stats.push({ value: String(age), label: 'Age' });
 
   return stats.slice(0, 3); // ưu tiên 3 stat đầu có sẵn
 }

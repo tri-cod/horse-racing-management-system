@@ -41,7 +41,7 @@ export default function TrainerDashboardPage() {
       const p = profileR.value;
       setProfileAvatarUrl(p?.avatarUrl ?? null);
       setExperienceYears(p?.experienceYears ?? null);
-      setProfileComplete(!!(p?.age && p?.experienceYears != null));
+      setProfileComplete(!!(p?.dateOfBirth && p?.experienceYears != null));
     } else {
       nextErr.profile = 'Failed to load';
     }

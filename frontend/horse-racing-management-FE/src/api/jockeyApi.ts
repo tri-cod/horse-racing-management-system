@@ -16,7 +16,7 @@ export const getMyProfile = () =>
   axiosInstance.get<ApiResponse<Jockey>>('/jockeys/me').then((r) => r.data.data);
 
 export interface CompleteJockeyProfilePayload {
-  age?: number;
+  dateOfBirth?: string;
   experienceYear?: number;
   description?: string;
   avatarUrl?: string | null;

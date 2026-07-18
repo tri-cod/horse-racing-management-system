@@ -14,6 +14,7 @@ const RegisterPage = lazy(() => import('@/pages/public/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/public/ForgotPasswordPage'));
 const JockeysPage = lazy(() => import('@/pages/public/JockeysPage'));
 const JockeyProfilePage = lazy(() => import('@/pages/public/JockeyProfilePage'));
+const RefereeProfilePage = lazy(() => import('@/pages/public/RefereeProfilePage'));
 const HorsesPage = lazy(() => import('@/pages/public/HorsesPage'));
 const HorseProfilePage = lazy(() => import('@/pages/public/HorseProfilePage'));
 const RacesPage = lazy(() => import('@/pages/public/RacesPage'));
@@ -52,6 +53,9 @@ const JockeyRaceRequestsPage = lazy(() => import('@/pages/jockey/JockeyRaceReque
 // Referee
 const RefereeDashboardPage = lazy(() => import('@/pages/referee/RefereeDashboardPage'));
 const RefereeRacesPage = lazy(() => import('@/pages/referee/RefereeRacesPage'));
+const RefereeMyRacesPage = lazy(() => import('@/pages/referee/RefereeMyRacesPage'));
+const RefereePenaltyHistoryPage = lazy(() => import('@/pages/referee/RefereePenaltyHistoryPage'));
+const RefereeMyProfilePage = lazy(() => import('@/pages/referee/RefereeMyProfilePage'));
 
 // Admin
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
@@ -83,6 +87,7 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/jockeys" element={<Layout><JockeysPage /></Layout>} />
           <Route path="/jockeys/:id" element={<Layout><JockeyProfilePage /></Layout>} />
+          <Route path="/referees/:id" element={<Layout><RefereeProfilePage /></Layout>} />
           <Route path="/horses" element={<Layout><HorsesPage /></Layout>} />
           <Route path="/horses/:id" element={<Layout><HorseProfilePage /></Layout>} />
           <Route path="/races" element={<Layout><RacesPage /></Layout>} />
@@ -115,6 +120,21 @@ export default function App() {
           <Route path="/referee/races" element={
             <ProtectedRoute allowedRoles={['REFEREE']}>
               <AppLayout><RefereeRacesPage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/referee/my-races" element={
+            <ProtectedRoute allowedRoles={['REFEREE']}>
+              <AppLayout><RefereeMyRacesPage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/referee/penalties" element={
+            <ProtectedRoute allowedRoles={['REFEREE']}>
+              <AppLayout><RefereePenaltyHistoryPage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/referee/profile" element={
+            <ProtectedRoute allowedRoles={['REFEREE']}>
+              <AppLayout><RefereeMyProfilePage /></AppLayout>
             </ProtectedRoute>
           } />
 

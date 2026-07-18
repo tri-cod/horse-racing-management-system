@@ -7,7 +7,7 @@ export interface CompleteTrainerProfilePayload {
  experience?: string;
  bio?: string;
  avatarUrl?: string | null;
- age?: number;
+ dateOfBirth?: string;
  experienceYears?: number;
  description?: string;
 }

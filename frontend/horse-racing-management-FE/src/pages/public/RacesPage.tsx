@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Flag, Calendar, Ticket } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Flag, Calendar, Ticket, Gavel, ArrowRight } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useRaces } from '@/hooks/useRaces';
 import { useRaceDetail } from '@/hooks/useRaceDetail';
 import { useHorsesByRace } from '@/hooks/useHorsesByRace';
 import { useRaceResults, type NormalizedRaceResult } from '@/hooks/useRaceResults';
+import { useRefereeProfile } from '@/hooks/useRefereeProfile';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
@@ -15,7 +16,7 @@ import Seo from '@/components/seo/Seo';
 import { assignLanes } from '@/utils/laneUtils';
 import type { Race } from '@/types';
 
-/* ── Helpers ─────────────────────────────────────────────────────────── */
+/* ── Helpers ──────────────────────────────────────────────────── */
 function toDateStr(d: Date) { return d.toISOString().slice(0, 10); }
 
 function fmtPrize(n?: number) {
@@ -23,7 +24,7 @@ function fmtPrize(n?: number) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n);
 }
 
-/* ── Lane post-position colors (traditional racing) ─────────────────── */
+/* ── Lane post-position colors (traditional racing) ──────────── */
 const LANE_CLR: Record<number, string> = {
   1: 'bg-red-600 text-white',
   2: 'bg-white text-gray-900 border-2 border-gray-300',
@@ -40,7 +41,7 @@ function laneClr(n?: number) {
   return LANE_CLR[n] ?? 'bg-navy text-on-blue';
 }
 
-/* ── Mini Calendar ───────────────────────────────────────────────────── */
+/* ── Mini Calendar ─────────────────────────────────────────────── */
 const WEEK_DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -126,7 +127,7 @@ function MiniCalendar({ raceDates, selected, onSelect }: CalendarProps) {
   );
 }
 
-/* ── Position badge — matches home page Leaderboard ─────────────────── */
+/* ── Position badge — matches home page Leaderboard ───────────── */
 function PosBadge({ pos }: { pos: number }) {
   const gold   = 'text-gold-hi';
   const silver = 'text-ink-2';
@@ -140,7 +141,7 @@ function PosBadge({ pos }: { pos: number }) {
   );
 }
 
-/* ── Finished Race Results ──────────────────────────────────────────── */
+/* ── Finished Race Results ─────────────────────────────────────── */
 function FinishedResults({ results }: { results: NormalizedRaceResult[] }) {
   return (
     <div className="bg-surface-overlay py-14">
@@ -197,10 +198,14 @@ function FinishedResults({ results }: { results: NormalizedRaceResult[] }) {
   );
 }
 
-/* ── Race Detail Panel ───────────────────────────────────────────────── */
+/* ── Race Detail Panel ────────────────────────────────────────── */
 function RaceDetailPanel({ raceId }: { raceId: number }) {
   const { race, loading: rl } = useRaceDetail(raceId);
   const { entries: raw, loading: el } = useHorsesByRace(raceId);
+
+  // Resolve the officiating referee's name/avatar for the public profile link.
+  // Passing undefined when no referee is assigned keeps the hook from fetching.
+  const { referee } = useRefereeProfile(race?.refereeId ?? undefined);
 
   const entries = useMemo(() =>
     assignLanes(raw.filter(e =>
@@ -265,6 +270,38 @@ function RaceDetailPanel({ raceId }: { raceId: number }) {
               <span className="font-medium text-ink">{race.location}</span></div>
           )}
         </div>
+
+        {/* Officiating referee — highlighted card with link to public profile */}
+        <div className="mt-3">
+          {race.refereeId ? (
+            <Link
+              to={`/referees/${race.refereeId}`}
+              className="group flex items-center justify-between gap-3 border border-rim bg-surface-overlay/60 px-4 py-3 transition-colors hover:border-gold/50 hover:bg-gold/5"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden bg-navy">
+                  {referee?.avatarUrl
+                    ? <img src={referee.avatarUrl} alt={referee.name} className="h-full w-full object-cover" />
+                    : <Gavel size={16} className="text-on-blue/70" />}
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-ink-4">Officiating Referee</p>
+                  <p className="text-sm font-semibold text-ink transition-colors group-hover:text-gold">
+                    {referee?.name ?? `Referee #${race.refereeId}`}
+                  </p>
+                </div>
+              </div>
+              <span className="flex shrink-0 items-center gap-1 text-xs font-semibold text-navy transition-colors group-hover:text-gold">
+                View Profile <ArrowRight size={12} />
+              </span>
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2 border border-dashed border-rim px-4 py-3 text-xs text-ink-4">
+              <Gavel size={14} /> Referee not yet assigned
+            </div>
+          )}
+        </div>
+
         <div className="mt-3"><RaceStatusBadge race={race} size="sm" /></div>
       </div>
 
@@ -323,7 +360,7 @@ function RaceDetailPanel({ raceId }: { raceId: number }) {
   );
 }
 
-/* ── Race Results Section (full-width, outside grid) ────────────────── */
+/* ── Race Results Section (full-width, outside grid) ──────────── */
 function RaceResultsSection({ raceId }: { raceId: number }) {
   const { results, loading } = useRaceResults(raceId);
   if (loading) return (
@@ -334,7 +371,7 @@ function RaceResultsSection({ raceId }: { raceId: number }) {
   return <FinishedResults results={results} />;
 }
 
-/* ── Main Page ───────────────────────────────────────────────────────── */
+/* ── Main Page ─────────────────────────────────────────────────── */
 export default function RacesPage({ bettingMode = false }: { bettingMode?: boolean }) {
   const { races, loading } = useRaces({ page: 0, size: 200 });
   const { user } = useAuth();
@@ -392,7 +429,7 @@ export default function RacesPage({ bettingMode = false }: { bettingMode?: boole
         ) : (
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_280px]">
 
-            {/* ── LEFT: Race info + entries ────────────────────── */}
+            {/* ── LEFT: Race info + entries ──────────────────── */}
             <div>
               {!selectedDate ? (
                 /* No date selected */
@@ -490,7 +527,7 @@ export default function RacesPage({ bettingMode = false }: { bettingMode?: boole
         )}
       </Container>
 
-      {/* ── Full-width results section — below grid ─────── */}
+      {/* ── Full-width results section — below grid ────────── */}
       {!loading && selectedRace?.status === 'FINISHED' && (
         <RaceResultsSection raceId={selectedRace.id} />
       )}

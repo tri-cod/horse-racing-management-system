@@ -18,8 +18,10 @@ const HORSES_GRID_COLS = '2fr_1.1fr_0.8fr_0.6fr_0.7fr_0.9fr_120px';
 const STATUS_TABS: { value: HorseStatus | ''; label: string }[] = [
   { value: '', label: 'All' },
   { value: 'ACTIVE', label: 'Active' },
+  { value: 'RACING', label: 'Racing' },
+  { value: 'FINISHED', label: 'Finished' },
   { value: 'INACTIVE', label: 'Resting' },
-  { value: 'RETIRE', label: 'Retired' },
+  { value: 'RETIRED', label: 'Retired' },
 ];
 
 const inputCls =

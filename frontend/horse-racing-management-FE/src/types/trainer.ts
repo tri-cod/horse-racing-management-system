@@ -4,7 +4,7 @@ export interface Trainer {
  name?: string;
  fullName?: string;
  avatarUrl?: string;
- age?: number;
+ dateOfBirth?: string;
  experienceYears?: number;
  experience?: string;
  specialization?: string;

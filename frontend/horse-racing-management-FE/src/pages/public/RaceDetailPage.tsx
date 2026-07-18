@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, Flag, Ticket } from 'lucide-react';
+import { ChevronLeft, Flag, Ticket, Gavel, ArrowRight } from 'lucide-react';
 import { useRaceDetail } from '@/hooks/useRaceDetail';
 import { useHorsesByRace } from '@/hooks/useHorsesByRace';
 import { useRaceResults, type NormalizedRaceResult } from '@/hooks/useRaceResults';
+import { useRefereeProfile } from '@/hooks/useRefereeProfile';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
@@ -122,6 +123,10 @@ export default function RaceDetailPage() {
   const { race, loading, error, refetch } = useRaceDetail(raceId);
   const { entries: raw, loading: entriesLoading } = useHorsesByRace(raceId);
 
+  // Resolve the officiating referee's name for the public profile link.
+  // Passing undefined when no referee is assigned keeps the hook from fetching.
+  const { referee } = useRefereeProfile(race?.refereeId ?? undefined);
+
   const entries = useMemo(() =>
     assignLanes(raw.filter((e) =>
       e.status?.toLowerCase() === 'approved' 
@@ -219,6 +224,37 @@ const bettableEntries = useMemo(() => entries.filter((e) => e.odds != null), [en
               {race.location && (
                 <div className="col-span-2"><span className="text-ink-4">Location: </span>
                   <span className="font-medium text-ink">{race.location}</span></div>
+              )}
+            </div>
+
+            {/* Officiating referee — highlighted card with link to public profile */}
+            <div className="mt-4">
+              {race.refereeId ? (
+                <Link
+                  to={`/referees/${race.refereeId}`}
+                  className="group flex items-center justify-between gap-3 border border-rim bg-surface-overlay/60 px-4 py-3 transition-colors hover:border-gold/50 hover:bg-gold/5"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden bg-navy">
+                      {referee?.avatarUrl
+                        ? <img src={referee.avatarUrl} alt={referee.name} className="h-full w-full object-cover" />
+                        : <Gavel size={16} className="text-on-blue/70" />}
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-ink-4">Officiating Referee</p>
+                      <p className="text-sm font-semibold text-ink transition-colors group-hover:text-gold">
+                        {referee?.name ?? `Referee #${race.refereeId}`}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="flex shrink-0 items-center gap-1 text-xs font-semibold text-navy transition-colors group-hover:text-gold">
+                    View Profile <ArrowRight size={12} />
+                  </span>
+                </Link>
+              ) : (
+                <div className="flex items-center gap-2 border border-dashed border-rim px-4 py-3 text-xs text-ink-4">
+                  <Gavel size={14} /> Referee not yet assigned
+                </div>
               )}
             </div>
 

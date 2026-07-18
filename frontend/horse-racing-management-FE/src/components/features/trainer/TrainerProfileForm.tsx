@@ -1,9 +1,15 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import Button from '@/components/ui/Button';
+import { isoDateYearsAgo } from '@/utils/age';
 import type { Trainer } from '@/types';
 
+const MIN_AGE = 18;
+const MAX_AGE = 99;
+const MIN_DOB = isoDateYearsAgo(MAX_AGE);
+const MAX_DOB = isoDateYearsAgo(MIN_AGE);
+
 interface FormData {
-  age: string;
+  dateOfBirth: string;
   experienceYears: string;
   description: string;
   avatarUrl: string;
@@ -11,7 +17,7 @@ interface FormData {
 
 interface TrainerProfileFormProps {
   initialValues?: Partial<Trainer>;
-  onSubmit: (payload: { age: number; experienceYears: number; description: string; avatarUrl: string | null }) => void;
+  onSubmit: (payload: { dateOfBirth: string; experienceYears: number; description: string; avatarUrl: string | null }) => void;
   loading?: boolean;
 }
 
@@ -21,7 +27,7 @@ const inputCls = (err?: string) =>
 
 export default function TrainerProfileForm({ initialValues = {}, onSubmit, loading }: TrainerProfileFormProps) {
   const [form, setForm] = useState<FormData>({
-    age: initialValues.age?.toString() ?? '',
+    dateOfBirth: initialValues.dateOfBirth ?? '',
     experienceYears: initialValues.experienceYears?.toString() ?? '',
     description: initialValues.description ?? '',
     avatarUrl: initialValues.avatarUrl ?? '',
@@ -33,8 +39,9 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
 
   const validate = () => {
     const errs: Partial<Record<keyof FormData, string>> = {};
-    const age = Number(form.age);
-    if (!form.age || isNaN(age) || age < 18 || age > 99) errs.age = 'Age must be between 18 and 99.';
+    if (!form.dateOfBirth || form.dateOfBirth < MIN_DOB || form.dateOfBirth > MAX_DOB) {
+      errs.dateOfBirth = `Age must be between ${MIN_AGE} and ${MAX_AGE}.`;
+    }
     const exp = Number(form.experienceYears);
     if (form.experienceYears === '' || isNaN(exp) || exp < 0 || exp > 70) errs.experienceYears = 'Experience must be between 0 and 70.';
     if (form.description.length > 1000) errs.description = 'Maximum 1000 characters.';
@@ -47,7 +54,7 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setErrors({});
     onSubmit({
-      age: Number(form.age),
+      dateOfBirth: form.dateOfBirth,
       experienceYears: Number(form.experienceYears),
       description: form.description,
       avatarUrl: form.avatarUrl || null,
@@ -57,14 +64,14 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
   return (
     <form onSubmit={handleSubmit} noValidate className="divide-y divide-rim">
 
-      {/* Age */}
+      {/* Date of Birth */}
       <div className="px-6 py-5">
-        <label htmlFor="tf-age" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-ink-4">
-          Age <span className="text-fail">*</span>
+        <label htmlFor="tf-dob" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-ink-4">
+          Date of Birth <span className="text-fail">*</span>
         </label>
-        <input id="tf-age" type="number" className={inputCls(errors.age)}
-          value={form.age} onChange={set('age')} min={18} max={99} placeholder="e.g. 32" />
-        {errors.age && <p className="mt-1.5 text-xs text-fail">{errors.age}</p>}
+        <input id="tf-dob" type="date" className={inputCls(errors.dateOfBirth)}
+          value={form.dateOfBirth} onChange={set('dateOfBirth')} min={MIN_DOB} max={MAX_DOB} />
+        {errors.dateOfBirth && <p className="mt-1.5 text-xs text-fail">{errors.dateOfBirth}</p>}
       </div>
 
       {/* Experience */}

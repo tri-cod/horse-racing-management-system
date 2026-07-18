@@ -43,7 +43,7 @@ export default function JockeyDashboardPage() {
       setProfileName(p?.name ?? null);
       setProfileAvatarUrl(p?.avatarUrl ?? null);
       setExperienceYear(p?.experienceYear ?? null);
-      setProfileComplete(!!(p?.age && p?.experienceYear != null));
+      setProfileComplete(!!(p?.dateOfBirth && p?.experienceYear != null));
     } else {
       nextErr.profile = 'Failed to load';
     }

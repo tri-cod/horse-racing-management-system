@@ -1,15 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Flag, Play, Lock, ChevronDown, ChevronUp, Calendar, MapPin } from 'lucide-react';
-import { startRace, closeRegistration } from '@/api/refereeApi';
+import { Flag, Play, Lock, ChevronDown, ChevronUp, Calendar, MapPin, Gavel } from 'lucide-react';
+import { startRace, closeRegistration, getPenaltiesByRace } from '@/api/refereeApi';
 import { getRaces } from '@/api/raceApi';
 import SetResultModal from '@/components/features/referee/SetResultModal';
+import IssuePenaltyModal from '@/components/features/referee/IssuePenaltyModal';
+import PenaltyList from '@/components/features/referee/PenaltyList';
 import RegisteredHorsesList from '@/components/features/race-horse/RegisteredHorsesList';
 import { useToast } from '@/components/ui/ToastProvider';
 import EmptyState from '@/components/ui/EmptyState';
 import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
-import type { Race } from '@/types';
+import type { Race, Penalty } from '@/types';
 
 const fmtDate = (iso?: string) =>
   iso
@@ -47,6 +49,12 @@ export default function RefereeRacesPage() {
   const [expandedRaceId, setExpandedRaceId] = useState<number | null>(null);
   const [resultRace, setResultRace] = useState<Race | null>(null);
 
+  // Penalty state
+  const [penaltyRace, setPenaltyRace] = useState<Race | null>(null);
+  const [penaltyPanelId, setPenaltyPanelId] = useState<number | null>(null);
+  const [penalties, setPenalties] = useState<Penalty[]>([]);
+  const [penaltiesLoading, setPenaltiesLoading] = useState(false);
+
   const fetchRaces = useCallback(async () => {
     setLoading(true);
     try {
@@ -58,6 +66,19 @@ export default function RefereeRacesPage() {
   }, [addToast]);
 
   useEffect(() => { fetchRaces(); }, [fetchRaces]);
+
+  const loadPenalties = useCallback(async (raceId: number) => {
+    setPenaltiesLoading(true);
+    try { setPenalties((await getPenaltiesByRace(raceId)) ?? []); }
+    catch { addToast('Failed to load penalties.', 'error'); }
+    finally { setPenaltiesLoading(false); }
+  }, [addToast]);
+
+  const togglePenaltyPanel = (raceId: number) => {
+    const next = penaltyPanelId === raceId ? null : raceId;
+    setPenaltyPanelId(next);
+    if (next != null) { setPenalties([]); loadPenalties(next); }
+  };
 
   const doAction = async (id: number, fn: (id: number) => Promise<unknown>, msg: string) => {
     setActionId(id);
@@ -72,7 +93,11 @@ export default function RefereeRacesPage() {
   return (
     <div className="px-8 py-6">
       <Seo title="Race Control" />
-      <DashboardPageHeader eyebrow="Referee" title="Race Control" subtitle="Manage race status and results" />
+      <DashboardPageHeader
+        eyebrow="Referee"
+        title="Race Control"
+        subtitle="Manage race status, penalties and results"
+      />
 
       {loading ? (
         <div className="flex flex-col gap-3">
@@ -84,6 +109,7 @@ export default function RefereeRacesPage() {
         <div className="flex flex-col gap-3">
           {races.map((race) => {
             const isExpanded = expandedRaceId === race.id;
+            const isPenaltyOpen = penaltyPanelId === race.id;
             const isActing = actionId === race.id;
 
             return (
@@ -138,15 +164,35 @@ export default function RefereeRacesPage() {
                         <Play size={12} /> Start Race
                       </button>
                     )}
+
+                    {/* Backend only accepts penalties while the race is ONGOING. */}
                     {race.status === 'ONGOING' && (
-                      <button
-                        type="button"
-                        onClick={() => setResultRace(race)}
-                        className="inline-flex items-center gap-1.5 border border-gold/40 bg-gold/10 px-3 py-1.5 text-xs font-semibold text-gold-hi transition-colors hover:bg-gold/20"
-                      >
-                        Set Result
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setPenaltyRace(race)}
+                          className="inline-flex items-center gap-1.5 border border-fail/30 bg-fail-subtle px-3 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail/20"
+                        >
+                          <Gavel size={12} /> Penalty
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setResultRace(race)}
+                          className="inline-flex items-center gap-1.5 border border-gold/40 bg-gold/10 px-3 py-1.5 text-xs font-semibold text-gold-hi transition-colors hover:bg-gold/20"
+                        >
+                          Set Result
+                        </button>
+                      </>
                     )}
+
+                    <button
+                      type="button"
+                      onClick={() => togglePenaltyPanel(race.id)}
+                      className="inline-flex items-center gap-1.5 border border-rim bg-surface-overlay px-3 py-1.5 text-xs font-semibold text-ink-3 transition-colors hover:border-rim-hi hover:text-ink"
+                    >
+                      <Gavel size={12} /> {isPenaltyOpen ? 'Hide' : 'View'} Penalties
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => setExpandedRaceId(isExpanded ? null : race.id)}
@@ -170,6 +216,19 @@ export default function RefereeRacesPage() {
                     />
                   </div>
                 )}
+
+                {/* Penalty panel */}
+                {isPenaltyOpen && (
+                  <div className="border-t border-rim bg-surface-overlay/30 px-5 py-4">
+                    <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Penalties</p>
+                    <PenaltyList
+                      penalties={penalties}
+                      loading={penaltiesLoading}
+                      onChanged={() => loadPenalties(race.id)}
+                      onToast={(msg, type) => addToast(msg, type ?? 'success')}
+                    />
+                  </div>
+                )}
               </div>
             );
           })}
@@ -185,6 +244,21 @@ export default function RefereeRacesPage() {
             setResultRace(null);
             fetchRaces();
           }}
+        />
+      )}
+
+      {penaltyRace && (
+        <IssuePenaltyModal
+          race={penaltyRace}
+          onClose={() => setPenaltyRace(null)}
+          onSuccess={(msg) => {
+            addToast(msg, 'success');
+            if (penaltyPanelId === penaltyRace.id) loadPenalties(penaltyRace.id);
+            // A DISQUALIFY changes RaceHorse status, so refresh the horse list too.
+            setExpandedRaceId((cur) => cur);
+            setPenaltyRace(null);
+          }}
+          onError={(msg) => addToast(msg, 'error')}
         />
       )}
     </div>

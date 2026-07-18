@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, Flag,
   Shield, ClipboardList, Ticket, Wallet, UserCog, TrendingUp,
-  Landmark, PencilLine, FlagTriangleRight, Undo2, Send, type LucideIcon,
+  Landmark, PencilLine, FlagTriangleRight, Undo2, Gavel, Send, type LucideIcon,
 } from 'lucide-react';
 import type { UserRole } from '@/types';
 
@@ -17,10 +17,14 @@ export const ROLE_MENU: Partial<Record<UserRole, NavItem[]>> = {
   ],
   STAFF: [
     { icon: TrendingUp, label: 'Set Odds', href: '/admin/races?tab=odds' },],
-  REFEREE: [
-    { icon: LayoutDashboard, label: 'Dashboard', href: '/referee/dashboard' },
-    { icon: Flag, label: 'Race Control', href: '/referee/races' },
-  ],
+REFEREE: [
+        { icon: LayoutDashboard, label: 'Dashboard', href: '/referee/dashboard' },
+        { icon: Flag, label: 'Race Control', href: '/referee/races' },
+        { icon: ClipboardList, label: 'My Races', href: '/referee/my-races' },
+        { icon: Gavel, label: 'Penalty History', href: '/referee/penalties' },
+        { icon: UserCog, label: 'My Profile', href: '/referee/profile' },
+        { icon: Wallet, label: 'My Wallet', href: '/my-wallet' },
+    ],
   HORSE_OWNER: [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/horse-owner/dashboard' },
     { icon: Shield, label: 'My Horses', href: '/horse-owner/horses' },

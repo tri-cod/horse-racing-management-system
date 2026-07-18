@@ -10,6 +10,7 @@ import { getAvailableJockeys } from '@/api/jockeyApi';
 import { registerHorseToRace, sendJockeyRequest } from '@/api/raceHorseApi';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
+import { calculateAge } from '@/utils/age';
 import type { Race, Horse, Jockey, RaceHorse } from '@/types';
 
 const fmt = (n?: number) =>
@@ -248,7 +249,7 @@ export default function HorseOwnerRacePage() {
                     <span className={`silk silk--${(j.id % 6) + 1}`} />
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-ink">{j.name}</p>
-                      <p className="text-xs text-ink-3">{j.experienceYear} yr exp · Age {j.age}</p>
+                      <p className="text-xs text-ink-3">{j.experienceYear} yr exp · Age {calculateAge(j.dateOfBirth) ?? '—'}</p>
                     </div>
                     {selectedJockey === j.id && <CheckCircle2 size={15} className="shrink-0 text-navy" />}
                   </label>

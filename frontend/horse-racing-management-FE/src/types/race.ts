@@ -2,10 +2,11 @@ export type RaceStatus =
  | 'UPCOMING'
  | 'OPEN_REGISTRATION'
  | 'CLOSED_REGISTRATION'
+ | 'OPEN_BETTING'
  | 'ONGOING'
  | 'FINISHED'
  | 'CANCELLED';
-
+ 
 // Backend enum RaceHorseStatus (SCREAMING_SNAKE), serialized as a plain string.
 export type RaceHorseStatus =
   | 'PENDING'
@@ -17,6 +18,8 @@ export type RaceHorseStatus =
   | 'WITHDRAW_PENDING'   // owner requested withdrawal, awaiting admin
   | 'WITHDRAW_REJECTED'
   | 'WITHDRAWN'
+  | 'FINISHED'           // race result recorded for this entry
+  | 'DISQUALIFIED'       // referee issued a disqualifying penalty
   | string;              // fallback for any other/legacy value
 export interface Race {
  id: number;
