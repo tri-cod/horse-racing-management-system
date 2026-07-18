@@ -13,4 +13,5 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Long> {
     List<Penalty> findByReferee_Id(Long refereeId);
     long countByReferee_Id(Long refereeId);
     List<Penalty> findByRaceHorse_Race_IdAndReferee_Id(Long raceId, Long refereeId);
+    void deleteByRaceHorse_Race_Id(Long raceId);
 }

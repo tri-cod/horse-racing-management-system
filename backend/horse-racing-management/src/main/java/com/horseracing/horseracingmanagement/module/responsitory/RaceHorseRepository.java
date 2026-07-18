@@ -66,9 +66,12 @@ public interface RaceHorseRepository extends JpaRepository<RaceHorse, Long> {
 
 
     // ← thêm
-    List<RaceHorse> findByRace_IdAndStatusIn(Long raceId, List<RaceHorseStatus> statuses);
     List<RaceHorse> findByJockey_IdAndStatusIn(Long jockeyId, List<String> statuses);
     long countByRace_Id(Long raceId);
+
+    List<RaceHorse> findByRace_IdAndStatus(Long raceId, RaceHorseStatus status);
+
+    List<RaceHorse> findByRace_IdAndStatusIn(Long raceId, List<RaceHorseStatus> statuses);
 
 
 

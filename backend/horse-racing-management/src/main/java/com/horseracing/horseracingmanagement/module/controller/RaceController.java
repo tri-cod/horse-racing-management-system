@@ -47,6 +47,13 @@ public class RaceController {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 raceService.getRaceList(status, pageable)));
     }
+
+    @PutMapping("/{id}/open-betting")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    public ResponseEntity<ApiResponse<RaceResponse>> openBetting(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Betting opened",
+                raceService.openBetting(id)));
+    }
     // Mở lại đăng ký (ví dụ admin lỡ close sớm)
     @PutMapping("/{id}/reopen")
     @PreAuthorize("hasAuthority('ADMIN')")

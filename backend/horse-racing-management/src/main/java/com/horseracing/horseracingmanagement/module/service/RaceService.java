@@ -15,6 +15,7 @@ public interface RaceService {
     void deleteRace(Long raceId);
 
     RaceResponse startRace(Long id);
+    RaceResponse openBetting(Long raceId);
 
     RaceResponse finishRace(Long id);
     RaceResponse reopenRace(Long raceId);

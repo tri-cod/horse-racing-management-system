@@ -4,7 +4,7 @@ import com.horseracing.horseracingmanagement.module.dto.RefereeDto.*;
 
 import java.util.List;
 
-public interface RefereeService {
+public interface    RefereeService {
     RefereeProfileResponse completeProfile(CompleteRefereeProfileRequest request, Long userId);
     RefereeProfileResponse getMyProfile(Long userId);
     RefereeProfileResponse getRefereeProfile(Long refereeId);  // public
@@ -19,4 +19,8 @@ public interface RefereeService {
     List<PenaltyResponse> getPenaltiesByRace(Long raceId);
     List<PenaltyResponse> getMyPenaltyHistory(Long userId);      // tất cả lần phạt của referee
     void cancelPenalty(Long penaltyId, Long userId);             // hủy phạt nếu nhầm
+
+
+    PreRaceInspectionResponse inspectRace(Long raceId, Long userId);
+    void reportInspectionIssue(InspectionIssueRequest request, Long userId);
 }

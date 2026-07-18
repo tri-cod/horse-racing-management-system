@@ -39,6 +39,7 @@ public class RaceResultServiceImpl implements RaceResultService {
     private final HorseRepository horseRepository;  // ← thêm
     private final TrainerRepository trainerRepository;  // ← thêm (dùng trong distributeRewards)
     private final PenaltyRepository penaltyRepository;
+    private final RaceRefereeRepository raceRefereeRepository;
 
     @Override
     @Transactional
@@ -50,27 +51,39 @@ public class RaceResultServiceImpl implements RaceResultService {
             throw new RuntimeException("Race must be ONGOING to set results");
         }
 
-        // ← Validate không có 2 con cùng thời gian
-        long distinctTimes = request.getResults().stream()
-                .map(RaceResultItemRequest::getCompletionTimeSeconds)
-                .distinct().count();
-        if (distinctTimes != request.getResults().size()) {
-            throw new RuntimeException(
-                    "Two horses cannot have the same completion time. Please check again.");
+        // ← Check referee có phụ trách race này không
+        RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Referee not found"));
+        if (race.getReferee() == null || !race.getReferee().getId().equals(referee.getId())) {
+            throw new RuntimeException("You are not the referee of this race");
         }
 
+        // ← Check đủ số ngựa APPROVED
+        List<RaceHorse> approvedHorses = raceHorseRepository
+                .findByRace_IdAndStatus(race.getId(), RaceHorseStatus.APPROVED);
+        List<Long> approvedIds = approvedHorses.stream()
+                .map(RaceHorse::getId).collect(Collectors.toList());
 
+        List<Long> submittedIds = request.getResults().stream()
+                .map(RaceResultItemRequest::getRaceHorseId).collect(Collectors.toList());
+
+        // Check có horse nào trong kết quả không phải APPROVED không
+        List<Long> invalidIds = submittedIds.stream()
+                .filter(id -> !approvedIds.contains(id))
+                .collect(Collectors.toList());
+        if (!invalidIds.isEmpty()) {
+            throw new RuntimeException("These raceHorseIds are not APPROVED: " + invalidIds);
+        }
+
+        // ← Cộng time penalty trước khi validate trùng thời gian
         List<RaceResultItemRequest> adjustedResults = request.getResults().stream()
                 .map(item -> {
-                    // Tìm time penalty của horse này trong race
                     Double timePenalty = penaltyRepository
                             .findByRaceHorse_Id(item.getRaceHorseId())
                             .stream()
                             .filter(p -> p.getTimePenaltySeconds() != null)
                             .mapToDouble(Penalty::getTimePenaltySeconds)
                             .sum();
-
-                    // Cộng penalty vào thời gian
                     return new RaceResultItemRequest(
                             item.getRaceHorseId(),
                             item.getCompletionTimeSeconds() + timePenalty
@@ -78,22 +91,34 @@ public class RaceResultServiceImpl implements RaceResultService {
                 })
                 .collect(Collectors.toList());
 
-        // ← Sort theo giây tăng dần → tự tính rank (fix bug hạng 2 nhanh hơn hạng 1)
+        // ← Validate trùng thời gian SAU KHI cộng penalty
+        long distinctTimes = adjustedResults.stream()
+                .map(RaceResultItemRequest::getCompletionTimeSeconds)
+                .distinct().count();
+        if (distinctTimes != adjustedResults.size()) {
+            throw new RuntimeException(
+                    "Two horses have the same completion time (after penalty). Please check again.");
+        }
+
+        // ← Filter bỏ DISQUALIFIED + sort
         List<RaceResultItemRequest> sorted = adjustedResults.stream()
                 .filter(item -> {
-                    // Loại bỏ horse bị DISQUALIFY
                     RaceHorse rh = raceHorseRepository.findById(item.getRaceHorseId()).orElse(null);
                     return rh != null && rh.getStatus() != RaceHorseStatus.DISQUALIFIED;
                 })
                 .sorted(Comparator.comparingDouble(RaceResultItemRequest::getCompletionTimeSeconds))
                 .collect(Collectors.toList());
 
+        if (sorted.isEmpty()) {
+            throw new RuntimeException("No valid horses to set result for");
+        }
+
         for (int i = 0; i < sorted.size(); i++) {
             RaceResultItemRequest item = sorted.get(i);
             long rank = i + 1;
 
             RaceHorse raceHorse = raceHorseRepository.findById(item.getRaceHorseId())
-                    .orElseThrow(() -> new RuntimeException("RaceHorse not found: " + item.getRaceHorseId()));
+                    .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
 
             Long rewards = calculateRewards(race.getTotalprizepool(), rank, sorted.size());
 
@@ -105,25 +130,30 @@ public class RaceResultServiceImpl implements RaceResultService {
                     .rewards(rewards)
                     .build());
 
-            // ← Đổi status RaceHorse → FINISHED
             raceHorse.setStatus(RaceHorseStatus.FINISHED);
             raceHorseRepository.save(raceHorse);
 
-            // ← Đổi status Horse → FINISHED (đã từng đua xong ít nhất 1 race)
             Horse horse = raceHorse.getHorse();
             horse.setStatus(HorseStatus.FINISHED);
-            horseRepository.save(horse);  // ← inject HorseRepository vào RaceResultServiceImpl
+            horseRepository.save(horse);
 
             if (rewards > 0) {
                 distributeRewards(raceHorse, race, rank, rewards);
             }
         }
 
-        // Cập nhật race status → FINISHED
+        // ← Đổi status DISQUALIFIED horse sang FINISHED (không có rewards)
+        raceHorseRepository.findByRace_IdAndStatus(race.getId(), RaceHorseStatus.DISQUALIFIED)
+                .forEach(rh -> {
+                    rh.setStatus(RaceHorseStatus.FINISHED);
+                    raceHorseRepository.save(rh);
+                    rh.getHorse().setStatus(HorseStatus.FINISHED);
+                    horseRepository.save(rh.getHorse());
+                });
+
         race.setStatus(RaceStatus.FINISHED);
         raceRepository.save(race);
 
-        // Push WebSocket
         wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
                 .raceId(race.getId())
                 .raceName(race.getRaceName())
@@ -132,13 +162,11 @@ public class RaceResultServiceImpl implements RaceResultService {
                 .updatedAt(Instant.now())
                 .build());
 
-        // Tính toán betting cho Spectator
         betService.calculateBetResults(request.getRaceId());
 
-        // Notify admins
         notificationService.sendToAllAdmins(
                 "🏁 Race Finished",
-                String.format("Race '%s' finished. Results published!", race.getRaceName()),
+                String.format("Race '%s' finished!", race.getRaceName()),
                 NotificationType.RACE_RESULT_PUBLISHED,
                 race.getId()
         );

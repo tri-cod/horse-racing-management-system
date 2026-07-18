@@ -115,4 +115,24 @@ public class RefereeController {
         refereeService.cancelPenalty(penaltyId, userDetails.getId());
         return ResponseEntity.ok(ApiResponse.success("Penalty cancelled", null));
     }
+
+    // Referee kiểm tra thông tin ngựa/jockey trước race
+    @GetMapping("/inspect-race/{raceId}")
+    @PreAuthorize("hasAuthority('REFEREE')")
+    public ResponseEntity<ApiResponse<PreRaceInspectionResponse>> inspectRace(
+            @PathVariable Long raceId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Inspection complete",
+                refereeService.inspectRace(raceId, userDetails.getId())));
+    }
+
+    // Referee báo cáo vấn đề phát hiện khi kiểm tra
+    @PostMapping("/inspection-issue")
+    @PreAuthorize("hasAuthority('REFEREE')")
+    public ResponseEntity<ApiResponse<String>> reportInspectionIssue(
+            @Valid @RequestBody InspectionIssueRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        refereeService.reportInspectionIssue(request, userDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success("Issue reported", null));
+    }
 }

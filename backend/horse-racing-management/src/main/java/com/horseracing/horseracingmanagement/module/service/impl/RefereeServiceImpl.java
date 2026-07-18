@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -223,6 +224,155 @@ public class RefereeServiceImpl implements RefereeService {
         }
 
         penaltyRepository.deleteById(penaltyId);
+    }
+
+
+    // Implement
+    @Override
+    public PreRaceInspectionResponse inspectRace(Long raceId, Long userId) {
+        RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Referee not found"));
+
+        Race race = raceRepository.findById(raceId)
+                .orElseThrow(() -> new RuntimeException("Race not found"));
+
+        // Check referee có phụ trách race này không
+        if (race.getReferee() == null || !race.getReferee().getId().equals(referee.getId())) {
+            throw new RuntimeException("You are not the referee of this race");
+        }
+
+        if (race.getStatus() != RaceStatus.ONGOING &&
+                race.getStatus() != RaceStatus.OPEN_BETTING) {
+            throw new RuntimeException("Race must be OPEN_BETTING or ONGOING to inspect");
+        }
+
+        List<RaceHorse> approvedHorses = raceHorseRepository
+                .findByRace_IdAndStatus(raceId, RaceHorseStatus.APPROVED);
+
+        List<String> globalIssues = new ArrayList<>();
+        List<HorseInspectionItem> items = new ArrayList<>();
+
+        for (RaceHorse rh : approvedHorses) {
+            List<String> warnings = new ArrayList<>();
+
+            // ← Check 1: Horse có status ACTIVE/RACING không (không phải INJURED/RETIRED)
+            if (rh.getHorse().getStatus() == HorseStatus.INACTIVE ||
+                    rh.getHorse().getStatus() == HorseStatus.RETIRED) {
+                warnings.add("⚠️ Horse is " + rh.getHorse().getStatus() + " — not fit to race");
+                globalIssues.add("Horse '" + rh.getHorse().getHorseName() + "' is not fit to race");
+            }
+
+            // ← Check 2: Jockey có tồn tại không
+            if (rh.getJockey() == null) {
+                warnings.add("❌ No jockey assigned");
+                globalIssues.add("Horse '" + rh.getHorse().getHorseName() + "' has no jockey");
+            }
+
+            // ← Check 3: Jockey có status ACTIVE không
+            if (rh.getJockey() != null &&
+                    !"Active".equalsIgnoreCase(rh.getJockey().getStatus())) {
+                warnings.add("⚠️ Jockey is " + rh.getJockey().getStatus());
+                globalIssues.add("Jockey '" + rh.getJockey().getUser().getFullName()
+                        + "' is not active");
+            }
+
+            // ← Check 4: Odds đã set chưa
+            if (rh.getOdds() == null) {
+                warnings.add("⚠️ Odds not set");
+                globalIssues.add("Horse '" + rh.getHorse().getHorseName() + "' has no odds");
+            }
+
+            // ← Check 5: Jockey có đang cưỡi 2 ngựa cùng race không
+            if (rh.getJockey() != null) {
+                long jockeyCount = approvedHorses.stream()
+                        .filter(other -> other.getJockey() != null
+                                && other.getJockey().getId().equals(rh.getJockey().getId())
+                                && !other.getId().equals(rh.getId()))
+                        .count();
+                if (jockeyCount > 0) {
+                    warnings.add("❌ Jockey assigned to multiple horses in same race!");
+                    globalIssues.add("Jockey '" + rh.getJockey().getUser().getFullName()
+                            + "' is assigned to multiple horses");
+                }
+            }
+
+            items.add(HorseInspectionItem.builder()
+                    .raceHorseId(rh.getId())
+                    .horseId(rh.getHorse().getId())
+                    .horseName(rh.getHorse().getHorseName())
+                    .horseStatus(rh.getHorse().getStatus().name())
+                    .jockeyId(rh.getJockey() != null ? rh.getJockey().getId() : null)
+                    .jockeyName(rh.getJockey() != null
+                            ? rh.getJockey().getUser().getFullName() : null)
+                    .jockeyStatus(rh.getJockey() != null ? rh.getJockey().getStatus() : null)
+                    .odds(rh.getOdds())
+                    .warnings(warnings)
+                    .build());
+        }
+
+        return PreRaceInspectionResponse.builder()
+                .raceId(race.getId())
+                .raceName(race.getRaceName())
+                .horses(items)
+                .issues(globalIssues)
+                .readyToRace(globalIssues.isEmpty())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public void reportInspectionIssue(InspectionIssueRequest request, Long userId) {
+        RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Referee not found"));
+
+        RaceHorse raceHorse = raceHorseRepository.findById(request.getRaceHorseId())
+                .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
+
+        // Nếu WRONG_HORSE hoặc HORSE_UNFIT → disqualify ngay
+        if ("WRONG_HORSE".equals(request.getIssueType()) ||
+                "HORSE_UNFIT".equals(request.getIssueType())) {
+
+            Penalty penalty = Penalty.builder()
+                    .raceHorse(raceHorse)
+                    .referee(referee)
+                    .reason(request.getDescription())
+                    .penaltyType("DISQUALIFY")
+                    .isDisqualified(true)
+                    .build();
+            penaltyRepository.save(penalty);
+
+            raceHorse.setStatus(RaceHorseStatus.DISQUALIFIED);
+            raceHorseRepository.save(raceHorse);
+
+            raceHorse.getHorse().setStatus(HorseStatus.ACTIVE);
+            horseRepository.save(raceHorse.getHorse());
+        } else {
+            // WRONG_JOCKEY, EQUIPMENT_ISSUE → issue warning penalty
+            Penalty penalty = Penalty.builder()
+                    .raceHorse(raceHorse)
+                    .referee(referee)
+                    .reason(request.getDescription())
+                    .penaltyType("WARNING")
+                    .isDisqualified(false)
+                    .build();
+            penaltyRepository.save(penalty);
+        }
+
+        // Notify HorseOwner
+        HorseOwner owner = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
+                .orElse(null);
+        if (owner != null) {
+            notificationService.sendToUser(
+                    owner.getUser().getId(),
+                    "🚨 Inspection Issue",
+                    String.format("[%s] %s — Horse: %s",
+                            request.getIssueType(),
+                            request.getDescription(),
+                            raceHorse.getHorse().getHorseName()),
+                    NotificationType.RACE_RESULT_PUBLISHED,
+                    raceHorse.getId()
+            );
+        }
     }
 
     // ============ mappers ============

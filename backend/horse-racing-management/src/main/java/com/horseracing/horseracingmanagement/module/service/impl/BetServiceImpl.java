@@ -41,7 +41,6 @@ public class BetServiceImpl implements BetService {
             throw new RuntimeException("Race is not open for betting");
         }
 
-
         // Tính tổng tiền bet
         long totalAmount = request.getBetItems().stream()
                 .mapToLong(BetItemDto::getBetAmount).sum();

@@ -421,21 +421,20 @@ public class RaceHorseServiceImpl implements RaceHorseService {
 
 
     @Override
+    @Transactional
     public void setOdds(SetAllOddsRequest request) {
         Race race = raceRepository.findById(request.getRaceId())
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
-        // FIX: trước đây chỉ cho phép khi race ở trạng thái CLOSED_REGISTRATION,
-        // khiến admin không thể set odds ở các giai đoạn khác. Nay chỉ chặn FINISHED và CANCELLED.
-        if (race.getStatus() == RaceStatus.FINISHED || race.getStatus() == RaceStatus.CANCELLED) {
-            throw new RuntimeException("Cannot set odds for a finished or cancelled race");
+        // ← đổi check sang SETTING_ODDS
+        if (race.getStatus() != RaceStatus.SETTING_ODDS) {
+            throw new RuntimeException("Can only set odds when race is SETTING_ODDS");
         }
 
         request.getOddsList().forEach(item -> {
             RaceHorse raceHorse = raceHorseRepository.findById(item.getRaceHorseId())
                     .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
 
-            // Validate odds hợp lệ
             if (item.getOdds().compareTo(BigDecimal.ONE) <= 0) {
                 throw new RuntimeException("Odds must be greater than 1");
             }

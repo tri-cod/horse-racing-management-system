@@ -27,12 +27,6 @@ public class MailService {
 
         MimeMessage message = mailSender.createMimeMessage();
 
-        System.out.println("Before send");
-        System.out.println("To Email = " + toEmail);
-
-        System.out.println("After send");
-
-
 
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");

@@ -1,19 +1,16 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
+import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.CreateRaceRequest;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.CreateRaceResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.RaceResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.RaceStatusUpdate;
 import com.horseracing.horseracingmanagement.module.entity.Race;
+import com.horseracing.horseracingmanagement.module.entity.RaceHorse;
 import com.horseracing.horseracingmanagement.module.entity.RaceReferee;
 import com.horseracing.horseracingmanagement.module.entity.User;
-import com.horseracing.horseracingmanagement.module.responsitory.BetItemRepository;
-import com.horseracing.horseracingmanagement.module.responsitory.BetRepository;
-import com.horseracing.horseracingmanagement.module.responsitory.RaceHorseRepository;
-import com.horseracing.horseracingmanagement.module.responsitory.RaceRefereeRepository;
-import com.horseracing.horseracingmanagement.module.responsitory.RaceRepository;
-import com.horseracing.horseracingmanagement.module.responsitory.RaceResultRepository;
+import com.horseracing.horseracingmanagement.module.responsitory.*;
 import com.horseracing.horseracingmanagement.module.service.RaceHorseService;
 import jakarta.transaction.Transactional;
 import com.horseracing.horseracingmanagement.module.service.RaceService;
@@ -25,6 +22,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +37,7 @@ public class RaceServiceImpl implements RaceService {
     private final RaceResultRepository raceResultRepository;
     private final RaceHorseRepository raceHorseRepository;
     private final RaceHorseService raceHorseService;
+    private final PenaltyRepository penaltyRepository;
 
 
     // Admin start race → đóng bet
@@ -46,9 +46,10 @@ public class RaceServiceImpl implements RaceService {
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
         // ← fix: phải là CLOSED_REGISTRATION mới được start
-        if (race.getStatus() != RaceStatus.CLOSED_REGISTRATION) {
-            throw new RuntimeException("Race must be CLOSED_REGISTRATION to start");
+        if (race.getStatus() != RaceStatus.OPEN_BETTING) {
+            throw new RuntimeException("Race must be OPEN_BETTING to start");
         }
+
 
         race.setStatus(RaceStatus.ONGOING);
         raceRepository.save(race);
@@ -124,14 +125,54 @@ public class RaceServiceImpl implements RaceService {
         race.setStatus(RaceStatus.CLOSED_REGISTRATION);
         raceRepository.save(race);
 
-        // ← Xóa các đơn Pending chưa hoàn tất + hoàn phí
+        // ← Xóa các pending chưa hoàn tất + hoàn phí
         raceHorseService.cleanupPendingOnClose(raceId);
+
+        // ← Chuyển sang SETTING_ODDS thay vì CLOSED_REGISTRATION
+        race.setStatus(RaceStatus.SETTING_ODDS);
+        raceRepository.save(race);
 
         wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
                 .raceId(race.getId())
                 .raceName(race.getRaceName())
                 .status("CLOSED_REGISTRATION")
                 .message("Registration closed. Betting is now open!")
+                .updatedAt(Instant.now())
+                .build());
+
+        return mapToResponse(race);
+    }
+
+    @Override
+    public RaceResponse openBetting(Long raceId) {
+        Race race = raceRepository.findById(raceId)
+                .orElseThrow(() -> new RuntimeException("Race not found"));
+
+        if (race.getStatus() != RaceStatus.SETTING_ODDS) {
+            throw new RuntimeException("Race must be SETTING_ODDS to open betting");
+        }
+
+        // ← Check tất cả horse đã có odds chưa
+        List<RaceHorse> approvedHorses = raceHorseRepository
+                .findByRace_IdAndStatus(raceId, RaceHorseStatus.APPROVED);
+
+        List<String> missingOdds = approvedHorses.stream()
+                .filter(rh -> rh.getOdds() == null)
+                .map(rh -> rh.getHorse().getHorseName())
+                .collect(Collectors.toList());
+
+        if (!missingOdds.isEmpty()) {
+            throw new RuntimeException("Missing odds for horses: " + missingOdds);
+        }
+
+        race.setStatus(RaceStatus.OPEN_BETTING);
+        raceRepository.save(race);
+
+        wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
+                .raceId(race.getId())
+                .raceName(race.getRaceName())
+                .status("OPEN_BETTING")
+                .message("Betting is now open!")
                 .updatedAt(Instant.now())
                 .build());
 
@@ -161,6 +202,7 @@ public class RaceServiceImpl implements RaceService {
             throw new RuntimeException("Race not found");
         }
         // Xóa theo đúng thứ tự FK: lá → gốc
+        penaltyRepository.deleteByRaceHorse_Race_Id(raceId);
         betItemRepository.deleteByBet_Race_Id(raceId);   // bet_items → bet → race
         betRepository.deleteByRace_Id(raceId);            // bet → race
         raceResultRepository.deleteByRace_Id(raceId);     // race_result → race_horse + race
