@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getRaces } from '@/api/raceApi';
 import type { Race, RaceStatus } from '@/types';
 
-const UPCOMING_STATUSES = new Set<RaceStatus>(['UPCOMING', 'OPEN_REGISTRATION', 'CLOSED_REGISTRATION']);
+const UPCOMING_STATUSES = new Set<RaceStatus>(['UPCOMING', 'OPEN_REGISTRATION', 'CLOSED_REGISTRATION', 'OPEN_BETTING']);
 
 export function useUpcomingRaces(limit = 3) {
  const { data, isLoading, error } = useQuery<Race[]>({

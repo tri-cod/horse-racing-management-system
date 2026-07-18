@@ -1,10 +1,6 @@
 import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  Search, Settings, LogOut, User, TrendingUp, LayoutDashboard,
-  ClipboardCheck, Plus, BadgeDollarSign, Flag, Shield, ClipboardList,
-  Wallet, UserCog, Ticket, Landmark, PencilLine, FlagTriangleRight, type LucideIcon,
-} from 'lucide-react';
+import { Search, Settings, LogOut, User, Wallet } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useWalletBalance } from '@/hooks/useWalletBalance';
 import NotificationBell from '@/components/NotificationBell';
@@ -12,7 +8,6 @@ import UserAvatar from '@/components/features/admin/UserAvatar';
 import type { UserRole } from '@/types';
 import { ROLE_MENU } from '@/config/roleMenu';
 
-interface NavItem { icon: LucideIcon; label: string; href: string }
 const WALLET_ROLES = new Set<UserRole>(['USER', 'HORSE_OWNER', 'JOCKEY', 'REFEREE', 'TRAINER']);
 
 const fmtBalance = (n: number | null) =>
