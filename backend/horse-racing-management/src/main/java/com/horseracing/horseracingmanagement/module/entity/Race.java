@@ -81,6 +81,12 @@ public class Race {
     @Column(name = "status", length = 20)
     private RaceStatus status;
 
+    // Stamped by RefereeServiceImpl.inspectRace() only when the inspection comes back
+    // clean (no issues). startRace() requires this to be set — starting without it means
+    // no one ever confirmed the horses/jockeys are race-ready.
+    @Column(name = "race_inspected_at")
+    private Instant raceInspectedAt;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;

@@ -3,6 +3,7 @@ import { Trophy } from 'lucide-react';
 import { getHorsesByRace, setRaceResult } from '@/api/refereeApi';
 import { assignLanes } from '@/utils/laneUtils';
 import { getErrorMessage } from '@/utils/errors';
+import { isStatus } from '@/utils/raceHorseStatus';
 import Modal from '@/components/ui/Modal';
 import type { Race, RaceHorse } from '@/types';
 
@@ -26,9 +27,12 @@ export default function SetResultModal({ race, onClose, onSuccess }: SetResultMo
       setLoading(true);
       try {
         const data = await getHorsesByRace(race.id);
-        setHorses(assignLanes(data ?? []) as RaceHorse[]);
+        // Backend only accepts results for APPROVED entries — a horse that was withdrawn,
+        // rejected, or disqualified isn't racing, so don't ask the referee to time it.
+        const approved = (data ?? []).filter((rh) => isStatus(rh.status, 'APPROVED'));
+        setHorses(assignLanes(approved) as RaceHorse[]);
         const init: Times = {};
-        (data ?? []).forEach((rh) => { init[rh.id] = ''; });
+        approved.forEach((rh) => { init[rh.id] = ''; });
         setTimes(init);
       } catch { setError('Unable to load horse list.'); }
       finally { setLoading(false); }

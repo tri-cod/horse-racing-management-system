@@ -9,6 +9,10 @@ const TRACK_CONDITIONS = ['Dry', 'Wet', 'Muddy', 'Fast', 'Soft'];
 const SURFACE_TYPES = ['Turf', 'Dirt', 'Synthetic'];
 const STEPS = ['Basic Info & Referee', 'Track & Schedule', 'Prize & Capacity', 'Media'];
 
+// Every race runs at the same physical venue — locked so it can't drift per-race.
+const LOCKED_TRACK_NAME = 'Derby Track';
+const LOCKED_LOCATION = 'Santa Anita Park';
+
 function toLocalDatetime(iso?: string) {
  if (!iso) return '';
  const d = new Date(iso);
@@ -31,8 +35,8 @@ interface FormData {
 type Errors = Partial<Record<keyof FormData | 'submit', string>>;
 
 const EMPTY: FormData = {
- raceName: '', startTime: '', registrationDeadline: '', trackName: '', trackCondition: 'Dry',
- surfaceType: 'Turf', totalprizepool: '', distance: '', location: '', capacity: '', bannerImageurl: '', refereeId: '', entryFee: '',
+ raceName: '', startTime: '', registrationDeadline: '', trackName: LOCKED_TRACK_NAME, trackCondition: 'Dry',
+ surfaceType: 'Turf', totalprizepool: '', distance: '', location: LOCKED_LOCATION, capacity: '', bannerImageurl: '', refereeId: '', entryFee: '',
 };
 
 function Field({ id, label, required, optional, hint, error, children }: { id: string; label: string; required?: boolean; optional?: boolean; hint?: string; error?: string; children: ReactNode }) {
@@ -97,7 +101,8 @@ interface RaceFormProps {
 export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit, loading }: RaceFormProps) {
  const { referees, loading: refereesLoading, error: refereesError } = useReferees();
  const [form, setForm] = useState<FormData>(() => {
- const base = { ...EMPTY, ...initialValues };
+ // Locked regardless of what an existing race was saved with — track/location are fixed venue info now.
+ const base = { ...EMPTY, ...initialValues, trackName: LOCKED_TRACK_NAME, location: LOCKED_LOCATION };
  return { ...base, startTime: toLocalDatetime(base.startTime), registrationDeadline: toLocalDatetime(base.registrationDeadline), totalprizepool: base.totalprizepool ?? '', capacity: base.capacity ?? '', refereeId: base.refereeId ?? '', entryFee: base.entryFee ?? '' };
  });
  const [errors, setErrors] = useState<Errors>({});
@@ -143,11 +148,9 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  const errs: Errors = {};
  if (s === 1) {
  if (!form.raceName.trim()) errs.raceName = 'Race name is required.';
- if (!form.location.trim()) errs.location = 'Location is required.';
  }
  if (s === 2) {
  if (!form.startTime) errs.startTime = 'Start time is required.';
- if (!form.trackName.trim()) errs.trackName = 'Track name is required.';
  if (!form.distance.trim()) errs.distance = 'Distance is required.';
  }
  if (s === 3) {
@@ -176,17 +179,23 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  const payload: CreateRacePayload & { status?: RaceStatus } = {
  raceName: form.raceName.trim(), startTime: toISO(form.startTime),
  registrationDeadline: form.registrationDeadline ? toISO(form.registrationDeadline) : undefined,
- trackName: form.trackName.trim(), trackCondition: form.trackCondition, surfaceType: form.surfaceType,
+ trackName: LOCKED_TRACK_NAME, trackCondition: form.trackCondition, surfaceType: form.surfaceType,
  totalprizepool: Number(form.totalprizepool), distance: form.distance.trim(),
- location: form.location.trim(), capacity: Number(form.capacity), bannerImageurl: form.bannerImageurl.trim(),
+ location: LOCKED_LOCATION, capacity: Number(form.capacity), bannerImageurl: form.bannerImageurl.trim(),
  status: mode === 'create' ? 'OPEN_REGISTRATION' : (initialValues?.status ?? 'UPCOMING'),
  };
  if (form.refereeId !== '') payload.refereeId = Number(form.refereeId);
  if (mode === 'create' && form.entryFee !== '') payload.entryFee = Number(form.entryFee);
  try { await onSubmit(payload); }
  catch (err: unknown) {
- const e = err as { response?: { data?: { message?: string } }; message?: string };
- setErrors({ submit: e?.response?.data?.message ?? e?.message ?? 'Failed to save race.' });
+ const e = err as { response?: { data?: { message?: string; data?: Record<string, string> } }; message?: string };
+ // Field-level validation failures (e.g. "raceName: must not contain special characters")
+ // come back in response.data.data — surface them instead of the generic top-level message.
+ const fieldErrors = e?.response?.data?.data;
+ const detail = fieldErrors && typeof fieldErrors === 'object' && Object.keys(fieldErrors).length
+ ? Object.entries(fieldErrors).map(([field, msg]) => `${field}: ${msg}`).join(' · ')
+ : undefined;
+ setErrors({ submit: detail ?? e?.response?.data?.message ?? e?.message ?? 'Failed to save race.' });
  }
  };
 
@@ -202,7 +211,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  <SectionHeader title="Basic Info & Referee" />
  <div className="flex flex-col gap-4">
  <Field id="rf-name" label="Race Name" required error={errors.raceName}>{inp('rf-name', 'raceName', 'text', { placeholder: 'e.g. Grand Prix 2026' })}</Field>
- <Field id="rf-location" label="Location" required error={errors.location}>{inp('rf-location', 'location', 'text', { placeholder: 'e.g. Hanoi Racetrack' })}</Field>
+ <Field id="rf-location" label="Location" required hint="Fixed for every race.">{inp('rf-location', 'location', 'text', { disabled: true, className: `${inputCls()} cursor-not-allowed bg-surface-overlay text-ink-3` })}</Field>
  <Field id="rf-referee" label="Race Referee" optional error={errors.refereeId}
  hint={refereesError ?? 'Optional. Leave blank to assign later.'}>
  <select id="rf-referee" className={inputCls()} value={form.refereeId} onChange={set('refereeId')} disabled={refereesLoading}>
@@ -221,7 +230,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  <div className="flex flex-col gap-4">
  <Field id="rf-start" label="Start Time" required error={errors.startTime}>{inp('rf-start', 'startTime', 'datetime-local')}</Field>
  <Field id="rf-deadline" label="Registration Deadline" error={errors.registrationDeadline} hint="Auto-close 1 day before start if blank.">{inp('rf-deadline', 'registrationDeadline', 'datetime-local')}</Field>
- <Field id="rf-track" label="Track Name" required error={errors.trackName}>{inp('rf-track', 'trackName', 'text', { placeholder: 'e.g. Main Track' })}</Field>
+ <Field id="rf-track" label="Track Name" required hint="Fixed for every race.">{inp('rf-track', 'trackName', 'text', { disabled: true, className: `${inputCls()} cursor-not-allowed bg-surface-overlay text-ink-3` })}</Field>
  <Field id="rf-distance" label="Distance" required error={errors.distance}>{inp('rf-distance', 'distance', 'text', { placeholder: 'e.g. 1600m' })}</Field>
  <Field id="rf-cond" label="Track Condition" required error={errors.trackCondition}>
  <select id="rf-cond" className={inputCls()} value={form.trackCondition} onChange={set('trackCondition')}>

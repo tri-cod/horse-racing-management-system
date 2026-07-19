@@ -48,6 +48,14 @@ public class RaceController {
                 raceService.getRaceList(status, pageable)));
     }
 
+    // Admin closes registration; race moves straight to SETTING_ODDS so odds can be entered.
+    @PutMapping("/{id}/close")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<RaceResponse>> closeRace(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Registration closed",
+                raceService.closeRace(id)));
+    }
+
     @PutMapping("/{id}/open-betting")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
     public ResponseEntity<ApiResponse<RaceResponse>> openBetting(@PathVariable Long id) {

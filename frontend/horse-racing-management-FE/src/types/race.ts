@@ -2,6 +2,7 @@ export type RaceStatus =
  | 'UPCOMING'
  | 'OPEN_REGISTRATION'
  | 'CLOSED_REGISTRATION'
+ | 'SETTING_ODDS'
  | 'OPEN_BETTING'
  | 'ONGOING'
  | 'FINISHED'

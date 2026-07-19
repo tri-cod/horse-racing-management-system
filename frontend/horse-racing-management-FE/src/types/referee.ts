@@ -59,11 +59,21 @@ export interface HorseInspectionItem {
   horseId: number;
   horseName: string;
   horseStatus: string;
+  horseAvatarUrl?: string | null;
+  breed?: string | null;
+  age?: number | null;
+  gender?: string | null;
+  weight?: number | null;
+  speedRating?: number | null;
+  historyRank?: string | null;
   jockeyId?: number | null;
   jockeyName?: string | null;
+  jockeyAvatarUrl?: string | null;
   jockeyStatus?: string | null;
   odds?: number | null;
   warnings: string[];
+  verified: boolean;
+  reported: boolean;
 }
 
 export interface PreRaceInspectionResponse {
@@ -78,4 +88,9 @@ export interface ReportInspectionIssuePayload {
   raceHorseId: number;
   issueType: InspectionIssueType;
   description: string;
+}
+
+export interface VerifyHorsePayload {
+  raceHorseId: number;
+  verified: boolean;
 }
