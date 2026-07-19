@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
     private final TrainerRepository trainerRepository;
     private final BetItemRepository betItemRepository;
     private final WalletRepository walletRepository;
+    private final PenaltyRepository penaltyRepository;
 
     private final NotificationService notificationService;
     @Override
@@ -632,6 +634,47 @@ public class RaceHorseServiceImpl implements RaceHorseService {
 
         raceHorse.setOdds(request.getOdds());
         return mapToResponse(raceHorseRepository.save(raceHorse));
+    }
+
+    @Override
+    public List<String> getPreRaceIssues(Long raceId) {
+        List<RaceHorse> approvedHorses = raceHorseRepository
+                .findByRace_IdAndStatus(raceId, RaceHorseStatus.APPROVED);
+
+        List<String> issues = new ArrayList<>();
+        for (RaceHorse rh : approvedHorses) {
+            if (rh.getHorse().getStatus() == HorseStatus.INACTIVE
+                    || rh.getHorse().getStatus() == HorseStatus.RETIRED) {
+                issues.add("Horse '" + rh.getHorse().getHorseName() + "' is not fit to race");
+            }
+
+            if (rh.getJockey() == null) {
+                issues.add("Horse '" + rh.getHorse().getHorseName() + "' has no jockey");
+            } else if (!"Active".equalsIgnoreCase(rh.getJockey().getStatus())) {
+                issues.add("Jockey '" + rh.getJockey().getUser().getFullName() + "' is not active");
+            }
+
+            if (rh.getOdds() == null) {
+                issues.add("Horse '" + rh.getHorse().getHorseName() + "' has no odds");
+            }
+
+            if (rh.getJockey() != null) {
+                boolean doubleBooked = approvedHorses.stream().anyMatch(other ->
+                        other.getJockey() != null
+                                && other.getJockey().getId().equals(rh.getJockey().getId())
+                                && !other.getId().equals(rh.getId()));
+                if (doubleBooked) {
+                    issues.add("Jockey '" + rh.getJockey().getUser().getFullName() + "' is assigned to multiple horses");
+                }
+            }
+
+            boolean verified = Boolean.TRUE.equals(rh.getVerifiedOk());
+            boolean reported = !penaltyRepository.findByRaceHorse_Id(rh.getId()).isEmpty();
+            if (!verified && !reported) {
+                issues.add("Horse '" + rh.getHorse().getHorseName() + "' has not been checked by the referee yet");
+            }
+        }
+        return issues;
     }
 
     private RaceHorseResponse mapToResponse(RaceHorse raceHorse) {

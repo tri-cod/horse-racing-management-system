@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Flag, Play, Lock, ChevronDown, ChevronUp, Calendar, MapPin, Gavel, ClipboardCheck } from 'lucide-react';
-import { startRace, closeRegistration, getPenaltiesByRace } from '@/api/refereeApi';
-import { getRaces } from '@/api/raceApi';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Flag, Play, Lock, ChevronDown, ChevronUp, Calendar, MapPin, Gavel } from 'lucide-react';
+import { startRace, getPenaltiesByRace } from '@/api/refereeApi';
+import { getRaces, closeRace } from '@/api/raceApi';
 import SetResultModal from '@/components/features/referee/SetResultModal';
 import IssuePenaltyModal from '@/components/features/referee/IssuePenaltyModal';
 import InspectRaceModal from '@/components/features/referee/InspectRaceModal';
@@ -43,6 +43,38 @@ function RaceCardSkeleton() {
   );
 }
 
+/** Thumbnail with a letter-avatar fallback — swaps in on a broken/missing image URL
+ *  instead of leaving the browser's broken-image icon on screen. */
+function RaceThumbnail({ race }: { race: Race }) {
+  const [broken, setBroken] = useState(false);
+  if (race.bannerImageurl && !broken) {
+    return (
+      <img
+        src={race.bannerImageurl}
+        alt=""
+        onError={() => setBroken(true)}
+        className="hidden h-14 w-20 shrink-0 rounded object-cover sm:block"
+      />
+    );
+  }
+  return (
+    <div className="hidden h-14 w-20 shrink-0 items-center justify-center rounded bg-surface-overlay font-serif text-sm font-bold text-ink-4 sm:flex">
+      {race.raceName.charAt(0).toUpperCase()}
+    </div>
+  );
+}
+
+/** Section label used to separate race groups (Live / Upcoming / Finished). */
+function SectionHeader({ label, count, dotClassName }: { label: string; count: number; dotClassName: string }) {
+  return (
+    <div className="mb-2 flex items-center gap-2 px-1">
+      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dotClassName}`} />
+      <span className="text-xs font-bold uppercase tracking-wider text-ink-3">{label}</span>
+      <span className="text-xs text-ink-4">({count})</span>
+    </div>
+  );
+}
+
 export default function RefereeRacesPage() {
   const addToast = useToast();
   const { profile: myProfile } = useMyRefereeProfile();
@@ -51,6 +83,7 @@ export default function RefereeRacesPage() {
   const [actionId, setActionId] = useState<number | null>(null);
   const [expandedRaceId, setExpandedRaceId] = useState<number | null>(null);
   const [resultRace, setResultRace] = useState<Race | null>(null);
+  const [showFinished, setShowFinished] = useState(false);
 
   // Inspection state
   const [inspectingRace, setInspectingRace] = useState<Race | null>(null);
@@ -96,6 +129,162 @@ export default function RefereeRacesPage() {
     finally { setActionId(null); }
   };
 
+  // Re-thrown after toasting so the modal (which awaits this) knows to stay open on failure.
+  const handleStartFromInspection = async (raceId: number) => {
+    try {
+      await startRace(raceId);
+      addToast('Race started!', 'success');
+      fetchRaces();
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      addToast(err?.response?.data?.message ?? 'Failed to start race.', 'error');
+      throw e;
+    }
+  };
+
+  // Group by what needs the referee's attention, same convention used on the odds panel:
+  // live races first, then everything still upcoming, with finished/cancelled tucked away.
+  const grouped = useMemo(() => {
+    const live: Race[] = [];
+    const upcoming: Race[] = [];
+    const finished: Race[] = [];
+    races.forEach((race) => {
+      if (race.status === 'FINISHED' || race.status === 'CANCELLED') finished.push(race);
+      else if (race.status === 'ONGOING') live.push(race);
+      else upcoming.push(race);
+    });
+    return { live, upcoming, finished };
+  }, [races]);
+
+  const renderCard = (race: Race) => {
+    const isExpanded = expandedRaceId === race.id;
+    const isPenaltyOpen = penaltyPanelId === race.id;
+    const isActing = actionId === race.id;
+    // Inspect/Penalty/Set Result are rejected server-side unless this referee is
+    // the one assigned to the race — hide them rather than surface a confusing error.
+    const isMine = myProfile != null && race.refereeId === myProfile.id;
+
+    return (
+      <div key={race.id} className="overflow-hidden border border-rim bg-surface-raised transition-shadow hover:shadow-card">
+
+        {/* Race row */}
+        <div className="flex flex-wrap items-start gap-4 px-5 py-4">
+          <RaceThumbnail race={race} />
+
+          {/* Info */}
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h3 className="font-serif text-base font-bold text-ink">{race.raceName}</h3>
+              <RaceStatusBadge race={race} size="sm" />
+            </div>
+            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5">
+              <span className="flex items-center gap-1 text-xs text-ink-3">
+                <Calendar size={11} />{fmtDate(race.startTime)}
+              </span>
+              {race.location && (
+                <span className="flex items-center gap-1 text-xs text-ink-3">
+                  <MapPin size={11} />{race.location}
+                </span>
+              )}
+            </div>
+
+            {/* Secondary, low-emphasis toggles — kept apart from the primary
+                status-changing actions on the right so that row stays scannable. */}
+            <div className="mt-2.5 flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => setExpandedRaceId(isExpanded ? null : race.id)}
+                className="flex items-center gap-1 text-xs font-semibold text-ink-4 transition-colors hover:text-gold-hi"
+              >
+                {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                {isExpanded ? 'Hide Horses' : 'View Horses'}
+              </button>
+              <button
+                type="button"
+                onClick={() => togglePenaltyPanel(race.id)}
+                className="flex items-center gap-1 text-xs font-semibold text-ink-4 transition-colors hover:text-gold-hi"
+              >
+                <Gavel size={12} /> {isPenaltyOpen ? 'Hide Penalties' : 'View Penalties'}
+              </button>
+            </div>
+          </div>
+
+          {/* Primary, status-changing actions */}
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            {race.status === 'OPEN_REGISTRATION' && (
+              <button
+                type="button"
+                disabled={isActing}
+                onClick={() => doAction(race.id, () => closeRace(race.id), 'Registration closed. Odds can now be set.')}
+                className="inline-flex items-center gap-1.5 bg-navy px-3.5 py-1.5 text-xs font-semibold text-on-blue transition-colors hover:bg-navy-hi disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Lock size={12} /> Close Reg
+              </button>
+            )}
+
+            {/* Pre-race check only — once the race is ONGOING this no longer applies.
+                Starting is gated behind a clean inspection (backend enforces this too);
+                the "Start Race" action lives inside the Inspect modal itself. */}
+            {isMine && race.status === 'OPEN_BETTING' && (
+              <button
+                type="button"
+                onClick={() => setInspectingRace(race)}
+                className="inline-flex items-center gap-1.5 bg-navy px-3.5 py-1.5 text-xs font-semibold text-on-blue transition-colors hover:bg-navy-hi"
+              >
+                <Play size={12} /> Inspect &amp; Start
+              </button>
+            )}
+
+            {/* Backend only accepts penalties/results from the assigned referee while ONGOING. */}
+            {isMine && race.status === 'ONGOING' && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setPenaltyRace(race)}
+                  className="inline-flex items-center gap-1.5 border border-fail/30 bg-fail-subtle px-3.5 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail/20"
+                >
+                  <Gavel size={12} /> Penalty
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setResultRace(race)}
+                  className="inline-flex items-center gap-1.5 bg-navy px-3.5 py-1.5 text-xs font-semibold text-on-blue transition-colors hover:bg-navy-hi"
+                >
+                  Set Result
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Expanded horse list */}
+        {isExpanded && (
+          <div className="border-t border-rim bg-surface-overlay/30 px-5 py-4">
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Registered Horses</p>
+            <RegisteredHorsesList
+              raceId={race.id}
+              isAdmin
+              onToast={(msg, type) => addToast(msg, type ?? 'success')}
+            />
+          </div>
+        )}
+
+        {/* Penalty panel */}
+        {isPenaltyOpen && (
+          <div className="border-t border-rim bg-surface-overlay/30 px-5 py-4">
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Penalties</p>
+            <PenaltyList
+              penalties={penalties}
+              loading={penaltiesLoading}
+              onChanged={() => loadPenalties(race.id)}
+              onToast={(msg, type) => addToast(msg, type ?? 'success')}
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="px-8 py-6">
       <Seo title="Race Control" />
@@ -112,146 +301,43 @@ export default function RefereeRacesPage() {
       ) : races.length === 0 ? (
         <EmptyState icon={Flag} title="No races found" subtitle="No races have been created yet." />
       ) : (
-        <div className="flex flex-col gap-3">
-          {races.map((race) => {
-            const isExpanded = expandedRaceId === race.id;
-            const isPenaltyOpen = penaltyPanelId === race.id;
-            const isActing = actionId === race.id;
-            // Inspect/Penalty/Set Result are rejected server-side unless this referee is
-            // the one assigned to the race — hide them rather than surface a confusing error.
-            const isMine = myProfile != null && race.refereeId === myProfile.id;
+        <div className="flex flex-col gap-6">
+          {grouped.live.length > 0 && (
+            <div>
+              <SectionHeader label="Live now" count={grouped.live.length} dotClassName="bg-ok animate-pulse" />
+              <div className="flex flex-col gap-2">{grouped.live.map(renderCard)}</div>
+            </div>
+          )}
 
-            return (
-              <div key={race.id} className="overflow-hidden border border-rim bg-surface-raised transition-shadow hover:shadow-card">
+          {grouped.upcoming.length > 0 && (
+            <div>
+              <SectionHeader label="Upcoming" count={grouped.upcoming.length} dotClassName="bg-gold" />
+              <div className="flex flex-col gap-2">{grouped.upcoming.map(renderCard)}</div>
+            </div>
+          )}
 
-                {/* Race row */}
-                <div className="flex flex-wrap items-center gap-4 px-5 py-4">
-                  {/* Banner thumbnail */}
-                  {race.bannerImageurl && (
-                    <div className="hidden h-12 w-16 shrink-0 overflow-hidden sm:block">
-                      <img src={race.bannerImageurl} alt="" className="h-full w-full object-cover" />
-                    </div>
-                  )}
-
-                  {/* Info */}
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2.5">
-                      <h3 className="font-serif text-base font-bold text-ink">{race.raceName}</h3>
-                      <RaceStatusBadge race={race} size="sm" />
-                    </div>
-                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5">
-                      <span className="flex items-center gap-1 text-xs text-ink-3">
-                        <Calendar size={11} />{fmtDate(race.startTime)}
-                      </span>
-                      {race.location && (
-                        <span className="flex items-center gap-1 text-xs text-ink-3">
-                          <MapPin size={11} />{race.location}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Action buttons */}
-                  <div className="flex flex-wrap items-center gap-2">
-                    {race.status === 'OPEN_REGISTRATION' && (
-                      <button
-                        type="button"
-                        disabled={isActing}
-                        onClick={() => doAction(race.id, () => closeRegistration(race), 'Registration closed.')}
-                        className="inline-flex items-center gap-1.5 border border-rim bg-surface-overlay px-3 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:border-rim-hi hover:text-ink disabled:opacity-50"
-                      >
-                        <Lock size={12} /> Close Reg
-                      </button>
-                    )}
-                    {race.status === 'CLOSED_REGISTRATION' && (
-                      <button
-                        type="button"
-                        disabled={isActing}
-                        onClick={() => doAction(race.id, startRace, `Race "${race.raceName}" started!`)}
-                        className="inline-flex items-center gap-1.5 border border-ok/30 bg-ok-subtle px-3 py-1.5 text-xs font-semibold text-ok transition-colors hover:bg-ok/20 disabled:opacity-50"
-                      >
-                        <Play size={12} /> Start Race
-                      </button>
-                    )}
-
-                    {/* Backend only allows inspection while OPEN_BETTING or ONGOING, and only for the assigned referee. */}
-                    {isMine && (race.status === 'OPEN_BETTING' || race.status === 'ONGOING') && (
-                      <button
-                        type="button"
-                        onClick={() => setInspectingRace(race)}
-                        className="inline-flex items-center gap-1.5 border border-gold/40 bg-gold/10 px-3 py-1.5 text-xs font-semibold text-gold-hi transition-colors hover:bg-gold/20"
-                      >
-                        <ClipboardCheck size={12} /> Inspect
-                      </button>
-                    )}
-
-                    {/* Backend only accepts penalties/results from the assigned referee while ONGOING. */}
-                    {isMine && race.status === 'ONGOING' && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => setPenaltyRace(race)}
-                          className="inline-flex items-center gap-1.5 border border-fail/30 bg-fail-subtle px-3 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail/20"
-                        >
-                          <Gavel size={12} /> Penalty
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setResultRace(race)}
-                          className="inline-flex items-center gap-1.5 border border-gold/40 bg-gold/10 px-3 py-1.5 text-xs font-semibold text-gold-hi transition-colors hover:bg-gold/20"
-                        >
-                          Set Result
-                        </button>
-                      </>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => togglePenaltyPanel(race.id)}
-                      className="inline-flex items-center gap-1.5 border border-rim bg-surface-overlay px-3 py-1.5 text-xs font-semibold text-ink-3 transition-colors hover:border-rim-hi hover:text-ink"
-                    >
-                      <Gavel size={12} /> {isPenaltyOpen ? 'Hide' : 'View'} Penalties
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setExpandedRaceId(isExpanded ? null : race.id)}
-                      className="inline-flex items-center gap-1.5 border border-rim bg-surface-overlay px-3 py-1.5 text-xs font-semibold text-ink-3 transition-colors hover:border-rim-hi hover:text-ink"
-                    >
-                      {isExpanded
-                        ? <><ChevronUp size={12} /> Hide Horses</>
-                        : <><ChevronDown size={12} /> View Horses</>}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Expanded horse list */}
-                {isExpanded && (
-                  <div className="border-t border-rim bg-surface-overlay/30 px-5 py-4">
-                    <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Registered Horses</p>
-                    <RegisteredHorsesList
-                      raceId={race.id}
-                      isAdmin
-                      onToast={(msg, type) => addToast(msg, type ?? 'success')}
-                    />
-                  </div>
-                )}
-
-                {/* Penalty panel */}
-                {isPenaltyOpen && (
-                  <div className="border-t border-rim bg-surface-overlay/30 px-5 py-4">
-                    <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Penalties</p>
-                    <PenaltyList
-                      penalties={penalties}
-                      loading={penaltiesLoading}
-                      onChanged={() => loadPenalties(race.id)}
-                      onToast={(msg, type) => addToast(msg, type ?? 'success')}
-                    />
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {grouped.finished.length > 0 && (
+            <div>
+              <button
+                type="button"
+                onClick={() => setShowFinished((v) => !v)}
+                className="flex w-full items-center justify-between border-t border-rim py-3 text-left"
+              >
+                <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink-3">
+                  <Lock size={12} className="text-ink-4" />
+                  Finished / Cancelled
+                  <span className="font-normal normal-case text-ink-4">({grouped.finished.length})</span>
+                </span>
+                <ChevronDown
+                  size={16}
+                  className={`text-ink-4 transition-transform duration-200 ${showFinished ? 'rotate-180' : ''}`}
+                />
+              </button>
+              {showFinished && (
+                <div className="flex flex-col gap-2 pt-2">{grouped.finished.map(renderCard)}</div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -272,6 +358,7 @@ export default function RefereeRacesPage() {
           race={inspectingRace}
           onClose={() => setInspectingRace(null)}
           onToast={(msg, type) => addToast(msg, type ?? 'success')}
+          onStartRace={inspectingRace.status === 'OPEN_BETTING' ? handleStartFromInspection : undefined}
         />
       )}
 

@@ -65,4 +65,9 @@ public class RaceHorse {
 
     @Column(name = "odds", precision = 10, scale = 2)
     private BigDecimal odds;
+
+    // Manual referee sign-off from the pre-race inspection — ticked once they've actually
+    // looked the horse over, separate from the automated checks (jockey/odds/status).
+    @Column(name = "verified_ok")
+    private Boolean verifiedOk;
 }

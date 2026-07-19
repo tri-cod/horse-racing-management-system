@@ -24,6 +24,7 @@ public class    RaceResponse {
     private Instant registrationDeadline;
     private Instant createdAt;
     private Instant updatedAt;
+    private Instant raceInspectedAt;
 
     // referee info
     private Long refereeId;
