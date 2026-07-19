@@ -131,3 +131,36 @@ ALTER TABLE trainer
 ALTER TABLE penalty DROP CONSTRAINT IF EXISTS penalty_race_horse_id_fkey;
 ALTER TABLE penalty ADD CONSTRAINT penalty_race_horse_id_fkey
     FOREIGN KEY (race_horse_id) REFERENCES race_horse(id) ON DELETE CASCADE;
+
+--========================================================
+-- Training contract table
+CREATE TABLE training_contract (
+                                   id             BIGSERIAL PRIMARY KEY,
+                                   horse_id       BIGINT NOT NULL REFERENCES horse(horse_id),
+                                   trainer_id     BIGINT NOT NULL REFERENCES trainer(id),
+                                   owner_id       BIGINT NOT NULL REFERENCES horse_owner(id),
+                                   start_date     DATE,
+                                   end_date       DATE,
+                                   fee            NUMERIC(12,2) NOT NULL,
+                                   fee_type       VARCHAR(20),
+                                   owner_note     TEXT,
+                                   trainer_note   TEXT,
+                                   status         VARCHAR(30) DEFAULT 'PENDING',
+                                   created_at     TIMESTAMP DEFAULT NOW(),
+                                   accepted_at    TIMESTAMP
+);
+
+-- Trainer thêm field
+ALTER TABLE trainer ADD COLUMN IF NOT EXISTS monthly_fee NUMERIC(12,2);
+ALTER TABLE trainer ADD COLUMN IF NOT EXISTS period_fee NUMERIC(12,2);
+ALTER TABLE trainer ADD COLUMN IF NOT EXISTS period_months INT;
+ALTER TABLE trainer ADD COLUMN IF NOT EXISTS max_horses INT;
+ALTER TABLE trainer ADD COLUMN IF NOT EXISTS specialization VARCHAR(255);
+ALTER TABLE trainer ADD COLUMN IF NOT EXISTS location VARCHAR(150);
+ALTER TABLE trainer ADD COLUMN IF NOT EXISTS is_available BOOLEAN DEFAULT TRUE;
+
+-- HorseOwner thêm field
+ALTER TABLE horse_owner ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(255);
+ALTER TABLE horse_owner ADD COLUMN IF NOT EXISTS cover_image_url VARCHAR(255);
+ALTER TABLE horse_owner ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE horse_owner ADD COLUMN IF NOT EXISTS total_horses INT DEFAULT 0;

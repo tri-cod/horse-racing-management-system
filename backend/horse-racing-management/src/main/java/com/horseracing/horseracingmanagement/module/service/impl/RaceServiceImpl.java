@@ -2,14 +2,12 @@ package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
+import com.horseracing.horseracingmanagement.common.constant.RoleName;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.CreateRaceRequest;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.CreateRaceResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.RaceResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.RaceStatusUpdate;
-import com.horseracing.horseracingmanagement.module.entity.Race;
-import com.horseracing.horseracingmanagement.module.entity.RaceHorse;
-import com.horseracing.horseracingmanagement.module.entity.RaceReferee;
-import com.horseracing.horseracingmanagement.module.entity.User;
+import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
 import com.horseracing.horseracingmanagement.module.service.RaceHorseService;
 import jakarta.transaction.Transactional;
@@ -21,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +37,8 @@ public class RaceServiceImpl implements RaceService {
     private final RaceHorseRepository raceHorseRepository;
     private final RaceHorseService raceHorseService;
     private final PenaltyRepository penaltyRepository;
-
+    private final UserRepository userRepository;
+    private final WalletRepository walletRepository;
 
     // Admin start race → đóng bet
     public RaceResponse startRace(Long raceId) {
@@ -90,12 +90,35 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     public RaceResponse createRace(CreateRaceRequest request) {
+
+        if (request.getTotalprizepool() != null && request.getTotalprizepool() > 0) {
+            User adminUser = userRepository.findFirstByRole_Rolename(RoleName.ADMIN)
+                    .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+            Wallet adminWallet = walletRepository.findByUser_Id(adminUser.getId())
+                    .orElseThrow(() -> new RuntimeException("Admin wallet not found"));
+
+            BigDecimal prizePool = BigDecimal.valueOf(request.getTotalprizepool());
+
+            if (adminWallet.getBalance().compareTo(prizePool) < 0) {
+                throw new RuntimeException(
+                        "Admin wallet has insufficient balance to fund this prize pool. " +
+                                "Required: " + prizePool + ", Available: " + adminWallet.getBalance());
+            }
+
+            adminWallet.setBalance(adminWallet.getBalance().subtract(prizePool));
+            walletRepository.save(adminWallet);
+        }
+
         // tìm referee nếu admin có set
         RaceReferee referee = null;
         if (request.getRefereeId() != null) {
             referee = raceRefereeRepository.findById(request.getRefereeId())
                     .orElseThrow(() -> new RuntimeException("Referee not found"));
         }
+
+
+
 
         Race race = Race.builder()
                 .raceName(request.getRaceName())
