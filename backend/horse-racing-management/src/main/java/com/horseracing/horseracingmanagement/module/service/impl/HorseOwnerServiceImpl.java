@@ -13,6 +13,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.horseracing.horseracingmanagement.common.exception.AppException;
+import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -425,6 +427,38 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 : null;
 
         return mapToResponse(saved, owner.getName(), saved.getTrainerId(), trainerName);
+    }
+    @Override
+    public HorseOwnerProfileResponse completeProfile(CompleteHorseOwnerProfileRequest request, Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new AppException("Horse owner profile not found", HttpStatus.NOT_FOUND));
+
+        owner.setName(request.getName());
+
+        if (request.getDescription() != null)    owner.setDescription(request.getDescription());
+        if (request.getAvatarUrl() != null)      owner.setAvatarUrl(request.getAvatarUrl());
+        if (request.getCoverImageUrl() != null)  owner.setCoverImageUrl(request.getCoverImageUrl());
+        if (request.getAddress() != null)        owner.setAddress(request.getAddress());
+
+
+        HorseOwner saved = horseOwnerRepository.save(owner);
+
+        HorseOwnerProfileResponse resp = mapToProfileResponse(saved);
+        resp.setUserId(userId);
+        return resp;
+    }
+
+    private HorseOwnerProfileResponse mapToProfileResponse(HorseOwner owner) {
+        return HorseOwnerProfileResponse.builder()
+                .id(owner.getId())
+                .name(owner.getName())
+                .description(owner.getDescription())
+                .avatarUrl(owner.getAvatarUrl())
+                .coverImageUrl(owner.getCoverImageUrl())
+                .address(owner.getAddress())
+                .totalHorses(owner.getTotalHorses())
+                .status(owner.getStatus())
+                .build();
     }
 
     @Override

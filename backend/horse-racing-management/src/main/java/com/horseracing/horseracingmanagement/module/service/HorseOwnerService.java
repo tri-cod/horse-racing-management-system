@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 
 @Service
@@ -38,5 +39,6 @@ public interface HorseOwnerService {
     List<RaceParticipationResponse> getOwnerRaceHistoryById(Long ownerId);
     List<SignHorseResponse> getHorsesByOwnerId(Long ownerId);
     OwnerStatsResponse getStats(Long ownerId);
+    HorseOwnerProfileResponse completeProfile(CompleteHorseOwnerProfileRequest request, Long userId);
 
 }

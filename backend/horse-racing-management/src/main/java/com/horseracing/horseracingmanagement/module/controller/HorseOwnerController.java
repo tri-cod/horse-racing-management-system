@@ -17,6 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.CompleteHorseOwnerProfileRequest;
+import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.HorseOwnerProfileResponse;
 
 import java.util.List;
 
@@ -177,6 +179,16 @@ public class HorseOwnerController {
             @PathVariable Long ownerId) {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 horseOwnerService.getStats(ownerId)));
+    }
+    @PutMapping("/profile/complete")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<HorseOwnerProfileResponse>> completeProfile(
+            @Valid @RequestBody CompleteHorseOwnerProfileRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getId();
+        return ResponseEntity.ok(ApiResponse.success("Profile completed successfully",
+                horseOwnerService.completeProfile(request, userId)));
     }
 
 }
