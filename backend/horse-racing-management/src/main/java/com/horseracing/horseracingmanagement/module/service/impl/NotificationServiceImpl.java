@@ -2,6 +2,8 @@ package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RoleName;
+import com.horseracing.horseracingmanagement.common.exception.AppException;
+import com.horseracing.horseracingmanagement.common.exception.ResourceNotFoundException;
 import com.horseracing.horseracingmanagement.module.dto.NotificationResponse;
 import com.horseracing.horseracingmanagement.module.entity.Notification;
 import com.horseracing.horseracingmanagement.module.entity.User;
@@ -10,6 +12,7 @@ import com.horseracing.horseracingmanagement.module.responsitory.UserRepository;
 import com.horseracing.horseracingmanagement.module.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.origin.SystemEnvironmentOrigin;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -78,6 +81,18 @@ public class NotificationServiceImpl implements NotificationService {
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
         notification.setIsRead(true);
         notificationRepository.save(notification);
+    }
+
+    @Override
+    public void deleteNotification(Long notificationId, Long userId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification", "id", notificationId));
+
+        if (!notification.getUser().getId().equals(userId)) {
+            throw new AppException("You don't have permission to delete this notification", HttpStatus.FORBIDDEN);
+        }
+
+        notificationRepository.delete(notification);
     }
 
     @Override

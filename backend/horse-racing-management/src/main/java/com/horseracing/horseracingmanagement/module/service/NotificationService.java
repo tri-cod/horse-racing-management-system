@@ -10,5 +10,6 @@ public interface NotificationService {
     void sendToAllAdmins(String title, String content, NotificationType type, Long referenceId);
     List<NotificationResponse> getMyNotifications(Long userId);
     void markAsRead(Long notificationId);
+    void deleteNotification(Long notificationId, Long userId);
     long countUnread(Long userId);
 }

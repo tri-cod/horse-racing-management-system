@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.controller;
 
+import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.CompleteTrainerProfileRequest;
@@ -50,6 +51,7 @@ public class TrainerController {
         List<Trainer> trainers = trainerRepository.findAll();
         List<TrainerListItemResponse> response = trainers.stream()
                 .filter(t -> "Active".equalsIgnoreCase(t.getStatus()))
+                .filter(t -> t.getUser() != null && t.getUser().getStatus() != UserStatus.BANNED)
                 .map(t -> {
                     String displayName = t.getName();
                     if (displayName == null && t.getUser() != null) {
