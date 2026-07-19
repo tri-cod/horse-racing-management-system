@@ -10,10 +10,15 @@ export function useHorses() {
     staleTime: 60_000,
   });
 
-  const activeHorses = (data ?? []).filter((h) => (h.status ?? '').toUpperCase() === 'ACTIVE');
+  // Public directory shows every horse still part of the current stable.
+  // Only RETIRED horses are hidden; ACTIVE, RACING, FINISHED, and INACTIVE
+  // all remain visible to the public.
+  const visibleHorses = (data ?? []).filter(
+    (h) => (h.status ?? '').toUpperCase() !== 'RETIRED',
+  );
 
   return {
-    horses: activeHorses,  
+    horses: visibleHorses,
     loading: isLoading,
     error: error ? getErrorMessage(error, 'Unable to load the horse list. Please try again.') : null,
     refetch,

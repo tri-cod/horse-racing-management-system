@@ -179,12 +179,11 @@ const bettableEntries = useMemo(() => entries.filter((e) => e.odds != null), [en
             {race.bannerImageurl
               ? <img src={race.bannerImageurl} alt={race.raceName} className="h-full w-full object-cover" />
               : <div className="h-full w-full bg-navy" />}
-            <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/20 to-transparent" />
             <div className="absolute left-4 top-4">
               <RaceStatusBadge race={race} size="md" />
             </div>
             <div className="absolute bottom-0 left-0 right-0 px-5 py-5">
-              <h1 className="font-serif text-2xl font-bold uppercase text-on-blue sm:text-3xl">
+              <h1 className="font-serif text-2xl font-bold uppercase text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.8)] sm:text-3xl">
                 {race.raceName}
               </h1>
             </div>

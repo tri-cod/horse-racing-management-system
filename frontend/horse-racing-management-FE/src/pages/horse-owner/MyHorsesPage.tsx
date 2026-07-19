@@ -52,7 +52,7 @@ export default function MyHorsesPage() {
   const [statusFilter, setStatusFilter] = useState<HorseStatus | ''>('');
 
   const active = horses.filter((h) => h.status === 'ACTIVE').length;
-  const other  = horses.length - active;
+  const other = horses.length - active;
 
   const breeds = useMemo(
     () => [...new Set(horses.map((h) => h.breed).filter((b): b is string => !!b))].sort(),
@@ -71,6 +71,12 @@ export default function MyHorsesPage() {
   const clearFilters = () => { setSearch(''); setBreedFilter(''); setStatusFilter(''); };
 
   const handleDelete = async (horse: Horse) => {
+    // Chặn ngay từ FE nếu ngựa đang đua, thay vì để lỗi constraint của DB hiện ra
+    if (horse.status === 'RACING') {
+      addToast('This horse is currently racing and cannot be deleted.', 'error');
+      return;
+    }
+
     if (!window.confirm(`Delete "${horse.horseName}"? This cannot be undone.`)) return;
     setDeletingId(horse.id);
     try {
@@ -78,7 +84,14 @@ export default function MyHorsesPage() {
       addToast(`"${horse.horseName}" deleted.`, 'success');
       refetch();
     } catch (e: unknown) {
-      addToast(getErrorMessage(e, 'Failed to delete horse.'), 'error');
+      const message = getErrorMessage(e, 'Failed to delete horse.');
+      // Lưới an toàn: nếu BE vẫn lọt lỗi generic (VD status đổi thành RACING
+      // ngay sau khi trang này load xong), map lại thành message rõ nghĩa
+      const isConstraintError = /already exist|constraint/i.test(message);
+      addToast(
+        isConstraintError ? 'This horse is currently racing and cannot be deleted.' : message,
+        'error',
+      );
     } finally {
       setDeletingId(null);
     }
@@ -153,9 +166,8 @@ export default function MyHorsesPage() {
                   aria-selected={statusFilter === t.value}
                   type="button"
                   onClick={() => setStatusFilter(t.value)}
-                  className={`shrink-0 px-3 py-1.5 text-sm font-medium transition-colors ${
-                    statusFilter === t.value ? 'bg-gold text-on-gold' : 'text-ink-3 hover:bg-surface-overlay hover:text-ink'
-                  }`}
+                  className={`shrink-0 px-3 py-1.5 text-sm font-medium transition-colors ${statusFilter === t.value ? 'bg-gold text-on-gold' : 'text-ink-3 hover:bg-surface-overlay hover:text-ink'
+                    }`}
                 >
                   {t.label}
                 </button>

@@ -38,12 +38,11 @@ export default function RaceCard({ race, isAdmin }: RaceCardProps) {
             <img
               src={race.bannerImageurl}
               alt={race.raceName}
-              className="h-full w-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,rgba(168,132,59,0.14),transparent_60%)]" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-navy/60 to-transparent" />
 
           {/* Status badge */}
           <div className="absolute left-3 top-3">

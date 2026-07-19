@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, type ReactNode, type ChangeEvent } from 'react';
 import { Upload, X, ArrowLeft } from 'lucide-react';
 import { uploadAvatar } from '@/api/horseOwnerApi';
+import { useReferees } from '@/hooks/useReferees';
 import Button from '@/components/ui/Button';
 import type { CreateRacePayload, RaceStatus } from '@/types';
 
@@ -94,6 +95,7 @@ interface RaceFormProps {
 }
 
 export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit, loading }: RaceFormProps) {
+ const { referees, loading: refereesLoading, error: refereesError } = useReferees();
  const [form, setForm] = useState<FormData>(() => {
  const base = { ...EMPTY, ...initialValues };
  return { ...base, startTime: toLocalDatetime(base.startTime), registrationDeadline: toLocalDatetime(base.registrationDeadline), totalprizepool: base.totalprizepool ?? '', capacity: base.capacity ?? '', refereeId: base.refereeId ?? '', entryFee: base.entryFee ?? '' };
@@ -142,7 +144,6 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  if (s === 1) {
  if (!form.raceName.trim()) errs.raceName = 'Race name is required.';
  if (!form.location.trim()) errs.location = 'Location is required.';
- if (form.refereeId !== '' && isNaN(Number(form.refereeId))) errs.refereeId = 'Referee ID must be a number.';
  }
  if (s === 2) {
  if (!form.startTime) errs.startTime = 'Start time is required.';
@@ -202,8 +203,15 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  <div className="flex flex-col gap-4">
  <Field id="rf-name" label="Race Name" required error={errors.raceName}>{inp('rf-name', 'raceName', 'text', { placeholder: 'e.g. Grand Prix 2026' })}</Field>
  <Field id="rf-location" label="Location" required error={errors.location}>{inp('rf-location', 'location', 'text', { placeholder: 'e.g. Hanoi Racetrack' })}</Field>
- <Field id="rf-referee" label="Race Referee ID" optional error={errors.refereeId}
- hint="Optional. Leave blank to assign later.">{inp('rf-referee', 'refereeId', 'number', { placeholder: 'Leave empty if not assigned yet' })}</Field>
+ <Field id="rf-referee" label="Race Referee" optional error={errors.refereeId}
+ hint={refereesError ?? 'Optional. Leave blank to assign later.'}>
+ <select id="rf-referee" className={inputCls()} value={form.refereeId} onChange={set('refereeId')} disabled={refereesLoading}>
+ <option value="">{refereesLoading ? 'Loading referees…' : 'Unassigned'}</option>
+ {referees.map((r) => (
+ <option key={r.id} value={r.id}>{r.name}</option>
+ ))}
+ </select>
+ </Field>
  </div>
  </section>
  )}

@@ -51,3 +51,31 @@ export interface IssuePenaltyPayload {
   amount?: number | null;
   timePenaltySeconds?: number | null;
 }
+
+export type InspectionIssueType = 'WRONG_HORSE' | 'WRONG_JOCKEY' | 'EQUIPMENT_ISSUE' | 'HORSE_UNFIT';
+
+export interface HorseInspectionItem {
+  raceHorseId: number;
+  horseId: number;
+  horseName: string;
+  horseStatus: string;
+  jockeyId?: number | null;
+  jockeyName?: string | null;
+  jockeyStatus?: string | null;
+  odds?: number | null;
+  warnings: string[];
+}
+
+export interface PreRaceInspectionResponse {
+  raceId: number;
+  raceName: string;
+  horses: HorseInspectionItem[];
+  issues: string[];
+  readyToRace: boolean;
+}
+
+export interface ReportInspectionIssuePayload {
+  raceHorseId: number;
+  issueType: InspectionIssueType;
+  description: string;
+}
