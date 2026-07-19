@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.controller;
 
+import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.CompleteJockeyProfileRequest;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyProfileResponse;
@@ -62,6 +63,7 @@ public class JockeyController {
     public ResponseEntity<ApiResponse<List<JockeyResponse>>> getJockeyList() {
         List<Jockey> jockeys = jockeyRepository.findByStatus("Active");
         List<JockeyResponse> response = jockeys.stream()
+                .filter(j -> j.getUser() != null && j.getUser().getStatus() != UserStatus.BANNED)
                 .map(j -> JockeyResponse.builder()
                         .id(j.getId())
                         .name(j.getUser().getFullName() != null

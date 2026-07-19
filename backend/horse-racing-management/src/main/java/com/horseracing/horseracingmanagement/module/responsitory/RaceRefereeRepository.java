@@ -11,4 +11,5 @@ import java.util.Optional;
 @Repository
 public interface RaceRefereeRepository extends JpaRepository<RaceReferee, Long> {
     Optional<RaceReferee> findByUser_Id(Long userId);
+
 }

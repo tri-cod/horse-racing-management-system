@@ -41,4 +41,13 @@ public class NotificationController {
         notificationService.markAsRead(id);
         return ResponseEntity.ok(ApiResponse.success("Marked as read", null));
     }
+
+    // Xóa notification — chỉ chủ sở hữu mới xóa được
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteNotification(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        notificationService.deleteNotification(id, userDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success("Notification deleted", null));
+    }
 }
