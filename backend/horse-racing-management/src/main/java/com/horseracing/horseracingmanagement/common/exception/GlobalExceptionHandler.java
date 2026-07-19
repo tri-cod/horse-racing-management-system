@@ -119,6 +119,18 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
+    // Service layer throughout the app signals business-rule failures (e.g. "Can only
+    // set odds when race is SETTING_ODDS") as plain RuntimeException with a message.
+    // Without this handler they fell through to handleUnknownException below and the
+    // real reason was replaced with a generic "Something went wrong", hiding it from
+    // both the caller and the API response.
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiResponse<Void>> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleUnknownException(Exception ex) {
         return ResponseEntity

@@ -34,4 +34,8 @@ public interface RaceHorseService {
     RaceHorseResponse rejectWithdrawal(Long raceHorseId);
     List<RaceHorseResponse> getWithdrawPending();
 
+    // Same checks as the referee's pre-race inspection (horse fitness, jockey assigned/active,
+    // odds set, no double-booked jockeys) — empty list means the race is clear to start.
+    List<String> getPreRaceIssues(Long raceId);
+
 }

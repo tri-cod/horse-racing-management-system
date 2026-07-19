@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, User, Flag, ShieldAlert, ShieldCheck, BadgeCheck, Quote } from 'lucide-react';
+import { ChevronLeft, User, BadgeCheck, Quote } from 'lucide-react';
 import { useRefereeProfile } from '@/hooks/useRefereeProfile';
 import Container from '@/components/ui/Container';
 import Seo from '@/components/seo/Seo';

@@ -250,9 +250,9 @@ public class RefereeServiceImpl implements RefereeService {
             throw new RuntimeException("You are not the referee of this race");
         }
 
-        if (race.getStatus() != RaceStatus.ONGOING &&
-                race.getStatus() != RaceStatus.OPEN_BETTING) {
-            throw new RuntimeException("Race must be OPEN_BETTING or ONGOING to inspect");
+        // Inspection is only for the pre-race check — once the race is ONGOING it's too late to matter.
+        if (race.getStatus() != RaceStatus.OPEN_BETTING) {
+            throw new RuntimeException("Race must be OPEN_BETTING to inspect");
         }
 
         List<RaceHorse> approvedHorses = raceHorseRepository
@@ -305,19 +305,43 @@ public class RefereeServiceImpl implements RefereeService {
                 }
             }
 
+            // ← Manual sign-off: every approved horse must end up either ticked OK by the
+            // referee or have an issue reported against it — one of the two, not neither.
+            boolean verified = Boolean.TRUE.equals(rh.getVerifiedOk());
+            boolean reported = !penaltyRepository.findByRaceHorse_Id(rh.getId()).isEmpty();
+            if (!verified && !reported) {
+                warnings.add("❌ Not yet checked — tick OK or report an issue");
+                globalIssues.add("Horse '" + rh.getHorse().getHorseName() + "' has not been checked by the referee yet");
+            }
+
             items.add(HorseInspectionItem.builder()
                     .raceHorseId(rh.getId())
                     .horseId(rh.getHorse().getId())
                     .horseName(rh.getHorse().getHorseName())
                     .horseStatus(rh.getHorse().getStatus().name())
+                    .horseAvatarUrl(rh.getHorse().getAvatarUrl())
+                    .breed(rh.getHorse().getBreed())
+                    .age(rh.getHorse().getAge())
+                    .gender(rh.getHorse().getGender())
+                    .weight(rh.getHorse().getWeight())
+                    .speedRating(rh.getHorse().getSpeedRating())
+                    .historyRank(rh.getHorse().getHistoryRank())
                     .jockeyId(rh.getJockey() != null ? rh.getJockey().getId() : null)
                     .jockeyName(rh.getJockey() != null
                             ? rh.getJockey().getUser().getFullName() : null)
+                    .jockeyAvatarUrl(rh.getJockey() != null ? rh.getJockey().getAvatarUrl() : null)
                     .jockeyStatus(rh.getJockey() != null ? rh.getJockey().getStatus() : null)
                     .odds(rh.getOdds())
                     .warnings(warnings)
+                    .verified(verified)
+                    .reported(reported)
                     .build());
         }
+
+        // ← Stamp the race as inspected only when it comes back clean; startRace() requires
+        // this. A dirty result clears any earlier stamp so a stale pass can't be relied on.
+        race.setRaceInspectedAt(globalIssues.isEmpty() ? Instant.now() : null);
+        raceRepository.save(race);
 
         return PreRaceInspectionResponse.builder()
                 .raceId(race.getId())
@@ -326,6 +350,28 @@ public class RefereeServiceImpl implements RefereeService {
                 .issues(globalIssues)
                 .readyToRace(globalIssues.isEmpty())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void verifyHorse(VerifyHorseRequest request, Long userId) {
+        RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Referee not found"));
+
+        RaceHorse raceHorse = raceHorseRepository.findById(request.getRaceHorseId())
+                .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
+
+        Race race = raceHorse.getRace();
+        if (race.getReferee() == null || !race.getReferee().getId().equals(referee.getId())) {
+            throw new RuntimeException("You are not the referee of this race");
+        }
+
+        if (race.getStatus() != RaceStatus.OPEN_BETTING) {
+            throw new RuntimeException("Race must be OPEN_BETTING to verify horses");
+        }
+
+        raceHorse.setVerifiedOk(request.getVerified());
+        raceHorseRepository.save(raceHorse);
     }
 
     @Override

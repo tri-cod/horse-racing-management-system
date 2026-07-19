@@ -8,7 +8,7 @@ import { useRaceDetail } from '@/hooks/useRaceDetail';
 import { useHorsesByRace } from '@/hooks/useHorsesByRace';
 import { useRefereeProfile } from '@/hooks/useRefereeProfile';
 import { approveRaceHorse, rejectRaceHorse, approveWithdrawal, rejectWithdrawal, setOdds } from '@/api/raceHorseApi';
-import { updateRace, deleteRace, reopenRace, startRace } from '@/api/raceApi';
+import { updateRace, deleteRace, reopenRace, startRace, closeRace, openBetting } from '@/api/raceApi';
 import { getHorseById } from '@/api/horseOwnerApi';
 import { useToast } from '@/components/ui/ToastProvider';
 import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
@@ -20,8 +20,9 @@ import { isStatus } from '@/utils/raceHorseStatus';
 import type { Horse } from '@/types';
 
 const CLOSEABLE = new Set(['UPCOMING', 'OPEN_REGISTRATION']);
-const REOPENABLE = new Set(['CLOSED_REGISTRATION']);
-const STARTABLE = new Set(['CLOSED_REGISTRATION']);
+const REOPENABLE = new Set(['CLOSED_REGISTRATION', 'SETTING_ODDS']);
+const OPENBETTABLE = new Set(['SETTING_ODDS']);
+const STARTABLE = new Set(['OPEN_BETTING']);
 const TRACK_CONDITIONS = ['Dry', 'Wet', 'Muddy', 'Fast', 'Soft'];
 const SURFACE_TYPES = ['Turf', 'Dirt', 'Synthetic'];
 
@@ -67,6 +68,7 @@ export default function AdminRaceDetailPage() {
   const [reopening, setReopening] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [starting, setStarting] = useState(false);
+  const [openingBetting, setOpeningBetting] = useState(false);
   const [horseDetails, setHorseDetails] = useState<Record<number, Horse>>({});
   const fetchedHorseIdsRef = useRef<Set<number>>(new Set());
 
@@ -264,13 +266,27 @@ export default function AdminRaceDetailPage() {
     } finally { setReopening(false); }
   };
 
+  const handleOpenBetting = async () => {
+    if (!race) return;
+    if (!window.confirm(`Open betting for "${race.raceName}"? Every approved horse must already have odds set.`)) return;
+    setOpeningBetting(true);
+    try {
+      await openBetting(race.id);
+      addToast('Betting is now open.', 'success');
+      refetchRace();
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } };
+      addToast(err?.response?.data?.message ?? 'Failed to open betting.', 'error');
+    } finally { setOpeningBetting(false); }
+  };
+
   const handleCloseRegistration = async () => {
     if (!race) return;
-    if (!window.confirm(`Close registration for "${race.raceName}"?`)) return;
+    if (!window.confirm(`Close registration for "${race.raceName}"? Odds can be set right after.`)) return;
     setClosing(true);
     try {
-      await updateRace(race.id, { ...race, distance: race.distance?.toString(), status: 'CLOSED_REGISTRATION' });
-      addToast('Registration closed.', 'success');
+      await closeRace(race.id);
+      addToast('Registration closed. You can set odds now.', 'success');
       refetchRace();
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
@@ -402,6 +418,16 @@ export default function AdminRaceDetailPage() {
                   className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-ok-subtle hover:text-ok disabled:opacity-50"
                 >
                   <LockOpen size={13} /> {reopening ? 'Reopening…' : 'Reopen Registration'}
+                </button>
+              )}
+              {OPENBETTABLE.has(race.status) && (
+                <button
+                  type="button"
+                  disabled={openingBetting}
+                  onClick={handleOpenBetting}
+                  className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-ok-subtle hover:text-ok disabled:opacity-50"
+                >
+                  <TrendingUp size={13} /> {openingBetting ? 'Opening…' : 'Open Betting'}
                 </button>
               )}
               {STARTABLE.has(race.status) && (

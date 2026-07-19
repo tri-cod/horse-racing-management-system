@@ -50,6 +50,16 @@ public class RaceServiceImpl implements RaceService {
             throw new RuntimeException("Race must be OPEN_BETTING to start");
         }
 
+        // ← Pre-race inspection gate: the assigned referee must run the inspection and have
+        // it come back clean before anyone (admin included) can start the race.
+        if (race.getRaceInspectedAt() == null) {
+            throw new RuntimeException("Race has not been inspected yet. The assigned referee must run the pre-race inspection first.");
+        }
+
+        List<String> issues = raceHorseService.getPreRaceIssues(raceId);
+        if (!issues.isEmpty()) {
+            throw new RuntimeException("Cannot start race — inspection found issues: " + String.join("; ", issues));
+        }
 
         race.setStatus(RaceStatus.ONGOING);
         raceRepository.save(race);
@@ -122,6 +132,10 @@ public class RaceServiceImpl implements RaceService {
         Race race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
+        if (race.getStatus() != RaceStatus.UPCOMING && race.getStatus() != RaceStatus.OPEN_REGISTRATION) {
+            throw new RuntimeException("Race must be UPCOMING or OPEN_REGISTRATION to close registration");
+        }
+
         race.setStatus(RaceStatus.CLOSED_REGISTRATION);
         raceRepository.save(race);
 
@@ -135,8 +149,8 @@ public class RaceServiceImpl implements RaceService {
         wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
                 .raceId(race.getId())
                 .raceName(race.getRaceName())
-                .status("CLOSED_REGISTRATION")
-                .message("Registration closed. Betting is now open!")
+                .status("SETTING_ODDS")
+                .message("Registration closed. Odds can now be set.")
                 .updatedAt(Instant.now())
                 .build());
 
@@ -297,8 +311,8 @@ public class RaceServiceImpl implements RaceService {
         Race race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new RuntimeException("Race not found"));
 
-        if (race.getStatus() != RaceStatus.CLOSED_REGISTRATION) {
-            throw new RuntimeException("Only CLOSED_REGISTRATION race can be reopened");
+        if (race.getStatus() != RaceStatus.CLOSED_REGISTRATION && race.getStatus() != RaceStatus.SETTING_ODDS) {
+            throw new RuntimeException("Only a race in CLOSED_REGISTRATION or SETTING_ODDS can be reopened");
         }
 
         race.setStatus(RaceStatus.OPEN_REGISTRATION);
@@ -346,6 +360,7 @@ public class RaceServiceImpl implements RaceService {
                 .registrationDeadline(race.getRegistrationDeadline())
                 .createdAt(race.getCreatedAt())
                 .updatedAt(race.getUpdatedAt())
+                .raceInspectedAt(race.getRaceInspectedAt())
                 .refereeId(refereeId)
                 .refereeName(refereeName)
                 .build();

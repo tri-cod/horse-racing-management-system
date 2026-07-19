@@ -475,12 +475,14 @@ export default function HorseOwnerRacePage() {
                   <img
                     src={race.bannerImageurl}
                     alt={race.raceName}
-                    className="h-full w-full object-cover opacity-70 transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
                   <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,rgba(168,132,59,0.14),transparent_60%)]" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-navy/75 to-transparent" />
+                {/* Bottom scrim only, just enough to keep the prize badge legible — not a
+                    full-image tint (the previous opacity-70 + navy-wash washed every photo green). */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
                 {/* Prize badge */}
                 {race.totalprizepool != null && (

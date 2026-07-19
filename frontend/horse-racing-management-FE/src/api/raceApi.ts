@@ -32,6 +32,14 @@ export const deleteRace = (id: number) =>
 export const reopenRace = (id: number) =>
  axiosInstance.put<ApiResponse<Race>>(`/races/${id}/reopen`).then((r) => r.data.data);
 
+// Admin only; closes registration and moves the race straight to SETTING_ODDS.
+export const closeRace = (id: number) =>
+ axiosInstance.put<ApiResponse<Race>>(`/races/${id}/close`).then((r) => r.data.data);
+
+// Admin/Staff; backend requires SETTING_ODDS and every approved horse to have odds set.
+export const openBetting = (id: number) =>
+ axiosInstance.put<ApiResponse<Race>>(`/races/${id}/open-betting`).then((r) => r.data.data);
+
 // Admin/Referee only; backend requires CLOSED_REGISTRATION before a race can start.
 export const startRace = (id: number) =>
  axiosInstance.put<ApiResponse<Race>>(`/races/${id}/start`).then((r) => r.data.data);

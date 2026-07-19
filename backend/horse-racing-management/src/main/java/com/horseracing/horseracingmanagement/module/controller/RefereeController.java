@@ -136,6 +136,16 @@ public class RefereeController {
         return ResponseEntity.ok(ApiResponse.success("Issue reported", null));
     }
 
+    // Referee tick/untick "OK" thủ công cho 1 ngựa sau khi kiểm tra trực tiếp
+    @PutMapping("/verify-horse")
+    @PreAuthorize("hasAuthority('REFEREE')")
+    public ResponseEntity<ApiResponse<String>> verifyHorse(
+            @Valid @RequestBody VerifyHorseRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        refereeService.verifyHorse(request, userDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success("Horse verification updated", null));
+    }
+
     // RefereeController — thêm endpoint (public)
     @GetMapping
     public ResponseEntity<ApiResponse<List<RefereeProfileResponse>>> getAllReferees() {
