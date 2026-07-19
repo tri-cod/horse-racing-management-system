@@ -20,25 +20,18 @@ public class RedisConfig {
     @Value("${spring.data.redis.port}")
     private int port;
 
+    @Value("${spring.data.redis.password:}")
+    private String password;
 
-    /////======máy khác không phải máy t thì chạy cái này
-//    @Bean
-//    public RedisConnectionFactory redisConnectionFactory() {
-//        RedisStandaloneConfiguration config =
-//                new RedisStandaloneConfiguration("172.20.25.195", 6379); // đổi thành 127.0.0.1
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration config =
-                new RedisStandaloneConfiguration(host, port); // đổi thành 127.0.0.1
+                new RedisStandaloneConfiguration(host, port);
+        if (password != null && !password.isBlank()) {
+            config.setPassword(password);
+        }
         return new LettuceConnectionFactory(config);
     }
-
-//    @Bean
-//    public RedisConnectionFactory redisConnectionFactory() {
-//        RedisStandaloneConfiguration config =
-//                new RedisStandaloneConfiguration("localhost", 6379); // đổi thành 127.0.0.1
-//        return new LettuceConnectionFactory(config);
-//    }
     @Bean
     public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, String> template = new RedisTemplate<>();
