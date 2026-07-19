@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Flag, Play, Lock, ChevronDown, ChevronUp, Calendar, MapPin, Gavel } from 'lucide-react';
+import { Flag, Play, Lock, ChevronDown, ChevronUp, Calendar, MapPin, Gavel, ClipboardCheck } from 'lucide-react';
 import { startRace, closeRegistration, getPenaltiesByRace } from '@/api/refereeApi';
 import { getRaces } from '@/api/raceApi';
 import SetResultModal from '@/components/features/referee/SetResultModal';
 import IssuePenaltyModal from '@/components/features/referee/IssuePenaltyModal';
+import InspectRaceModal from '@/components/features/referee/InspectRaceModal';
 import PenaltyList from '@/components/features/referee/PenaltyList';
 import RegisteredHorsesList from '@/components/features/race-horse/RegisteredHorsesList';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -11,6 +12,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
+import { useMyRefereeProfile } from '@/hooks/useMyRefereeProfile';
 import type { Race, Penalty } from '@/types';
 
 const fmtDate = (iso?: string) =>
@@ -43,11 +45,15 @@ function RaceCardSkeleton() {
 
 export default function RefereeRacesPage() {
   const addToast = useToast();
+  const { profile: myProfile } = useMyRefereeProfile();
   const [races, setRaces] = useState<Race[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionId, setActionId] = useState<number | null>(null);
   const [expandedRaceId, setExpandedRaceId] = useState<number | null>(null);
   const [resultRace, setResultRace] = useState<Race | null>(null);
+
+  // Inspection state
+  const [inspectingRace, setInspectingRace] = useState<Race | null>(null);
 
   // Penalty state
   const [penaltyRace, setPenaltyRace] = useState<Race | null>(null);
@@ -111,6 +117,9 @@ export default function RefereeRacesPage() {
             const isExpanded = expandedRaceId === race.id;
             const isPenaltyOpen = penaltyPanelId === race.id;
             const isActing = actionId === race.id;
+            // Inspect/Penalty/Set Result are rejected server-side unless this referee is
+            // the one assigned to the race — hide them rather than surface a confusing error.
+            const isMine = myProfile != null && race.refereeId === myProfile.id;
 
             return (
               <div key={race.id} className="overflow-hidden border border-rim bg-surface-raised transition-shadow hover:shadow-card">
@@ -165,8 +174,19 @@ export default function RefereeRacesPage() {
                       </button>
                     )}
 
-                    {/* Backend only accepts penalties while the race is ONGOING. */}
-                    {race.status === 'ONGOING' && (
+                    {/* Backend only allows inspection while OPEN_BETTING or ONGOING, and only for the assigned referee. */}
+                    {isMine && (race.status === 'OPEN_BETTING' || race.status === 'ONGOING') && (
+                      <button
+                        type="button"
+                        onClick={() => setInspectingRace(race)}
+                        className="inline-flex items-center gap-1.5 border border-gold/40 bg-gold/10 px-3 py-1.5 text-xs font-semibold text-gold-hi transition-colors hover:bg-gold/20"
+                      >
+                        <ClipboardCheck size={12} /> Inspect
+                      </button>
+                    )}
+
+                    {/* Backend only accepts penalties/results from the assigned referee while ONGOING. */}
+                    {isMine && race.status === 'ONGOING' && (
                       <>
                         <button
                           type="button"
@@ -244,6 +264,14 @@ export default function RefereeRacesPage() {
             setResultRace(null);
             fetchRaces();
           }}
+        />
+      )}
+
+      {inspectingRace && (
+        <InspectRaceModal
+          race={inspectingRace}
+          onClose={() => setInspectingRace(null)}
+          onToast={(msg, type) => addToast(msg, type ?? 'success')}
         />
       )}
 

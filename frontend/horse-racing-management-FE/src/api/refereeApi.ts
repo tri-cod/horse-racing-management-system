@@ -63,6 +63,8 @@ import type {
   RefereeRace,
   Penalty,
   IssuePenaltyPayload,
+  PreRaceInspectionResponse,
+  ReportInspectionIssuePayload,
 } from '@/types';
 
 /* ── Profile ────────────────────────────────────────────── */
@@ -77,6 +79,9 @@ export const getMyRefereeProfile = () =>
 
 export const getRefereeProfile = (refereeId: number) =>
   axiosInstance.get<ApiResponse<RefereeProfile>>(`/referee/${refereeId}`).then((r) => r.data.data);
+
+export const getAllReferees = () =>
+  axiosInstance.get<ApiResponse<RefereeProfile[]>>('/referee').then((r) => r.data.data);
 
 /* ── Races ──────────────────────────────────────────────── */
 
@@ -102,3 +107,13 @@ export const getMyPenaltyHistory = () =>
 
 export const cancelPenalty = (penaltyId: number) =>
   axiosInstance.delete<ApiResponse<string>>(`/referee/penalty/${penaltyId}`).then((r) => r.data);
+
+/* ── Pre-race inspection ────────────────────────────────── */
+
+export const inspectRace = (raceId: number) =>
+  axiosInstance
+    .get<ApiResponse<PreRaceInspectionResponse>>(`/referee/inspect-race/${raceId}`)
+    .then((r) => r.data.data);
+
+export const reportInspectionIssue = (payload: ReportInspectionIssuePayload) =>
+  axiosInstance.post<ApiResponse<string>>('/referee/inspection-issue', payload).then((r) => r.data);

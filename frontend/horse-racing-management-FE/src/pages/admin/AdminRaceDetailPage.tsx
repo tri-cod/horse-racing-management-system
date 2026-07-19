@@ -448,7 +448,6 @@ export default function AdminRaceDetailPage() {
           {race.bannerImageurl
             ? <img src={race.bannerImageurl} alt={race.raceName} className="h-full w-full object-cover" />
             : <div className="h-full w-full bg-[radial-gradient(ellipse_at_30%_50%,rgba(168,132,59,0.14),transparent_60%)]" />}
-          <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/10 to-transparent" />
           <div className="absolute left-5 top-5"><RaceStatusBadge race={race} /></div>
           {race.totalprizepool != null && (
             <div className="absolute bottom-5 right-5 inline-flex items-center gap-1.5 bg-gold/90 px-3 py-1 text-xs font-bold text-navy">
