@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.origin.SystemEnvironmentOrigin;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -93,6 +94,12 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         notificationRepository.delete(notification);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllNotifications(Long userId) {
+        notificationRepository.deleteByUser_Id(userId);
     }
 
     @Override

@@ -16,4 +16,7 @@ public class JockeyResponse {
     private String avatarUrl;
     private String coverImageUrl;
     private String description;
+    private Long totalRaces;
+    private Long totalWins;
+    private Double winRate;
 }

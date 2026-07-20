@@ -40,6 +40,7 @@ export interface Race {
  refereeId?: number | null;
  status: RaceStatus;
  createdAt?: string;
+ raceInspectedAt?: string | null;
 }
 
 export interface RaceHorse {

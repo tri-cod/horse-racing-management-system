@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getMyNotifications, markAsRead } from '@/api/notificationApi';
+import { getMyNotifications, markAsRead, deleteNotification, deleteAllNotifications } from '@/api/notificationApi';
+import { getErrorMessage } from '@/utils/errors';
 import type { Notification } from '@/types';
 
 export function useNotifications() {
@@ -28,13 +29,27 @@ export function useNotifications() {
  );
  };
 
+ const handleDelete = async (id: number) => {
+ await deleteNotification(id);
+ queryClient.setQueryData<Notification[]>(['notifications'], (prev) =>
+ prev?.filter((n) => n.id !== id)
+ );
+ };
+
+ const handleDeleteAll = async () => {
+ await deleteAllNotifications();
+ queryClient.setQueryData<Notification[]>(['notifications'], []);
+ };
+
  return {
  notifications,
  unreadCount,
  loading: isLoading,
- error: error ? 'Failed to load notifications.' : null,
+ error: error ? getErrorMessage(error, 'Failed to load notifications.') : null,
  refetch,
  markAsRead: handleMarkAsRead,
  markAllAsRead: handleMarkAllAsRead,
+ deleteNotification: handleDelete,
+ deleteAllNotifications: handleDeleteAll,
  };
 }

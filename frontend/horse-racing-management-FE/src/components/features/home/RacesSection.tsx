@@ -19,7 +19,7 @@ function daysUntil(iso?: string) {
 }
 
 const STATUS_LABEL: Record<string, string> = {
-  UPCOMING: 'Upcoming', OPEN_REGISTRATION: 'Open', CLOSED_REGISTRATION: 'Entries Closed', ONGOING: 'Live', FINISHED: 'Finished',
+  UPCOMING: 'Upcoming', OPEN_REGISTRATION: 'Open', CLOSED_REGISTRATION: 'Entries Closed', SETTING_ODDS: 'Setting Odds', OPEN_BETTING: 'Betting Open', ONGOING: 'Live', FINISHED: 'Finished',
 };
 
 function RaceCardSkeleton() {

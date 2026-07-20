@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   ChevronLeft, Pencil, Trash2, Lock, LockOpen, TrendingUp, MapPin, Calendar,
-  Trophy, Users, CheckCircle2, XCircle, Flag, PlayCircle, Gauge, Award, Check, X,
+  Trophy, Users, CheckCircle2, XCircle, Flag, PlayCircle, Gauge, Award, Check, X, ShieldAlert,
 } from 'lucide-react';
 import { useRaceDetail } from '@/hooks/useRaceDetail';
 import { useHorsesByRace } from '@/hooks/useHorsesByRace';
@@ -431,14 +431,24 @@ export default function AdminRaceDetailPage() {
                 </button>
               )}
               {STARTABLE.has(race.status) && (
-                <button
-                  type="button"
-                  disabled={starting}
-                  onClick={handleStartRace}
-                  className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-ok-subtle hover:text-ok disabled:opacity-50"
-                >
-                  <PlayCircle size={13} /> {starting ? 'Starting…' : 'Start Race'}
-                </button>
+                <>
+                  {!race.raceInspectedAt && (
+                    <span
+                      title="The assigned referee must run a clean pre-race inspection before this race can start."
+                      className="inline-flex items-center gap-1.5 border border-warn/30 bg-warn-subtle px-3 py-2 text-xs font-semibold text-warn"
+                    >
+                      <ShieldAlert size={13} /> Not inspected yet
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    disabled={starting}
+                    onClick={handleStartRace}
+                    className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-ok-subtle hover:text-ok disabled:opacity-50"
+                  >
+                    <PlayCircle size={13} /> {starting ? 'Starting…' : 'Start Race'}
+                  </button>
+                </>
               )}
               {isFinished ? (
                 <span className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-4">

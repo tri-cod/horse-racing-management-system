@@ -8,3 +8,4 @@ export * from './wallet';
 export * from './notification';
 export * from './common';
 export * from './referee';
+export * from './horseOwner';

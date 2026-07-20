@@ -6,7 +6,7 @@ interface TabDef {
 
 const TABS: TabDef[] = [
   { value: '', label: 'All', statuses: [] },
-  { value: 'UPCOMING', label: 'Upcoming', statuses: ['UPCOMING', 'OPEN_REGISTRATION', 'CLOSED_REGISTRATION', 'OPEN_BETTING'] },
+  { value: 'UPCOMING', label: 'Upcoming', statuses: ['UPCOMING', 'OPEN_REGISTRATION', 'CLOSED_REGISTRATION', 'SETTING_ODDS', 'OPEN_BETTING'] },
   { value: 'ONGOING', label: 'Ongoing', statuses: ['ONGOING'] },
   { value: 'FINISHED', label: 'Finished', statuses: ['FINISHED'] },
   { value: 'CANCELLED', label: 'Cancelled', statuses: ['CANCELLED'] },

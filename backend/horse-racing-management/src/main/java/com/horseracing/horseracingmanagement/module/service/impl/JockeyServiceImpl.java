@@ -2,8 +2,10 @@ package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
+import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.CompleteJockeyProfileRequest;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyProfileResponse;
+import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyResponse;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyStatsResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
 import com.horseracing.horseracingmanagement.module.entity.Jockey;
@@ -67,6 +69,43 @@ public class JockeyServiceImpl implements JockeyService {
         return jockeyRepository.findAll()
                 .stream()
                 .map(this::mapToProfileResponse)
+                .collect(Collectors.toList());
+    }
+
+    // Danh sách công khai (card view) — chỉ Active, ẩn user bị banned, kèm thống kê race.
+    @Override
+    public List<JockeyResponse> getJockeyList() {
+        return jockeyRepository.findByStatus("Active")
+                .stream()
+                .filter(j -> j.getUser() != null && j.getUser().getStatus() != UserStatus.BANNED)
+                .map(j -> {
+                    List<RaceHorse> raceHorses = getCollect(j);
+                    long totalRaces = raceHorses.size();
+                    long totalWins = raceHorses.stream()
+                            .filter(rh -> {
+                                Optional<RaceResult> result = raceResultRepository.findByRaceHorse_Id(rh.getId());
+                                return result.isPresent() && result.get().getRank() == 1L;
+                            })
+                            .count();
+                    double winRate = totalRaces > 0
+                            ? Math.round((double) totalWins / totalRaces * 100.0) : 0.0;
+
+                    return JockeyResponse.builder()
+                            .id(j.getId())
+                            .name(j.getUser().getFullName() != null
+                                    ? j.getUser().getFullName()
+                                    : j.getUser().getUsername())
+                            .dateOfBirth(j.getDateOfBirth())
+                            .experienceYear(j.getExperienceYear())
+                            .status(j.getStatus())
+                            .avatarUrl(j.getAvatarUrl())
+                            .coverImageUrl(j.getCoverImageUrl())
+                            .description(j.getDescription())
+                            .totalRaces(totalRaces)
+                            .totalWins(totalWins)
+                            .winRate(winRate)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
     @Override

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Trophy, Target, CheckCircle, Wallet, Info, ArrowRight } from 'lucide-react';
-import { getMyNotifications, countUnread, markAsRead } from '@/api/notificationApi';
+import { Bell, Trophy, Target, CheckCircle, Wallet, Info, ArrowRight, Trash2 } from 'lucide-react';
+import { getMyNotifications, countUnread, markAsRead, deleteNotification } from '@/api/notificationApi';
 import { useAuth } from '@/context/AuthContext';
 import type { Notification, UserRole } from '@/types';
 
@@ -96,6 +96,15 @@ export default function NotificationBell() {
  navigate(resolveNotificationPath(notif, user?.role));
  };
 
+ const handleDelete = async (e: React.MouseEvent, notif: Notification) => {
+ e.stopPropagation();
+ try {
+ await deleteNotification(notif.id);
+ setNotifications((prev) => prev.filter((n) => n.id !== notif.id));
+ if (!notif.isRead) setUnreadCount((c) => Math.max(0, c - 1));
+ } catch { /* leave it in the list so the user can retry */ }
+ };
+
  return (
  <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
  <button
@@ -130,11 +139,13 @@ export default function NotificationBell() {
  <div className="flex items-center justify-center py-10 text-sm text-ink-4">No notifications yet.</div>
  ) : (
  notifications.map((n) => (
- <button
+ <div
  key={n.id}
- type="button"
- className={`group w-full flex items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-overlay ${!n.isRead ? 'bg-gold/5' : ''}`}
+ role="button"
+ tabIndex={0}
+ className={`group flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-overlay ${!n.isRead ? 'bg-gold/5' : ''}`}
  onClick={() => handleItemClick(n)}
+ onKeyDown={(e) => { if (e.key === 'Enter') handleItemClick(n); }}
  >
  {/* Icon */}
  <span className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-colors ${!n.isRead ? 'bg-gold/15 text-gold' : 'bg-surface-input text-ink-4'}`}>
@@ -158,7 +169,17 @@ export default function NotificationBell() {
  {!n.isRead && (
  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-gold" aria-label="Unread" />
  )}
+
+ {/* Delete */}
+ <button
+ type="button"
+ title="Delete"
+ onClick={(e) => handleDelete(e, n)}
+ className="shrink-0 text-ink-4 opacity-0 transition-colors group-hover:opacity-100 hover:text-fail"
+ >
+ <Trash2 size={13} />
  </button>
+ </div>
  ))
  )}
  </div>

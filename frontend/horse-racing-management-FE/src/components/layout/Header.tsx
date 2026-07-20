@@ -107,7 +107,7 @@ export default function Header() {
   const roleItems = user ? (ROLE_MENU[user.role] ?? []) : [];
 
   const nextRace = allRaces
-    .filter((r) => ['ONGOING', 'CLOSED_REGISTRATION', 'OPEN_REGISTRATION'].includes(r.status))
+    .filter((r) => ['ONGOING', 'CLOSED_REGISTRATION', 'SETTING_ODDS', 'OPEN_BETTING', 'OPEN_REGISTRATION'].includes(r.status))
     .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())[0] ?? null;
 
   const previousRaces = allRaces.filter((r) => r.status === 'FINISHED')

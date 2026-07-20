@@ -31,6 +31,7 @@ REFEREE: [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/horse-owner/dashboard' },
         { icon: Shield, label: 'My Horses', href: '/horse-owner/horses' },
         { icon: ClipboardList, label: 'My Registrations', href: '/horse-owner/race-registrations' },
+        { icon: UserCog, label: 'My Profile', href: '/horse-owner/profile' },
         { icon: Wallet, label: 'My Wallet', href: '/my-wallet' },
         { icon: FlagTriangleRight, label: 'Register to Race', href: '/horse-owner/register-race' },
     ],
