@@ -17,7 +17,8 @@ import RaceHorseStatusBadge from '@/components/features/race-horse/RaceHorseStat
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Seo from '@/components/seo/Seo';
-import { isStatus } from '@/utils/raceHorseStatus';
+import { isStatus, isAnyStatus, type RaceHorseStatusKey } from '@/utils/raceHorseStatus';
+import { assignLanes } from '@/utils/laneUtils';
 import type { Horse } from '@/types';
 
 const CLOSEABLE = new Set(['UPCOMING', 'OPEN_REGISTRATION']);
@@ -26,6 +27,31 @@ const OPENBETTABLE = new Set(['SETTING_ODDS']);
 const STARTABLE = new Set(['OPEN_BETTING']);
 const TRACK_CONDITIONS = ['Dry', 'Wet', 'Muddy', 'Fast', 'Soft'];
 const SURFACE_TYPES = ['Turf', 'Dirt', 'Synthetic'];
+// Every race runs at the same physical venue — locked here too, mirroring RaceForm.tsx.
+const LOCKED_TRACK_NAME = 'Derby Track';
+const LOCKED_LOCATION = 'Santa Anita Park';
+
+// One table per status group instead of one mixed table — each tab only
+// carries the columns/actions that are actually relevant to that status.
+// FINISHED/DISQUALIFIED are intentionally excluded: FINISHED duplicates the
+// dedicated race-results view (which also has rank/rewards this page's API
+// doesn't return), and DISQUALIFIED is a transient state that folds back
+// into FINISHED as soon as results are recorded.
+type EntryTabKey =
+  | 'JOCKEY_STATUS' | 'PENDING_ADMIN' | 'WITHDRAW_PENDING'
+  | 'APPROVED' | 'REJECTED' | 'WITHDRAW_HISTORY';
+
+const ENTRY_TABS: { key: EntryTabKey; label: string; statuses: RaceHorseStatusKey[]; emptyText: string }[] = [
+  // PENDING_JOCKEY (still waiting on the jockey to respond) and JOCKEY_REJECTED
+  // (jockey declined) are both non-actionable for admin — same "not real yet"
+  // holding area — so they share one tab, distinguished by a Status column.
+  { key: 'JOCKEY_STATUS', label: 'Jockey Status', statuses: ['PENDING_JOCKEY', 'JOCKEY_REJECTED'], emptyText: 'No registrations awaiting a jockey.' },
+  { key: 'PENDING_ADMIN', label: 'Pending Approval', statuses: ['PENDING_ADMIN'], emptyText: 'No entries awaiting approval.' },
+  { key: 'WITHDRAW_PENDING', label: 'Withdrawal Requests', statuses: ['WITHDRAW_PENDING'], emptyText: 'No withdrawal requests.' },
+  { key: 'APPROVED', label: 'Approved', statuses: ['APPROVED'], emptyText: 'No approved horses yet.' },
+  { key: 'REJECTED', label: 'Rejected', statuses: ['REJECTED'], emptyText: 'No rejected entries.' },
+  { key: 'WITHDRAW_HISTORY', label: 'Withdrawal History', statuses: ['WITHDRAW_REJECTED', 'WITHDRAWN'], emptyText: 'No withdrawal history yet.' },
+];
 
 const fmtPrize = (n?: number) =>
   n != null
@@ -83,6 +109,7 @@ export default function AdminRaceDetailPage() {
     setEditForm((prev) => ({ ...prev, [field]: value }));
   const [oddsInputs, setOddsInputs] = useState<Record<number, string>>({});
   const [savingAllOdds, setSavingAllOdds] = useState(false);
+  const [activeTab, setActiveTab] = useState<EntryTabKey>('PENDING_ADMIN');
 
   // Race-horse entries don't carry breed/age/speed/rank — fetch them per unique
   // horse (same N+1 pattern used in SetOddsPanel), deduped via a ref
@@ -209,9 +236,10 @@ export default function AdminRaceDetailPage() {
     setEditForm({
       raceName: race.raceName ?? '',
       startTime: toLocalDatetime(race.startTime),
-      location: race.location ?? '',
+      // Locked regardless of what the race was saved with — track/location are fixed venue info now.
+      location: LOCKED_LOCATION,
       capacity: race.capacity != null ? String(race.capacity) : '',
-      trackName: race.trackName ?? '',
+      trackName: LOCKED_TRACK_NAME,
       surfaceType: race.surfaceType ?? SURFACE_TYPES[0],
       distance: race.distance != null ? String(race.distance) : '',
       trackCondition: race.trackCondition ?? TRACK_CONDITIONS[0],
@@ -233,12 +261,12 @@ export default function AdminRaceDetailPage() {
         raceName: editForm.raceName.trim(),
         startTime: toISO(editForm.startTime)!,
         endTime: race.endTime,
-        trackName: editForm.trackName.trim(),
+        trackName: LOCKED_TRACK_NAME,
         trackCondition: editForm.trackCondition,
         surfaceType: editForm.surfaceType,
         totalprizepool: editForm.totalprizepool ? Number(editForm.totalprizepool) : undefined,
         distance: editForm.distance.trim(),
-        location: editForm.location.trim(),
+        location: LOCKED_LOCATION,
         capacity: editForm.capacity ? Number(editForm.capacity) : undefined,
         bannerImageurl: race.bannerImageurl,
         registrationDeadline: toISO(editForm.registrationDeadline),
@@ -340,8 +368,6 @@ export default function AdminRaceDetailPage() {
     );
   }
 
-  const pendingCount = entries.filter((e) => isStatus(e.status, 'PENDING_ADMIN')).length;
-  const withdrawCount = entries.filter((e) => isStatus(e.status, 'WITHDRAW_PENDING')).length;
   // A finished race is a closed historical record — none of its information
   // (fields, odds, or entry decisions) may be changed anymore. This flag freezes
   // every mutating control below.
@@ -352,20 +378,34 @@ export default function AdminRaceDetailPage() {
   // Odds can only be set once registration is closed — before that the field is
   // still open to new entries, so pricing them early would be premature.
   const registrationClosed = !CLOSEABLE.has(race.status);
-  // Hide entries still waiting on the jockey to accept — they aren't a real part
-  // of the field yet, so they shouldn't clutter admin's approval queue.
-  // Then sort by odds ascending (smallest first); horses without odds set (null)
-  // fall to the bottom. odds is a BigDecimal → may arrive as a string over JSON,
-  // so coerce to Number before comparing. .filter() already returns a fresh array,
-  // so .sort() here never mutates the original `entries`.
-  const visibleEntries = entries
-    .filter((e) => !isStatus(e.status, 'PENDING_JOCKEY'))
-    .sort((a, b) => (a.odds != null ? Number(a.odds) : Infinity) - (b.odds != null ? Number(b.odds) : Infinity));
+
+  // Per-tab counts, shown as badges on the tab bar.
+  const tabCounts = Object.fromEntries(
+    ENTRY_TABS.map((t) => [t.key, entries.filter((e) => isAnyStatus(e.status, t.statuses)).length]),
+  ) as Record<EntryTabKey, number>;
+
+  const activeTabConfig = ENTRY_TABS.find((t) => t.key === activeTab)!;
+  let tabEntries = entries.filter((e) => isAnyStatus(e.status, activeTabConfig.statuses));
+  if (activeTab === 'APPROVED') {
+    // Lane assignment is keyed off registration order — assign it before the
+    // odds sort below reorders the rows for display.
+    tabEntries = assignLanes(tabEntries as Parameters<typeof assignLanes>[0]);
+    // Sort by odds ascending (smallest first); horses without odds set (null)
+    // fall to the bottom. odds is a BigDecimal → may arrive as a string over
+    // JSON, so coerce to Number before comparing.
+    tabEntries = [...tabEntries].sort(
+      (a, b) => (a.odds != null ? Number(a.odds) : Infinity) - (b.odds != null ? Number(b.odds) : Infinity),
+    );
+  }
 
   const { invalid: invalidOdds, changed: changedOdds } = oddsDiff();
-  const settableCount = registrationClosed && !isFinished
-    ? visibleEntries.filter((e) => isStatus(e.status, 'APPROVED')).length
-    : 0;
+  const settableCount = activeTab === 'APPROVED' && registrationClosed && !isFinished ? tabEntries.length : 0;
+
+  const showLaneColumn = activeTab === 'APPROVED';
+  const showOddsColumn = activeTab === 'APPROVED';
+  const showStatusColumn = activeTab === 'WITHDRAW_HISTORY' || activeTab === 'JOCKEY_STATUS';
+  const showRegisteredColumn = activeTab === 'REJECTED';
+  const showActionsColumn = activeTab === 'PENDING_ADMIN' || activeTab === 'WITHDRAW_PENDING';
 
   return (
     <div className="px-8 py-6">
@@ -505,7 +545,7 @@ export default function AdminRaceDetailPage() {
             </label>
             <label className="flex flex-col gap-1">
               <span className="text-xs font-semibold uppercase tracking-wide text-ink-4">Location</span>
-              <input value={editForm.location} onChange={(e) => setField('location', e.target.value)} className={editInputCls} />
+              <input value={editForm.location} disabled className={`${editInputCls} cursor-not-allowed bg-surface-overlay text-ink-3`} />
             </label>
             <label className="flex flex-col gap-1">
               <span className="text-xs font-semibold uppercase tracking-wide text-ink-4">Capacity</span>
@@ -513,7 +553,7 @@ export default function AdminRaceDetailPage() {
             </label>
             <label className="flex flex-col gap-1">
               <span className="text-xs font-semibold uppercase tracking-wide text-ink-4">Track Name</span>
-              <input value={editForm.trackName} onChange={(e) => setField('trackName', e.target.value)} className={editInputCls} />
+              <input value={editForm.trackName} disabled className={`${editInputCls} cursor-not-allowed bg-surface-overlay text-ink-3`} />
             </label>
             <label className="flex flex-col gap-1">
               <span className="text-xs font-semibold uppercase tracking-wide text-ink-4">Surface</span>
@@ -587,17 +627,40 @@ export default function AdminRaceDetailPage() {
 
       {/* Entries */}
       <div className="mt-8">
-        <div className="mb-4 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">
-              {[
-                pendingCount > 0 ? `${pendingCount} awaiting approval` : null,
-                withdrawCount > 0 ? `${withdrawCount} awaiting withdrawal review` : null,
-              ].filter(Boolean).join(' · ') || 'Entries'}
-            </p>
-            <h2 className="font-serif text-lg font-bold text-ink">Race Entries</h2>
-          </div>
+        <div className="mb-4">
+          <h2 className="font-serif text-lg font-bold text-ink">Race Entries</h2>
+        </div>
 
+        {/* Tab bar — one status group per tab, each with its own count badge */}
+        <div className="flex flex-wrap gap-1.5 border-b border-rim">
+          {ENTRY_TABS.map((t) => {
+            const count = tabCounts[t.key];
+            const active = activeTab === t.key;
+            return (
+              <button
+                key={t.key}
+                type="button"
+                onClick={() => setActiveTab(t.key)}
+                className={`inline-flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-semibold transition-colors ${
+                  active
+                    ? 'border-gold text-ink'
+                    : 'border-transparent text-ink-3 hover:text-ink-2'
+                }`}
+              >
+                {t.label}
+                <span
+                  className={`tnum inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1 py-0.5 text-[10px] font-bold ${
+                    active ? 'bg-gold/15 text-gold' : 'bg-surface-overlay text-ink-4'
+                  }`}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-4 mb-4 flex items-end justify-end gap-4">
           {/* One button saves odds for every horse that has a changed, valid value. */}
           {settableCount > 0 && (
             <button
@@ -625,32 +688,35 @@ export default function AdminRaceDetailPage() {
               </div>
             ))}
           </div>
-        ) : visibleEntries.length === 0 ? (
+        ) : tabEntries.length === 0 ? (
           <div className="flex flex-col items-center gap-2 border border-rim bg-surface-raised py-12 text-center">
             <Flag size={20} className="text-ink-4" />
-            <p className="text-sm text-ink-2">
-              {entries.length > 0 ? 'No entries yet — all registrations are still awaiting jockey confirmation.' : 'No horses registered for this race yet.'}
-            </p>
+            <p className="text-sm text-ink-2">{activeTabConfig.emptyText}</p>
           </div>
         ) : (
           <div className="overflow-hidden border border-rim bg-surface-raised">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[720px]">
+              <table className="w-full min-w-[760px]">
                 <thead>
                   <tr className="border-b border-rim bg-surface-overlay">
-                    {['Horse', 'Owner', 'Jockey', 'Status', 'Odds', 'Actions'].map((h) => (
+                    {[
+                      'Horse', 'Owner', 'Jockey',
+                      ...(showLaneColumn ? ['Lane'] : []),
+                      ...(showOddsColumn ? ['Odds'] : []),
+                      ...(showStatusColumn ? ['Status'] : []),
+                      ...(showRegisteredColumn ? ['Registered'] : []),
+                      ...(showActionsColumn ? ['Actions'] : []),
+                    ].map((h) => (
                       <th key={h} className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-rim">
-                  {visibleEntries.map((e) => {
+                  {tabEntries.map((e) => {
                     const isLoading = actionId === e.id;
                     const initial = e.horseName?.charAt(0)?.toUpperCase() ?? '?';
                     const detail = horseDetails[e.horseId];
-                    const canApprove = isStatus(e.status, 'PENDING_ADMIN') && !isFinished;
-                    const canReviewWithdrawal = isStatus(e.status, 'WITHDRAW_PENDING') && !isFinished;
-                    const canSetOdds = isStatus(e.status, 'APPROVED') && registrationClosed && !isFinished;
+                    const canSetOdds = showOddsColumn && registrationClosed && !isFinished;
                     return (
                       <tr key={e.id} className="transition-colors hover:bg-surface-overlay/40">
                         <td className="px-5 py-3.5">
@@ -724,58 +790,21 @@ export default function AdminRaceDetailPage() {
                             <span className="text-sm text-ink-2">—</span>
                           )}
                         </td>
-                        <td className="px-5 py-3.5"><RaceHorseStatusBadge status={e.status} /></td>
-                        <td className="tnum px-5 py-3.5 text-sm font-semibold text-ink">{e.odds != null ? `×${Number(e.odds).toFixed(2)}` : '—'}</td>
-                        <td className="px-5 py-3.5">
-                          <div className="flex flex-wrap items-center gap-2">
-                            {/* Approve/Reject — only while awaiting admin approval */}
-                            {canApprove && (
-                              <div className="flex gap-1.5">
-                                <button
-                                  type="button"
-                                  disabled={isLoading}
-                                  onClick={() => handleApprove(e.id, e.horseName)}
-                                  className="inline-flex items-center gap-1 border border-ok/30 bg-ok-subtle px-2.5 py-1.5 text-xs font-semibold text-ok transition-colors hover:bg-ok hover:text-white disabled:opacity-50"
-                                >
-                                  <CheckCircle2 size={12} /> Approve
-                                </button>
-                                <button
-                                  type="button"
-                                  disabled={isLoading}
-                                  onClick={() => handleReject(e.id, e.horseName)}
-                                  className="inline-flex items-center gap-1 border border-fail/30 bg-fail-subtle px-2.5 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail hover:text-white disabled:opacity-50"
-                                >
-                                  <XCircle size={12} /> Reject
-                                </button>
-                              </div>
-                            )}
 
-                            {/* Withdrawal review — only while a withdrawal request is pending */}
-                            {canReviewWithdrawal && (
-                              <div className="flex gap-1.5">
-                                <button
-                                  type="button"
-                                  disabled={isLoading}
-                                  onClick={() => handleApproveWithdrawal(e.id, e.horseName)}
-                                  className="inline-flex items-center gap-1 border border-ok/30 bg-ok-subtle px-2.5 py-1.5 text-xs font-semibold text-ok transition-colors hover:bg-ok hover:text-white disabled:opacity-50"
-                                >
-                                  <CheckCircle2 size={12} /> Approve Withdrawal
-                                </button>
-                                <button
-                                  type="button"
-                                  disabled={isLoading}
-                                  onClick={() => handleRejectWithdrawal(e.id, e.horseName)}
-                                  className="inline-flex items-center gap-1 border border-fail/30 bg-fail-subtle px-2.5 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail hover:text-white disabled:opacity-50"
-                                >
-                                  <XCircle size={12} /> Reject Withdrawal
-                                </button>
-                              </div>
-                            )}
+                        {showLaneColumn && (
+                          <td className="px-5 py-3.5">
+                            <span className="tnum inline-flex h-6 w-6 items-center justify-center rounded-full bg-navy/10 text-xs font-bold text-navy">
+                              {e.laneNumber ?? '—'}
+                            </span>
+                          </td>
+                        )}
 
-                            {/* Odds input — only once approved AND registration has closed.
-                                Saving is handled by the single "Set Odds" button above the table. */}
-                            {canSetOdds && (
-                              <div className="relative">
+                        {showOddsColumn && (
+                          <td className="px-5 py-3.5">
+                            {/* Editable only once registration has closed — saving is handled
+                                by the single "Set Odds" button above the table. */}
+                            {canSetOdds ? (
+                              <div className="relative w-20">
                                 <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs font-semibold text-ink-4">×</span>
                                 <input
                                   type="text"
@@ -790,18 +819,70 @@ export default function AdminRaceDetailPage() {
                                     }))
                                   }
                                   onKeyDown={(ev) => { if (ev.key === 'Enter') handleSaveAllOdds(); }}
-                                  className={`w-20 border bg-surface-input py-1.5 pl-5 pr-2 text-xs font-semibold text-ink outline-none transition-colors focus:border-gold disabled:opacity-50 ${isOddsInvalid(e.id) ? 'border-fail' : 'border-rim'
+                                  className={`w-full border bg-surface-input py-1.5 pl-5 pr-2 text-xs font-semibold text-ink outline-none transition-colors focus:border-gold disabled:opacity-50 ${isOddsInvalid(e.id) ? 'border-fail' : 'border-rim'
                                     }`}
                                 />
                               </div>
+                            ) : (
+                              <span className="tnum text-sm font-semibold text-ink">{e.odds != null ? `×${Number(e.odds).toFixed(2)}` : '—'}</span>
                             )}
+                          </td>
+                        )}
 
-                            {/* Nothing actionable right now (e.g. still open for registration, or jockey hasn't confirmed yet) */}
-                            {!canApprove && !canReviewWithdrawal && !canSetOdds && (
-                              <span className="text-xs text-ink-4">—</span>
-                            )}
-                          </div>
-                        </td>
+                        {showStatusColumn && (
+                          <td className="px-5 py-3.5"><RaceHorseStatusBadge status={e.status} /></td>
+                        )}
+
+                        {showRegisteredColumn && (
+                          <td className="px-5 py-3.5 text-sm text-ink-3">{fmtDate(e.registerAt)}</td>
+                        )}
+
+                        {showActionsColumn && (
+                          <td className="px-5 py-3.5">
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              {activeTab === 'PENDING_ADMIN' && !isFinished && (
+                                <>
+                                  <button
+                                    type="button"
+                                    disabled={isLoading}
+                                    onClick={() => handleApprove(e.id, e.horseName)}
+                                    className="inline-flex items-center gap-1 border border-ok/30 bg-ok-subtle px-2.5 py-1.5 text-xs font-semibold text-ok transition-colors hover:bg-ok hover:text-white disabled:opacity-50"
+                                  >
+                                    <CheckCircle2 size={12} /> Approve
+                                  </button>
+                                  <button
+                                    type="button"
+                                    disabled={isLoading}
+                                    onClick={() => handleReject(e.id, e.horseName)}
+                                    className="inline-flex items-center gap-1 border border-fail/30 bg-fail-subtle px-2.5 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail hover:text-white disabled:opacity-50"
+                                  >
+                                    <XCircle size={12} /> Reject
+                                  </button>
+                                </>
+                              )}
+                              {activeTab === 'WITHDRAW_PENDING' && !isFinished && (
+                                <>
+                                  <button
+                                    type="button"
+                                    disabled={isLoading}
+                                    onClick={() => handleApproveWithdrawal(e.id, e.horseName)}
+                                    className="inline-flex items-center gap-1 border border-ok/30 bg-ok-subtle px-2.5 py-1.5 text-xs font-semibold text-ok transition-colors hover:bg-ok hover:text-white disabled:opacity-50"
+                                  >
+                                    <CheckCircle2 size={12} /> Approve Withdrawal
+                                  </button>
+                                  <button
+                                    type="button"
+                                    disabled={isLoading}
+                                    onClick={() => handleRejectWithdrawal(e.id, e.horseName)}
+                                    className="inline-flex items-center gap-1 border border-fail/30 bg-fail-subtle px-2.5 py-1.5 text-xs font-semibold text-fail transition-colors hover:bg-fail hover:text-white disabled:opacity-50"
+                                  >
+                                    <XCircle size={12} /> Reject Withdrawal
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     );
                   })}
