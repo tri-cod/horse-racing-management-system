@@ -112,10 +112,10 @@ export default function AdminWithdrawalRequestsPage() {
       ) : (
         <div className="overflow-hidden border border-rim bg-surface-raised">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[820px]">
+            <table className="w-full min-w-[860px]">
               <thead>
                 <tr className="border-b border-rim bg-surface-overlay">
-                  {['Horse', 'Owner', 'Race', 'Jockey', 'Actions'].map((h) => (
+                  {['Horse', 'Owner', 'Race', 'Jockey', 'Reason', 'Actions'].map((h) => (
                     <th key={h} className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">{h}</th>
                   ))}
                 </tr>
@@ -199,6 +199,7 @@ export default function AdminWithdrawalRequestsPage() {
                           <span className="text-sm text-ink-2">—</span>
                         )}
                       </td>
+                      <td className="max-w-xs px-5 py-3.5 text-sm text-ink-2">{r.withdrawReason || ''}</td>
                       <td className="px-5 py-3.5">
                         <div className="flex gap-2">
                           <button

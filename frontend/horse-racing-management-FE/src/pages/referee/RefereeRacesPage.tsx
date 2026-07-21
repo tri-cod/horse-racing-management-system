@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Flag, Play, Lock, ChevronDown, ChevronUp, Calendar, MapPin, Gavel, ClipboardCheck } from 'lucide-react';
+import {
+  Flag, Play, Lock, ChevronDown, ChevronUp, Calendar, MapPin, Gavel, ClipboardCheck,
+  Ruler, Waves, Droplets,
+} from 'lucide-react';
 import { startRace, getPenaltiesByRace } from '@/api/refereeApi';
 import { getRaces } from '@/api/raceApi';
 import SetResultModal from '@/components/features/referee/SetResultModal';
@@ -180,6 +183,26 @@ export default function RefereeRacesPage() {
                 </span>
               )}
             </div>
+            {/* Track conditions — officiating-relevant race parameters. */}
+            {(race.trackCondition || race.surfaceType || race.distance != null) && (
+              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5">
+                {race.trackCondition && (
+                  <span className="flex items-center gap-1 text-xs text-ink-3">
+                    <Droplets size={11} />{race.trackCondition}
+                  </span>
+                )}
+                {race.surfaceType && (
+                  <span className="flex items-center gap-1 text-xs text-ink-3">
+                    <Waves size={11} />{race.surfaceType}
+                  </span>
+                )}
+                {race.distance != null && race.distance !== '' && (
+                  <span className="flex items-center gap-1 text-xs text-ink-3">
+                    <Ruler size={11} />{race.distance}
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* Secondary, low-emphasis toggles — kept apart from the primary
                 status-changing actions on the right so that row stays scannable. */}
@@ -254,11 +277,7 @@ export default function RefereeRacesPage() {
         {isExpanded && (
           <div className="border-t border-rim bg-surface-overlay/30 px-5 py-4">
             <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Registered Horses</p>
-            <RegisteredHorsesList
-              raceId={race.id}
-              isAdmin
-              onToast={(msg, type) => addToast(msg, type ?? 'success')}
-            />
+            <RegisteredHorsesList raceId={race.id} />
           </div>
         )}
 
