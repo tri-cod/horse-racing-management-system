@@ -26,7 +26,7 @@ function toISO(local: string) {
 }
 
 interface FormData {
- raceName: string; startTime: string; registrationDeadline: string;
+ raceName: string; startTime: string; registrationOpenDate: string; registrationDeadline: string;
  trackName: string; trackCondition: string; surfaceType: string;
  totalprizepool: string; distance: string; location: string; capacity: string;
  bannerImageurl: string; refereeId: string; entryFee: string;
@@ -35,7 +35,7 @@ interface FormData {
 type Errors = Partial<Record<keyof FormData | 'submit', string>>;
 
 const EMPTY: FormData = {
- raceName: '', startTime: '', registrationDeadline: '', trackName: LOCKED_TRACK_NAME, trackCondition: 'Dry',
+ raceName: '', startTime: '', registrationOpenDate: '', registrationDeadline: '', trackName: LOCKED_TRACK_NAME, trackCondition: 'Dry',
  surfaceType: 'Turf', totalprizepool: '', distance: '', location: LOCKED_LOCATION, capacity: '', bannerImageurl: '', refereeId: '', entryFee: '',
 };
 
@@ -103,7 +103,13 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  const [form, setForm] = useState<FormData>(() => {
  // Locked regardless of what an existing race was saved with — track/location are fixed venue info now.
  const base = { ...EMPTY, ...initialValues, trackName: LOCKED_TRACK_NAME, location: LOCKED_LOCATION };
- return { ...base, startTime: toLocalDatetime(base.startTime), registrationDeadline: toLocalDatetime(base.registrationDeadline), totalprizepool: base.totalprizepool ?? '', capacity: base.capacity ?? '', refereeId: base.refereeId ?? '', entryFee: base.entryFee ?? '' };
+ return {
+ ...base,
+ startTime: toLocalDatetime(base.startTime),
+ registrationOpenDate: toLocalDatetime(base.registrationOpenDate),
+ registrationDeadline: toLocalDatetime(base.registrationDeadline),
+ totalprizepool: base.totalprizepool ?? '', capacity: base.capacity ?? '', refereeId: base.refereeId ?? '', entryFee: base.entryFee ?? '',
+ };
  });
  const [errors, setErrors] = useState<Errors>({});
  const [uploading, setUploading] = useState(false);
@@ -152,6 +158,12 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  if (s === 2) {
  if (!form.startTime) errs.startTime = 'Start time is required.';
  if (!form.distance.trim()) errs.distance = 'Distance is required.';
+ if (form.registrationOpenDate && form.startTime && form.registrationOpenDate >= form.startTime) {
+ errs.registrationOpenDate = 'Registration open date must be before start time.';
+ }
+ if (form.registrationOpenDate && form.registrationDeadline && form.registrationOpenDate >= form.registrationDeadline) {
+ errs.registrationOpenDate = 'Registration open date must be before registration deadline.';
+ }
  }
  if (s === 3) {
  if (!form.totalprizepool || isNaN(Number(form.totalprizepool)) || Number(form.totalprizepool) < 0) errs.totalprizepool = 'Prize pool must be a positive number.';
@@ -178,6 +190,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  setErrors({});
  const payload: CreateRacePayload & { status?: RaceStatus } = {
  raceName: form.raceName.trim(), startTime: toISO(form.startTime),
+ registrationOpenDate: form.registrationOpenDate ? toISO(form.registrationOpenDate) : undefined,
  registrationDeadline: form.registrationDeadline ? toISO(form.registrationDeadline) : undefined,
  trackName: LOCKED_TRACK_NAME, trackCondition: form.trackCondition, surfaceType: form.surfaceType,
  totalprizepool: Number(form.totalprizepool), distance: form.distance.trim(),
@@ -229,6 +242,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  <SectionHeader title="Track & Schedule" />
  <div className="flex flex-col gap-4">
  <Field id="rf-start" label="Start Time" required error={errors.startTime}>{inp('rf-start', 'startTime', 'datetime-local')}</Field>
+ <Field id="rf-open" label="Registration Opens" optional error={errors.registrationOpenDate} hint="Opens immediately if left blank. Set a future date to keep the race Upcoming until then.">{inp('rf-open', 'registrationOpenDate', 'datetime-local')}</Field>
  <Field id="rf-deadline" label="Registration Deadline" error={errors.registrationDeadline} hint="Auto-close 1 day before start if blank.">{inp('rf-deadline', 'registrationDeadline', 'datetime-local')}</Field>
  <Field id="rf-track" label="Track Name" required>{inp('rf-track', 'trackName', 'text', { disabled: true, className: `${inputCls()} cursor-not-allowed bg-surface-overlay text-ink-3` })}</Field>
  <Field id="rf-distance" label="Distance" required error={errors.distance}>{inp('rf-distance', 'distance', 'text', { placeholder: 'e.g. 1600m' })}</Field>

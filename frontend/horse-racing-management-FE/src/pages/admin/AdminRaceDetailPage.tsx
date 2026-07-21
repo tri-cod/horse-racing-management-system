@@ -103,7 +103,7 @@ export default function AdminRaceDetailPage() {
   const [savingEdit, setSavingEdit] = useState(false);
   const [editForm, setEditForm] = useState({
     raceName: '', startTime: '', location: '', capacity: '', trackName: '',
-    surfaceType: '', distance: '', trackCondition: '', registrationDeadline: '', totalprizepool: '',
+    surfaceType: '', distance: '', trackCondition: '', registrationOpenDate: '', registrationDeadline: '', totalprizepool: '',
   });
   const setField = (field: keyof typeof editForm, value: string) =>
     setEditForm((prev) => ({ ...prev, [field]: value }));
@@ -243,6 +243,7 @@ export default function AdminRaceDetailPage() {
       surfaceType: race.surfaceType ?? SURFACE_TYPES[0],
       distance: race.distance != null ? String(race.distance) : '',
       trackCondition: race.trackCondition ?? TRACK_CONDITIONS[0],
+      registrationOpenDate: toLocalDatetime(race.registrationOpenDate),
       registrationDeadline: toLocalDatetime(race.registrationDeadline),
       totalprizepool: race.totalprizepool != null ? String(race.totalprizepool) : '',
     });
@@ -269,6 +270,7 @@ export default function AdminRaceDetailPage() {
         location: LOCKED_LOCATION,
         capacity: editForm.capacity ? Number(editForm.capacity) : undefined,
         bannerImageurl: race.bannerImageurl,
+        registrationOpenDate: toISO(editForm.registrationOpenDate),
         registrationDeadline: toISO(editForm.registrationDeadline),
         refereeId: race.refereeId ?? null,
         status: race.status,
@@ -572,6 +574,10 @@ export default function AdminRaceDetailPage() {
               </select>
             </label>
             <label className="flex flex-col gap-1">
+              <span className="text-xs font-semibold uppercase tracking-wide text-ink-4">Reg. Opens</span>
+              <input type="datetime-local" value={editForm.registrationOpenDate} onChange={(e) => setField('registrationOpenDate', e.target.value)} className={editInputCls} />
+            </label>
+            <label className="flex flex-col gap-1">
               <span className="text-xs font-semibold uppercase tracking-wide text-ink-4">Reg. Deadline</span>
               <input type="datetime-local" value={editForm.registrationDeadline} onChange={(e) => setField('registrationDeadline', e.target.value)} className={editInputCls} />
             </label>
@@ -602,6 +608,9 @@ export default function AdminRaceDetailPage() {
             <div className="text-sm"><span className="text-ink-4">Surface: </span><span className="text-ink-2">{race.surfaceType ?? '—'}</span></div>
             <div className="text-sm"><span className="text-ink-4">Distance: </span><span className="text-ink-2">{race.distance ?? '—'}</span></div>
             <div className="text-sm"><span className="text-ink-4">Condition: </span><span className="text-ink-2">{race.trackCondition ?? '—'}</span></div>
+            {race.registrationOpenDate && (
+              <div className="text-sm"><span className="text-ink-4">Reg. opens: </span><span className="text-ink-2">{fmtDate(race.registrationOpenDate)}</span></div>
+            )}
             <div className="text-sm"><span className="text-ink-4">Reg. deadline: </span><span className="text-ink-2">{fmtDate(race.registrationDeadline)}</span></div>
 
             {/* Referee — name (resolved via useRefereeProfile) + link to public profile */}
