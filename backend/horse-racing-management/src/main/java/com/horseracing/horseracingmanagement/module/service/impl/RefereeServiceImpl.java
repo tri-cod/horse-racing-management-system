@@ -4,6 +4,7 @@ import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
+import com.horseracing.horseracingmanagement.common.constant.RoleName;
 import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import com.horseracing.horseracingmanagement.module.dto.RefereeDto.*;
 import com.horseracing.horseracingmanagement.module.entity.*;
@@ -14,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,6 +33,7 @@ public class RefereeServiceImpl implements RefereeService {
     private final HorseRepository horseRepository;
     private final WalletRepository walletRepository;
     private final HorseOwnerRepository horseOwnerRepository;
+    private final UserRepository userRepository;
     private final NotificationService notificationService;
 
     @Override
@@ -160,6 +163,26 @@ public class RefereeServiceImpl implements RefereeService {
         // Notify HorseOwner
         HorseOwner owner = horseOwnerRepository.findById(raceHorse.getHorse().getOwnerId())
                 .orElse(null);
+
+        // ← FIX: FINE chỉ được lưu bản ghi + báo cho owner biết, chưa hề trừ tiền thật.
+        // Trừ ví owner và chuyển vào ví admin (giống mọi luồng tiền khác trong hệ thống).
+        if ("FINE".equals(request.getPenaltyType()) && owner != null
+                && request.getAmount() != null && request.getAmount() > 0) {
+            BigDecimal fineAmount = BigDecimal.valueOf(request.getAmount());
+
+            Wallet ownerWallet = walletRepository.findByUser_Id(owner.getUser().getId()).orElse(null);
+            if (ownerWallet != null) {
+                ownerWallet.setBalance(ownerWallet.getBalance().subtract(fineAmount));
+                walletRepository.save(ownerWallet);
+            }
+
+            userRepository.findFirstByRole_Rolename(RoleName.ADMIN).ifPresent(adminUser ->
+                    walletRepository.findByUser_Id(adminUser.getId()).ifPresent(adminWallet -> {
+                        adminWallet.setBalance(adminWallet.getBalance().add(fineAmount));
+                        walletRepository.save(adminWallet);
+                    }));
+        }
+
         if (owner != null) {
             String message = switch (request.getPenaltyType()) {
                 case "DISQUALIFY" -> String.format(
@@ -232,6 +255,24 @@ public class RefereeServiceImpl implements RefereeService {
             Horse horse = raceHorse.getHorse();
             horse.setStatus(HorseStatus.RACING);
             horseRepository.save(horse);
+        }
+
+        // Nếu là FINE đã trừ tiền thật → hoàn lại cho owner khi hủy phạt
+        if ("FINE".equals(penalty.getPenaltyType()) && penalty.getAmount() != null && penalty.getAmount() > 0) {
+            BigDecimal fineAmount = BigDecimal.valueOf(penalty.getAmount());
+            HorseOwner owner = horseOwnerRepository.findById(penalty.getRaceHorse().getHorse().getOwnerId())
+                    .orElse(null);
+            if (owner != null) {
+                walletRepository.findByUser_Id(owner.getUser().getId()).ifPresent(ownerWallet -> {
+                    ownerWallet.setBalance(ownerWallet.getBalance().add(fineAmount));
+                    walletRepository.save(ownerWallet);
+                });
+            }
+            userRepository.findFirstByRole_Rolename(RoleName.ADMIN).ifPresent(adminUser ->
+                    walletRepository.findByUser_Id(adminUser.getId()).ifPresent(adminWallet -> {
+                        adminWallet.setBalance(adminWallet.getBalance().subtract(fineAmount));
+                        walletRepository.save(adminWallet);
+                    }));
         }
 
         penaltyRepository.deleteById(penaltyId);

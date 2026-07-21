@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Rabbit, Flag } from 'lucide-react';
 import RaceHorseStatusBadge from './RaceHorseStatusBadge';
 import { isAnyStatus, type RaceHorseStatusKey } from '@/utils/raceHorseStatus';
 import type { RaceHorse } from '@/types';
@@ -51,8 +52,32 @@ export default function MyRegistrationsTable({
                     {r.raceName ?? '—'}
                   </Link>
                 </td>
-                <td className="px-5 py-3.5 text-sm font-medium text-ink">{r.horseName ?? '—'}</td>
-                <td className="px-5 py-3.5 text-sm text-ink-2">{r.jockeyName ?? '—'}</td>
+                <td className="px-5 py-3.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-ink">{r.horseName ?? '—'}</span>
+                    <Link
+                      to={`/horses/${r.horseId}`}
+                      title="View horse profile and race record"
+                      className="inline-flex shrink-0 items-center gap-1 border border-rim-hi px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-ink-3 transition-colors hover:border-gold/40 hover:bg-surface-overlay hover:text-gold-hi"
+                    >
+                      <Rabbit size={10} /> View
+                    </Link>
+                  </div>
+                </td>
+                <td className="px-5 py-3.5">
+                  {r.jockeyId != null ? (
+                    <Link
+                      to={`/jockeys/${r.jockeyId}`}
+                      title="View jockey profile and record"
+                      className="inline-flex items-center gap-1.5 border border-rim-hi px-2.5 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:border-gold/40 hover:bg-surface-overlay hover:text-gold-hi"
+                    >
+                      <Flag size={12} className="shrink-0 text-ink-4" />
+                      {r.jockeyName ?? `Jockey #${r.jockeyId}`}
+                    </Link>
+                  ) : (
+                    <span className="text-sm text-ink-2">—</span>
+                  )}
+                </td>
                 <td className="px-5 py-3.5">
                   <RaceHorseStatusBadge status={r.status} />
                 </td>

@@ -99,6 +99,7 @@ public class RaceServiceImpl implements RaceService {
     }
 
     @Override
+    @Transactional
     public RaceResponse createRace(CreateRaceRequest request) {
 
         if (request.getTotalprizepool() != null && request.getTotalprizepool() > 0) {
@@ -151,6 +152,7 @@ public class RaceServiceImpl implements RaceService {
     }
 
     @Override
+    @Transactional
     public RaceResponse closeRace(Long raceId) {
         Race race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new RuntimeException("Race not found"));
