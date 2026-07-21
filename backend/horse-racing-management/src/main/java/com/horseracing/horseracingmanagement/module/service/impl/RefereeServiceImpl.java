@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
@@ -357,6 +358,7 @@ public class RefereeServiceImpl implements RefereeService {
                 globalIssues.add("Horse '" + rh.getHorse().getHorseName() + "' has not been checked by the referee yet");
             }
 
+
             items.add(HorseInspectionItem.builder()
                     .raceHorseId(rh.getId())
                     .horseId(rh.getHorse().getId())
@@ -368,7 +370,6 @@ public class RefereeServiceImpl implements RefereeService {
                     .gender(rh.getHorse().getGender())
                     .weight(rh.getHorse().getWeight())
                     .speedRating(rh.getHorse().getSpeedRating())
-                    .historyRank(rh.getHorse().getHistoryRank())
                     .jockeyId(rh.getJockey() != null ? rh.getJockey().getId() : null)
                     .jockeyName(rh.getJockey() != null
                             ? rh.getJockey().getUser().getFullName() : null)
