@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { motion, useReducedMotion } from 'motion/react';
 import { ChevronLeft, User, BadgeCheck, Quote } from 'lucide-react';
 import { useRefereeProfile } from '@/hooks/useRefereeProfile';
 import Container from '@/components/ui/Container';
 import Seo from '@/components/seo/Seo';
+
+const GOLD = '#d9bc76';
 
 /** One segment of the unified stat bar shown inside the hero */
 function StatSegment({
@@ -35,25 +38,50 @@ function QuickFact({ label, value }: { label: string; value: string }) {
   );
 }
 
-/** Avatar with graceful fallback if the image URL is broken or missing */
+/** Avatar with graceful fallback if the image URL is broken or missing, plus a
+ *  soft gold radar-ping pulse and a spring pop-in on load. */
 function RefereeAvatar({ avatarUrl, name }: { avatarUrl?: string | null; name: string }) {
   const [errored, setErrored] = useState(false);
+  const reduce = useReducedMotion();
   const showImage = avatarUrl && !errored;
 
   return (
-    <div className="h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-gold/70 bg-navy shadow-xl shadow-black/40 ring-1 ring-black/20 sm:h-36 sm:w-36">
-      {showImage ? (
-        <img
-          src={avatarUrl}
-          alt={name}
-          className="h-full w-full object-cover"
-          onError={() => setErrored(true)}
-        />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-gold to-gold-hi text-5xl font-bold text-on-gold">
-          {name.charAt(0).toUpperCase()}
-        </div>
+    <div className="relative flex h-32 w-32 shrink-0 items-center justify-center sm:h-36 sm:w-36">
+      {!reduce && (
+        <>
+          <motion.span
+            className="absolute inset-0 rounded-full"
+            style={{ border: `2px solid ${GOLD}` }}
+            animate={{ scale: [1, 1.35], opacity: [0.6, 0] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeOut' }}
+          />
+          <motion.span
+            className="absolute inset-0 rounded-full"
+            style={{ border: `2px solid ${GOLD}` }}
+            animate={{ scale: [1, 1.35], opacity: [0.6, 0] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeOut', delay: 1.1 }}
+          />
+        </>
       )}
+      <motion.div
+        initial={reduce ? undefined : { opacity: 0, scale: 0.7 }}
+        animate={reduce ? undefined : { opacity: 1, scale: 1 }}
+        transition={{ type: 'spring', stiffness: 220, damping: 16 }}
+        className="relative h-full w-full overflow-hidden rounded-full border-4 border-gold/70 bg-navy shadow-xl shadow-black/40 ring-1 ring-black/20"
+      >
+        {showImage ? (
+          <img
+            src={avatarUrl}
+            alt={name}
+            className="h-full w-full object-cover"
+            onError={() => setErrored(true)}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-gold to-gold-hi text-5xl font-bold text-on-gold">
+            {name.charAt(0).toUpperCase()}
+          </div>
+        )}
+      </motion.div>
     </div>
   );
 }
@@ -67,6 +95,7 @@ function firstSentence(text: string): string {
 export default function RefereeProfilePage() {
   const { id } = useParams<{ id: string }>();
   const { referee, loading, error } = useRefereeProfile(id ? Number(id) : undefined);
+  const reduce = useReducedMotion();
 
   if (loading) return (
     <div className="min-h-screen bg-surface pb-20">
@@ -122,23 +151,45 @@ export default function RefereeProfilePage() {
             <RefereeAvatar avatarUrl={referee.avatarUrl} name={referee.name} />
 
             <div className="flex-1">
-              <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-gold-hi">
+              <motion.span
+                initial={reduce ? undefined : { opacity: 0, y: -8 }}
+                animate={reduce ? undefined : { opacity: 1, y: 0 }}
+                transition={{ delay: 0.15, duration: 0.4 }}
+                className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-gold-hi"
+              >
                 <BadgeCheck size={14} /> Royal Derby Referee
-              </span>
-              <h1 className="font-serif text-4xl font-bold uppercase leading-[0.95] text-white sm:text-5xl">{referee.name}</h1>
+              </motion.span>
+              <motion.h1
+                initial={reduce ? undefined : { opacity: 0, y: 16 }}
+                animate={reduce ? undefined : { opacity: 1, y: 0 }}
+                transition={{ delay: 0.28, duration: 0.45 }}
+                className="font-serif text-4xl font-bold uppercase leading-[0.95] text-white sm:text-5xl"
+              >
+                {referee.name}
+              </motion.h1>
               {referee.experienceYears != null && (
-                <p className="mt-4 text-sm font-medium text-white/70">
+                <motion.p
+                  initial={reduce ? undefined : { opacity: 0 }}
+                  animate={reduce ? undefined : { opacity: 1 }}
+                  transition={{ delay: 0.4, duration: 0.4 }}
+                  className="mt-4 text-sm font-medium text-white/70"
+                >
                   {referee.experienceYears} years of experience officiating
                   {homeCircuit ? ` · ${homeCircuit} circuit` : ''}
-                </p>
+                </motion.p>
               )}
 
-              {/* Unified stat bar ΓÇö replaces the three separate floating cards */}
-              <div className="mt-6 inline-flex divide-gold/20 overflow-hidden rounded-lg border border-gold/25 bg-white/[0.03]">
+              {/* Unified stat bar — replaces the three separate floating cards */}
+              <motion.div
+                initial={reduce ? undefined : { opacity: 0, y: 16 }}
+                animate={reduce ? undefined : { opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.45 }}
+                className="mt-6 inline-flex divide-gold/20 overflow-hidden rounded-lg border border-gold/25 bg-white/[0.03]"
+              >
                 <StatSegment value={races} label="Races Refereed" />
                 <StatSegment value={penalties} label="Penalties Issued" />
                 {cleanRate != null && <StatSegment value={`${cleanRate}%`} label="Clean Record" accent last />}
-              </div>
+              </motion.div>
             </div>
           </div>
         </Container>

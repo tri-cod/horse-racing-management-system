@@ -186,4 +186,12 @@ public class HorseOwnerController {
                 horseOwnerService.completeProfile(request, userId)));
     }
 
+    @GetMapping("/profile/me")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<HorseOwnerProfileResponse>> getMyProfile(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getMyProfile(userDetails.getId())));
+    }
+
 }

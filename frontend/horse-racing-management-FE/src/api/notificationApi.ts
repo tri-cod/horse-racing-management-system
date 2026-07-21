@@ -9,3 +9,9 @@ export const countUnread = () =>
 
 export const markAsRead = (id: number) =>
  axiosInstance.put<ApiResponse<null>>(`/notifications/${id}/read`).then((r) => r.data);
+
+export const deleteNotification = (id: number) =>
+ axiosInstance.delete<ApiResponse<string>>(`/notifications/${id}`).then((r) => r.data);
+
+export const deleteAllNotifications = () =>
+ axiosInstance.delete<ApiResponse<string>>('/notifications').then((r) => r.data);

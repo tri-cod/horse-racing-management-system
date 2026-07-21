@@ -40,5 +40,6 @@ public interface HorseOwnerService {
     List<SignHorseResponse> getHorsesByOwnerId(Long ownerId);
     OwnerStatsResponse getStats(Long ownerId);
     HorseOwnerProfileResponse completeProfile(CompleteHorseOwnerProfileRequest request, Long userId);
+    HorseOwnerProfileResponse getMyProfile(Long userId);
 
 }

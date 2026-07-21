@@ -50,4 +50,12 @@ public class NotificationController {
         notificationService.deleteNotification(id, userDetails.getId());
         return ResponseEntity.ok(ApiResponse.success("Notification deleted", null));
     }
+
+    // Xóa toàn bộ notification của user hiện tại
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<String>> deleteAllNotifications(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        notificationService.deleteAllNotifications(userDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success("All notifications deleted", null));
+    }
 }
