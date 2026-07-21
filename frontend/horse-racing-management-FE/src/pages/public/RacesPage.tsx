@@ -8,7 +8,6 @@ import { useRaceResults, type NormalizedRaceResult } from '@/hooks/useRaceResult
 import { useRefereeProfile } from '@/hooks/useRefereeProfile';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
-import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
 import PlaceBetModal from '@/components/features/bet/PlaceBetModal';
 import Container from '@/components/ui/Container';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -300,8 +299,6 @@ function RaceDetailPanel({ raceId }: { raceId: number }) {
             </div>
           )}
         </div>
-
-        <div className="mt-3"><RaceStatusBadge race={race} size="sm" /></div>
       </div>
 
       {/* Entries table */}

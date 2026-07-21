@@ -146,7 +146,7 @@ export default function HeroSection() {
  const betHref = !user ? '/login' : user.role === 'USER' ? '/bet/races' : null;
 
  return (
- <section className="relative -mt-[113px] flex min-h-[100dvh] items-center overflow-hidden">
+ <section className="relative flex min-h-[calc(100dvh-113px)] items-center overflow-hidden">
  {/* Video background */}
  <video
  src="https://res.cloudinary.com/dxg3w2joa/video/upload/v1782285815/hero_hisssl.mp4"
