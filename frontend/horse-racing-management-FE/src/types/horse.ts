@@ -1,4 +1,4 @@
-export type HorseStatus = 'ACTIVE' | 'RACING' | 'FINISHED' | 'INACTIVE' | 'RETIRED';
+export type HorseStatus = 'ACTIVE' | 'RACING' | 'FINISHED' | 'INACTIVE' | 'RETIRED' | 'BANNED';
 
 export interface HorseCurrentStatusResponse {
   horseId: number;
