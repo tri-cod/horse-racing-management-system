@@ -38,5 +38,6 @@ public class CreateRaceRequest {
     private RaceStatus status;
     private Long entryFee;
     private Long refereeId;
+    private Instant registrationOpenDate;
     private Instant registrationDeadline;
 }

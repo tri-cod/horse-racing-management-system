@@ -25,6 +25,29 @@ public class RaceSchedule {
     private final RaceRefereeRepository raceRefereeRepository;
     private final WebSocketNotificationService wsService; // [WS] inject để push auto-close
 
+    @Scheduled(fixedRate = 60000)
+    public void autoOpenRegistration() {
+        Instant now = Instant.now();
+
+        List<Race> races = raceRepository.findByStatus(RaceStatus.UPCOMING);
+        for (Race race : races) {
+            if (race.getRegistrationOpenDate() != null
+                    && !race.getRegistrationOpenDate().isAfter(now)) {
+
+                race.setStatus(RaceStatus.OPEN_REGISTRATION);
+                raceRepository.save(race);
+
+                wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
+                        .raceId(race.getId())
+                        .raceName(race.getRaceName())
+                        .status("OPEN_REGISTRATION")
+                        .message("Registration is now open!")
+                        .updatedAt(Instant.now())
+                        .build());
+            }
+        }
+    }
+
     // Chạy mỗi phút
     @Scheduled(fixedRate = 60000)
     public void autoCloseRegistration() {

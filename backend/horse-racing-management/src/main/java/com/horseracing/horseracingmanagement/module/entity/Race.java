@@ -9,6 +9,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+
 import java.time.Instant;
 
 @Builder
@@ -73,6 +74,9 @@ public class Race {
     // @Size(max = 255)
     @Column(name = "banner_imageurl")
     private String bannerImageurl;
+
+    @Column(name = "registration_open_date")
+    private Instant registrationOpenDate;
 
     @Column(name = "registration_deadline")
     private Instant registrationDeadline;
