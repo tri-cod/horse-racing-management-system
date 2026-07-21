@@ -15,6 +15,7 @@ public interface RaceRepository extends JpaRepository<Race, Long> {
     // ← chỉ dùng RaceStatus enum, bỏ String version
     Page<Race> findByStatus(RaceStatus status, Pageable pageable);
     List<Race> findByStatus(RaceStatus status);
+    List<Race> findByStatusIn(List<RaceStatus> statuses);
     List<Race> findByReferee_Id(Long refereeId);
 
     // ← thêm để scheduler dùng

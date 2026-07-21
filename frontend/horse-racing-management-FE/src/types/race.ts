@@ -36,6 +36,7 @@ export interface Race {
  capacity?: number;
  bannerImageurl?: string;
  entryFee?: number;
+ registrationOpenDate?: string;
  registrationDeadline?: string;
  refereeId?: number | null;
  status: RaceStatus;
@@ -132,6 +133,7 @@ export interface CreateRacePayload {
  location?: string;
  capacity?: number;
  bannerImageurl?: string;
+ registrationOpenDate?: string;
  registrationDeadline?: string;
  refereeId?: number | null;
  /** Only applied on race creation — the backend does not read this field on update. */
