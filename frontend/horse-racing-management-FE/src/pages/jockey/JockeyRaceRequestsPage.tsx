@@ -10,6 +10,14 @@ import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
 import type { RaceHorse, Horse } from '@/types';
 
+const fmtPrize = (n?: number) =>
+  n != null
+    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n)
+    : '';
+
+const fmtDateTime = (iso?: string) =>
+  iso ? new Date(iso).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+
 function RequestsSkeleton() {
   return (
     <div className="divide-y divide-rim border border-rim bg-surface-raised">
@@ -113,11 +121,16 @@ export default function JockeyRaceRequestsPage() {
       ) : (
         <div className="overflow-hidden border border-rim bg-surface-raised">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[680px]">
+            <table className="w-full min-w-[820px]">
               <thead>
                 <tr className="border-b border-rim bg-surface-overlay">
-                  {['Horse', 'Owner', 'Race', 'Actions'].map((h) => (
-                    <th key={h} className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">{h}</th>
+                  {['Horse', 'Owner', 'Race', 'Commission', 'Prize Pool', 'Actions'].map((h) => (
+                    <th
+                      key={h}
+                      className={`px-5 py-3 text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4 ${h === 'Commission' ? 'text-center' : 'text-left'}`}
+                    >
+                      {h}
+                    </th>
                   ))}
                 </tr>
               </thead>
@@ -185,7 +198,26 @@ export default function JockeyRaceRequestsPage() {
                           <span className="text-sm text-ink-4">{r.ownerName ?? '—'}</span>
                         )}
                       </td>
-                      <td className="px-5 py-3.5 text-sm text-ink-2">{r.raceName ?? `Race #${r.raceId}`}</td>
+                      <td className="px-5 py-3.5">
+                        <Link
+                          to={`/races/${r.raceId}`}
+                          title="View race details"
+                          className="text-sm font-semibold text-ink-2 transition-colors hover:text-gold-hi hover:underline"
+                        >
+                          {r.raceName ?? `Race #${r.raceId}`}
+                        </Link>
+                        {r.startTime && <p className="mt-0.5 text-[11px] text-ink-4">{fmtDateTime(r.startTime)}</p>}
+                      </td>
+                      <td className="px-5 py-3.5 text-center">
+                        {r.jockeyRevenuePercent != null ? (
+                          <span className="tnum inline-flex items-center border border-gold/30 bg-gold/10 px-2 py-0.5 text-xs font-bold text-gold-hi">
+                            {r.jockeyRevenuePercent}%
+                          </span>
+                        ) : (
+                          <span className="text-sm text-ink-4">—</span>
+                        )}
+                      </td>
+                      <td className="tnum px-5 py-3.5 text-sm font-semibold text-ink">{fmtPrize(r.totalPrizePool)}</td>
                       <td className="px-5 py-3.5">
                         <div className="flex gap-2">
                           <button
