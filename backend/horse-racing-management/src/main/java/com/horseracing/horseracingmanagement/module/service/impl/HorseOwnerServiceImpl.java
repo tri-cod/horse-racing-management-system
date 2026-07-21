@@ -1,5 +1,7 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseCurrentStatusResponse;
@@ -19,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -35,12 +38,24 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
     private final RaceHorseRepository raceHorseRepository;
     private final RaceRepository raceRepository;
     private final RaceResultRepository raceResultRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
 
     @Override
     public SignHorseResponse signHorse(SignHorseRequest request, Long userId) {
         HorseOwner owner = horseOwnerRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
+
+
+        String raceHistoryJson = null;
+        if (request.getRaceHistory() != null && !request.getRaceHistory().isEmpty()) {
+            try {
+                raceHistoryJson = objectMapper.writeValueAsString(request.getRaceHistory());
+            } catch (Exception e) {
+                raceHistoryJson = "[]";
+            }
+        }
 
         Horse horse = Horse.builder()
                 .ownerId(owner.getId())
@@ -50,7 +65,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .gender(request.getGender())
                 .speedRating(request.getSpeedRating())
                 .description(request.getDescription())
-                .historyRank(request.getHistory_rank())
+                .raceHistory(raceHistoryJson)
                 .avatarUrl(request.getAvatar_url())
                 .weight(request.getWeight())
                 .status(request.getStatus())
@@ -418,7 +433,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
         if (request.getAge() != null)          horse.setAge(request.getAge());
         if (request.getGender() != null)       horse.setGender(request.getGender());
         if (request.getSpeedRating() != null)  horse.setSpeedRating(request.getSpeedRating());
-        if (request.getHistory_rank() != null) horse.setHistoryRank(request.getHistory_rank());
+        if (request.getHistory_rank() != null) horse.setRaceHistory(request.getHistory_rank());
         if (request.getAvatar_url() != null)   horse.setAvatarUrl(request.getAvatar_url());
         if (request.getWeight() != null)       horse.setWeight(request.getWeight());
         if (request.getStatus() != null)       horse.setStatus(request.getStatus());
@@ -586,6 +601,16 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                                             String ownerName,
                                             Long trainerId,
                                             String trainerName) {
+
+
+        List<String> raceHistory = new ArrayList<>();
+        if (horse.getRaceHistory() != null) {
+            try {
+                raceHistory = objectMapper.readValue(horse.getRaceHistory(),
+                        new TypeReference<List<String>>() {});
+            } catch (Exception ignored) {}
+        }
+
         return SignHorseResponse.builder()
                 .id(horse.getId())
                 .horseName(horse.getHorseName())
@@ -593,7 +618,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .age(horse.getAge())
                 .gender(horse.getGender())
                 .speedRating(horse.getSpeedRating())
-                .historyRank(horse.getHistoryRank())
+                .raceHistory(raceHistory)  // ← trả về List
                 .avatarUrl(horse.getAvatarUrl())
                 .weight(horse.getWeight())
                 .status(horse.getStatus())

@@ -1,5 +1,7 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +43,9 @@ public class RaceResultServiceImpl implements RaceResultService {
     private final TrainerRepository trainerRepository;  // ← thêm (dùng trong distributeRewards)
     private final PenaltyRepository penaltyRepository;
     private final RaceRefereeRepository raceRefereeRepository;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     @Override
     @Transactional
@@ -129,6 +135,7 @@ public class RaceResultServiceImpl implements RaceResultService {
                     .completionTimeSeconds(item.getCompletionTimeSeconds())
                     .rewards(rewards)
                     .build());
+            appendRaceHistory(raceHorse.getHorse(), race, rank);
 
             raceHorse.setStatus(RaceHorseStatus.FINISHED);
             raceHorseRepository.save(raceHorse);
@@ -237,6 +244,31 @@ public class RaceResultServiceImpl implements RaceResultService {
             }
         }
     }
+
+    private void appendRaceHistory(Horse horse, Race race, long rank) {
+        try {
+            List<String> history = new ArrayList<>();
+            if (horse.getRaceHistory() != null) {
+                history = objectMapper.readValue(horse.getRaceHistory(),
+                        new TypeReference<List<String>>() {});
+            }
+
+            String rankLabel = rank == 1 ? "1st" : rank == 2 ? "2nd" : rank == 3 ? "3rd" : rank + "th";
+            String entry = String.format("%s %s (%s)",
+                    rankLabel,
+                    race.getRaceName(),
+                    race.getStartTime() != null
+                            ? race.getStartTime().toString().substring(0, 10)
+                            : "N/A");
+            history.add(entry);
+
+            horse.setRaceHistory(objectMapper.writeValueAsString(history));
+            horseRepository.save(horse);
+        } catch (Exception e) {
+            // log error nhưng không crash flow chính
+        }
+    }
+
 
     // Tính rewards theo hạng
     private Long calculateRewards(Long totalPrizePool, long rank, int totalHorses) {

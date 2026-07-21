@@ -164,3 +164,25 @@ ALTER TABLE horse_owner ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(255);
 ALTER TABLE horse_owner ADD COLUMN IF NOT EXISTS cover_image_url VARCHAR(255);
 ALTER TABLE horse_owner ADD COLUMN IF NOT EXISTS address TEXT;
 ALTER TABLE horse_owner ADD COLUMN IF NOT EXISTS total_horses INT DEFAULT 0;
+
+---=======================================================
+
+
+-- Race history column
+ALTER TABLE horse DROP COLUMN IF EXISTS history_rank;
+ALTER TABLE horse ADD COLUMN IF NOT EXISTS race_history TEXT DEFAULT '[]';
+
+-- Report table
+CREATE TABLE IF NOT EXISTS report (
+                                      id          BIGSERIAL PRIMARY KEY,
+                                      reporter_id BIGINT NOT NULL REFERENCES users(user_id),
+                                      target_type VARCHAR(20) NOT NULL,  -- USER hoặc HORSE
+                                      target_id   BIGINT NOT NULL,
+                                      target_name VARCHAR(150),
+                                      reason      TEXT NOT NULL,
+                                      detail      TEXT,
+                                      status      VARCHAR(20) DEFAULT 'PENDING',
+                                      admin_note  TEXT,
+                                      created_at  TIMESTAMP DEFAULT NOW(),
+                                      reviewed_at TIMESTAMP
+);

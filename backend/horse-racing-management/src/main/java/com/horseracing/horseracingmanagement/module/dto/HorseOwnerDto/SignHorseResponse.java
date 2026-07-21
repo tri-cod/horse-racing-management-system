@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Builder
@@ -21,7 +22,7 @@ public class SignHorseResponse {
     private int age;
     private String gender;
     private int speedRating;
-    private String historyRank;
+    private List<String> raceHistory;  // ← đổi từ historyRank sang List
     private String avatarUrl;
     private Long weight;
     private String description;
