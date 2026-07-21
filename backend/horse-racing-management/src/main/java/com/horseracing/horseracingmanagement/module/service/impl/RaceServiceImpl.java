@@ -130,6 +130,13 @@ public class RaceServiceImpl implements RaceService {
 
 
 
+        validateRegistrationDates(request.getRegistrationOpenDate(),
+                request.getRegistrationDeadline(), request.getStartTime());
+
+        RaceStatus initialStatus = request.getStatus() != null
+                ? request.getStatus()
+                : determineInitialStatus(request.getRegistrationOpenDate());
+
         Race race = Race.builder()
                 .raceName(request.getRaceName())
                 .startTime(request.getStartTime())
@@ -142,12 +149,35 @@ public class RaceServiceImpl implements RaceService {
                 .location(request.getLocation())
                 .capacity(request.getCapacity())
                 .bannerImageurl(request.getBannerImageurl())
+                .registrationOpenDate(request.getRegistrationOpenDate())
                 .registrationDeadline(request.getRegistrationDeadline())
-                .status(request.getStatus())
+                .status(initialStatus)
                 .referee(referee)
                 .build();
 
         return mapToResponse(raceRepository.save(race));
+    }
+
+    private RaceStatus determineInitialStatus(Instant registrationOpenDate) {
+        if (registrationOpenDate != null && registrationOpenDate.isAfter(Instant.now())) {
+            return RaceStatus.UPCOMING;
+        }
+        return RaceStatus.OPEN_REGISTRATION;
+    }
+
+    private void validateRegistrationDates(Instant registrationOpenDate, Instant registrationDeadline, Instant startTime) {
+        if (registrationOpenDate != null && registrationDeadline != null
+                && !registrationOpenDate.isBefore(registrationDeadline)) {
+            throw new RuntimeException("Registration open date must be before registration deadline");
+        }
+        if (registrationDeadline != null && startTime != null
+                && registrationDeadline.isAfter(startTime)) {
+            throw new RuntimeException("Registration deadline must be before start time");
+        }
+        if (registrationOpenDate != null && startTime != null
+                && !registrationOpenDate.isBefore(startTime)) {
+            throw new RuntimeException("Registration open date must be before start time");
+        }
     }
 
     @Override
@@ -270,6 +300,7 @@ public class RaceServiceImpl implements RaceService {
         race.setSurfaceType(request.getSurfaceType());
         race.setTotalprizepool(request.getTotalprizepool());
         race.setDistance(request.getDistance());
+        race.setRegistrationOpenDate(request.getRegistrationOpenDate());
         race.setRegistrationDeadline(request.getRegistrationDeadline());
         race.setLocation(request.getLocation());
         race.setCapacity(request.getCapacity());
@@ -313,6 +344,10 @@ public class RaceServiceImpl implements RaceService {
                 request.getRegistrationDeadline().isAfter(request.getStartTime())) {
             throw new RuntimeException("Registration deadline must be before start time");
         }
+
+        // registrationOpenDate phải trước registrationDeadline và trước startTime
+        validateRegistrationDates(request.getRegistrationOpenDate(),
+                request.getRegistrationDeadline(), request.getStartTime());
         // endTime phải sau startTime
         if (request.getEndTime() != null &&
                 request.getStartTime() != null &&
@@ -380,6 +415,7 @@ public class RaceServiceImpl implements RaceService {
                 .capacity(race.getCapacity())
                 .bannerImageurl(race.getBannerImageurl())
                 .status(race.getStatus() != null ? race.getStatus().name() : null)
+                .registrationOpenDate(race.getRegistrationOpenDate())
                 .registrationDeadline(race.getRegistrationDeadline())
                 .createdAt(race.getCreatedAt())
                 .updatedAt(race.getUpdatedAt())
