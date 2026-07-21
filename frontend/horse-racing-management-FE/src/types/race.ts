@@ -50,6 +50,8 @@ export interface RaceHorse {
  horseId: number;
  horseName?: string;
  horseAvatarUrl?: string;
+ ownerId?: number;
+ ownerName?: string;
  jockeyId?: number;
  jockeyName?: string;
  laneNumber?: number;
