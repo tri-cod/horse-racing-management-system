@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import {
   ChevronLeft, Pencil, Trash2, Lock, LockOpen, TrendingUp, MapPin, Calendar,
   Trophy, Users, CheckCircle2, XCircle, Flag, PlayCircle, Gauge, Award, Check, X, ShieldAlert,
+  Rabbit, User,
 } from 'lucide-react';
 import { useRaceDetail } from '@/hooks/useRaceDetail';
 import { useHorsesByRace } from '@/hooks/useHorsesByRace';
@@ -728,7 +729,16 @@ export default function AdminRaceDetailPage() {
                               </div>
                             )}
                             <div className="min-w-0">
-                              <p className="font-serif text-sm font-bold text-ink">{e.horseName ?? `Horse #${e.horseId}`}</p>
+                              <p className="flex items-center gap-2 font-serif text-sm font-bold text-ink">
+                                {e.horseName ?? `Horse #${e.horseId}`}
+                                <Link
+                                  to={`/horses/${e.horseId}`}
+                                  title="View horse profile and race record"
+                                  className="inline-flex shrink-0 items-center gap-1 border border-rim-hi px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-ink-3 transition-colors hover:border-gold/40 hover:bg-surface-overlay hover:text-gold-hi"
+                                >
+                                  <Rabbit size={10} /> View
+                                </Link>
+                              </p>
                               <p className="mt-0.5 flex items-center gap-2.5 truncate text-[10px] font-medium text-ink-4">
                                 {detail ? (
                                   <>
@@ -752,8 +762,34 @@ export default function AdminRaceDetailPage() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-5 py-3.5 text-sm text-ink-2">{e.ownerName ?? '—'}</td>
-                        <td className="px-5 py-3.5 text-sm text-ink-2">{e.jockeyName ?? '—'}</td>
+                        <td className="px-5 py-3.5">
+                          {e.ownerId != null ? (
+                            <Link
+                              to={`/horse-owners/${e.ownerId}`}
+                              title="View owner's stable profile and track record"
+                              className="inline-flex items-center gap-1.5 border border-rim-hi px-2.5 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:border-gold/40 hover:bg-surface-overlay hover:text-gold-hi"
+                            >
+                              <User size={12} className="shrink-0 text-ink-4" />
+                              {e.ownerName ?? `Owner #${e.ownerId}`}
+                            </Link>
+                          ) : (
+                            <span className="text-sm text-ink-4">{e.ownerName ?? '—'}</span>
+                          )}
+                        </td>
+                        <td className="px-5 py-3.5">
+                          {e.jockeyId != null ? (
+                            <Link
+                              to={`/jockeys/${e.jockeyId}`}
+                              title="View jockey profile and record"
+                              className="inline-flex items-center gap-1.5 border border-rim-hi px-2.5 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:border-gold/40 hover:bg-surface-overlay hover:text-gold-hi"
+                            >
+                              <Flag size={12} className="shrink-0 text-ink-4" />
+                              {e.jockeyName ?? `Jockey #${e.jockeyId}`}
+                            </Link>
+                          ) : (
+                            <span className="text-sm text-ink-2">—</span>
+                          )}
+                        </td>
 
                         {showLaneColumn && (
                           <td className="px-5 py-3.5">

@@ -150,6 +150,8 @@ public class BetServiceImpl implements BetService {
             bet.setStatus(hasWon ? "WON" : "LOST");
             betRepository.save(bet);
 
+            // Every losing item's stake goes to the admin wallet exactly once, regardless
+            // of whether other items in the same bet won.
             if (totalLost.compareTo(BigDecimal.ZERO) > 0) {
                 adminWallet.setBalance(adminWallet.getBalance().add(totalLost));
             }
@@ -167,9 +169,6 @@ public class BetServiceImpl implements BetService {
                         NotificationType.RACE_RESULT_PUBLISHED, raceId
                 );
             } else {
-                // ← tiền thua chuyển vào wallet admin
-                adminWallet.setBalance(adminWallet.getBalance().add(totalLost));
-
                 notificationService.sendToUser(
                         bet.getUser().getId(),
                         "Race Result",

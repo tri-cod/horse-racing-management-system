@@ -4,6 +4,7 @@ import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
+import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.WithdrawalRequest;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyRequestDto;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyResponse;
@@ -305,6 +306,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
     }
 
     @Override
+    @Transactional
     public RaceHorseResponse approveHorse(Long raceHorseId) {
         RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
@@ -337,6 +339,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         return mapToResponse(saved);
     }
     @Override
+    @Transactional
     public RaceHorseResponse rejectHorse(Long raceHorseId) {
         RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
@@ -383,6 +386,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
 
 
 
+    @Transactional
     public void cleanupPendingOnClose(Long raceId) {
         List<RaceHorse> pendingList = raceHorseRepository
                 .findByRace_IdAndStatusIn(raceId,
@@ -461,9 +465,10 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         // Lấy danh sách jockey đã được assign trong race này
         List<Long> assignedJockeyIds = raceHorseRepository.findJockeyIdsByRaceId(raceId);
 
-        // Lọc bỏ jockey đã có trong race này
+        // Lọc bỏ jockey đã có trong race này + jockey bị banned
         return activeJockeys.stream()
                 .filter(jockey -> !assignedJockeyIds.contains(jockey.getId()))
+                .filter(jockey -> jockey.getUser() != null && jockey.getUser().getStatus() != UserStatus.BANNED)
                 .map(j -> JockeyResponse.builder()
                         .id(j.getId())
                         .name(j.getUser().getFullName() != null
@@ -586,6 +591,7 @@ public class RaceHorseServiceImpl implements RaceHorseService {
 
     // ============ Admin từ chối rút ============
     @Override
+    @Transactional
     public RaceHorseResponse rejectWithdrawal(Long raceHorseId) {
         RaceHorse raceHorse = raceHorseRepository.findById(raceHorseId)
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));

@@ -211,7 +211,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  <SectionHeader title="Basic Info & Referee" />
  <div className="flex flex-col gap-4">
  <Field id="rf-name" label="Race Name" required error={errors.raceName}>{inp('rf-name', 'raceName', 'text', { placeholder: 'e.g. Grand Prix 2026' })}</Field>
- <Field id="rf-location" label="Location" required hint="Fixed for every race.">{inp('rf-location', 'location', 'text', { disabled: true, className: `${inputCls()} cursor-not-allowed bg-surface-overlay text-ink-3` })}</Field>
+ <Field id="rf-location" label="Location" required>{inp('rf-location', 'location', 'text', { disabled: true, className: `${inputCls()} cursor-not-allowed bg-surface-overlay text-ink-3` })}</Field>
  <Field id="rf-referee" label="Race Referee" optional error={errors.refereeId}
  hint={refereesError ?? 'Optional. Leave blank to assign later.'}>
  <select id="rf-referee" className={inputCls()} value={form.refereeId} onChange={set('refereeId')} disabled={refereesLoading}>
@@ -230,7 +230,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  <div className="flex flex-col gap-4">
  <Field id="rf-start" label="Start Time" required error={errors.startTime}>{inp('rf-start', 'startTime', 'datetime-local')}</Field>
  <Field id="rf-deadline" label="Registration Deadline" error={errors.registrationDeadline} hint="Auto-close 1 day before start if blank.">{inp('rf-deadline', 'registrationDeadline', 'datetime-local')}</Field>
- <Field id="rf-track" label="Track Name" required hint="Fixed for every race.">{inp('rf-track', 'trackName', 'text', { disabled: true, className: `${inputCls()} cursor-not-allowed bg-surface-overlay text-ink-3` })}</Field>
+ <Field id="rf-track" label="Track Name" required>{inp('rf-track', 'trackName', 'text', { disabled: true, className: `${inputCls()} cursor-not-allowed bg-surface-overlay text-ink-3` })}</Field>
  <Field id="rf-distance" label="Distance" required error={errors.distance}>{inp('rf-distance', 'distance', 'text', { placeholder: 'e.g. 1600m' })}</Field>
  <Field id="rf-cond" label="Track Condition" required error={errors.trackCondition}>
  <select id="rf-cond" className={inputCls()} value={form.trackCondition} onChange={set('trackCondition')}>

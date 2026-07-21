@@ -1,12 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
-import { CheckCircle2, XCircle, Flag } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { CheckCircle2, XCircle, Flag, Rabbit, User, Gauge, Award } from 'lucide-react';
 import { getJockeyRequests, jockeyAcceptRequest, jockeyDeclineRequest } from '@/api/raceHorseApi';
+import { getHorseById } from '@/api/horseOwnerApi';
 import { getErrorMessage } from '@/utils/errors';
 import { useToast } from '@/components/ui/ToastProvider';
 import EmptyState from '@/components/ui/EmptyState';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
-import type { RaceHorse } from '@/types';
+import type { RaceHorse, Horse } from '@/types';
 
 function RequestsSkeleton() {
   return (
@@ -31,6 +33,12 @@ export default function JockeyRaceRequestsPage() {
   const [error, setError] = useState('');
   const [actionId, setActionId] = useState<number | null>(null);
 
+  // Requests only carry the horse's name/avatar — fetch breed/age/speed/rank per
+  // unique horse (same pattern as the admin race-detail approval table) so the
+  // jockey can judge the horse before accepting a ride, not just its name.
+  const [horseDetails, setHorseDetails] = useState<Record<number, Horse>>({});
+  const fetchedHorseIdsRef = useRef<Set<number>>(new Set());
+
   const fetchRequests = useCallback(async () => {
     setLoading(true);
     try {
@@ -43,6 +51,16 @@ export default function JockeyRaceRequestsPage() {
   }, []);
 
   useEffect(() => { fetchRequests(); }, [fetchRequests]);
+
+  useEffect(() => {
+    const toFetch = [...new Set(requests.map((r) => r.horseId))].filter((hid) => !fetchedHorseIdsRef.current.has(hid));
+    toFetch.forEach((hid) => {
+      fetchedHorseIdsRef.current.add(hid);
+      getHorseById(hid)
+        .then((horse) => setHorseDetails((prev) => ({ ...prev, [hid]: horse })))
+        .catch(() => { fetchedHorseIdsRef.current.delete(hid); });
+    });
+  }, [requests]);
 
   const handleAccept = async (r: RaceHorse) => {
     setActionId(r.id);
@@ -95,10 +113,10 @@ export default function JockeyRaceRequestsPage() {
       ) : (
         <div className="overflow-hidden border border-rim bg-surface-raised">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[560px]">
+            <table className="w-full min-w-[680px]">
               <thead>
                 <tr className="border-b border-rim bg-surface-overlay">
-                  {['Horse', 'Race', 'Actions'].map((h) => (
+                  {['Horse', 'Owner', 'Race', 'Actions'].map((h) => (
                     <th key={h} className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">{h}</th>
                   ))}
                 </tr>
@@ -107,6 +125,7 @@ export default function JockeyRaceRequestsPage() {
                 {requests.map((r) => {
                   const isLoading = actionId === r.id;
                   const initial = r.horseName?.charAt(0)?.toUpperCase() ?? '?';
+                  const detail = horseDetails[r.horseId];
                   return (
                     <tr key={r.id} className="transition-colors hover:bg-surface-overlay/40">
                       <td className="px-5 py-3.5">
@@ -118,8 +137,53 @@ export default function JockeyRaceRequestsPage() {
                               {initial}
                             </div>
                           )}
-                          <span className="font-serif text-sm font-bold text-ink">{r.horseName ?? `Horse #${r.horseId}`}</span>
+                          <div className="min-w-0">
+                            <p className="flex items-center gap-2 font-serif text-sm font-bold text-ink">
+                              {r.horseName ?? `Horse #${r.horseId}`}
+                              <Link
+                                to={`/horses/${r.horseId}`}
+                                title="View horse profile and race record"
+                                className="inline-flex shrink-0 items-center gap-1 border border-rim-hi px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-ink-3 transition-colors hover:border-gold/40 hover:bg-surface-overlay hover:text-gold-hi"
+                              >
+                                <Rabbit size={11} /> View
+                              </Link>
+                            </p>
+                            <p className="mt-0.5 flex items-center gap-2.5 truncate text-[10px] font-medium text-ink-4">
+                              {detail ? (
+                                <>
+                                  {detail.breed && <span className="truncate">{detail.breed}</span>}
+                                  {detail.age != null && <span className="shrink-0">Age {detail.age}</span>}
+                                  {detail.speedRating != null && (
+                                    <span className="flex shrink-0 items-center gap-0.5">
+                                      <Gauge size={10} className="text-ink-4" /> {detail.speedRating}
+                                    </span>
+                                  )}
+                                  {detail.historyRank && (
+                                    <span className="flex shrink-0 items-center gap-0.5 text-gold">
+                                      <Award size={10} /> {detail.historyRank}
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <span className="italic text-ink-4/60">Loading stats…</span>
+                              )}
+                            </p>
+                          </div>
                         </div>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        {r.ownerId != null ? (
+                          <Link
+                            to={`/horse-owners/${r.ownerId}`}
+                            title="View owner's stable profile and track record"
+                            className="inline-flex items-center gap-1.5 border border-rim-hi px-2.5 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:border-gold/40 hover:bg-surface-overlay hover:text-gold-hi"
+                          >
+                            <User size={12} className="shrink-0 text-ink-4" />
+                            {r.ownerName ?? `Owner #${r.ownerId}`}
+                          </Link>
+                        ) : (
+                          <span className="text-sm text-ink-4">{r.ownerName ?? '—'}</span>
+                        )}
                       </td>
                       <td className="px-5 py-3.5 text-sm text-ink-2">{r.raceName ?? `Race #${r.raceId}`}</td>
                       <td className="px-5 py-3.5">

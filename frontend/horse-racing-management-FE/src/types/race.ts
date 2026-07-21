@@ -52,6 +52,8 @@ export interface RaceHorse {
  horseAvatarUrl?: string;
  ownerId?: number;
  ownerName?: string;
+ trainerId?: number;
+ trainerName?: string;
  jockeyId?: number;
  jockeyName?: string;
  laneNumber?: number;
