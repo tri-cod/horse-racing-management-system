@@ -22,7 +22,6 @@ const RacesPage = lazy(() => import('@/pages/public/RacesPage'));
 const RaceDetailPage = lazy(() => import('@/pages/public/RaceDetailPage'));
 const RaceResultsPage = lazy(() => import('@/pages/public/RaceResultsPage'));
 const AboutPage = lazy(() => import('@/pages/public/AboutPage'));
-const BetHomePage = lazy(() => import('@/pages/public/BetHomePage'));
 const BetRacesPage = lazy(() => import('@/pages/public/BetRacesPage'));
 const NotFoundPage = lazy(() => import('@/pages/public/NotFoundPage'));
 
@@ -95,7 +94,7 @@ export default function App() {
           <Route path="/horse-owners/:id" element={<Layout><HorseOwnerProfilePage /></Layout>} />
           <Route path="/races" element={<Layout><RacesPage /></Layout>} />
           <Route path="/races/:id" element={<Layout><RaceDetailPage /></Layout>} />
-          <Route path="/bet" element={<Layout><BetHomePage /></Layout>} />
+          <Route path="/bet" element={<Navigate to="/bet/races" replace />} />
           <Route path="/bet/races" element={<Layout><BetRacesPage /></Layout>} />
           <Route path="/results" element={<Layout><RaceResultsPage /></Layout>} />
           <Route path="/about" element={<Layout><AboutPage /></Layout>} />

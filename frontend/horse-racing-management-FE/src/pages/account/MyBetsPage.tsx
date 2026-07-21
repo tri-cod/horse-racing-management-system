@@ -221,7 +221,7 @@ export default function MyBetsPage() {
           subtitle="Place your first bet on an upcoming race to see your wagering history here."
           action={
             <Link
-              to="/bet"
+              to="/bet/races"
               className="mt-4 inline-flex items-center gap-2 bg-gold px-6 py-2.5 text-xs font-bold uppercase tracking-widest text-on-gold transition-colors hover:bg-gold-hi"
             >
               <Ticket size={13} /> Go to Betting

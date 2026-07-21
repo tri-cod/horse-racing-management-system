@@ -514,7 +514,7 @@ export default function RacesPage({ bettingMode = false }: { bettingMode?: boole
                       )
                     )
                   ) : (
-                    <Link to="/bet"
+                    <Link to="/bet/races"
                       className="flex w-full items-center justify-center gap-1.5 bg-gold py-3.5 text-xs font-bold uppercase tracking-widest text-on-gold hover:bg-gold-hi transition-colors">
                       <Ticket size={13} /> Bet Now
                     </Link>

@@ -130,7 +130,7 @@ export default function JockeysSection() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={reduce ? { duration: 0.2, ease: 'easeOut' } : { duration: 0.5, ease: 'easeOut' }}
-                    className="absolute inset-0 h-full w-full object-cover"
+                    className="absolute inset-y-0 left-1/2 h-full w-auto max-w-none -translate-x-1/2"
                   />
                 ) : (
                   <motion.div

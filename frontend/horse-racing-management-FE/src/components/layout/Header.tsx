@@ -334,11 +334,6 @@ export default function Header() {
               {navTrigger('/results', 'Results', 'results')}
               {navTrigger('/jockeys', 'Jockeys', 'jockeys')}
               {navTrigger('/horses', 'Horses', 'horses')}
-              <li>
-                <Link to="/bet" className={`flex items-center gap-1 px-1 py-1 text-sm font-medium tracking-wide transition-colors ${pathname.startsWith('/bet') ? 'text-on-blue' : 'text-on-blue/75 hover:text-on-blue'}`}>
-                  <span className={`pb-1 border-b-2 ${pathname.startsWith('/bet') ? 'border-gold' : 'border-transparent'}`}>Bet</span>
-                </Link>
-              </li>
             </ul>
           </nav>
 
@@ -370,7 +365,7 @@ export default function Header() {
         <div className="border-t border-on-blue/20 bg-navy lg:hidden">
           <nav className="flex flex-col divide-y divide-on-blue/10">
             {[{ label: 'Schedule', href: '/races' }, { label: 'Results', href: '/results' },
-            { label: 'Bet', href: '/bet' }, { label: 'Jockeys', href: '/jockeys' },
+            { label: 'Jockeys', href: '/jockeys' },
             { label: 'Horses', href: '/horses' }].map((item) => (
               <Link key={item.label} to={item.href}
                 className={`px-6 py-4 text-sm font-medium transition-colors ${pathname === item.href ? 'text-on-blue' : 'text-on-blue/80 hover:bg-on-blue/10 hover:text-on-blue'}`}
