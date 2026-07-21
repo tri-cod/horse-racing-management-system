@@ -17,6 +17,7 @@ const JockeyProfilePage = lazy(() => import('@/pages/public/JockeyProfilePage'))
 const RefereeProfilePage = lazy(() => import('@/pages/public/RefereeProfilePage'));
 const HorsesPage = lazy(() => import('@/pages/public/HorsesPage'));
 const HorseProfilePage = lazy(() => import('@/pages/public/HorseProfilePage'));
+const HorseOwnerProfilePage = lazy(() => import('@/pages/public/HorseOwnerProfilePage'));
 const RacesPage = lazy(() => import('@/pages/public/RacesPage'));
 const RaceDetailPage = lazy(() => import('@/pages/public/RaceDetailPage'));
 const RaceResultsPage = lazy(() => import('@/pages/public/RaceResultsPage'));
@@ -40,6 +41,7 @@ const HorseDetailPage = lazy(() => import('@/pages/horse-owner/HorseDetailPage')
 const HorseEditPage = lazy(() => import('@/pages/horse-owner/HorseEditPage'));
 const HorseOwnerRacePage = lazy(() => import('@/pages/horse-owner/HorseOwnerRacePage'));
 const MyRaceRegistrationsPage = lazy(() => import('@/pages/horse-owner/MyRaceRegistrationsPage'));
+const HorseOwnerMyProfilePage = lazy(() => import('@/pages/horse-owner/HorseOwnerMyProfilePage'));
 
 // Trainer
 const TrainerDashboardPage = lazy(() => import('@/pages/trainer/TrainerDashboardPage'));
@@ -90,6 +92,7 @@ export default function App() {
           <Route path="/referees/:id" element={<Layout><RefereeProfilePage /></Layout>} />
           <Route path="/horses" element={<Layout><HorsesPage /></Layout>} />
           <Route path="/horses/:id" element={<Layout><HorseProfilePage /></Layout>} />
+          <Route path="/horse-owners/:id" element={<Layout><HorseOwnerProfilePage /></Layout>} />
           <Route path="/races" element={<Layout><RacesPage /></Layout>} />
           <Route path="/races/:id" element={<Layout><RaceDetailPage /></Layout>} />
           <Route path="/bet" element={<Layout><BetHomePage /></Layout>} />
@@ -172,6 +175,11 @@ export default function App() {
           <Route path="/horse-owner/race-registrations" element={
             <ProtectedRoute allowedRoles={['HORSE_OWNER']}>
               <AppLayout><MyRaceRegistrationsPage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/horse-owner/profile" element={
+            <ProtectedRoute allowedRoles={['HORSE_OWNER']}>
+              <AppLayout><HorseOwnerMyProfilePage /></AppLayout>
             </ProtectedRoute>
           } />
 

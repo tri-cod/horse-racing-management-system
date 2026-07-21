@@ -4,6 +4,7 @@ import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
+import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import com.horseracing.horseracingmanagement.module.dto.RefereeDto.*;
 import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
@@ -64,6 +65,7 @@ public class RefereeServiceImpl implements RefereeService {
     public List<RefereeProfileResponse> getAllReferees() {
         return raceRefereeRepository.findAll()
                 .stream()
+                .filter(r -> r.getUser() != null && r.getUser().getStatus() != UserStatus.BANNED)
                 .map(this::mapToProfileResponse)
                 .collect(Collectors.toList());
     }

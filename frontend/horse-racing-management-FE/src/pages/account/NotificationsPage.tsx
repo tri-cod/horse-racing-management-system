@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Bell, Trophy, Target, CheckCircle, Wallet, Info, CheckCheck } from 'lucide-react';
+import { Bell, Trophy, Target, CheckCircle, Wallet, Info, CheckCheck, Trash2 } from 'lucide-react';
 import { useNotifications } from '@/hooks/useNotifications';
 import EmptyState from '@/components/ui/EmptyState';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
+import { useToast } from '@/components/ui/ToastProvider';
+import { getErrorMessage } from '@/utils/errors';
 import type { Notification } from '@/types';
 
 function timeAgo(dateStr?: string) {
@@ -56,9 +58,17 @@ function NotifSkeleton() {
   );
 }
 
-function NotifItem({ notif, onMarkRead }: { notif: Notification; onMarkRead: (id: number) => void }) {
+function NotifItem({
+  notif,
+  onMarkRead,
+  onDelete,
+}: {
+  notif: Notification;
+  onMarkRead: (id: number) => void;
+  onDelete: (id: number) => void;
+}) {
   return (
-    <div className={`flex items-start gap-4 px-5 py-4 transition-colors hover:bg-surface-overlay/60 ${
+    <div className={`group flex items-start gap-4 px-5 py-4 transition-colors hover:bg-surface-overlay/60 ${
       !notif.isRead ? 'border-l-2 border-navy' : 'border-l-2 border-transparent'
     }`}>
       <div className={`flex h-10 w-10 shrink-0 items-center justify-center ${notifAccent(notif.type)}`}>
@@ -71,8 +81,8 @@ function NotifItem({ notif, onMarkRead }: { notif: Notification; onMarkRead: (id
         <p className="mt-0.5 text-sm leading-relaxed text-ink-3">{notif.content ?? notif.message}</p>
         <span className="mt-1 block text-xs text-ink-4">{timeAgo(notif.createdAt)}</span>
       </div>
-      <div className="shrink-0 pt-0.5">
-        {!notif.isRead ? (
+      <div className="flex shrink-0 items-center gap-2 pt-0.5">
+        {!notif.isRead && (
           <button
             type="button"
             title="Mark as read"
@@ -81,18 +91,39 @@ function NotifItem({ notif, onMarkRead }: { notif: Notification; onMarkRead: (id
           >
             <CheckCheck size={16} />
           </button>
-        ) : (
-          <span className="block h-4 w-4" />
         )}
+        <button
+          type="button"
+          title="Delete"
+          onClick={() => onDelete(notif.id)}
+          className="text-ink-4 opacity-0 transition-colors group-hover:opacity-100 hover:text-fail"
+        >
+          <Trash2 size={15} />
+        </button>
       </div>
     </div>
   );
 }
 
 export default function NotificationsPage() {
+  const addToast = useToast();
   const [tab, setTab] = useState<'all' | 'unread'>('all');
-  const { notifications, unreadCount, loading, error, markAsRead, markAllAsRead } = useNotifications();
+  const {
+    notifications, unreadCount, loading, error,
+    markAsRead, markAllAsRead, deleteNotification, deleteAllNotifications,
+  } = useNotifications();
   const list = tab === 'unread' ? notifications.filter((n) => !n.isRead) : notifications;
+
+  const handleDelete = async (id: number) => {
+    try { await deleteNotification(id); }
+    catch (e: unknown) { addToast(getErrorMessage(e, 'Failed to delete notification.'), 'error'); }
+  };
+
+  const handleDeleteAll = async () => {
+    if (!window.confirm('Delete all notifications? This cannot be undone.')) return;
+    try { await deleteAllNotifications(); }
+    catch (e: unknown) { addToast(getErrorMessage(e, 'Failed to delete notifications.'), 'error'); }
+  };
 
   return (
     <div className="px-8 py-6">
@@ -102,14 +133,25 @@ export default function NotificationsPage() {
         title="Notifications"
         subtitle={unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
         action={
-          unreadCount > 0 ? (
-            <button
-              type="button"
-              onClick={markAllAsRead}
-              className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-surface-overlay hover:text-ink"
-            >
-              <CheckCheck size={13} /> Mark all read
-            </button>
+          notifications.length > 0 ? (
+            <div className="flex items-center gap-2">
+              {unreadCount > 0 && (
+                <button
+                  type="button"
+                  onClick={markAllAsRead}
+                  className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-surface-overlay hover:text-ink"
+                >
+                  <CheckCheck size={13} /> Mark all read
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={handleDeleteAll}
+                className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:border-fail/30 hover:bg-fail-subtle hover:text-fail"
+              >
+                <Trash2 size={13} /> Clear all
+              </button>
+            </div>
           ) : undefined
         }
       />
@@ -156,7 +198,7 @@ export default function NotificationsPage() {
         ) : (
           <div className="overflow-hidden border border-rim bg-surface-raised divide-y divide-rim">
             {list.map((n) => (
-              <NotifItem key={n.id} notif={n} onMarkRead={markAsRead} />
+              <NotifItem key={n.id} notif={n} onMarkRead={markAsRead} onDelete={handleDelete} />
             ))}
           </div>
         )}

@@ -355,6 +355,10 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
         return OwnerStatsResponse.builder()
                 .ownerId(ownerId)
                 .name(owner.getName())
+                .avatarUrl(owner.getAvatarUrl())
+                .coverImageUrl(owner.getCoverImageUrl())
+                .description(owner.getDescription())
+                .status(owner.getStatus())
                 .totalHorses((long) myHorses.size())
                 .totalRaces(totalRaces)
                 .totalWins(totalWins)
@@ -448,7 +452,20 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
         return resp;
     }
 
+    @Override
+    public HorseOwnerProfileResponse getMyProfile(Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new AppException("Horse owner profile not found", HttpStatus.NOT_FOUND));
+
+        HorseOwnerProfileResponse resp = mapToProfileResponse(owner);
+        resp.setUserId(userId);
+        return resp;
+    }
+
     private HorseOwnerProfileResponse mapToProfileResponse(HorseOwner owner) {
+        // owner.getTotalHorses() is a stored counter nothing ever increments/decrements —
+        // count live from the horse table instead, same as getStats()/getHorseList() do.
+        int totalHorses = horseRepository.findByOwnerId(owner.getId()).size();
         return HorseOwnerProfileResponse.builder()
                 .id(owner.getId())
                 .name(owner.getName())
@@ -456,7 +473,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .avatarUrl(owner.getAvatarUrl())
                 .coverImageUrl(owner.getCoverImageUrl())
                 .address(owner.getAddress())
-                .totalHorses(owner.getTotalHorses())
+                .totalHorses(totalHorses)
                 .status(owner.getStatus())
                 .build();
     }

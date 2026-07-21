@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance';
-import type { ApiResponse, Horse } from '@/types';
+import type { ApiResponse, Horse, HorseOwnerProfile, CompleteHorseOwnerProfilePayload, HorseOwnerPublicProfile } from '@/types';
 
 export interface SignHorsePayload {
  horseName: string;
@@ -54,3 +54,17 @@ export const getAvailableHorses = (raceId: number) =>
   axiosInstance
     .get<ApiResponse<Horse[]>>('/horse-owner/horses/available', { params: { raceId } })
     .then((r) => r.data.data);
+
+export const getMyProfile = () =>
+ axiosInstance.get<ApiResponse<HorseOwnerProfile>>('/horse-owner/profile/me').then((r) => r.data.data);
+
+export const completeProfile = (payload: CompleteHorseOwnerProfilePayload) =>
+ axiosInstance
+ .put<ApiResponse<HorseOwnerProfile>>('/horse-owner/profile/complete', payload)
+ .then((r) => r.data.data);
+
+// Public — no auth required, used by the public horse-owner profile page.
+export const getOwnerStats = (ownerId: number) =>
+ axiosInstance
+ .get<ApiResponse<HorseOwnerPublicProfile>>(`/horse-owner/${ownerId}/stats`)
+ .then((r) => r.data.data);

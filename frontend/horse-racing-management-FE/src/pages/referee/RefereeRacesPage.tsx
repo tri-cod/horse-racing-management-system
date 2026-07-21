@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Flag, Play, Lock, ChevronDown, ChevronUp, Calendar, MapPin, Gavel } from 'lucide-react';
+import { Flag, Play, Lock, ChevronDown, ChevronUp, Calendar, MapPin, Gavel, ClipboardCheck } from 'lucide-react';
 import { startRace, getPenaltiesByRace } from '@/api/refereeApi';
-import { getRaces, closeRace } from '@/api/raceApi';
+import { getRaces } from '@/api/raceApi';
 import SetResultModal from '@/components/features/referee/SetResultModal';
 import IssuePenaltyModal from '@/components/features/referee/IssuePenaltyModal';
 import InspectRaceModal from '@/components/features/referee/InspectRaceModal';
@@ -80,10 +80,10 @@ export default function RefereeRacesPage() {
   const { profile: myProfile } = useMyRefereeProfile();
   const [races, setRaces] = useState<Race[]>([]);
   const [loading, setLoading] = useState(true);
-  const [actionId, setActionId] = useState<number | null>(null);
   const [expandedRaceId, setExpandedRaceId] = useState<number | null>(null);
   const [resultRace, setResultRace] = useState<Race | null>(null);
   const [showFinished, setShowFinished] = useState(false);
+  const [startingId, setStartingId] = useState<number | null>(null);
 
   // Inspection state
   const [inspectingRace, setInspectingRace] = useState<Race | null>(null);
@@ -119,26 +119,20 @@ export default function RefereeRacesPage() {
     if (next != null) { setPenalties([]); loadPenalties(next); }
   };
 
-  const doAction = async (id: number, fn: (id: number) => Promise<unknown>, msg: string) => {
-    setActionId(id);
-    try { await fn(id); addToast(msg, 'success'); fetchRaces(); }
-    catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string } } };
-      addToast(err?.response?.data?.message ?? 'Action failed.', 'error');
-    }
-    finally { setActionId(null); }
-  };
-
-  // Re-thrown after toasting so the modal (which awaits this) knows to stay open on failure.
-  const handleStartFromInspection = async (raceId: number) => {
+  // A dedicated action, separate from the Check button — starting only becomes available
+  // once a clean inspection has stamped race.raceInspectedAt (checked server-side too).
+  const handleStartRace = async (race: Race) => {
+    if (!window.confirm(`Start "${race.raceName}"? Betting will close and the race goes live.`)) return;
+    setStartingId(race.id);
     try {
-      await startRace(raceId);
+      await startRace(race.id);
       addToast('Race started!', 'success');
       fetchRaces();
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
       addToast(err?.response?.data?.message ?? 'Failed to start race.', 'error');
-      throw e;
+    } finally {
+      setStartingId(null);
     }
   };
 
@@ -159,7 +153,6 @@ export default function RefereeRacesPage() {
   const renderCard = (race: Race) => {
     const isExpanded = expandedRaceId === race.id;
     const isPenaltyOpen = penaltyPanelId === race.id;
-    const isActing = actionId === race.id;
     // Inspect/Penalty/Set Result are rejected server-side unless this referee is
     // the one assigned to the race — hide them rather than surface a confusing error.
     const isMine = myProfile != null && race.refereeId === myProfile.id;
@@ -211,27 +204,27 @@ export default function RefereeRacesPage() {
 
           {/* Primary, status-changing actions */}
           <div className="flex shrink-0 flex-wrap items-center gap-2">
-            {race.status === 'OPEN_REGISTRATION' && (
-              <button
-                type="button"
-                disabled={isActing}
-                onClick={() => doAction(race.id, () => closeRace(race.id), 'Registration closed. Odds can now be set.')}
-                className="inline-flex items-center gap-1.5 bg-navy px-3.5 py-1.5 text-xs font-semibold text-on-blue transition-colors hover:bg-navy-hi disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <Lock size={12} /> Close Reg
-              </button>
-            )}
-
-            {/* Pre-race check only — once the race is ONGOING this no longer applies.
-                Starting is gated behind a clean inspection (backend enforces this too);
-                the "Start Race" action lives inside the Inspect modal itself. */}
+            {/* Check and Start are deliberately two separate actions: Check only opens
+                the inspection modal (mark horses OK / report issues), it never starts
+                the race by itself. Start only appears once that check comes back clean
+                (race.raceInspectedAt set) — backend enforces this gate too. */}
             {isMine && race.status === 'OPEN_BETTING' && (
               <button
                 type="button"
                 onClick={() => setInspectingRace(race)}
-                className="inline-flex items-center gap-1.5 bg-navy px-3.5 py-1.5 text-xs font-semibold text-on-blue transition-colors hover:bg-navy-hi"
+                className="inline-flex items-center gap-1.5 border border-rim-hi px-3.5 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:bg-surface-overlay"
               >
-                <Play size={12} /> Inspect &amp; Start
+                <ClipboardCheck size={12} /> Check
+              </button>
+            )}
+            {isMine && race.status === 'OPEN_BETTING' && race.raceInspectedAt && (
+              <button
+                type="button"
+                disabled={startingId === race.id}
+                onClick={() => handleStartRace(race)}
+                className="inline-flex items-center gap-1.5 bg-navy px-3.5 py-1.5 text-xs font-semibold text-on-blue transition-colors hover:bg-navy-hi disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Play size={12} /> {startingId === race.id ? 'Starting…' : 'Start Race'}
               </button>
             )}
 
@@ -356,9 +349,8 @@ export default function RefereeRacesPage() {
       {inspectingRace && (
         <InspectRaceModal
           race={inspectingRace}
-          onClose={() => setInspectingRace(null)}
+          onClose={() => { setInspectingRace(null); fetchRaces(); }}
           onToast={(msg, type) => addToast(msg, type ?? 'success')}
-          onStartRace={inspectingRace.status === 'OPEN_BETTING' ? handleStartFromInspection : undefined}
         />
       )}
 

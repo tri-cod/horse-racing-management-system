@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   ChevronLeft, Rabbit, Trophy, Flag, Wallet, MapPin, Calendar, Award, Sparkles,
-  Venus, Mars, Weight, Gauge, GraduationCap, Palette,
+  Venus, Mars, Weight, Gauge, GraduationCap, Palette, ArrowRight,
 } from 'lucide-react';
 import { useHorseProfile } from '@/hooks/useHorseProfile';
 import { useHorseRaceHistory } from '@/hooks/useHorseRaceHistory';
@@ -21,6 +21,28 @@ function DetailFact({ icon: Icon, label, value }: { icon: typeof Rabbit; label: 
         <p className="truncate text-sm font-medium text-ink">{value}</p>
       </div>
     </div>
+  );
+}
+
+/** Standalone, high-visibility banner — the owner link used to be one small cell
+ *  buried in the detail-facts grid alongside gender/weight/etc. and got missed. */
+function OwnerBanner({ ownerId, ownerName }: { ownerId: number; ownerName: string }) {
+  return (
+    <Link
+      to={`/horse-owners/${ownerId}`}
+      className="group mt-4 flex items-center gap-4 border border-gold/30 bg-gold/[0.06] px-5 py-4 transition-colors hover:border-gold/60 hover:bg-gold/10"
+    >
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-gold to-gold-hi text-lg font-bold text-on-gold shadow-sm">
+        {ownerName.charAt(0).toUpperCase()}
+      </div>
+      <div className="min-w-0 flex-1 text-left">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-gold-hi">Owned By</p>
+        <p className="truncate font-serif text-lg font-bold text-ink transition-colors group-hover:text-gold-hi">{ownerName}</p>
+      </div>
+      <span className="flex shrink-0 items-center gap-1 text-xs font-semibold uppercase tracking-wide text-gold-hi opacity-80 transition-transform group-hover:translate-x-0.5 group-hover:opacity-100">
+        View Profile <ArrowRight size={14} />
+      </span>
+    </Link>
   );
 }
 
@@ -215,6 +237,10 @@ export default function HorseProfilePage() {
 
               <h1 className="font-serif text-3xl font-bold uppercase leading-tight text-ink sm:text-4xl">{horse.horseName}</h1>
               {horse.breed && <p className="mt-1 text-sm text-ink-3">{horse.breed}</p>}
+
+              {detail?.ownerId != null && detail?.ownerName && (
+                <OwnerBanner ownerId={detail.ownerId} ownerName={detail.ownerName} />
+              )}
             </div>
 
             {/* Horse details — gender/age/weight/speed/class/trainer, only for fields that exist */}

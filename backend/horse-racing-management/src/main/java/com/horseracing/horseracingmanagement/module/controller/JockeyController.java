@@ -1,14 +1,11 @@
 package com.horseracing.horseracingmanagement.module.controller;
 
-import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.CompleteJockeyProfileRequest;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyProfileResponse;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyResponse;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyStatsResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
-import com.horseracing.horseracingmanagement.module.entity.Jockey;
-import com.horseracing.horseracingmanagement.module.responsitory.JockeyRepository;
 import com.horseracing.horseracingmanagement.module.service.JockeyService;
 import com.horseracing.horseracingmanagement.module.service.RaceHorseService;
 import com.horseracing.horseracingmanagement.security.CustomUserDetails;
@@ -20,7 +17,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/jockeys")
@@ -28,7 +24,6 @@ import java.util.stream.Collectors;
 @Tag(name = "Jockey", description = "Jockey management APIs")
 public class JockeyController {
 
-    private final JockeyRepository jockeyRepository;
     private final RaceHorseService raceHorseService;
     private final JockeyService jockeyService;
 
@@ -61,23 +56,7 @@ public class JockeyController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<JockeyResponse>>> getJockeyList() {
-        List<Jockey> jockeys = jockeyRepository.findByStatus("Active");
-        List<JockeyResponse> response = jockeys.stream()
-                .filter(j -> j.getUser() != null && j.getUser().getStatus() != UserStatus.BANNED)
-                .map(j -> JockeyResponse.builder()
-                        .id(j.getId())
-                        .name(j.getUser().getFullName() != null
-                                ? j.getUser().getFullName()
-                                : j.getUser().getUsername())
-                        .dateOfBirth(j.getDateOfBirth())
-                        .experienceYear(j.getExperienceYear())
-                        .status(j.getStatus())
-                        .avatarUrl(j.getAvatarUrl())
-                        .coverImageUrl(j.getCoverImageUrl())
-                        .description(j.getDescription())
-                        .build())
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(ApiResponse.success("Success", response));
+        return ResponseEntity.ok(ApiResponse.success("Success", jockeyService.getJockeyList()));
     }
 
     @GetMapping("/available")

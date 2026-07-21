@@ -16,6 +16,10 @@ import java.util.List;
 public class OwnerStatsResponse {
     private Long ownerId;
     private String name;
+    private String avatarUrl;
+    private String coverImageUrl;
+    private String description;
+    private String status;
     private Long totalHorses;    // tổng số ngựa sở hữu
     private Long totalRaces;     // tổng số trận tham gia
     private Long totalWins;      // số lần ngựa về hạng 1
