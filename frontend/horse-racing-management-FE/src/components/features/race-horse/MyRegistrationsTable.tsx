@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Rabbit, Flag } from 'lucide-react';
+import { Rabbit, Flag, Trophy } from 'lucide-react';
 import RaceHorseStatusBadge from './RaceHorseStatusBadge';
-import { isAnyStatus, type RaceHorseStatusKey } from '@/utils/raceHorseStatus';
+import { isStatus, isAnyStatus, type RaceHorseStatusKey } from '@/utils/raceHorseStatus';
 import type { RaceHorse } from '@/types';
 
 function formatDate(iso?: string) {
@@ -18,20 +18,23 @@ export default function MyRegistrationsTable({
   registrations,
   onAssignJockey,
   onWithdraw,
+  actionLabel = 'Actions',
 }: {
   registrations: RaceHorse[];
   onAssignJockey: (r: RaceHorse) => void;
   onWithdraw: (r: RaceHorse) => void;
+  // Header for the last column — varies by tab (e.g. "Reason" for withdrawals).
+  actionLabel?: string;
 }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[760px]">
+      <table className="w-full min-w-[820px]">
         <thead>
           <tr className="border-b border-rim bg-surface-overlay">
-            {['Race', 'Horse', 'Jockey', 'Status', 'Registered', 'Actions'].map((h) => (
+            {['Race', 'Horse', 'Jockey', 'Commission', 'Status', 'Registered', actionLabel].map((h) => (
               <th
                 key={h}
-                className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4"
+                className={`py-3 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4 ${h === 'Commission' ? 'w-px whitespace-nowrap pr-5 pl-0' : 'px-5'}`}
               >
                 {h}
               </th>
@@ -42,6 +45,8 @@ export default function MyRegistrationsTable({
           {registrations.map((r) => {
             const canAssignJockey = isAnyStatus(r.status, JOCKEY_ACTIONABLE);
             const canWithdraw = isAnyStatus(r.status, WITHDRAWABLE);
+            const isFinished = isStatus(r.status, 'FINISHED');
+            const isWithdrawPending = isStatus(r.status, 'WITHDRAW_PENDING');
             return (
               <tr key={r.id} className="transition-colors hover:bg-surface-overlay/40">
                 <td className="px-5 py-3.5">
@@ -78,6 +83,9 @@ export default function MyRegistrationsTable({
                     <span className="text-sm text-ink-2">—</span>
                   )}
                 </td>
+                <td className="tnum w-px whitespace-nowrap py-3.5 pl-0 pr-5 text-left text-sm text-ink-2">
+                  {r.jockeyRevenuePercent != null ? `${r.jockeyRevenuePercent}%` : '—'}
+                </td>
                 <td className="px-5 py-3.5">
                   <RaceHorseStatusBadge status={r.status} />
                 </td>
@@ -102,8 +110,21 @@ export default function MyRegistrationsTable({
                         Withdraw Horse
                       </button>
                     )}
-                    {!canAssignJockey && !canWithdraw && (
-                      <span className="text-xs text-ink-4">—</span>
+                    {isFinished && (
+                      <Link
+                        to={`/races/${r.raceId}`}
+                        title="View race result"
+                        className="inline-flex items-center gap-1.5 whitespace-nowrap border border-rim-hi px-2.5 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:border-gold/40 hover:bg-surface-overlay hover:text-gold-hi"
+                      >
+                        <Trophy size={12} className="shrink-0 text-ink-4" /> View Result
+                      </Link>
+                    )}
+                    {/* Withdrawal is awaiting admin — no action left, so show the
+                        reason the owner submitted instead of an empty cell. */}
+                    {isWithdrawPending && (
+                      <span className="text-xs text-ink-3">
+                        {r.withdrawReason || <span className="italic text-ink-4">No reason given</span>}
+                      </span>
                     )}
                   </div>
                 </td>

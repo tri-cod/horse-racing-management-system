@@ -99,21 +99,29 @@ export default function HorseOwnerDashboardPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const horseItems: ActivityItem[] = horses.map((h) => ({
-    id: h.id,
-    title: h.horseName,
-    subtitle: h.breed ?? h.trainerName ?? 'No trainer assigned',
-    meta: h.createdAt ? fmtDate(h.createdAt) : undefined,
-    badge: { label: HORSE_STATUS_LABEL[h.status] ?? h.status, tone: STATUS_TONE[h.status as HorseStatus] ?? 'neutral' },
-  }));
+  // "Recent Activity" → newest first. Sort copies so the source arrays stay intact.
+  const horseItems: ActivityItem[] = [...horses]
+    .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
+    .map((h) => ({
+      id: h.id,
+      title: h.horseName,
+      subtitle: h.breed ?? h.trainerName ?? 'No trainer assigned',
+      meta: h.createdAt ? fmtDate(h.createdAt) : undefined,
+      badge: { label: HORSE_STATUS_LABEL[h.status] ?? h.status, tone: STATUS_TONE[h.status as HorseStatus] ?? 'neutral' },
+      to: `/horses/${h.id}`,
+    }));
 
-  const regItems: ActivityItem[] = registrations.map((r) => ({
-    id: r.id,
-    title: r.horseName ?? `Horse #${r.horseId}`,
-    subtitle: r.raceName ?? 'Race',
-    meta: r.registerAt ? fmtDate(r.registerAt) : undefined,
-    badge: { label: r.status, tone: STATUS_TONE[r.status] ?? 'neutral' },
-  }));
+  const regItems: ActivityItem[] = [...registrations]
+    .sort((a, b) => new Date(b.registerAt ?? 0).getTime() - new Date(a.registerAt ?? 0).getTime())
+    .map((r) => ({
+      id: r.id,
+      title: r.horseName ?? `Horse #${r.horseId}`,
+      // Race + jockey, so the row says at a glance where and with whom the horse rides.
+      subtitle: [r.raceName ?? 'Race', r.jockeyName].filter(Boolean).join(' · '),
+      meta: r.registerAt ? fmtDate(r.registerAt) : undefined,
+      badge: { label: r.status, tone: STATUS_TONE[r.status] ?? 'neutral' },
+      to: `/races/${r.raceId}`,
+    }));
 
   return (
     <div>

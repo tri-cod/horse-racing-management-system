@@ -63,6 +63,10 @@ export interface RaceHorse {
  status: RaceHorseStatus;
  registerAt?: string;
  withdrawReason?: string;
+ // Race context carried on the entry (used e.g. on the jockey's request list).
+ startTime?: string;
+ totalPrizePool?: number;
+ jockeyRevenuePercent?: number;
 }
 
 export interface RaceResult {

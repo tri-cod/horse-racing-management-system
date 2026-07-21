@@ -25,6 +25,8 @@ export interface ActivityItem {
   subtitle?: string;
   meta?: string;
   badge?: { label: string; tone: Tone };
+  // When set, the whole row becomes a link to this route (drill-in).
+  to?: string;
 }
 
 interface ActivityListProps {
@@ -92,26 +94,34 @@ export default function ActivityList({
       ) : (
         <>
           <div className="divide-y divide-rim">
-            {visibleItems.map((item) => (
-              <div key={item.id} className="relative flex items-center gap-4 py-4 pl-6 pr-5 transition-colors hover:bg-surface-overlay/40">
-                <div className={`absolute left-0 top-0 h-full w-1 ${item.badge ? TONE_BAR_CLS[item.badge.tone] : 'bg-transparent'}`} />
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy/8 text-navy">
-                  <Icon size={16} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-ink">{item.title}</p>
-                  {item.subtitle && <p className="mt-0.5 truncate text-xs text-ink-3">{item.subtitle}</p>}
-                </div>
-                <div className="flex shrink-0 flex-col items-end gap-1">
-                  {item.badge && (
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${TONE_CLS[item.badge.tone]}`}>
-                      {item.badge.label}
-                    </span>
-                  )}
-                  {item.meta && <span className="tnum text-[11px] text-ink-4">{item.meta}</span>}
-                </div>
-              </div>
-            ))}
+            {visibleItems.map((item) => {
+              const rowCls = 'relative flex items-center gap-4 py-4 pl-6 pr-5 transition-colors hover:bg-surface-overlay/40';
+              const inner = (
+                <>
+                  <div className={`absolute left-0 top-0 h-full w-1 ${item.badge ? TONE_BAR_CLS[item.badge.tone] : 'bg-transparent'}`} />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy/8 text-navy">
+                    <Icon size={16} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-ink">{item.title}</p>
+                    {item.subtitle && <p className="mt-0.5 truncate text-xs text-ink-3">{item.subtitle}</p>}
+                  </div>
+                  <div className="flex shrink-0 flex-col items-end gap-1">
+                    {item.badge && (
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${TONE_CLS[item.badge.tone]}`}>
+                        {item.badge.label}
+                      </span>
+                    )}
+                    {item.meta && <span className="tnum text-[11px] text-ink-4">{item.meta}</span>}
+                  </div>
+                </>
+              );
+              return item.to ? (
+                <Link key={item.id} to={item.to} className={rowCls}>{inner}</Link>
+              ) : (
+                <div key={item.id} className={rowCls}>{inner}</div>
+              );
+            })}
           </div>
           {remaining > 0 && (
             <button
