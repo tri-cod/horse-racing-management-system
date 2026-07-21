@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, MapPin, Trophy, Clock, ArrowRight, Flag } from 'lucide-react';
+import { Calendar, MapPin, Trophy, Clock, ArrowRight, Flag, Ticket } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import Button from '@/components/ui/Button';
 import Container from '@/components/ui/Container';
 import TiltCard from '@/components/ui/TiltCard';
 import { useUpcomingRaces } from '@/hooks/useUpcomingRaces';
+import { useAuth } from '@/context/AuthContext';
 import type { Race } from '@/types';
 
 const stagger = {
@@ -140,6 +141,9 @@ export default function HeroSection() {
  const { races } = useUpcomingRaces(1);
  const nextRace = races[0] ?? null;
  const reduce = useReducedMotion();
+ const { user } = useAuth();
+ // Betting is USER-only: guests are funneled to login, other roles see no bet CTA.
+ const betHref = !user ? '/login' : user.role === 'USER' ? '/bet/races' : null;
 
  return (
  <section className="relative -mt-[113px] flex min-h-[100dvh] items-center overflow-hidden">
@@ -179,9 +183,13 @@ export default function HeroSection() {
  </motion.p>
 
  <motion.div variants={fadeUp} className="mt-10 flex flex-wrap gap-4">
- <Button as={Link} to="/races" variant="primary" size="lg">View Schedule</Button>
- <Button as={Link} to="/register" variant="ghost" size="lg" className="!border-0 !bg-surface/70 !text-ink backdrop-blur-md hover:!bg-surface/90">
- Join Now <ArrowRight size={16} />
+ {betHref && (
+ <Button as={Link} to={betHref} variant="primary" size="lg">
+ <Ticket size={18} /> Bet Now
+ </Button>
+ )}
+ <Button as={Link} to="/races" variant={betHref ? 'ghost' : 'primary'} size="lg" className={betHref ? '!border-0 !bg-surface/70 !text-ink backdrop-blur-md hover:!bg-surface/90' : undefined}>
+ View Schedule <ArrowRight size={16} />
  </Button>
  </motion.div>
  </motion.div>

@@ -143,7 +143,7 @@ export default function DashboardPage() {
         <QuickActions
           actions={[
             { icon: Flag, label: 'Browse Races', description: 'View upcoming and live races', to: '/races' },
-            { icon: TrendingUp, label: 'Place a Bet', description: 'See current odds and place your bet', to: '/bet' },
+            { icon: TrendingUp, label: 'Place a Bet', description: 'See current odds and place your bet', to: '/bet/races' },
             { icon: Ticket, label: 'My Bets', description: 'Track the status of your bets', to: '/my-bets' },
             { icon: Wallet, label: 'My Wallet', description: 'Deposit or withdraw funds', to: '/my-wallet' },
           ]}
