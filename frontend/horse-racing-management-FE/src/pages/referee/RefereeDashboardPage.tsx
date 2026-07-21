@@ -36,18 +36,29 @@ export default function RefereeDashboardPage() {
     setUpcomingLoading(true);
     setBalanceLoading(true);
 
-    const [ongoingR, upcomingR, balR] = await Promise.allSettled([
-      getRaces({ status: 'ONGOING', page: 0, size: 20 }),
-      getRaces({ status: 'UPCOMING', page: 0, size: 20 }),
+    // Pre-race statuses aren't a single "UPCOMING" value — a race sits in
+    // OPEN_REGISTRATION / SETTING_ODDS / OPEN_BETTING etc. before it starts.
+    // So fetch all races once and split them the same way Race Control does:
+    // ongoing = ONGOING, upcoming = anything not yet started (and not over).
+    const [racesR, balR] = await Promise.allSettled([
+      getRaces({ page: 0, size: 100 }),
       getBalance(),
     ]);
 
-    if (ongoingR.status === 'fulfilled') setOngoing(ongoingR.value?.content ?? []);
-    else setOngoingError('Failed to load');
+    if (racesR.status === 'fulfilled') {
+      const all = racesR.value?.content ?? [];
+      const byStart = (a: Race, b: Race) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
+      setOngoing(all.filter((r) => r.status === 'ONGOING').sort(byStart));
+      setUpcoming(
+        all
+          .filter((r) => r.status !== 'ONGOING' && r.status !== 'FINISHED' && r.status !== 'CANCELLED')
+          .sort(byStart),
+      );
+    } else {
+      setOngoingError('Failed to load');
+      setUpcomingError('Failed to load');
+    }
     setOngoingLoading(false);
-
-    if (upcomingR.status === 'fulfilled') setUpcoming(upcomingR.value?.content ?? []);
-    else setUpcomingError('Failed to load');
     setUpcomingLoading(false);
 
     if (balR.status === 'fulfilled') {

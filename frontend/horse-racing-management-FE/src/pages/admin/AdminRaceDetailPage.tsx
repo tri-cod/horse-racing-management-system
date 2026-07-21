@@ -406,6 +406,9 @@ export default function AdminRaceDetailPage() {
   const showStatusColumn = activeTab === 'WITHDRAW_HISTORY' || activeTab === 'JOCKEY_STATUS';
   const showRegisteredColumn = activeTab === 'REJECTED';
   const showActionsColumn = activeTab === 'PENDING_ADMIN' || activeTab === 'WITHDRAW_PENDING';
+  // The owner's stated reason for withdrawing — admin needs it to decide, and it
+  // stays useful as a record in the history tab.
+  const showReasonColumn = activeTab === 'WITHDRAW_PENDING' || activeTab === 'WITHDRAW_HISTORY';
 
   return (
     <div className="px-8 py-6">
@@ -705,6 +708,7 @@ export default function AdminRaceDetailPage() {
                       ...(showOddsColumn ? ['Odds'] : []),
                       ...(showStatusColumn ? ['Status'] : []),
                       ...(showRegisteredColumn ? ['Registered'] : []),
+                      ...(showReasonColumn ? ['Reason'] : []),
                       ...(showActionsColumn ? ['Actions'] : []),
                     ].map((h) => (
                       <th key={h} className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">{h}</th>
@@ -794,7 +798,7 @@ export default function AdminRaceDetailPage() {
                         {showLaneColumn && (
                           <td className="px-5 py-3.5">
                             <span className="tnum inline-flex h-6 w-6 items-center justify-center rounded-full bg-navy/10 text-xs font-bold text-navy">
-                              {e.laneNumber ?? '—'}
+                              {e.laneNumber ?? ''}
                             </span>
                           </td>
                         )}
@@ -824,7 +828,7 @@ export default function AdminRaceDetailPage() {
                                 />
                               </div>
                             ) : (
-                              <span className="tnum text-sm font-semibold text-ink">{e.odds != null ? `×${Number(e.odds).toFixed(2)}` : '—'}</span>
+                              <span className="tnum text-sm font-semibold text-ink">{e.odds != null ? `×${Number(e.odds).toFixed(2)}` : ''}</span>
                             )}
                           </td>
                         )}
@@ -834,7 +838,11 @@ export default function AdminRaceDetailPage() {
                         )}
 
                         {showRegisteredColumn && (
-                          <td className="px-5 py-3.5 text-sm text-ink-3">{fmtDate(e.registerAt)}</td>
+                          <td className="px-5 py-3.5 text-sm text-ink-3">{e.registerAt ? fmtDate(e.registerAt) : ''}</td>
+                        )}
+
+                        {showReasonColumn && (
+                          <td className="max-w-xs px-5 py-3.5 text-sm text-ink-2">{e.withdrawReason || ''}</td>
                         )}
 
                         {showActionsColumn && (

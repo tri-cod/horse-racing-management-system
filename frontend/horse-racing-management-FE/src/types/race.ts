@@ -61,6 +61,7 @@ export interface RaceHorse {
  finalPosition?: number;
  status: RaceHorseStatus;
  registerAt?: string;
+ withdrawReason?: string;
 }
 
 export interface RaceResult {
