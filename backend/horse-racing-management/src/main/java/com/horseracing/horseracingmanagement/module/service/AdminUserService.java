@@ -21,6 +21,7 @@ public interface AdminUserService {
     // Report
     ReportResponse createReport(CreateReportRequest request, Long reporterId);
     List<ReportResponse> getPendingReports();
+    List<ReportResponse> getAllReports();
     ReportResponse reviewReport(Long reportId, String action, String adminNote, Long adminId);
 
     // Stats

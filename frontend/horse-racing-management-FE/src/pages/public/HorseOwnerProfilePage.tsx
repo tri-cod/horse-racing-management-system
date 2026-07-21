@@ -6,6 +6,7 @@ import { useHorseOwnerProfile } from '@/hooks/useHorseOwnerProfile';
 import { silkColor } from '@/utils/jockeySilks';
 import Container from '@/components/ui/Container';
 import Seo from '@/components/seo/Seo';
+import ReportButton from '@/components/features/report/ReportButton';
 import type { HorseOwnerHorseSummary } from '@/types';
 
 /** One stat in the trophy-cabinet row — icon first, number second. Distinct from
@@ -203,9 +204,19 @@ export default function HorseOwnerProfilePage() {
         </span>
 
         <Container className="relative z-10 pb-10 pt-8 sm:pb-12">
-          <Link to="/" className="mb-8 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-white/80 transition-colors hover:text-gold">
-            <ChevronLeft size={14} /> Home
-          </Link>
+          <div className="mb-8 flex items-center justify-between">
+            <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-white/80 transition-colors hover:text-gold">
+              <ChevronLeft size={14} /> Home
+            </Link>
+            {owner.userId != null && (
+              <ReportButton
+                targetType="USER"
+                targetId={owner.userId}
+                targetName={owner.name}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/60 transition-colors hover:text-fail"
+              />
+            )}
+          </div>
 
           <div className="flex flex-col items-center text-center">
             <OwnerAvatar avatarUrl={owner.avatarUrl} name={owner.name} color={color} />

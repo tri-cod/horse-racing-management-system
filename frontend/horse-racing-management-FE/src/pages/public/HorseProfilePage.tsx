@@ -10,6 +10,7 @@ import { getHorseById } from '@/api/horseOwnerApi';
 import Container from '@/components/ui/Container';
 import Seo from '@/components/seo/Seo';
 import StatCard from '@/components/shared/StatCard';
+import ReportButton from '@/components/features/report/ReportButton';
 import type { HorseRaceHistoryItem, Horse } from '@/types';
 
 function DetailFact({ icon: Icon, label, value }: { icon: typeof Rabbit; label: string; value: string }) {
@@ -225,6 +226,9 @@ export default function HorseProfilePage() {
 
             {/* Avatar overlapping cover, centered */}
             <div className="relative border border-t-0 border-rim bg-surface-raised px-6 pb-6 pt-16 text-center sm:px-8">
+              <div className="absolute right-4 top-4">
+                <ReportButton targetType="HORSE" targetId={horse.horseId} targetName={horse.horseName} />
+              </div>
               <div className="absolute -top-14 left-1/2 h-28 w-28 -translate-x-1/2 overflow-hidden rounded-full border-4 border-surface-raised bg-navy-deep shadow-lg sm:h-32 sm:w-32">
                 {horse.avatarUrl ? (
                   <img src={horse.avatarUrl} alt={horse.horseName} className="h-full w-full object-cover" />

@@ -110,22 +110,47 @@ public class AdminUserServiceImpl implements AdminUserService {
         horseRepository.save(horse);
     }
 
+    private static final java.util.Set<String> VALID_TARGET_TYPES = java.util.Set.of("USER", "HORSE");
+    private static final java.util.Set<String> VALID_REASONS =
+            java.util.Set.of("CHEATING", "ABUSE", "FAKE_INFO", "RULE_VIOLATION", "OTHER");
+
     @Override
     @Transactional
     public ReportResponse createReport(CreateReportRequest request, Long reporterId) {
         User reporter = userRepository.findById(reporterId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", reporterId));
 
-        // Lấy tên của target
-        String targetName = "Unknown";
+        if (!VALID_TARGET_TYPES.contains(request.getTargetType())) {
+            throw new RuntimeException("targetType must be USER or HORSE");
+        }
+        if (!VALID_REASONS.contains(request.getReason())) {
+            throw new RuntimeException("reason must be one of: " + VALID_REASONS);
+        }
+
+        // Xác định tên target — báo lỗi nếu target không tồn tại thay vì âm thầm ghi "Unknown"
+        String targetName;
         if ("USER".equals(request.getTargetType())) {
-            targetName = userRepository.findById(request.getTargetId())
-                    .map(u -> u.getFullName() != null ? u.getFullName() : u.getEmail())
-                    .orElse("Unknown user");
-        } else if ("HORSE".equals(request.getTargetType())) {
-            targetName = horseRepository.findById(request.getTargetId())
-                    .map(Horse::getHorseName)
-                    .orElse("Unknown horse");
+            if (request.getTargetId().equals(reporterId)) {
+                throw new RuntimeException("You cannot report yourself");
+            }
+            User target = userRepository.findById(request.getTargetId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.getTargetId()));
+            targetName = target.getFullName() != null ? target.getFullName() : target.getEmail();
+        } else {
+            Horse target = horseRepository.findById(request.getTargetId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Horse", "id", request.getTargetId()));
+            targetName = target.getHorseName();
+        }
+
+        // Chặn spam — không cho gửi report trùng (cùng người, cùng target) khi report trước
+        // vẫn còn PENDING chưa được admin xử lý.
+        boolean alreadyPending = reportRepository
+                .findByTargetTypeAndTargetId(request.getTargetType(), request.getTargetId())
+                .stream()
+                .anyMatch(r -> r.getReporter().getId().equals(reporterId) && "PENDING".equals(r.getStatus()));
+        if (alreadyPending) {
+            throw new RuntimeException("You already have a pending report for this " +
+                    request.getTargetType().toLowerCase());
         }
 
         Report report = Report.builder()
@@ -149,6 +174,15 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
+    public List<ReportResponse> getAllReports() {
+        return reportRepository.findAll()
+                .stream()
+                .sorted(Comparator.comparing(Report::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                .map(this::mapToReportResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public ReportResponse reviewReport(Long reportId, String action, String adminNote, Long adminId) {
         Report report = reportRepository.findById(reportId)
@@ -160,6 +194,12 @@ public class AdminUserServiceImpl implements AdminUserService {
                 report.setAdminNote(adminNote);
             }
             case "BAN_USER" -> {
+                User target = userRepository.findById(report.getTargetId())
+                        .orElseThrow(() -> new ResourceNotFoundException("User", "id", report.getTargetId()));
+                if (target.getRole() != null && (target.getRole().getRolename() == RoleName.ADMIN
+                        || target.getRole().getRolename() == RoleName.STAFF)) {
+                    throw new RuntimeException("Cannot ban an admin or staff account through a report");
+                }
                 deleteUser(report.getTargetId());
                 report.setStatus("ACTION_TAKEN");
                 report.setAdminNote("User banned. " + (adminNote != null ? adminNote : ""));

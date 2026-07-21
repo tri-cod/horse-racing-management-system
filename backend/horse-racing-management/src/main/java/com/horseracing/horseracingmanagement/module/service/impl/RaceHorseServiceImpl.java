@@ -67,6 +67,10 @@ public class RaceHorseServiceImpl implements RaceHorseService {
             throw new RuntimeException("You are not the owner of this horse");
         }
 
+        if (horse.getStatus() == HorseStatus.BANNED) {
+            throw new RuntimeException("This horse has been banned and cannot race");
+        }
+
         if (horse.getTrainerId() == null) {
             throw new RuntimeException("Horse must have a trainer before registering");
         }

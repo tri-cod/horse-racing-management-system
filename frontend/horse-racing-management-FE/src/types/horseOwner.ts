@@ -21,6 +21,7 @@ export interface CompleteHorseOwnerProfilePayload {
 // Public profile — GET /horse-owner/{ownerId}/stats, no auth required.
 export interface HorseOwnerPublicProfile {
   ownerId: number;
+  userId?: number;
   name: string;
   avatarUrl?: string | null;
   coverImageUrl?: string | null;

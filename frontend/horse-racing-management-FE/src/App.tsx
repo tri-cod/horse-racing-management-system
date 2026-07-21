@@ -65,6 +65,7 @@ const AdminRaceListPage = lazy(() => import('@/pages/admin/AdminRaceListPage'));
 const AdminRaceDetailPage = lazy(() => import('@/pages/admin/AdminRaceDetailPage'));
 const AdminEditRacePage = lazy(() => import('@/pages/admin/AdminEditRacePage'));
 const AdminWithdrawalRequestsPage = lazy(() => import('@/pages/admin/AdminWithdrawalRequestsPage'));
+const AdminReportsPage = lazy(() => import('@/pages/admin/AdminReportsPage'));
 const AdminWalletPage = lazy(() => import('@/pages/admin/AdminWalletPage'));
 
 function RouteFallback() {
@@ -256,6 +257,11 @@ export default function App() {
           <Route path="/admin/withdrawal-requests" element={
             <ProtectedRoute allowedRoles={['ADMIN']}>
               <AppLayout><AdminWithdrawalRequestsPage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/reports" element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AppLayout><AdminReportsPage /></AppLayout>
             </ProtectedRoute>
           } />
           <Route path="/admin/set-odds" element={<Navigate to="/admin/races?tab=odds" replace />} />

@@ -1,8 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Users, ClipboardCheck, ArrowDownLeft, Landmark, BadgeDollarSign, Flag,
+  ShieldAlert, Trophy, Rabbit, ArrowRight,
 } from 'lucide-react';
-import { getUsers } from '@/api/adminApi';
+import { getUsers, getAdminStats } from '@/api/adminApi';
 import { getPendingHorses } from '@/api/raceHorseApi';
 import { getPendingWithdraws, getPendingDeposits, getSystemBalance } from '@/api/walletApi';
 import { getRaces } from '@/api/raceApi';
@@ -13,7 +15,7 @@ import ActivityList, { type ActivityItem } from '@/components/shared/ActivityLis
 import { FadeInStagger, FadeInItem } from '@/components/shared/FadeIn';
 import UserGrowthChart from '@/components/shared/UserGrowthChart';
 import Seo from '@/components/seo/Seo';
-import type { RaceHorse, PendingTransaction } from '@/types';
+import type { RaceHorse, PendingTransaction, AdminStats } from '@/types';
 
 type FullRaceHorse = RaceHorse & { raceName?: string; registerAt?: string };
 
@@ -52,11 +54,16 @@ export default function AdminDashboardPage() {
   const [depositsLoading, setDepositsLoading] = useState(true);
   const [depositsError, setDepositsError] = useState('');
 
+  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [statsError, setStatsError] = useState('');
+
   const load = useCallback(async () => {
     setLoading(true);
     setHorsesLoading(true);
     setWithdrawsLoading(true);
     setDepositsLoading(true);
+    setStatsLoading(true);
 
     const results = await Promise.allSettled([
       getUsers({ page: 0, size: 500 }),
@@ -65,9 +72,10 @@ export default function AdminDashboardPage() {
       getPendingDeposits(),
       getRaces({ status: 'OPEN_REGISTRATION', page: 0, size: 1 }),
       getSystemBalance(),
+      getAdminStats(),
     ]);
 
-    const [usersR, horsesR, withdrawsR, depositsR, racesR, balanceR] = results;
+    const [usersR, horsesR, withdrawsR, depositsR, racesR, balanceR, statsR] = results;
     const next: Counts = {};
     const nextErr: Partial<Record<keyof Counts, string>> = {};
 
@@ -106,6 +114,11 @@ export default function AdminDashboardPage() {
       const bal = balanceR.value as unknown as { balance?: number };
       next.systemBalance = bal?.balance ?? (balanceR.value as unknown as number);
     } else nextErr.systemBalance = 'Failed to load';
+
+    if (statsR.status === 'fulfilled') {
+      setStats(statsR.value ?? null);
+    } else setStatsError('Failed to load');
+    setStatsLoading(false);
 
     setCounts(next);
     setErrors(nextErr);
@@ -215,6 +228,19 @@ export default function AdminDashboardPage() {
             tone="gold"
           />
           </FadeInItem>
+          <FadeInItem>
+          <Link to="/admin/reports" className="block">
+            <StatCard
+              icon={ShieldAlert}
+              label="Pending Reports"
+              value={stats?.totalPendingReports ?? 0}
+              loading={statsLoading}
+              error={statsError}
+              hint="Reports from members awaiting review"
+              tone={!statsLoading && (stats?.totalPendingReports ?? 0) > 0 ? 'warn' : 'default'}
+            />
+          </Link>
+          </FadeInItem>
         </FadeInStagger>
       </div>
 
@@ -263,6 +289,108 @@ export default function AdminDashboardPage() {
             viewAllTo="/admin/wallet"
           />
         </div>
+      </div>
+
+      <div className="px-8 pb-8">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Lifetime</p>
+            <h2 className="font-serif text-lg font-bold text-ink">Platform Overview</h2>
+          </div>
+        </div>
+
+        {statsError && !statsLoading && (
+          <div className="mb-4 border border-fail/20 bg-fail-subtle px-4 py-3 text-sm text-fail">{statsError}</div>
+        )}
+
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          {/* Financial */}
+          <div className="border border-rim bg-surface-raised px-5 py-4">
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Financial</p>
+            <div className="space-y-2.5">
+              {[
+                ['Deposits Approved', stats?.totalDepositApproved],
+                ['Withdrawals Approved', stats?.totalWithdrawApproved],
+                ['Entry Fees Collected', stats?.totalEntryFeeCollected],
+                ['Prize Pool Funded', stats?.totalPrizePoolFunded],
+              ].map(([label, value]) => (
+                <div key={label as string} className="flex items-center justify-between text-sm">
+                  <span className="text-ink-3">{label}</span>
+                  <span className="tnum font-semibold text-ink">{statsLoading ? '—' : fmt(value as number | undefined)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Races by status */}
+          <div className="border border-rim bg-surface-raised px-5 py-4">
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Races</p>
+            <div className="space-y-2.5">
+              {[
+                ['Total', stats?.totalRaces],
+                ['Finished', stats?.totalFinishedRaces],
+                ['Ongoing', stats?.totalOngoingRaces],
+                ['Upcoming', stats?.totalUpcomingRaces],
+                ['Cancelled', stats?.totalCancelledRaces],
+              ].map(([label, value]) => (
+                <div key={label as string} className="flex items-center justify-between text-sm">
+                  <span className="text-ink-3">{label}</span>
+                  <span className="tnum font-semibold text-ink">{statsLoading ? '—' : (value ?? 0)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Users by role + Horses by status */}
+          <div className="border border-rim bg-surface-raised px-5 py-4">
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Members &amp; Horses</p>
+            <div className="space-y-2.5">
+              {[
+                ['Horse Owners', stats?.totalHorseOwners],
+                ['Trainers', stats?.totalTrainers],
+                ['Jockeys', stats?.totalJockeys],
+                ['Referees', stats?.totalReferees],
+                ['Horses (Active/Racing)', statsLoading ? undefined : `${stats?.totalActiveHorses ?? 0} / ${stats?.totalRacingHorses ?? 0}`],
+              ].map(([label, value]) => (
+                <div key={label as string} className="flex items-center justify-between text-sm">
+                  <span className="text-ink-3">{label}</span>
+                  <span className="tnum font-semibold text-ink">{statsLoading ? '—' : (value ?? 0)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {!statsLoading && (stats?.recentRaces?.length ?? 0) > 0 && (
+          <div className="mt-4 overflow-hidden border border-rim bg-surface-raised">
+            <div className="flex items-center justify-between border-b border-rim px-5 py-3">
+              <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-ink-3">
+                <Trophy size={13} className="text-gold" /> Recent Finished Races
+              </p>
+              <Link to="/admin/races" className="flex items-center gap-1 text-xs font-semibold text-gold-hi hover:text-gold">
+                View all <ArrowRight size={12} />
+              </Link>
+            </div>
+            <div className="divide-y divide-rim">
+              {stats!.recentRaces.map((r) => (
+                <Link
+                  key={r.raceId}
+                  to={`/admin/races/${r.raceId}`}
+                  className="flex items-center justify-between gap-3 px-5 py-3 text-sm transition-colors hover:bg-surface-overlay/40"
+                >
+                  <span className="flex min-w-0 items-center gap-2 truncate font-medium text-ink">
+                    <Rabbit size={13} className="shrink-0 text-ink-4" /> {r.raceName}
+                  </span>
+                  <span className="flex shrink-0 items-center gap-4 text-xs text-ink-3">
+                    <span>{r.totalHorses} horses</span>
+                    <span>{r.totalBets} bets</span>
+                    <span className="tnum font-semibold text-gold">{fmt(r.prizePool)}</span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

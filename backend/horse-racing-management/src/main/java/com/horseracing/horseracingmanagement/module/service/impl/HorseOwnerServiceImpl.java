@@ -2,6 +2,7 @@ package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseCurrentStatusResponse;
@@ -237,6 +238,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
         List<Horse> allHorses = horseRepository.findAll();
 
         return allHorses.stream()
+                .filter(h -> h.getStatus() != HorseStatus.BANNED)
                 .map(this::mapToCurrentStatusResponse)
                 .collect(Collectors.toList());
     }
@@ -369,6 +371,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
 
         return OwnerStatsResponse.builder()
                 .ownerId(ownerId)
+                .userId(owner.getUser() != null ? owner.getUser().getId() : null)
                 .name(owner.getName())
                 .avatarUrl(owner.getAvatarUrl())
                 .coverImageUrl(owner.getCoverImageUrl())

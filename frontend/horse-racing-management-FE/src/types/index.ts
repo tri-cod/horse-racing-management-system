@@ -9,3 +9,5 @@ export * from './notification';
 export * from './common';
 export * from './referee';
 export * from './horseOwner';
+export * from './report';
+export * from './admin';

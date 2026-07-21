@@ -15,6 +15,7 @@ import java.util.List;
 @Builder
 public class OwnerStatsResponse {
     private Long ownerId;
+    private Long userId;
     private String name;
     private String avatarUrl;
     private String coverImageUrl;

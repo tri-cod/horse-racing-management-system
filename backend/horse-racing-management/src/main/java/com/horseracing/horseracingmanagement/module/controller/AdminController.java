@@ -79,6 +79,12 @@ public class AdminController {
                 adminUserService.getPendingReports()));
     }
 
+    @GetMapping("/reports/all")
+    public ResponseEntity<ApiResponse<List<ReportResponse>>> getAllReports() {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                adminUserService.getAllReports()));
+    }
+
     @PutMapping("/reports/{id}/review")
     public ResponseEntity<ApiResponse<ReportResponse>> reviewReport(
             @PathVariable Long id,
