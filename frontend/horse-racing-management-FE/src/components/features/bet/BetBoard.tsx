@@ -10,11 +10,13 @@ import { useHorsesByRace } from '@/hooks/useHorsesByRace';
 import { useAuth } from '@/context/AuthContext';
 import { useWalletBalance, useInvalidateWalletBalance } from '@/hooks/useWalletBalance';
 import { useToast } from '@/components/ui/ToastProvider';
-import { placeBet } from '@/api/betApi';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { placeBet, getMyBets } from '@/api/betApi';
 import { FadeInStagger, FadeInItem } from '@/components/shared/FadeIn';
+import BetStatusBadge from './BetStatusBadge';
 import { assignLanes } from '@/utils/laneUtils';
 import { getErrorMessage } from '@/utils/errors';
-import type { Race, RaceHorse } from '@/types';
+import type { Race, RaceHorse, BetResponse } from '@/types';
 
 /* ── Helpers ───────────────────────────────────────────────────── */
 const LANE_STYLE: Record<number, { bg: string; color: string }> = {
@@ -30,28 +32,6 @@ const LANE_STYLE: Record<number, { bg: string; color: string }> = {
 };
 
 const NON_BETTABLE = new Set(['FINISHED', 'CANCELLED', 'ONGOING']);
-
-const STATUS_DOT: Record<string, string> = {
-  UPCOMING: 'bg-gold/60',
-  OPEN_REGISTRATION: 'bg-ok',
-  CLOSED_REGISTRATION: 'bg-gold',
-  SETTING_ODDS: 'bg-gold',
-  OPEN_BETTING: 'bg-gold',
-  ONGOING: 'bg-fail animate-pulse',
-  FINISHED: 'bg-ink-4',
-  CANCELLED: 'bg-ink-4',
-};
-
-const STATUS_LABEL: Record<string, string> = {
-  UPCOMING: 'Upcoming',
-  OPEN_REGISTRATION: 'Open',
-  CLOSED_REGISTRATION: 'Entries Closed',
-  SETTING_ODDS: 'Setting Odds',
-  OPEN_BETTING: 'Betting Open',
-  ONGOING: 'Live',
-  FINISHED: 'Finished',
-  CANCELLED: 'Cancelled',
-};
 
 function fmtDate(iso?: string) {
   if (!iso) return '—';
@@ -75,7 +55,6 @@ type BetAmounts = Record<number, string>; /* raceHorseId → raw input string */
 
 /* ── Race Selector Card ────────────────────────────────────────── */
 function RaceSelectorCard({ race, selected, onClick }: { race: Race; selected: boolean; onClick: () => void }) {
-  const dot = STATUS_DOT[race.status] ?? 'bg-ink-4';
   return (
     <button type="button" onClick={onClick}
       className={`group relative shrink-0 w-52 overflow-hidden rounded-md border text-left transition-all duration-200 active:scale-[0.98] ${
@@ -85,12 +64,6 @@ function RaceSelectorCard({ race, selected, onClick }: { race: Race; selected: b
       }`}>
       <div className={`h-0.5 w-full ${!NON_BETTABLE.has(race.status) ? 'bg-gold' : 'bg-rim'}`} />
       <div className="p-3.5">
-        <div className="mb-2 flex items-center gap-1.5">
-          <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${dot}`} />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-ink-3">
-            {STATUS_LABEL[race.status] ?? race.status}
-          </span>
-        </div>
         <p className="mb-2 line-clamp-2 text-sm font-bold leading-snug text-ink group-hover:text-gold transition-colors">
           {race.raceName}
         </p>
@@ -146,6 +119,7 @@ function OddsBoard({
   canBet,
   bettable,
   embedded,
+  userBets,
 }: {
   raceId: number;
   betAmounts: BetAmounts;
@@ -153,6 +127,7 @@ function OddsBoard({
   canBet: boolean;
   bettable: boolean;
   embedded: boolean;
+  userBets: Record<number, { amount: number; status: string }>;
 }) {
   const { race, loading: rl } = useRaceDetail(raceId);
   const { entries: raw, loading: el } = useHorsesByRace(raceId);
@@ -298,6 +273,11 @@ function OddsBoard({
                       )}
                     </div>
                     <p className="mt-0.5 truncate text-xs text-ink-4">{e.jockeyName ?? 'Jockey TBA'}</p>
+                    {userBets[e.id] && (
+                      <span className="mt-1 inline-flex items-center gap-1 rounded bg-gold/10 px-1.5 py-0.5 text-[10px] font-bold text-gold-hi">
+                        Your bet: {fmtVnd(userBets[e.id].amount)}
+                      </span>
+                    )}
                   </div>
 
                   {/* Odds */}
@@ -506,8 +486,17 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
   const [betError, setBetError] = useState('');
 
   const canBet = user?.role === 'USER';
-  const { balance, loading: balanceLoading } = useWalletBalance(!!canBet);
+  const { balance, loading: balanceLoading } = useWalletBalance(!!canBet && !embedded);
   const invalidateBalance = useInvalidateWalletBalance();
+  const queryClient = useQueryClient();
+
+  /* The spectator's own bets — used to show what they've already wagered on the selected race */
+  const { data: myBets } = useQuery<BetResponse[]>({
+    queryKey: ['my-bets'],
+    queryFn: getMyBets,
+    enabled: !!canBet,
+    staleTime: 30_000,
+  });
 
   /* Races still open for betting or on their way there — finished/cancelled/ongoing are excluded */
   const filteredRaces = useMemo(() =>
@@ -559,6 +548,38 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
 
   const betTotal = selections.reduce((s, s2) => s + s2.amount, 0);
 
+  /* The spectator's existing bets on the currently-selected race, aggregated per horse */
+  const myBetsOnRace = useMemo(() => {
+    if (!effectiveId || !myBets) return [] as { raceHorseId: number; horseName: string; amount: number; status: string }[];
+    const map = new Map<number, { raceHorseId: number; horseName: string; amount: number; statuses: string[] }>();
+    for (const bet of myBets) {
+      if (bet.raceId !== effectiveId) continue;
+      for (const item of bet.betItems ?? []) {
+        const cur = map.get(item.raceHorseId) ?? { raceHorseId: item.raceHorseId, horseName: item.horseName ?? '—', amount: 0, statuses: [] };
+        cur.amount += item.betAmount;
+        cur.statuses.push(item.resultStatus);
+        map.set(item.raceHorseId, cur);
+      }
+    }
+    return Array.from(map.values()).map(v => ({
+      raceHorseId: v.raceHorseId,
+      horseName: v.horseName,
+      amount: v.amount,
+      status: v.statuses.includes('PENDING') ? 'PENDING'
+        : v.statuses.includes('WON') ? 'WON'
+        : v.statuses.includes('LOST') ? 'LOST'
+        : v.statuses[0] ?? 'PENDING',
+    }));
+  }, [myBets, effectiveId]);
+
+  const myBetByHorse = useMemo(() => {
+    const m: Record<number, { amount: number; status: string }> = {};
+    for (const b of myBetsOnRace) m[b.raceHorseId] = { amount: b.amount, status: b.status };
+    return m;
+  }, [myBetsOnRace]);
+
+  const myBetTotalOnRace = myBetsOnRace.reduce((s, b) => s + b.amount, 0);
+
   const handleAmountChange = (id: number, value: string) => {
     setBetError('');
     setBetAmounts(prev => ({ ...prev, [id]: value }));
@@ -582,6 +603,7 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
       addToast('Bet placed successfully!', 'success');
       setBetAmounts({});
       invalidateBalance();
+      queryClient.invalidateQueries({ queryKey: ['my-bets'] });
     } catch (e: unknown) {
       setBetError(getErrorMessage(e, 'Failed to place bet. Please try again.'));
     } finally {
@@ -664,23 +686,22 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
                 canBet={canBet}
                 bettable={bettable}
                 embedded={embedded}
+                userBets={myBetByHorse}
               />
             </div>
 
             {/* RIGHT: Sticky panel */}
             <div className="flex flex-col gap-4 lg:sticky lg:top-8 lg:self-start">
 
-              {/* Wallet balance */}
-              {canBet && (
+              {/* Wallet balance — shown on the standalone /bet/races page, hidden when embedded on the homepage */}
+              {canBet && !embedded && (
                 <div className="overflow-hidden rounded-md border border-rim bg-surface-raised">
                   <div className="flex items-center justify-between border-b border-rim px-5 py-3">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-ink-4">Available Balance</p>
-                    {!embedded && (
-                      <Link to="/my-wallet"
-                        className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-gold-hi transition-colors hover:text-gold">
-                        <Wallet size={10} /> Deposit
-                      </Link>
-                    )}
+                    <Link to="/my-wallet"
+                      className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-gold-hi transition-colors hover:text-gold">
+                      <Wallet size={10} /> Deposit
+                    </Link>
                   </div>
                   <div className="px-5 py-4">
                     <p className="tnum text-2xl font-bold text-ink">
@@ -690,8 +711,8 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
                 </div>
               )}
 
-              {/* Race summary */}
-              {selectedRace && (
+              {/* Race summary — hidden when embedded (the homepage detail panel already shows this) */}
+              {selectedRace && !embedded && (
                 <div className="overflow-hidden rounded-md border border-rim bg-surface-raised">
                   <div className="border-b border-rim px-5 py-4">
                     <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-ink-4">Selected Race</p>
@@ -718,6 +739,30 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
                         <span className="tabular-nums font-bold text-gold-hi">{fmtPrize(selectedRace.totalprizepool)}</span>
                       </div>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {/* Your existing bets on this race */}
+              {canBet && myBetsOnRace.length > 0 && (
+                <div className="overflow-hidden rounded-md border border-rim bg-surface-raised">
+                  <div className="border-b border-rim px-5 py-3">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-ink-4">Your Bets on This Race</p>
+                  </div>
+                  <ul className="divide-y divide-rim">
+                    {myBetsOnRace.map(b => (
+                      <li key={b.raceHorseId} className="flex items-center justify-between gap-3 px-5 py-3">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-bold text-ink">{b.horseName}</p>
+                          <div className="mt-1"><BetStatusBadge status={b.status} /></div>
+                        </div>
+                        <span className="tnum shrink-0 text-sm font-bold text-ink">{fmtVnd(b.amount)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex items-center justify-between border-t border-rim bg-surface-overlay/60 px-5 py-3">
+                    <span className="text-xs text-ink-3">Total staked</span>
+                    <span className="tnum text-sm font-bold text-gold-hi">{fmtVnd(myBetTotalOnRace)}</span>
                   </div>
                 </div>
               )}
