@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance';
-import type { ApiResponse, Jockey } from '@/types';
+import type { ApiResponse, Jockey, RaceParticipation } from '@/types';
 
 export const getJockeyList = () =>
  axiosInstance.get<ApiResponse<Jockey[]>>('/jockeys').then((r) => r.data.data);
@@ -26,3 +26,12 @@ export const completeProfile = (payload: CompleteJockeyProfilePayload) =>
   axiosInstance
     .put<ApiResponse<Jockey>>('/jockeys/complete-profile', payload)
     .then((r) => r.data.data);
+
+export const getMyRaceHistory = () =>
+  axiosInstance.get<ApiResponse<RaceParticipation[]>>('/jockeys/my-race-history').then((r) => r.data.data);
+
+export const getMyUpcomingRaces = () =>
+  axiosInstance.get<ApiResponse<RaceParticipation[]>>('/jockeys/my-upcoming-races').then((r) => r.data.data);
+
+export const getMyCurrentRaces = () =>
+  axiosInstance.get<ApiResponse<RaceParticipation[]>>('/jockeys/my-current-races').then((r) => r.data.data);

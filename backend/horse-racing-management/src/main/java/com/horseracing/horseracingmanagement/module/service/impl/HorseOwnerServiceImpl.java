@@ -9,6 +9,7 @@ import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseCurrentSta
 import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseRaceHistoryResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.*;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
+import com.horseracing.horseracingmanagement.module.dto.RefereeDto.PenaltyResponse;
 import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
 import com.horseracing.horseracingmanagement.module.service.HorseOwnerService;
@@ -39,6 +40,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
     private final RaceHorseRepository raceHorseRepository;
     private final RaceRepository raceRepository;
     private final RaceResultRepository raceResultRepository;
+    private final PenaltyRepository penaltyRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
 
@@ -75,27 +77,6 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
 
         Horse saved = horseRepository.save(horse);
         return mapToResponse(saved, owner.getName(), null, null);
-    }
-
-    @Override
-    public SignHorseResponse assignTrainer(Long horseId, Long trainerId, Long userId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
-
-        Horse horse = horseRepository.findById(horseId)
-                .orElseThrow(() -> new RuntimeException("Horse not found"));
-
-        if (!horse.getOwnerId().equals(owner.getId())) {
-            throw new RuntimeException("You are not the owner of this horse");
-        }
-
-        // Check trainer có tồn tại không
-        Trainer trainer = trainerRepository.findById(trainerId)
-                .orElseThrow(() -> new RuntimeException("Trainer not found"));
-
-        horse.setTrainerId(trainerId);
-        Horse saved = horseRepository.save(horse);
-        return mapToResponse(saved, owner.getName(), trainerId, trainer.getName());
     }
 
     @Override
@@ -242,27 +223,6 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .map(this::mapToCurrentStatusResponse)
                 .collect(Collectors.toList());
     }
-
-    // Chỉ những horse đang trong 1 race cụ thể (dùng để Spectator xem trước khi bet)
-    @Override
-    public List<HorseCurrentStatusResponse> getHorsesByRaceId(Long raceId) {
-        List<RaceHorse> raceHorses = raceHorseRepository.findByRace_Id(raceId);
-
-        return raceHorses.stream()
-                .map(rh -> HorseCurrentStatusResponse.builder()
-                        .horseId(rh.getHorse().getId())
-                        .horseName(rh.getHorse().getHorseName())
-                        .breed(rh.getHorse().getBreed())
-                        .avatarUrl(rh.getHorse().getAvatarUrl())
-                        .status(String.valueOf(rh.getHorse().getStatus()))
-                        .currentRaceId(rh.getRace().getId())
-                        .currentRaceName(rh.getRace().getRaceName())
-                        .currentRaceStatus(rh.getRace().getStatus().name())
-                        .registrationStatus(rh.getStatus().name())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
 
     @Override
     public List<RaceParticipationResponse> getOwnerRaceHistoryById(Long ownerId) {
@@ -630,5 +590,65 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .trainerId(trainerId)
                 .trainerName(trainerName)
                 .build();
+    }
+
+    @Override
+    public List<PenaltyResponse> getHorsePenalties(Long horseId, Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Horse owner not found"));
+
+        Horse horse = horseRepository.findById(horseId)
+                .orElseThrow(() -> new RuntimeException("Horse not found"));
+
+        if (!horse.getOwnerId().equals(owner.getId())) {
+            throw new RuntimeException("This horse does not belong to you");
+        }
+
+        return penaltyRepository.findByRaceHorse_Horse_IdOrderByCreatedAtDesc(horseId).stream()
+                .map(p -> PenaltyResponse.builder()
+                        .id(p.getId())
+                        .raceHorseId(p.getRaceHorse().getId())
+                        .horseId(p.getRaceHorse().getHorse().getId())
+                        .horseName(p.getRaceHorse().getHorse().getHorseName())
+                        .raceId(p.getRaceHorse().getRace().getId())
+                        .raceName(p.getRaceHorse().getRace().getRaceName())
+                        .ownerName(owner.getName())
+                        .refereeId(p.getReferee().getId())
+                        .refereeName(p.getReferee().getUser().getFullName())
+                        .reason(p.getReason())
+                        .penaltyType(p.getPenaltyType())
+                        .amount(p.getAmount())
+                        .timePenaltySeconds(p.getTimePenaltySeconds())
+                        .isDisqualified(p.getIsDisqualified())
+                        .createdAt(p.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    // Toàn bộ phạt trên tất cả ngựa của owner — dùng để hiện số phạt ngay ở bảng My Horses
+    @Override
+    public List<PenaltyResponse> getMyPenalties(Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Horse owner not found"));
+
+        return penaltyRepository.findByRaceHorse_Horse_OwnerIdOrderByCreatedAtDesc(owner.getId()).stream()
+                .map(p -> PenaltyResponse.builder()
+                        .id(p.getId())
+                        .raceHorseId(p.getRaceHorse().getId())
+                        .horseId(p.getRaceHorse().getHorse().getId())
+                        .horseName(p.getRaceHorse().getHorse().getHorseName())
+                        .raceId(p.getRaceHorse().getRace().getId())
+                        .raceName(p.getRaceHorse().getRace().getRaceName())
+                        .ownerName(owner.getName())
+                        .refereeId(p.getReferee().getId())
+                        .refereeName(p.getReferee().getUser().getFullName())
+                        .reason(p.getReason())
+                        .penaltyType(p.getPenaltyType())
+                        .amount(p.getAmount())
+                        .timePenaltySeconds(p.getTimePenaltySeconds())
+                        .isDisqualified(p.getIsDisqualified())
+                        .createdAt(p.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

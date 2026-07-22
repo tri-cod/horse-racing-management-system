@@ -334,6 +334,12 @@ export default function Header() {
               {navTrigger('/results', 'Results', 'results')}
               {navTrigger('/jockeys', 'Jockeys', 'jockeys')}
               {navTrigger('/horses', 'Horses', 'horses')}
+              <li className="py-2">
+                <Link to="/news"
+                  className={`flex items-center text-sm font-medium tracking-wide transition-colors px-1 ${pathname === '/news' ? 'text-on-blue' : 'text-on-blue/75 hover:text-on-blue'}`}>
+                  <span className={`pb-1 border-b-2 transition-colors ${pathname === '/news' ? 'border-gold' : 'border-transparent hover:border-on-blue/30'}`}>News</span>
+                </Link>
+              </li>
             </ul>
           </nav>
 
@@ -366,7 +372,8 @@ export default function Header() {
           <nav className="flex flex-col divide-y divide-on-blue/10">
             {[{ label: 'Schedule', href: '/races' }, { label: 'Results', href: '/results' },
             { label: 'Jockeys', href: '/jockeys' },
-            { label: 'Horses', href: '/horses' }].map((item) => (
+            { label: 'Horses', href: '/horses' },
+            { label: 'News', href: '/news' }].map((item) => (
               <Link key={item.label} to={item.href}
                 className={`px-6 py-4 text-sm font-medium transition-colors ${pathname === item.href ? 'text-on-blue' : 'text-on-blue/80 hover:bg-on-blue/10 hover:text-on-blue'}`}
                 onClick={() => setMenuOpen(false)}>

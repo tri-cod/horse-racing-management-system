@@ -121,16 +121,17 @@ export default function TrainingContractDetailPage() {
 
   useEffect(() => { fetchContract(); }, [fetchContract]);
 
+  const active = isStatus(contract?.status, 'ACTIVE');
   const handleCancel = async () => {
     if (!contract) return;
     setCancelLoading(true);
     try {
       await cancelTrainingContract(contract.id);
-      addToast('Training request cancelled.', 'success');
+      addToast(active ? 'Training contract terminated.' : 'Training request cancelled.', 'success');
       setCancelOpen(false);
       fetchContract();
     } catch (e: unknown) {
-      addToast(getErrorMessage(e, 'Failed to cancel the request.'), 'error');
+      addToast(getErrorMessage(e, active ? 'Failed to terminate the contract.' : 'Failed to cancel the request.'), 'error');
     } finally { setCancelLoading(false); }
   };
 
@@ -246,7 +247,7 @@ export default function TrainingContractDetailPage() {
           </div>
         </div>
 
-        {/* Actions for the pending stage */}
+        {/* Actions for the pending and active stages */}
         {pending && (
           <div className="mt-4 flex flex-wrap justify-end gap-2.5">
             {isTrainer ? (
@@ -277,6 +278,18 @@ export default function TrainingContractDetailPage() {
             )}
           </div>
         )}
+        {active && !isTrainer && (
+          <div className="mt-4 flex flex-wrap items-center justify-end gap-2.5">
+            <p className="text-xs text-ink-4">Ends automatically on {fmtDate(c.endDate)} — the fee is then paid to the trainer.</p>
+            <button
+              type="button"
+              onClick={() => setCancelOpen(true)}
+              className="inline-flex items-center gap-1.5 border border-fail/30 px-4 py-2 text-sm font-semibold text-fail transition-colors hover:bg-fail-subtle"
+            >
+              <XCircle size={14} /> Terminate Contract
+            </button>
+          </div>
+        )}
       </div>
 
       <ConfirmDialog
@@ -284,9 +297,13 @@ export default function TrainingContractDetailPage() {
         onClose={() => setCancelOpen(false)}
         onConfirm={handleCancel}
         loading={cancelLoading}
-        title="Cancel Training Request?"
-        message={`Cancel the request to hire ${c.trainerName ?? 'this trainer'} for "${c.horseName ?? 'this horse'}"?`}
-        confirmLabel="Cancel Request"
+        title={active ? 'Terminate Training Contract?' : 'Cancel Training Request?'}
+        message={
+          active
+            ? `Ending this contract early refunds 50% of the fee to you and pays 20% to ${c.trainerName ?? 'the trainer'} as compensation for work already done. The remaining 30% is retained as an early-termination fee. This cannot be undone.`
+            : `Cancel the request to hire ${c.trainerName ?? 'this trainer'} for "${c.horseName ?? 'this horse'}"?`
+        }
+        confirmLabel={active ? 'Terminate Contract' : 'Cancel Request'}
         variant="danger"
       />
 

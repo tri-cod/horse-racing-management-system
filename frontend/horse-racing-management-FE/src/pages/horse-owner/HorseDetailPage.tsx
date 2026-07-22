@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Dna, Cake, VenetianMask, Scale, Zap, Trophy, UserCog, Pencil, Trash2, Dumbbell } from 'lucide-react';
+import { ArrowLeft, Dna, Cake, VenetianMask, Scale, Zap, Trophy, UserCog, Pencil, Trash2, Dumbbell, Gavel } from 'lucide-react';
 import { useHorseDetail } from '@/hooks/useHorseDetail';
-import { deleteHorse } from '@/api/horseOwnerApi';
+import { deleteHorse, getHorsePenalties } from '@/api/horseOwnerApi';
 import { useToast } from '@/components/ui/ToastProvider';
 import HorseStatusBadge from '@/components/features/horse-owner/HorseStatusBadge';
 import Button from '@/components/ui/Button';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import PenaltyList from '@/components/features/referee/PenaltyList';
 import Seo from '@/components/seo/Seo';
 import { getErrorMessage } from '@/utils/errors';
-import type { Horse } from '@/types';
+import type { Horse, Penalty } from '@/types';
 
 type FullHorse = Horse & { history_rank?: string };
 
@@ -41,10 +43,24 @@ export default function HorseDetailPage() {
   const addToast = useToast();
   const { horse, loading, error, refetch } = useHorseDetail(id ? Number(id) : undefined);
   const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [penalties, setPenalties] = useState<Penalty[]>([]);
+  const [penaltiesLoading, setPenaltiesLoading] = useState(true);
+
+  useEffect(() => {
+    if (!horse) return;
+    let alive = true;
+    setPenaltiesLoading(true);
+    getHorsePenalties(horse.id)
+      .then((list) => { if (alive) setPenalties(list ?? []); })
+      .catch(() => { if (alive) setPenalties([]); })
+      .finally(() => { if (alive) setPenaltiesLoading(false); });
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [horse?.id]);
 
   const handleDelete = async () => {
     if (!horse) return;
-    if (!window.confirm(`Delete "${horse.horseName}"? This cannot be undone.`)) return;
     setDeleting(true);
     try {
       await deleteHorse(horse.id);
@@ -53,6 +69,7 @@ export default function HorseDetailPage() {
     } catch (e: unknown) {
       addToast(getErrorMessage(e, 'Failed to delete horse.'), 'error');
       setDeleting(false);
+      setConfirmDelete(false);
     }
   };
 
@@ -107,7 +124,7 @@ export default function HorseDetailPage() {
           </Button>
           <Button
             variant="ghost" size="sm" disabled={deleting}
-            onClick={handleDelete}
+            onClick={() => setConfirmDelete(true)}
             className="!border-fail/40 !text-fail hover:!bg-fail-subtle"
           >
             <Trash2 size={13} /> {deleting ? 'Deleting…' : 'Delete'}
@@ -220,6 +237,25 @@ export default function HorseDetailPage() {
               </div>
             </div>
           )}
+
+          <div className="overflow-hidden border border-rim bg-surface-raised">
+            <div className="border-b border-rim px-5 py-4">
+              <div className="flex items-center gap-2">
+                <Gavel size={14} className="text-gold" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Race Control</p>
+              </div>
+              <h2 className="mt-0.5 font-serif text-base font-bold text-ink">Penalty History</h2>
+            </div>
+            <div className="px-5 py-5">
+              <PenaltyList
+                penalties={penalties}
+                loading={penaltiesLoading}
+                showRefereeName
+                showRaceName
+                readOnly
+              />
+            </div>
+          </div>
         </div>
 
         {/* ── Sidebar ──────────────────────────────────── */}
@@ -262,6 +298,17 @@ export default function HorseDetailPage() {
         </div>
 
       </div>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        onClose={() => setConfirmDelete(false)}
+        onConfirm={handleDelete}
+        loading={deleting}
+        title="Delete This Horse?"
+        message={`Delete "${h.horseName}"? This cannot be undone.`}
+        confirmLabel="Delete"
+        variant="danger"
+      />
     </div>
   );
 }

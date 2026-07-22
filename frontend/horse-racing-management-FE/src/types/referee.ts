@@ -33,7 +33,11 @@ export interface RefereeRace {
 export interface Penalty {
   id: number;
   raceHorseId: number;
+  horseId?: number | null;
   horseName?: string | null;
+  raceId?: number | null;
+  raceName?: string | null;
+  ownerName?: string | null;
   refereeId: number;
   refereeName?: string | null;
   reason?: string | null;

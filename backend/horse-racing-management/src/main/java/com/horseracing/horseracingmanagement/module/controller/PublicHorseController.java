@@ -26,13 +26,4 @@ public class PublicHorseController {
                 horseOwnerService.getAllHorsesWithCurrentRace()));
     }
 
-    // Spectator xem cụ thể những horse nào đang trong 1 race để đặt cược
-    @GetMapping("/by-race/{raceId}")
-    public ResponseEntity<ApiResponse<List<HorseCurrentStatusResponse>>> getHorsesByRace(
-            @PathVariable Long raceId) {
-        return ResponseEntity.ok(ApiResponse.success("Success",
-                horseOwnerService.getHorsesByRaceId(raceId)));
-    }
-
-
 }

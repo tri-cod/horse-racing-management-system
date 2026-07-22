@@ -1,6 +1,6 @@
-// Mirrors backend TrainingContract lifecycle. ACCEPTED/COMPLETED are declared in
-// the entity but never produced by the current backend, so the UI treats the
-// live set as PENDING / ACTIVE / REJECTED / CANCELLED.
+// Mirrors backend TrainingContract lifecycle. ACCEPTED is declared in the entity but
+// never produced — trainer acceptance jumps straight to ACTIVE. COMPLETED is produced
+// by the daily auto-complete job once a contract's end date passes.
 export type TrainingContractStatus =
   | 'PENDING'
   | 'ACTIVE'

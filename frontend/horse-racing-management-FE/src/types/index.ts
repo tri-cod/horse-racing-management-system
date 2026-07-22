@@ -11,3 +11,4 @@ export * from './common';
 export * from './referee';
 export * from './horseOwner';
 export * from './admin';
+export * from './raceParticipation';

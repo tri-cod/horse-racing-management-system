@@ -4,6 +4,7 @@ import com.horseracing.horseracingmanagement.module.entity.TrainingContract;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,4 +21,7 @@ public interface TrainingContractRepository extends JpaRepository<TrainingContra
 
     // Trainer đang train bao nhiêu ngựa
     long countByTrainer_IdAndStatus(Long trainerId, String status);
+
+    // Contracts whose term has ended — for the auto-complete scheduled job
+    List<TrainingContract> findByStatusAndEndDateLessThanEqual(String status, LocalDate date);
 }
