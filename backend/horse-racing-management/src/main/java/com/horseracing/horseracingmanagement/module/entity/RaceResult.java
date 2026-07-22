@@ -37,4 +37,8 @@ public class RaceResult {
 
     @Column(name = "rewards")
     private Long rewards;
+
+    // Danh hiệu do referee tự nhập khi chấm kết quả, ví dụ "Ngựa xuất sắc nhất", "Vô địch"...
+    @Column(name = "title", length = 255)
+    private String title;
 }

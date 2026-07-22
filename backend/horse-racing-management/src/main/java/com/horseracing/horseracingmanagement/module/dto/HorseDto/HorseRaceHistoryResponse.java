@@ -16,4 +16,7 @@ public class HorseRaceHistoryResponse {
     private Long jockeyId;
     private String jockeyName;
     private Long rank;             // null nếu race chưa Finished
+
+    // Danh hiệu (VD: "Vô địch", "Ngựa xuất sắc nhất"), null nếu chưa có kết quả/không có danh hiệu
+    private String title;
 }

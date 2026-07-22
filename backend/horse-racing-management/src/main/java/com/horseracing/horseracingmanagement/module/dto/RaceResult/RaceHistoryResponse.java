@@ -18,4 +18,7 @@ public class RaceHistoryResponse {
     private Long rewards;
     private String jockeyName;
     private Long totalParticipants;
+
+    // Danh hiệu (VD: "Vô địch", "Ngựa xuất sắc nhất"), null nếu không có
+    private String title;
 }
