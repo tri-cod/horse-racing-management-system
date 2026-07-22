@@ -5,6 +5,9 @@ const STATUS_VARIANT: Record<string, 'ocean' | 'neutral' | 'dark'> = {
   APPROVED: 'ocean', PENDING: 'neutral', REJECTED: 'dark',
 };
 
+const fmtVnd = (n: number) =>
+  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(n));
+
 export default function TrainerProfileView({ profile }: { profile: Trainer }) {
   return (
     <div className="divide-y divide-rim">
@@ -13,6 +16,13 @@ export default function TrainerProfileView({ profile }: { profile: Trainer }) {
         <Badge variant={STATUS_VARIANT[profile.status ?? ''] ?? 'neutral'} size="lg">
           {profile.status ?? 'Unknown'}
         </Badge>
+      </div>
+
+      <div className="flex items-center justify-between px-6 py-4">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-4">Monthly Fee</span>
+        <span className="tnum text-sm font-semibold text-ink">
+          {profile.monthlyFee != null ? fmtVnd(profile.monthlyFee) : <span className="text-ink-4">Not set</span>}
+        </span>
       </div>
 
       {profile.description ? (

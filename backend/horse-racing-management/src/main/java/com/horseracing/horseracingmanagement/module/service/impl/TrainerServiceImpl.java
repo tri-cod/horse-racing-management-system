@@ -45,6 +45,7 @@ public class TrainerServiceImpl implements TrainerService {
         if (request.getDescription() != null) trainer.setDescription(request.getDescription());
         if (request.getAvatarUrl() != null) trainer.setAvatarUrl(request.getAvatarUrl());            // ← thêm
         if (request.getCoverImageUrl() != null) trainer.setCoverImageUrl(request.getCoverImageUrl()); // ← thêm
+        if (request.getMonthlyFee() != null) trainer.setMonthlyFee(request.getMonthlyFee());          // ← giá thuê/tháng
 
         Trainer saved = trainerRepository.save(trainer);
         return mapToResponse(saved);
@@ -233,6 +234,7 @@ public class TrainerServiceImpl implements TrainerService {
                 .description(trainer.getDescription())
                 .avatarUrl(trainer.getAvatarUrl())
                 .status(trainer.getStatus())
+                .monthlyFee(trainer.getMonthlyFee())
                 .build();
     }
 }

@@ -3,6 +3,7 @@ export * from './race';
 export * from './horse';
 export * from './jockey';
 export * from './trainer';
+export * from './trainingContract';
 export * from './bet';
 export * from './wallet';
 export * from './notification';

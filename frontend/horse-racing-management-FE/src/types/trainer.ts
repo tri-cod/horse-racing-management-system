@@ -11,4 +11,5 @@ export interface Trainer {
  description?: string;
  bio?: string;
  status?: string;
+ monthlyFee?: number;   // giá thuê/tháng do trainer đặt (BigDecimal → number/string on wire)
 }
