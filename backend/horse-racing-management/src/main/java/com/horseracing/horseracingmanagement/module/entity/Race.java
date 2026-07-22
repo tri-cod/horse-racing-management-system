@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.entity;
 
+import com.horseracing.horseracingmanagement.common.constant.RaceClass;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -91,6 +92,30 @@ public class Race {
     @Column(name = "race_inspected_at")
     private Instant raceInspectedAt;
 
+
+    @Column(name = "min_age")
+    private Integer minAge;
+
+    @Column(name = "max_age")
+    private Integer maxAge;
+
+    @Size(max = 20)
+    @Column(name = "gender_restriction", length = 20)
+    private String genderRestriction;   // MALE / FEMALE / GELDING / null = tất cả
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "race_class", length = 20)
+    private RaceClass raceClass;
+
+    @Column(name = "min_earnings")
+    private Long minEarnings;           // null = lấy mặc định theo raceClass
+
+    @Column(name = "max_earnings")
+    private Long maxEarnings;           // null = lấy mặc định theo raceClass
+
+    @Column(name = "distance_meters")
+    private Integer distanceMeters;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
@@ -98,4 +123,6 @@ public class Race {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Instant updatedAt;
+
+
 }

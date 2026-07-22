@@ -186,3 +186,19 @@ CREATE TABLE IF NOT EXISTS report (
                                       created_at  TIMESTAMP DEFAULT NOW(),
                                       reviewed_at TIMESTAMP
 );
+--=======================================================
+
+-- Điều kiện tham gia của race
+ALTER TABLE race
+    ADD COLUMN min_age             INTEGER,
+    ADD COLUMN max_age             INTEGER,
+    ADD COLUMN gender_restriction  VARCHAR(20),
+    ADD COLUMN race_class          VARCHAR(20),
+    ADD COLUMN min_earnings        BIGINT,
+    ADD COLUMN max_earnings        BIGINT,
+    ADD COLUMN distance_meters     INTEGER;
+
+-- Thông tin ngựa phục vụ đối chiếu (soft — chỉ cảnh báo)
+ALTER TABLE horse
+    ADD COLUMN preferred_distance  VARCHAR(20),
+    ADD COLUMN preferred_surface   VARCHAR(50);

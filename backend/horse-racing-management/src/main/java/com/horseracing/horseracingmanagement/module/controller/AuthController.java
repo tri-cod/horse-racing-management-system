@@ -2,6 +2,7 @@ package com.horseracing.horseracingmanagement.module.controller;
 
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.module.dto.AuthDto.*;
+import com.horseracing.horseracingmanagement.module.responsitory.BetItemRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.UserRepository;
 import com.horseracing.horseracingmanagement.module.service.AuthService;
 import com.horseracing.horseracingmanagement.security.CustomUserDetails;
@@ -22,6 +23,7 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final AuthService authService;
+    private final BetItemRepository betItemRepository;
 
 
     @PostMapping("/send-verification-otp")

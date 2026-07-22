@@ -1,13 +1,17 @@
 package com.horseracing.horseracingmanagement.module.dto.AdminDto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@   Data
+@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AdminStatsResponse {
     // Tài chính
     private BigDecimal adminWalletBalance;      // số dư ví hệ thống

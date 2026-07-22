@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.entity;
 
+import com.horseracing.horseracingmanagement.common.constant.DistanceCategory;
 import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -64,6 +65,13 @@ public class Horse {
     @Column(name = "weight")
     private Long weight;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "preferred_distance", length = 20)
+    private DistanceCategory preferredDistance;
+
+    @Size(max = 50)
+    @Column(name = "preferred_surface", length = 50)
+    private String preferredSurface;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;

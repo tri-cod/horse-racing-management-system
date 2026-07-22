@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto;
 
+import com.horseracing.horseracingmanagement.common.constant.DistanceCategory;
 import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
 import com.horseracing.horseracingmanagement.common.validation.NoSpecialCharacters;
 import jakarta.validation.constraints.NotBlank;
@@ -30,5 +31,7 @@ public class SignHorseRequest
     public String avatar_url;
     public String description;
     public Long weight;
+    private DistanceCategory preferredDistance;
+    private String preferredSurface;
     public HorseStatus status;
 }

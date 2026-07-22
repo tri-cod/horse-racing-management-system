@@ -225,9 +225,14 @@ public class JockeyServiceImpl implements JockeyService {
         Jockey jockey = jockeyRepository.findById(jockeyId)
                 .orElseThrow(() -> new RuntimeException("Jockey not found"));
 
-        List<RaceHorse> allRaceHorses = raceHorseRepository.findByJockey_Id(jockeyId);
-        List<RaceHorse> finishedRaces = allRaceHorses.stream()
+        // Chỉ tính các lượt thực sự thi đấu: FINISHED / DISQUALIFIED / APPROVED
+        // (loại WITHDRAWN, REJECTED, PENDING... để không đếm trận đã rút lui)
+        List<RaceHorse> finishedRaces = raceHorseRepository.findByJockey_Id(jockeyId)
+                .stream()
                 .filter(rh -> rh.getRace().getStatus() == RaceStatus.FINISHED)
+                .filter(rh -> rh.getStatus() == RaceHorseStatus.FINISHED
+                        || rh.getStatus() == RaceHorseStatus.DISQUALIFIED
+                        || rh.getStatus() == RaceHorseStatus.APPROVED)
                 .collect(Collectors.toList());
 
         long totalRaces = finishedRaces.size();
@@ -237,26 +242,28 @@ public class JockeyServiceImpl implements JockeyService {
 
         for (RaceHorse rh : finishedRaces) {
             RaceResult result = raceResultRepository.findByRaceHorse_Id(rh.getId()).orElse(null);
-            if (result != null) {
-                if (result.getRank() == 1L) totalWins++;
-                if (result.getRank() <= 3L) totalTop3++;
-                if (result.getRewards() != null) {
-                    // Jockey nhận % từ rewards
-                    BigDecimal jockeyPercent = rh.getJockeyRevenuePercent() != null
-                            ? rh.getJockeyRevenuePercent()
-                            : BigDecimal.valueOf(10);
-                    totalRewards += BigDecimal.valueOf(result.getRewards())
-                            .multiply(jockeyPercent)
-                            .divide(BigDecimal.valueOf(100), 0, RoundingMode.FLOOR)
-                            .longValue();
-                }
+            if (result == null || result.getRank() == null) continue;  // ← null-safe, hết NPE
+
+            long rank = result.getRank();
+            if (rank == 1L) totalWins++;
+            if (rank <= 3L) totalTop3++;
+
+            if (result.getRewards() != null && result.getRewards() > 0) {
+                BigDecimal jockeyPercent = rh.getJockeyRevenuePercent() != null
+                        ? rh.getJockeyRevenuePercent()
+                        : BigDecimal.valueOf(10);
+                totalRewards += BigDecimal.valueOf(result.getRewards())
+                        .multiply(jockeyPercent)
+                        .divide(BigDecimal.valueOf(100), 0, RoundingMode.FLOOR)
+                        .longValue();
             }
         }
 
+        // Giữ 1 chữ số thập phân thay vì làm tròn hẳn (vd 66.7 thay vì 67.0)
         double winRate = totalRaces > 0
-                ? Math.round((double) totalWins / totalRaces * 100.0) : 0.0;
+                ? Math.round((double) totalWins / totalRaces * 1000.0) / 10.0
+                : 0.0;
 
-        // 5 trận gần nhất
         List<RaceParticipationResponse> recentHistory = finishedRaces.stream()
                 .map(rh -> buildParticipationResponse(rh, jockeyId))
                 .sorted(Comparator.comparing(
@@ -284,7 +291,6 @@ public class JockeyServiceImpl implements JockeyService {
                 .build();
     }
 
-
     private JockeyProfileResponse mapToProfileResponse(Jockey jockey) {
         // Tính thống kê race
         List<RaceHorse> raceHorses = getCollect(jockey);
@@ -293,7 +299,7 @@ public class JockeyServiceImpl implements JockeyService {
                 .filter(rh -> {
                     Optional<RaceResult> result = raceResultRepository
                             .findByRaceHorse_Id(rh.getId());
-                    return result.isPresent() && result.get().getRank() == 1L;
+                    return result.isPresent() && result.isPresent() && result.get().getRank() != null && result.get().getRank() == 1L;
                 })
                 .count();
 
@@ -319,10 +325,7 @@ public class JockeyServiceImpl implements JockeyService {
     }
 
     private @NonNull List<RaceHorse> getCollect(Jockey jockey) {
-        // Khi race kết thúc, status entry chuyển APPROVED → FINISHED/DISQUALIFIED,
-        // nên phải nhận cả các status đó (giữ APPROVED cho dữ liệu cũ chưa chuyển).
-        return raceHorseRepository
-                .findByJockey_Id(jockey.getId())
+        return raceHorseRepository.findByJockey_Id(jockey.getId())
                 .stream()
                 .filter(rh -> rh.getRace().getStatus() == RaceStatus.FINISHED)
                 .filter(rh -> rh.getStatus() == RaceHorseStatus.FINISHED

@@ -69,6 +69,8 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .speedRating(request.getSpeedRating())
                 .description(request.getDescription())
                 .raceHistory(raceHistoryJson)
+                .preferredDistance(request.getPreferredDistance())
+                .preferredSurface(request.getPreferredSurface())
                 .avatarUrl(request.getAvatar_url())
                 .weight(request.getWeight())
                 .status(request.getStatus())
@@ -395,6 +397,8 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
         if (request.getBreed() != null)        horse.setBreed(request.getBreed());
         if (request.getAge() != null)          horse.setAge(request.getAge());
         if (request.getGender() != null)       horse.setGender(request.getGender());
+        if (request.getPreferredDistance() != null) horse.setPreferredDistance(request.getPreferredDistance());
+        if (request.getPreferredSurface() != null)  horse.setPreferredSurface(request.getPreferredSurface());
         if (request.getSpeedRating() != null)  horse.setSpeedRating(request.getSpeedRating());
         if (request.getHistory_rank() != null) horse.setRaceHistory(request.getHistory_rank());
         if (request.getAvatar_url() != null)   horse.setAvatarUrl(request.getAvatar_url());

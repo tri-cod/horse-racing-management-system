@@ -138,9 +138,7 @@ public class RefereeServiceImpl implements RefereeService {
             throw new RuntimeException("Can only issue penalty during ONGOING race");
         }
 
-        // Chỉ được phạt ngựa đang thực sự tham gia đua — chặn phạt ngựa đã bị
-        // DISQUALIFIED, WITHDRAWN, hay chưa từng được duyệt (FE đã lọc theo status
-        // APPROVED nhưng phải chặn cả ở BE, phòng gọi thẳng API).
+
         if (raceHorse.getStatus() != RaceHorseStatus.APPROVED) {
             throw new RuntimeException("This horse is not currently racing (status: " + raceHorse.getStatus() + ") — it cannot be penalised");
         }
@@ -188,6 +186,14 @@ public class RefereeServiceImpl implements RefereeService {
 
             Wallet ownerWallet = walletRepository.findByUser_Id(owner.getUser().getId()).orElse(null);
             if (ownerWallet != null) {
+                // ← FIX: check đủ số dư trước khi trừ, nhất quán với mọi luồng trừ tiền
+                // khác trong hệ thống (entry fee, bet, withdraw...). Trước đây trừ thẳng,
+                // có thể khiến ví chủ ngựa bị âm.
+                if (ownerWallet.getBalance().compareTo(fineAmount) < 0) {
+                    throw new RuntimeException(
+                            "Owner does not have enough balance to cover this fine. Required: "
+                                    + fineAmount + ", Available: " + ownerWallet.getBalance());
+                }
                 ownerWallet.setBalance(ownerWallet.getBalance().subtract(fineAmount));
                 walletRepository.save(ownerWallet);
             }
@@ -265,6 +271,14 @@ public class RefereeServiceImpl implements RefereeService {
         // Nếu là DISQUALIFY → khôi phục lại status
         if (Boolean.TRUE.equals(penalty.getIsDisqualified())) {
             RaceHorse raceHorse = penalty.getRaceHorse();
+
+
+            RaceStatus raceStatus = raceHorse.getRace().getStatus();
+            if (raceStatus == RaceStatus.FINISHED || raceStatus == RaceStatus.CANCELLED) {
+                throw new RuntimeException(
+                        "Cannot cancel a disqualification after the race has " + raceStatus);
+            }
+
             raceHorse.setStatus(RaceHorseStatus.APPROVED);
             raceHorseRepository.save(raceHorse);
 
@@ -364,8 +378,7 @@ public class RefereeServiceImpl implements RefereeService {
                 }
             }
 
-            // ← Manual sign-off: every approved horse must end up either ticked OK by the
-            // referee or have an issue reported against it — one of the two, not neither.
+
             boolean verified = Boolean.TRUE.equals(rh.getVerifiedOk());
             boolean reported = !penaltyRepository.findByRaceHorse_Id(rh.getId()).isEmpty();
             if (!verified && !reported) {
@@ -397,8 +410,7 @@ public class RefereeServiceImpl implements RefereeService {
                     .build());
         }
 
-        // ← Stamp the race as inspected only when it comes back clean; startRace() requires
-        // this. A dirty result clears any earlier stamp so a stale pass can't be relied on.
+
         race.setRaceInspectedAt(globalIssues.isEmpty() ? Instant.now() : null);
         raceRepository.save(race);
 

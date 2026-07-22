@@ -3,10 +3,7 @@ package com.horseracing.horseracingmanagement.module.controller;
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.WithdrawalRequest;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyRequestDto;
-import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceHorseResponse;
-import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RegisterRaceHorseRequest;
-import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetAllOddsRequest;
-import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetOddsRequest;
+import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.*;
 import com.horseracing.horseracingmanagement.module.service.RaceHorseService;
 import com.horseracing.horseracingmanagement.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -174,6 +171,14 @@ public class RaceHorseController {
     public ResponseEntity<ApiResponse<List<RaceHorseResponse>>> getWithdrawPending() {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 raceHorseService.getWithdrawPending()));
+    }
+
+    @GetMapping("/eligibility")
+    public ResponseEntity<ApiResponse<HorseEligibilityResponse>> checkEligibility(
+            @RequestParam Long raceId,
+            @RequestParam Long horseId) {
+        return ResponseEntity.ok(ApiResponse.success("Eligibility checked",
+                raceHorseService.checkEligibility(raceId, horseId)));
     }
 
 }

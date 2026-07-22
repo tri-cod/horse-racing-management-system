@@ -76,6 +76,15 @@ public class RaceServiceImpl implements RaceService {
     }
 
     // Referee finish race → push kết quả
+    //
+    // ← LƯU Ý (chưa chắc là bug, cần team xác nhận lại ý đồ thiết kế): method này
+    // CHỦ Ý không đổi race.status trong DB — status thật chỉ chuyển sang FINISHED
+    // trong RaceResultServiceImpl.setRaceResult() (vì method đó yêu cầu status đang
+    // là ONGOING mới cho nhập kết quả). Method này chỉ đóng vai trò "ngựa đã về đích,
+    // đang chờ nhập kết quả chính thức" — nếu đổi status ở đây thành FINISHED luôn thì
+    // setRaceResult() sẽ bị chặn ngay bước validate (status != ONGOING).
+    // Trước đây WS message gửi status="FINISHED" dù DB vẫn là ONGOING — sửa lại nhãn
+    // cho khớp thực tế, tránh FE hiểu nhầm là race đã có kết quả.
     public RaceResponse finishRace(Long raceId) {
         Race race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new RuntimeException("Race not found"));
@@ -85,13 +94,13 @@ public class RaceServiceImpl implements RaceService {
         }
 
 
-        // ← Push WebSocket → FE load kết quả
-        // [CHANGED] "Finished" → "FINISHED": nhất quán UPPER_CASE với startRace và setRaceResult
+        // ← Push WebSocket → FE hiện "đã về đích, đang chờ kết quả" (KHÔNG phải FINISHED
+        // thật sự — status DB vẫn là ONGOING cho tới khi referee submit setRaceResult())
         wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
                 .raceId(race.getId())
                 .raceName(race.getRaceName())
-                .status("FINISHED")
-                .message("Race has finished! Results are being calculated.")
+                .status("AWAITING_RESULTS")
+                .message("Race has crossed the finish line! Results are being calculated.")
                 .updatedAt(Instant.now())
                 .build());
 
@@ -270,7 +279,7 @@ public class RaceServiceImpl implements RaceService {
         if (!raceRepository.existsById(raceId)) {
             throw new RuntimeException("Race not found");
         }
-        // Xóa theo đúng thứ tự FK: lá → gốc
+
         penaltyRepository.deleteByRaceHorse_Race_Id(raceId);
         betItemRepository.deleteByBet_Race_Id(raceId);   // bet_items → bet → race
         betRepository.deleteByRace_Id(raceId);            // bet → race
@@ -283,9 +292,6 @@ public class RaceServiceImpl implements RaceService {
     public RaceResponse updateRace(Long raceId, CreateRaceRequest request) {
         Race race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new RuntimeException("Race not found"));
-
-        RaceStatus oldStatus = race.getStatus(); // [WS] lưu status cũ để so sánh sau khi save
-
 
         validateRaceTimeUpdate(race, request);
         if (request.getRefereeId() != null) {
@@ -307,21 +313,9 @@ public class RaceServiceImpl implements RaceService {
         race.setLocation(request.getLocation());
         race.setCapacity(request.getCapacity());
         race.setBannerImageurl(request.getBannerImageurl());
-        race.setStatus(request.getStatus());
+
 
         Race saved = raceRepository.save(race);
-
-        // [WS] Chỉ push khi status thực sự thay đổi tránh gây noise cho FE
-        if (request.getStatus() != null && request.getStatus() != oldStatus) {
-            wsService.sendRaceStatusUpdate(RaceStatusUpdate.builder()
-                    .raceId(saved.getId())
-                    .raceName(saved.getRaceName())
-                    .status(saved.getStatus().name())
-                    .message("Race status updated.")
-                    .updatedAt(Instant.now())
-                    .build());
-        }
-
         return mapToResponse(saved);
     }
 
@@ -334,31 +328,30 @@ public class RaceServiceImpl implements RaceService {
             throw new RuntimeException("Cannot edit a race that is ongoing or finished");
         }
 
-        // startTime phải sau thời điểm hiện tại
+
         if (request.getStartTime() != null &&
                 request.getStartTime().isBefore(now)) {
             throw new RuntimeException("Start time must be in the future");
         }
 
-        // registrationDeadline phải trước startTime
+
         if (request.getRegistrationDeadline() != null &&
                 request.getStartTime() != null &&
                 request.getRegistrationDeadline().isAfter(request.getStartTime())) {
             throw new RuntimeException("Registration deadline must be before start time");
         }
 
-        // registrationOpenDate phải trước registrationDeadline và trước startTime
+
         validateRegistrationDates(request.getRegistrationOpenDate(),
                 request.getRegistrationDeadline(), request.getStartTime());
-        // endTime phải sau startTime
+
         if (request.getEndTime() != null &&
                 request.getStartTime() != null &&
                 request.getEndTime().isBefore(request.getStartTime())) {
             throw new RuntimeException("End time must be after start time");
         }
 
-        // Nếu đã CLOSED_REGISTRATION mà đổi deadline về tương lai
-        // → gợi ý reopen registration thay vì tự đổi
+
         if (race.getStatus() == RaceStatus.CLOSED_REGISTRATION &&
                 request.getRegistrationDeadline() != null &&
                 request.getRegistrationDeadline().isAfter(now)) {

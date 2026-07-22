@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto;
 
+import com.horseracing.horseracingmanagement.common.constant.DistanceCategory;
 import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
 import com.horseracing.horseracingmanagement.common.validation.NoSpecialCharacters;
 import jakarta.validation.constraints.Size;
@@ -17,6 +18,9 @@ public class UpdateHorse {
     @Size(min = 2, max = 150, message = "Horse name must be between 2 and 150 characters")
     @NoSpecialCharacters(message = "Horse name must not contain special characters")
     private String horseName;
+
+    private DistanceCategory preferredDistance;
+    private String preferredSurface;
 
     private String breed;
     private Integer age;

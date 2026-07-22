@@ -1,17 +1,10 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
-import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
-import com.horseracing.horseracingmanagement.common.constant.NotificationType;
-import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
-import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
-import com.horseracing.horseracingmanagement.common.constant.UserStatus;
+import com.horseracing.horseracingmanagement.common.constant.*;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.WithdrawalRequest;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyRequestDto;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyResponse;
-import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceHorseResponse;
-import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RegisterRaceHorseRequest;
-import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetAllOddsRequest;
-import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetOddsRequest;
+import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.*;
 import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
 import com.horseracing.horseracingmanagement.module.service.NotificationService;
@@ -40,8 +33,20 @@ public class RaceHorseServiceImpl implements RaceHorseService {
     private final BetItemRepository betItemRepository;
     private final WalletRepository walletRepository;
     private final PenaltyRepository penaltyRepository;
+    private final UserRepository userRepository;
+    private final RaceResultRepository raceResultRepository;
 
     private final NotificationService notificationService;
+
+    // ← FIX: helper dùng chung cho mọi chỗ cộng/trừ entry fee vào ví admin,
+    // để 4 luồng (đăng ký, reject, cleanup khi đóng đăng ký, duyệt rút lui)
+    // luôn đối xứng với nhau — tránh chỗ trừ user mà quên cộng/trừ admin.
+    private Wallet getAdminWallet() {
+        User adminUser = userRepository.findFirstByRole_Rolename(RoleName.ADMIN)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        return walletRepository.findByUser_Id(adminUser.getId())
+                .orElseThrow(() -> new RuntimeException("Admin wallet not found"));
+    }
     @Override
     public RaceHorseResponse registerHorseToRace(RegisterRaceHorseRequest request, Long userId) {
         HorseOwner owner = horseOwnerRepository.findByUserId(userId)
@@ -103,6 +108,15 @@ public class RaceHorseServiceImpl implements RaceHorseService {
             ownerWallet.setBalance(ownerWallet.getBalance()
                     .subtract(BigDecimal.valueOf(race.getEntryFee())));
             walletRepository.save(ownerWallet);
+
+            // ← FIX: entry fee phải cộng vào ví admin ngay lúc thu, không thì tiền
+            // biến mất khỏi hệ thống (trước đây chỉ trừ owner, không cộng đâu cả).
+            // Mọi chỗ hoàn phí (reject/cleanup/withdraw) đã được sửa để trừ lại từ
+            // đây một cách đối xứng.
+            Wallet adminWallet = getAdminWallet();
+            adminWallet.setBalance(adminWallet.getBalance()
+                    .add(BigDecimal.valueOf(race.getEntryFee())));
+            walletRepository.save(adminWallet);
         }
         // ← Tạo RaceHorse với status "PendingJockey" — chưa gắn jockey
         RaceHorse saved = raceHorseRepository.save(RaceHorse.builder()
@@ -367,6 +381,13 @@ public class RaceHorseServiceImpl implements RaceHorseService {
             ownerWallet.setBalance(ownerWallet.getBalance()
                     .add(BigDecimal.valueOf(race.getEntryFee())));
             walletRepository.save(ownerWallet);
+
+            // ← FIX: entry fee đã được cộng vào ví admin lúc đăng ký, nên hoàn
+            // tiền cho owner thì phải trừ lại từ admin cho đối xứng.
+            Wallet adminWallet = getAdminWallet();
+            adminWallet.setBalance(adminWallet.getBalance()
+                    .subtract(BigDecimal.valueOf(race.getEntryFee())));
+            walletRepository.save(adminWallet);
         }
         raceHorse.setStatus(RaceHorseStatus.REJECTED);
         RaceHorse saved = raceHorseRepository.save(raceHorse);
@@ -409,6 +430,12 @@ public class RaceHorseServiceImpl implements RaceHorseService {
                         wallet.setBalance(wallet.getBalance()
                                 .add(BigDecimal.valueOf(race.getEntryFee())));
                         walletRepository.save(wallet);
+
+                        // ← FIX: trừ lại ví admin cho đối xứng với lúc thu entry fee
+                        Wallet adminWallet = getAdminWallet();
+                        adminWallet.setBalance(adminWallet.getBalance()
+                                .subtract(BigDecimal.valueOf(race.getEntryFee())));
+                        walletRepository.save(adminWallet);
                     }
 
                     // Notify HorseOwner
@@ -565,6 +592,12 @@ public class RaceHorseServiceImpl implements RaceHorseService {
             ownerWallet.setBalance(ownerWallet.getBalance().add(refund));
             walletRepository.save(ownerWallet);
 
+            // ← FIX: chỉ trừ đúng phần đã hoàn (50%) khỏi ví admin — 50% còn lại
+            // admin giữ lại làm phí phạt rút lui, không hoàn lại nên không trừ.
+            Wallet adminWallet = getAdminWallet();
+            adminWallet.setBalance(adminWallet.getBalance().subtract(refund));
+            walletRepository.save(adminWallet);
+
             notificationService.sendToUser(
                     owner.getUser().getId(),
                     "✅ Withdrawal Approved",
@@ -685,6 +718,99 @@ public class RaceHorseServiceImpl implements RaceHorseService {
             }
         }
         return issues;
+    }
+
+    @Override
+    public HorseEligibilityResponse checkEligibility(Long raceId, Long horseId) {
+        Race race = raceRepository.findById(raceId)
+                .orElseThrow(() -> new RuntimeException("Race not found"));
+        Horse horse = horseRepository.findById(horseId)
+                .orElseThrow(() -> new RuntimeException("Horse not found"));
+
+        List<String> reasons = new ArrayList<>();
+        List<String> warnings = new ArrayList<>();
+
+        long earnings = raceResultRepository.sumRewardsByHorseId(horseId) != null
+                ? raceResultRepository.sumRewardsByHorseId(horseId) : 0L;
+
+        // ---- Age ----
+        if (race.getMinAge() != null
+                && (horse.getAge() == null || horse.getAge() < race.getMinAge())) {
+            reasons.add("Horse does not meet the minimum age requirement (" + race.getMinAge() + " years)");
+        }
+
+        if (race.getMaxAge() != null
+                && horse.getAge() != null && horse.getAge() > race.getMaxAge()) {
+            reasons.add("Horse exceeds the maximum age limit (" + race.getMaxAge() + " years)");
+        }
+
+// ---- Gender ----
+        if (race.getGenderRestriction() != null && !race.getGenderRestriction().isBlank()
+                && !race.getGenderRestriction().equalsIgnoreCase(horse.getGender())) {
+            reasons.add("This race is restricted to " + race.getGenderRestriction() + " horses");
+        }
+
+// ---- Race Class & Earnings ----
+        RaceClass rc = race.getRaceClass();
+        if (rc != null) {
+            if (rc == RaceClass.MAIDEN
+                    && raceResultRepository.countWinsByHorseId(horseId) > 0) {
+                reasons.add("MAIDEN races are only open to horses that have never won a race");
+            }
+
+            Long min = race.getMinEarnings() != null
+                    ? race.getMinEarnings() : rc.getDefaultMinEarnings();
+            Long max = race.getMaxEarnings() != null
+                    ? race.getMaxEarnings() : rc.getDefaultMaxEarnings();
+
+            if (min != null && earnings < min) {
+                reasons.add("Accumulated earnings do not meet the minimum requirement for "
+                        + rc.name() + " class (" + min + ")");
+            }
+
+            if (max != null && earnings > max) {
+                reasons.add("Accumulated earnings exceed the maximum limit for "
+                        + rc.name() + " class (" + max + ") — the horse must compete in a higher class");
+            }
+        } else {
+            // No race class specified; validate earnings independently
+            if (race.getMinEarnings() != null && earnings < race.getMinEarnings()) {
+                reasons.add("Accumulated earnings are below the required minimum (" + race.getMinEarnings() + ")");
+            }
+
+            if (race.getMaxEarnings() != null && earnings > race.getMaxEarnings()) {
+                reasons.add("Accumulated earnings exceed the allowed maximum (" + race.getMaxEarnings() + ")");
+            }
+        }
+
+// ---- Distance & Surface: WARNING ONLY, do not block ----
+        DistanceCategory raceCat = DistanceCategory.fromMeters(race.getDistanceMeters());
+
+        if (raceCat != null && horse.getPreferredDistance() != null
+                && horse.getPreferredDistance() != raceCat) {
+            warnings.add("Horse's preferred distance is "
+                    + horse.getPreferredDistance()
+                    + ", but this race is in the "
+                    + raceCat + " category");
+        }
+
+        if (race.getSurfaceType() != null && horse.getPreferredSurface() != null
+                && !race.getSurfaceType().equalsIgnoreCase(horse.getPreferredSurface())) {
+            warnings.add("Horse is accustomed to "
+                    + horse.getPreferredSurface()
+                    + " surface, but this race is run on "
+                    + race.getSurfaceType());
+        }
+
+        return HorseEligibilityResponse.builder()
+                .horseId(horseId)
+                .horseName(horse.getHorseName())
+                .raceId(raceId)
+                .eligible(reasons.isEmpty())
+                .reasons(reasons)
+                .warnings(warnings)
+                .horseEarnings(earnings)
+                .build();
     }
 
     private RaceHorseResponse mapToResponse(RaceHorse raceHorse) {
