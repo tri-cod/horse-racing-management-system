@@ -35,7 +35,8 @@ public class CreateRaceRequest {
     private RaceClass raceClass;
     private Long minEarnings;
     private Long maxEarnings;
-    private Integer distanceMeters;
+    private Double distanceMeters;
+    private Long minWeight;
 
     private String trackCondition;
     private String surfaceType;

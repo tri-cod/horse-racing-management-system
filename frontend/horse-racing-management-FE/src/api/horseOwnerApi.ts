@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance';
-import type { ApiResponse, Horse, HorseOwnerProfile, CompleteHorseOwnerProfilePayload, HorseOwnerPublicProfile, Penalty, RaceParticipation } from '@/types';
+import type { ApiResponse, Horse, HorseOwnerProfile, CompleteHorseOwnerProfilePayload, HorseOwnerPublicProfile, Penalty, RaceParticipation, DistanceCategory } from '@/types';
 
 export interface SignHorsePayload {
  horseName: string;
@@ -11,6 +11,8 @@ export interface SignHorsePayload {
  avatar_url?: string;
  weight?: number;
  status?: string;
+ preferredDistance?: DistanceCategory;
+ preferredSurface?: string;
 }
 
 export type UpdateHorsePayload = Partial<SignHorsePayload>;

@@ -3,7 +3,7 @@ import type { ApiResponse, Trainer, TrainerStats, TrainerHorse, TrainerRaceParti
 
 export interface CompleteTrainerProfilePayload {
  fullName?: string;
- specialization?: string;
+ specialization?: string | null;
  experience?: string;
  bio?: string;
  avatarUrl?: string | null;

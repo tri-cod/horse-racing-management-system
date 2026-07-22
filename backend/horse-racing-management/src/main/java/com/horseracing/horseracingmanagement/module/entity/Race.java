@@ -114,7 +114,10 @@ public class Race {
     private Long maxEarnings;           // null = lấy mặc định theo raceClass
 
     @Column(name = "distance_meters")
-    private Integer distanceMeters;
+    private Double distanceMeters;      // khoảng cách dạng số thực (m), thay cho chuỗi "distance" tự do
+
+    @Column(name = "min_weight")
+    private Long minWeight;             // ngựa phải đủ số kí (kg) tối thiểu mới được đăng ký
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

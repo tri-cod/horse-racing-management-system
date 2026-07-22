@@ -12,6 +12,8 @@ public class HorseCurrentStatusResponse {
     private String breed;
     private String avatarUrl;
     private String status;          // status của horse (Active...)
+    private String preferredDistance;
+    private String preferredSurface;
 
     // Thông tin race hiện tại (null nếu đang trống, không tham gia race nào)
     private Long currentRaceId;

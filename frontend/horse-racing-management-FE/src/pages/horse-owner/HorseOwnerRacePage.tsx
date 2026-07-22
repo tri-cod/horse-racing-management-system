@@ -2,16 +2,16 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Calendar, MapPin, Trophy, Users, Ruler,
-  CheckCircle2, ArrowLeft, ChevronRight, Send, Wallet,
+  CheckCircle2, ArrowLeft, ChevronRight, Send, Wallet, AlertTriangle,
 } from 'lucide-react';
 import { getRaces } from '@/api/raceApi';
 import { getAvailableHorses } from '@/api/horseOwnerApi';
 import { getAvailableJockeys } from '@/api/jockeyApi';
-import { registerHorseToRace, sendJockeyRequest } from '@/api/raceHorseApi';
+import { registerHorseToRace, sendJockeyRequest, checkHorseEligibility } from '@/api/raceHorseApi';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
 import { calculateAge } from '@/utils/age';
-import type { Race, Horse, Jockey, RaceHorse } from '@/types';
+import type { Race, Horse, Jockey, RaceHorse, HorseEligibility } from '@/types';
 
 const fmt = (n?: number) =>
   n != null
@@ -103,6 +103,7 @@ export default function HorseOwnerRacePage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [registeredHorse, setRegisteredHorse] = useState<RaceHorse | null>(null);
+  const [eligibility, setEligibility] = useState<Record<number, HorseEligibility>>({});
 
   useEffect(() => {
     getRaces({ status: 'OPEN_REGISTRATION', size: 50 })
@@ -115,8 +116,25 @@ export default function HorseOwnerRacePage() {
     if (view !== 'register' || !selectedRace) return;
     let cancelled = false;
     setLoadingForm(true);
+    setEligibility({});
     getAvailableHorses(selectedRace.id)
-      .then((h) => { if (!cancelled) setHorses(h ?? []); })
+      .then(async (h) => {
+        if (cancelled) return;
+        const list = h ?? [];
+        setHorses(list);
+        // Preview eligibility per horse — same rules the backend now enforces at registration,
+        // shown up front instead of the owner only finding out after clicking "Register Horse".
+        const entries = await Promise.all(
+          list.map((horse) =>
+            checkHorseEligibility(selectedRace.id, horse.id)
+              .then((e): [number, HorseEligibility] => [horse.id, e])
+              .catch((): [number, HorseEligibility] | null => null),
+          ),
+        );
+        if (!cancelled) {
+          setEligibility(Object.fromEntries(entries.filter((e): e is [number, HorseEligibility] => e != null)));
+        }
+      })
       .catch(() => { if (!cancelled) setError('Failed to load your horses.'); })
       .finally(() => { if (!cancelled) setLoadingForm(false); });
     return () => { cancelled = true; };
@@ -367,17 +385,20 @@ export default function HorseOwnerRacePage() {
               <div className="flex flex-col gap-2">
                 {horses.map((h) => {
                   const hasTrainer = !!h.trainerId;
+                  const horseEligibility = eligibility[h.id];
+                  const isIneligible = horseEligibility != null && !horseEligibility.eligible;
+                  const canSelect = hasTrainer && !isIneligible;
                   const isSel = selectedHorse === h.id;
                   return (
                     <button
                       key={h.id}
                       type="button"
-                      disabled={!hasTrainer}
-                      onClick={() => hasTrainer && setSelectedHorse(h.id)}
+                      disabled={!canSelect}
+                      onClick={() => canSelect && setSelectedHorse(h.id)}
                       className={[
                         'flex items-center gap-3 border px-4 py-3 text-left transition-colors',
                         isSel ? 'border-navy bg-navy/5' : 'border-rim bg-surface hover:border-rim-hi',
-                        !hasTrainer ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+                        !canSelect ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
                       ].join(' ')}
                     >
                       {h.avatarUrl ? (
@@ -397,6 +418,16 @@ export default function HorseOwnerRacePage() {
                         {!hasTrainer && (
                           <p className="mt-0.5 text-xs text-warn">No trainer — cannot register</p>
                         )}
+                        {isIneligible && horseEligibility.reasons.map((reason) => (
+                          <p key={reason} className="mt-0.5 flex items-start gap-1 text-xs text-fail">
+                            <AlertTriangle size={11} className="mt-0.5 shrink-0" /> {reason}
+                          </p>
+                        ))}
+                        {!isIneligible && horseEligibility?.warnings?.map((warning) => (
+                          <p key={warning} className="mt-0.5 flex items-start gap-1 text-xs text-warn">
+                            <AlertTriangle size={11} className="mt-0.5 shrink-0" /> {warning}
+                          </p>
+                        ))}
                       </div>
                       {isSel && <CheckCircle2 size={16} className="shrink-0 text-navy" />}
                     </button>

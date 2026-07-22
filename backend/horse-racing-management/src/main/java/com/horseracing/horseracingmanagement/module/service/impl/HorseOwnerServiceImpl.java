@@ -367,6 +367,8 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .breed(horse.getBreed())
                 .avatarUrl(horse.getAvatarUrl())
                 .status(String.valueOf(horse.getStatus()))
+                .preferredDistance(horse.getPreferredDistance() != null ? horse.getPreferredDistance().name() : null)
+                .preferredSurface(horse.getPreferredSurface())
                 .currentRaceId(currentRaceHorse.map(rh -> rh.getRace().getId()).orElse(null))
                 .currentRaceName(currentRaceHorse.map(rh -> rh.getRace().getRaceName()).orElse(null))
                 .currentRaceStatus(currentRaceHorse.map(rh -> rh.getRace().getStatus().name()).orElse(null))
@@ -588,6 +590,9 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .raceHistory(raceHistory)  // ← trả về List
                 .avatarUrl(horse.getAvatarUrl())
                 .weight(horse.getWeight())
+                .description(horse.getDescription())
+                .preferredDistance(horse.getPreferredDistance())
+                .preferredSurface(horse.getPreferredSurface())
                 .status(horse.getStatus())
                 .ownerId(horse.getOwnerId())
                 .ownerName(ownerName)

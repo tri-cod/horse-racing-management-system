@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
-  ChevronLeft, Rabbit, Trophy, Flag, Wallet, MapPin, Calendar, Award, Sparkles,
-  Venus, Mars, Weight, Gauge, GraduationCap, Palette, ArrowRight,
+  ChevronLeft, Rabbit, Trophy, Flag, Wallet, MapPin, Calendar, Award, Sparkles, ArrowRight,
+  Venus, Mars, Weight, Gauge, GraduationCap, Palette, Waves,
 } from 'lucide-react';
 import { useHorseProfile } from '@/hooks/useHorseProfile';
 import { useHorseRaceHistory } from '@/hooks/useHorseRaceHistory';
 import { getHorseById } from '@/api/horseOwnerApi';
+import { formatPreferredDistance } from '@/utils/horsePreferences';
 import Container from '@/components/ui/Container';
 import Seo from '@/components/seo/Seo';
 import StatCard from '@/components/shared/StatCard';
@@ -182,6 +183,8 @@ export default function HorseProfilePage() {
         detail.speedRating != null && { icon: Gauge, label: 'Speed Rating', value: String(detail.speedRating) },
         detail.historyRank && { icon: GraduationCap, label: 'Achievement', value: detail.historyRank },
         detail.color && { icon: Palette, label: 'Color', value: detail.color },
+        detail.preferredDistance && { icon: Flag, label: 'Preferred Distance', value: formatPreferredDistance(detail.preferredDistance) ?? detail.preferredDistance },
+        detail.preferredSurface && { icon: Waves, label: 'Preferred Surface', value: detail.preferredSurface },
         detail.trainerName && { icon: Award, label: 'Trainer', value: detail.trainerName },
       ].filter((f): f is { icon: typeof Rabbit; label: string; value: string } => !!f)
     : [];
@@ -243,7 +246,7 @@ export default function HorseProfilePage() {
               )}
             </div>
 
-            {/* Horse details — gender/age/weight/speed/class/trainer, only for fields that exist */}
+            {/* Horse details — gender/age/weight/speed/preferences/trainer, only for fields that exist */}
             {detailFacts.length > 0 && (
               <div className="grid grid-cols-2 divide-x divide-y divide-rim border border-t-0 border-rim bg-surface-raised sm:grid-cols-3 sm:divide-y-0">
                 {detailFacts.map((f) => <DetailFact key={f.label} {...f} />)}

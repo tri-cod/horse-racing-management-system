@@ -22,6 +22,9 @@ export type RaceHorseStatus =
   | 'FINISHED'           // race result recorded for this entry
   | 'DISQUALIFIED'       // referee issued a disqualifying penalty
   | string;              // fallback for any other/legacy value
+export type RaceClass = 'MAIDEN' | 'CLASS_4' | 'CLASS_3' | 'CLASS_2' | 'CLASS_1' | 'LISTED' | 'GRADE_1';
+export type GenderRestriction = 'MALE' | 'FEMALE' | 'GELDING';
+
 export interface Race {
  id: number;
  raceName: string;
@@ -42,6 +45,15 @@ export interface Race {
  status: RaceStatus;
  createdAt?: string;
  raceInspectedAt?: string | null;
+ // Horse eligibility requirements — all optional, null/undefined = no restriction
+ minAge?: number | null;
+ maxAge?: number | null;
+ genderRestriction?: GenderRestriction | string | null;
+ raceClass?: RaceClass | string | null;
+ minEarnings?: number | null;
+ maxEarnings?: number | null;
+ distanceMeters?: number | null;
+ minWeight?: number | null;
 }
 
 export interface RaceHorse {
@@ -142,6 +154,15 @@ export interface CreateRacePayload {
  refereeId?: number | null;
  /** Only applied on race creation — the backend does not read this field on update. */
  entryFee?: number;
+ // Horse eligibility requirements — leave undefined for "no restriction"
+ minAge?: number | null;
+ maxAge?: number | null;
+ genderRestriction?: GenderRestriction | null;
+ raceClass?: RaceClass | null;
+ minEarnings?: number | null;
+ maxEarnings?: number | null;
+ distanceMeters?: number | null;
+ minWeight?: number | null;
 }
 
 export type UpdateRacePayload = CreateRacePayload & { status?: RaceStatus };
@@ -149,6 +170,17 @@ export type UpdateRacePayload = CreateRacePayload & { status?: RaceStatus };
 export interface RegisterHorseToRacePayload {
  raceId: number;
  horseId: number;
+}
+
+// GET /race-horse/eligibility?raceId=&horseId= — preview before registering
+export interface HorseEligibility {
+ horseId: number;
+ horseName?: string;
+ raceId: number;
+ eligible: boolean;
+ reasons: string[];   // blocks registration
+ warnings: string[];  // advisory only, still allowed
+ horseEarnings?: number;
 }
 
 export interface SendJockeyRequestPayload {

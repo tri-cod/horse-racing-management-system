@@ -13,6 +13,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Seo from '@/components/seo/Seo';
 import Button from '@/components/ui/Button';
 import { assignLanes } from '@/utils/laneUtils';
+import { buildRaceRequirements } from '@/utils/raceRequirements';
 
 const NON_BETTABLE = new Set(['FINISHED', 'CANCELLED', 'ONGOING']);
 
@@ -221,6 +222,24 @@ const bettableEntries = useMemo(() => entries.filter((e) => e.odds != null), [en
                   <span className="font-medium text-ink">{race.location}</span></div>
               )}
             </div>
+
+            {/* Horse eligibility requirements — only shown when the race has any restriction set */}
+            {(() => {
+              const requirements = buildRaceRequirements(race);
+              if (requirements.length === 0) return null;
+              return (
+                <div className="mt-4 border-t border-rim pt-4">
+                  <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-ink-4">Entry Requirements</p>
+                  <div className="flex flex-wrap gap-2">
+                    {requirements.map((r) => (
+                      <span key={r} className="border border-gold/30 bg-gold/5 px-2.5 py-1 text-xs font-medium text-ink-2">
+                        {r}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Officiating referee — highlighted card with link to public profile */}
             <div className="mt-4">
