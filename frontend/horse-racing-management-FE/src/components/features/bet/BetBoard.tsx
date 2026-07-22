@@ -7,6 +7,7 @@ import {
 import { useRaces } from '@/hooks/useRaces';
 import { useRaceDetail } from '@/hooks/useRaceDetail';
 import { useHorsesByRace } from '@/hooks/useHorsesByRace';
+import { useRaceResults } from '@/hooks/useRaceResults';
 import { useAuth } from '@/context/AuthContext';
 import { useWalletBalance, useInvalidateWalletBalance } from '@/hooks/useWalletBalance';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -33,6 +34,13 @@ const LANE_STYLE: Record<number, { bg: string; color: string }> = {
 
 const NON_BETTABLE = new Set(['FINISHED', 'CANCELLED', 'ONGOING']);
 
+/* Pre-race we list APPROVED entries with odds; once the race runs, the backend
+   flips each entry's status to FINISHED/DISQUALIFIED — keep those visible too. */
+function isRunnerEntry(e: RaceHorse) {
+  const s = e.status?.toLowerCase();
+  return s === 'finished' || s === 'disqualified' || (s === 'approved' && e.odds != null);
+}
+
 function fmtDate(iso?: string) {
   if (!iso) return '—';
   return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -57,17 +65,22 @@ type BetAmounts = Record<number, string>; /* raceHorseId → raw input string */
 function RaceSelectorCard({ race, selected, onClick }: { race: Race; selected: boolean; onClick: () => void }) {
   return (
     <button type="button" onClick={onClick}
-      className={`group relative shrink-0 w-52 overflow-hidden rounded-md border text-left transition-all duration-200 active:scale-[0.98] ${
+      className={`group relative shrink-0 w-52 overflow-hidden rounded-md text-left transition-all duration-200 active:scale-[0.98] ${
         selected
-          ? 'border-gold bg-gold/5 shadow-lg shadow-gold/10'
-          : 'border-rim bg-surface-raised hover:border-rim-hi hover:bg-surface-overlay/60'
+          ? 'bg-gold/5 shadow-lg shadow-gold/15'
+          : 'bg-surface-raised shadow-card hover:bg-surface-overlay/60 hover:shadow-md'
       }`}>
       <div className={`h-0.5 w-full ${!NON_BETTABLE.has(race.status) ? 'bg-gold' : 'bg-rim'}`} />
       <div className="p-3.5">
         <p className="mb-2 line-clamp-2 text-sm font-bold leading-snug text-ink group-hover:text-gold transition-colors">
           {race.raceName}
         </p>
-        <p className="text-[11px] tabular-nums text-ink-4">{fmtDate(race.startTime)}</p>
+        <p className="flex items-center gap-2 text-[11px] tabular-nums text-ink-4">
+          {fmtDate(race.startTime)}
+          {race.status === 'FINISHED' && (
+            <span className="text-[9px] font-semibold uppercase tracking-wide text-ink-3">Finished</span>
+          )}
+        </p>
       </div>
     </button>
   );
@@ -112,6 +125,118 @@ function OddsBoardSkeleton({ showStake }: { showStake: boolean }) {
   );
 }
 
+/* ── Final Standings ────────────────────────────────────────────
+   Rendered under the runners table once a race is FINISHED. Results are
+   joined back to the race entries by horseId so each row carries the same
+   info as the runners list above (post position, jockey, owner, trainer). */
+function FinalStandings({ raceId, entries }: { raceId: number; entries: HorseEntry[] }) {
+  const { results, loading } = useRaceResults(raceId);
+
+  const entryByHorseId = useMemo(() => {
+    const m = new Map<number, HorseEntry>();
+    for (const e of entries) m.set(e.horseId, e);
+    return m;
+  }, [entries]);
+
+  const cols = 'grid-cols-[2.5rem_2.5rem_1fr_5.5rem_4rem]';
+
+  return (
+    <div>
+      {/* Section header */}
+      <div className="flex items-center gap-2 border-b border-rim bg-surface-overlay/60 px-6 py-3">
+        <Trophy size={12} className="text-gold" />
+        <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-gold-hi">Final Standings</span>
+      </div>
+
+      {loading ? (
+        <div className="divide-y divide-rim">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className={`grid ${cols} items-center gap-3 px-6 py-4`}>
+              <div className="h-3 w-5 animate-pulse rounded bg-rim" />
+              <div className="h-8 w-8 animate-pulse rounded bg-rim" />
+              <div className="space-y-1.5">
+                <div className="h-3.5 w-2/3 animate-pulse rounded bg-rim" />
+                <div className="h-2.5 w-1/3 animate-pulse rounded bg-surface-overlay" />
+              </div>
+              <div className="ml-auto h-3 w-12 animate-pulse rounded bg-rim" />
+              <div className="ml-auto h-5 w-8 animate-pulse rounded bg-rim" />
+            </div>
+          ))}
+        </div>
+      ) : results.length === 0 ? (
+        <p className="px-6 py-8 text-center text-sm text-ink-3">Official results are not available yet.</p>
+      ) : (
+        <>
+          {/* Table header */}
+          <div className={`grid ${cols} gap-3 border-b border-rim bg-surface-raised px-6 py-3`}>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-ink-4">Pos</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-ink-4">PP</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-ink-4">Runner</span>
+            <span className="text-right text-[10px] font-bold uppercase tracking-widest text-ink-4">Time</span>
+            <span className="text-right text-[10px] font-bold uppercase tracking-widest text-ink-4">Odds</span>
+          </div>
+
+          {/* Result rows */}
+          <div className="divide-y divide-rim">
+            {results.map(r => {
+              const entry = r.horseId != null ? entryByHorseId.get(r.horseId) : undefined;
+              const laneStyle = LANE_STYLE[entry?.laneNumber ?? 0];
+              const isWinner = r.position === 1;
+
+              return (
+                <div key={r.id}
+                  className={`grid ${cols} items-center gap-3 px-6 py-4 ${isWinner ? 'bg-gold/[0.06]' : ''}`}>
+
+                  {/* Finish position */}
+                  <span className={`tnum text-sm font-bold ${isWinner ? 'text-gold-hi' : r.position > 0 && r.position <= 3 ? 'text-ink' : 'text-ink-4'}`}>
+                    {r.position > 0 ? String(r.position).padStart(2, '0') : '—'}
+                  </span>
+
+                  {/* Post position */}
+                  <div className="flex h-8 w-8 items-center justify-center text-sm font-bold"
+                    style={laneStyle
+                      ? { backgroundColor: laneStyle.bg, color: laneStyle.color }
+                      : { backgroundColor: 'rgba(19,28,21,0.06)', color: 'rgba(19,28,21,0.35)' }}>
+                    {entry?.laneNumber ?? '—'}
+                  </div>
+
+                  {/* Horse info — mirrors the runners list above */}
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-sm font-bold uppercase tracking-wide text-ink">{r.horseName}</p>
+                      {isWinner && (
+                        <span className="shrink-0 rounded-full bg-gold/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-gold-hi">
+                          Winner
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-0.5 truncate text-xs text-ink-4">
+                      Jockey: <span className="text-ink-3">{r.jockeyName || entry?.jockeyName || 'TBA'}</span>
+                    </p>
+                    {entry && (entry.ownerName || entry.trainerName) && (
+                      <p className="mt-0.5 truncate text-[11px] text-ink-4">
+                        {entry.ownerName && <>Owner: <span className="text-ink-3">{entry.ownerName}</span></>}
+                        {entry.ownerName && entry.trainerName && <span className="mx-1.5">·</span>}
+                        {entry.trainerName && <>Trainer: <span className="text-ink-3">{entry.trainerName}</span></>}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Completion time */}
+                  <span className="tnum text-right text-sm font-medium text-ink-2">{r.time ?? '—'}</span>
+
+                  {/* Odds */}
+                  <span className="tnum text-right text-sm font-bold text-gold-hi">{r.odds ?? entry?.odds ?? '—'}</span>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function OddsBoard({
   raceId,
   betAmounts,
@@ -134,7 +259,7 @@ function OddsBoard({
 
   const entries = useMemo((): HorseEntry[] =>
     (assignLanes(
-      raw.filter(e => e.status?.toLowerCase() === 'approved' && e.odds != null) as Parameters<typeof assignLanes>[0]
+      raw.filter(isRunnerEntry) as Parameters<typeof assignLanes>[0]
     ) as HorseEntry[]).sort((a, b) => (a.odds ?? Infinity) - (b.odds ?? Infinity)),
     [raw]
   );
@@ -167,8 +292,8 @@ function OddsBoard({
       {embedded ? (
         /* Homepage: full race details in place of the banner image */
         <div className="border-b border-rim bg-surface-overlay/40 px-6 py-4">
-          <h2 className="mb-4 font-serif text-xl font-bold text-ink sm:text-2xl">{race.raceName}</h2>
-          <dl className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3">
+          <h2 className="mb-3 font-serif text-xl font-bold text-ink sm:text-2xl">{race.raceName}</h2>
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3">
             {infoItems.map((item) => (
               <div key={item.label}>
                 <dt className="text-[10px] font-bold uppercase tracking-widest text-ink-4">{item.label}</dt>
@@ -272,7 +397,16 @@ function OddsBoard({
                         </span>
                       )}
                     </div>
-                    <p className="mt-0.5 truncate text-xs text-ink-4">{e.jockeyName ?? 'Jockey TBA'}</p>
+                    <p className="mt-0.5 truncate text-xs text-ink-4">
+                      Jockey: <span className="text-ink-3">{e.jockeyName ?? 'TBA'}</span>
+                    </p>
+                    {(e.ownerName || e.trainerName) && (
+                      <p className="mt-0.5 truncate text-[11px] text-ink-4">
+                        {e.ownerName && <>Owner: <span className="text-ink-3">{e.ownerName}</span></>}
+                        {e.ownerName && e.trainerName && <span className="mx-1.5">·</span>}
+                        {e.trainerName && <>Trainer: <span className="text-ink-3">{e.trainerName}</span></>}
+                      </p>
+                    )}
                     {userBets[e.id] && (
                       <span className="mt-1 inline-flex items-center gap-1 rounded bg-gold/10 px-1.5 py-0.5 text-[10px] font-bold text-gold-hi">
                         Your bet: {fmtVnd(userBets[e.id].amount)}
@@ -498,13 +632,17 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
     staleTime: 30_000,
   });
 
-  /* Races still open for betting or on their way there — finished/cancelled/ongoing are excluded */
-  const filteredRaces = useMemo(() =>
-    [...races]
+  /* Bettable races first (soonest → latest), then finished ones (most recent first)
+     so punters can review final standings; cancelled/ongoing stay excluded. */
+  const filteredRaces = useMemo(() => {
+    const upcoming = races
       .filter(r => !NON_BETTABLE.has(r.status))
-      .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()),
-    [races]
-  );
+      .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+    const finished = races
+      .filter(r => r.status === 'FINISHED')
+      .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+    return [...upcoming, ...finished];
+  }, [races]);
 
   const initialRaceId = useMemo(() => {
     const date = searchParams.get('date');
@@ -529,7 +667,7 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
   const { entries: rawBetHorses } = useHorsesByRace(effectiveId ?? undefined);
   const betHorses = useMemo((): HorseEntry[] =>
     (assignLanes(
-      rawBetHorses.filter(e => e.status?.toLowerCase() === 'approved' && e.odds != null) as Parameters<typeof assignLanes>[0]
+      rawBetHorses.filter(isRunnerEntry) as Parameters<typeof assignLanes>[0]
     ) as HorseEntry[]),
     [rawBetHorses]
   );
@@ -691,7 +829,9 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
             </div>
 
             {/* RIGHT: Sticky panel */}
-            <div className="flex flex-col gap-4 lg:sticky lg:top-8 lg:self-start">
+            {/* Sticky offset = fixed header height (109px) + 1rem breathing room,
+                so the panel pins the moment it meets the header instead of sliding under it. */}
+            <div className="flex flex-col gap-4 lg:sticky lg:top-[125px] lg:self-start">
 
               {/* Wallet balance — shown on the standalone /bet/races page, hidden when embedded on the homepage */}
               {canBet && !embedded && (
@@ -792,6 +932,18 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
           </div>
         )}
       </FadeInItem>
+
+      {/* ── Final standings ──────────────────────────────────────
+          Own full-width section BELOW the betting grid — kept outside it so the
+          sticky bet-slip column stops at the end of the runners list instead of
+          following down over (and covering) the standings table. */}
+      {effectiveId != null && selectedRace?.status === 'FINISHED' && (
+        <FadeInItem className="mx-auto max-w-screen-xl px-4 pb-8 sm:px-6">
+          <div className="overflow-hidden rounded-md border border-rim bg-surface-raised">
+            <FinalStandings raceId={effectiveId} entries={betHorses} />
+          </div>
+        </FadeInItem>
+      )}
     </FadeInStagger>
   );
 }
