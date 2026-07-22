@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Globe, Camera, Video, MessageCircle, MapPin, Phone, Mail } from 'lucide-react';
 import Container from '@/components/ui/Container';
 
@@ -41,8 +42,8 @@ export default function Footer() {
  <ul className="mt-5 space-y-2">
  {[
  { Icon: MapPin, text: '285 W Huntington Dr, Arcadia, CA 91007' },
- { Icon: Phone, text: '+84 28 1234 5678' },
- { Icon: Mail, text: 'contact@royalderby.vn' },
+ { Icon: Phone, text: '0326 883 343' },
+ { Icon: Mail, text: 'RoyalDerbyservice@gmail.com' },
  ].map(({ Icon, text }) => (
  <li key={text} className="flex items-start gap-2 text-sm text-on-blue/60">
  <Icon size={15} className="mt-0.5 shrink-0 text-gold" />
@@ -57,9 +58,9 @@ export default function Footer() {
  <ul className="mt-4 space-y-2">
  {ABOUT_LINKS.map((item) => (
  <li key={item.href}>
- <a href={item.href} className="text-sm text-on-blue/60 hover:text-gold transition-colors">
+ <Link to={item.href} className="text-sm text-on-blue/60 hover:text-gold transition-colors">
  {item.label}
- </a>
+ </Link>
  </li>
  ))}
  </ul>
@@ -70,9 +71,9 @@ export default function Footer() {
  <ul className="mt-4 space-y-2">
  {EXPLORE_LINKS.map((item) => (
  <li key={item.href}>
- <a href={item.href} className="text-sm text-on-blue/60 hover:text-gold transition-colors">
+ <Link to={item.href} className="text-sm text-on-blue/60 hover:text-gold transition-colors">
  {item.label}
- </a>
+ </Link>
  </li>
  ))}
  </ul>

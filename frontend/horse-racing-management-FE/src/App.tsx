@@ -22,6 +22,9 @@ const RacesPage = lazy(() => import('@/pages/public/RacesPage'));
 const RaceDetailPage = lazy(() => import('@/pages/public/RaceDetailPage'));
 const RaceResultsPage = lazy(() => import('@/pages/public/RaceResultsPage'));
 const AboutPage = lazy(() => import('@/pages/public/AboutPage'));
+const RulesPage = lazy(() => import('@/pages/public/RulesPage'));
+const ContactPage = lazy(() => import('@/pages/public/ContactPage'));
+const NewsPage = lazy(() => import('@/pages/public/NewsPage'));
 const BetRacesPage = lazy(() => import('@/pages/public/BetRacesPage'));
 const NotFoundPage = lazy(() => import('@/pages/public/NotFoundPage'));
 
@@ -41,6 +44,7 @@ const HorseEditPage = lazy(() => import('@/pages/horse-owner/HorseEditPage'));
 const HorseOwnerRacePage = lazy(() => import('@/pages/horse-owner/HorseOwnerRacePage'));
 const MyRaceRegistrationsPage = lazy(() => import('@/pages/horse-owner/MyRaceRegistrationsPage'));
 const TrainingContractsPage = lazy(() => import('@/pages/horse-owner/TrainingContractsPage'));
+const HorseOwnerMyRacesPage = lazy(() => import('@/pages/horse-owner/HorseOwnerMyRacesPage'));
 const HorseOwnerMyProfilePage = lazy(() => import('@/pages/horse-owner/HorseOwnerMyProfilePage'));
 
 // Trainer
@@ -48,11 +52,13 @@ const TrainerDashboardPage = lazy(() => import('@/pages/trainer/TrainerDashboard
 const TrainerProfilePage = lazy(() => import('@/pages/trainer/TrainerProfilePage'));
 const TrainerContractsPage = lazy(() => import('@/pages/trainer/TrainerContractsPage'));
 const TrainerHorsesPage = lazy(() => import('@/pages/trainer/TrainerHorsesPage'));
+const TrainerMyRacesPage = lazy(() => import('@/pages/trainer/TrainerMyRacesPage'));
 
 // Jockey
 const JockeyDashboardPage = lazy(() => import('@/pages/jockey/JockeyDashboardPage'));
 const JockeyMyProfilePage = lazy(() => import('@/pages/jockey/JockeyMyProfilePage'));
 const JockeyRaceRequestsPage = lazy(() => import('@/pages/jockey/JockeyRaceRequestsPage'));
+const JockeyMyRacesPage = lazy(() => import('@/pages/jockey/JockeyMyRacesPage'));
 
 // Referee
 const RefereeDashboardPage = lazy(() => import('@/pages/referee/RefereeDashboardPage'));
@@ -64,6 +70,7 @@ const RefereeMyProfilePage = lazy(() => import('@/pages/referee/RefereeMyProfile
 // Admin
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
 const AdminUsersPage = lazy(() => import('@/pages/admin/AdminUsersPage'));
+const AdminPenaltiesPage = lazy(() => import('@/pages/admin/AdminPenaltiesPage'));
 const AdminRaceListPage = lazy(() => import('@/pages/admin/AdminRaceListPage'));
 const AdminRaceDetailPage = lazy(() => import('@/pages/admin/AdminRaceDetailPage'));
 const AdminEditRacePage = lazy(() => import('@/pages/admin/AdminEditRacePage'));
@@ -101,6 +108,9 @@ export default function App() {
           <Route path="/bet/races" element={<Layout><BetRacesPage /></Layout>} />
           <Route path="/results" element={<Layout><RaceResultsPage /></Layout>} />
           <Route path="/about" element={<Layout><AboutPage /></Layout>} />
+          <Route path="/rules" element={<Layout><RulesPage /></Layout>} />
+          <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
+          <Route path="/news" element={<Layout><NewsPage /></Layout>} />
 
           {/* ── Authenticated (AppLayout: sidebar + app header) ───────── */}
 
@@ -189,6 +199,11 @@ export default function App() {
               <AppLayout><TrainingContractsPage /></AppLayout>
             </ProtectedRoute>
           } />
+          <Route path="/horse-owner/my-races" element={
+            <ProtectedRoute allowedRoles={['HORSE_OWNER']}>
+              <AppLayout><HorseOwnerMyRacesPage /></AppLayout>
+            </ProtectedRoute>
+          } />
 
           {/* Trainer */}
           <Route path="/trainer/dashboard" element={
@@ -211,6 +226,11 @@ export default function App() {
               <AppLayout><TrainerHorsesPage /></AppLayout>
             </ProtectedRoute>
           } />
+          <Route path="/trainer/my-races" element={
+            <ProtectedRoute allowedRoles={['TRAINER']}>
+              <AppLayout><TrainerMyRacesPage /></AppLayout>
+            </ProtectedRoute>
+          } />
 
           {/* Jockey */}
           <Route path="/jockey/dashboard" element={
@@ -226,6 +246,11 @@ export default function App() {
           <Route path="/jockey/race-requests" element={
             <ProtectedRoute allowedRoles={['JOCKEY']}>
               <AppLayout><JockeyRaceRequestsPage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/jockey/my-races" element={
+            <ProtectedRoute allowedRoles={['JOCKEY']}>
+              <AppLayout><JockeyMyRacesPage /></AppLayout>
             </ProtectedRoute>
           } />
 
@@ -250,6 +275,11 @@ export default function App() {
           <Route path="/admin/users" element={
             <ProtectedRoute allowedRoles={['ADMIN']}>
               <AppLayout><AdminUsersPage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/penalties" element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AppLayout><AdminPenaltiesPage /></AppLayout>
             </ProtectedRoute>
           } />
           {/* Create Race, Set Odds and Approve Horses merged into Manage Races as

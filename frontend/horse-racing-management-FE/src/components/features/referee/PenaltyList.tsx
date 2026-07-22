@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Trash2, Gavel } from 'lucide-react';
 import { cancelPenalty } from '@/api/refereeApi';
 import { getErrorMessage } from '@/utils/errors';
 import EmptyState from '@/components/ui/EmptyState';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import PenaltyBadge from './PenaltyBadge';
 import type { Penalty } from '@/types';
 
@@ -22,6 +24,8 @@ export default function PenaltyList({
   loading,
   error,
   showRefereeName = false,
+  showRaceName = false,
+  readOnly = false,
   onChanged,
   onToast,
 }: {
@@ -29,26 +33,29 @@ export default function PenaltyList({
   loading?: boolean;
   error?: string;
   showRefereeName?: boolean;
+  showRaceName?: boolean;
+  /** Hides the Cancel action — for viewers (horse owner, admin) who aren't the issuing referee. */
+  readOnly?: boolean;
   onChanged?: () => void;
   onToast?: (msg: string, type?: 'success' | 'error') => void;
 }) {
   // Backend hard-deletes the row (penaltyRepository.deleteById) — there is no
   // soft-delete or audit trail, so confirm before firing.
-  const handleCancel = async (p: Penalty) => {
-    const extra = p.isDisqualified
-      ? '\n\nThe horse will be reinstated into the race.'
-      : '';
-    const ok = window.confirm(
-      `Cancel this penalty for ${p.horseName ?? 'this horse'}? This cannot be undone.${extra}`,
-    );
-    if (!ok) return;
+  const [confirmTarget, setConfirmTarget] = useState<Penalty | null>(null);
+  const [cancelling, setCancelling] = useState(false);
 
+  const handleCancel = async () => {
+    if (!confirmTarget) return;
+    setCancelling(true);
     try {
-      await cancelPenalty(p.id);
+      await cancelPenalty(confirmTarget.id);
       onToast?.('Penalty cancelled.', 'success');
       onChanged?.();
     } catch (e: unknown) {
       onToast?.(getErrorMessage(e, 'Failed to cancel penalty.'), 'error');
+    } finally {
+      setCancelling(false);
+      setConfirmTarget(null);
     }
   };
 
@@ -69,6 +76,7 @@ export default function PenaltyList({
   }
 
   return (
+    <>
     <div className="flex flex-col gap-2">
       {penalties.map((p) => (
         <div
@@ -91,19 +99,42 @@ export default function PenaltyList({
               {p.timePenaltySeconds != null && (
                 <span className="tnum">+{p.timePenaltySeconds}s</span>
               )}
+              {showRaceName && p.raceName && <span>in {p.raceName}</span>}
               {showRefereeName && p.refereeName && <span>by {p.refereeName}</span>}
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => handleCancel(p)}
-            className="inline-flex shrink-0 items-center gap-1.5 border border-rim px-2.5 py-1.5 text-xs font-semibold text-ink-3 transition-colors hover:border-fail/40 hover:text-fail"
-          >
-            <Trash2 size={12} /> Cancel
-          </button>
+          {!readOnly && (
+            <button
+              type="button"
+              onClick={() => setConfirmTarget(p)}
+              className="inline-flex shrink-0 items-center gap-1.5 border border-rim px-2.5 py-1.5 text-xs font-semibold text-ink-3 transition-colors hover:border-fail/40 hover:text-fail"
+            >
+              <Trash2 size={12} /> Cancel
+            </button>
+          )}
         </div>
       ))}
     </div>
+
+    {!readOnly && (
+      <ConfirmDialog
+        open={confirmTarget != null}
+        onClose={() => setConfirmTarget(null)}
+        onConfirm={handleCancel}
+        loading={cancelling}
+        title="Cancel This Penalty?"
+        message={
+          confirmTarget
+            ? `Cancel this penalty for ${confirmTarget.horseName ?? 'this horse'}? This cannot be undone.${
+                confirmTarget.isDisqualified ? ' The horse will be reinstated into the race.' : ''
+              }`
+            : undefined
+        }
+        confirmLabel="Cancel Penalty"
+        variant="danger"
+      />
+    )}
+    </>
   );
 }

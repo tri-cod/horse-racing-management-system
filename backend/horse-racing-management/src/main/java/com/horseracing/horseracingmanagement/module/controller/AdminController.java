@@ -8,9 +8,13 @@ import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminStatsRespo
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminUserItemResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.UpdateUserRoleRequest;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.UpdateUserStatusRequest;
+import com.horseracing.horseracingmanagement.module.dto.AuthDto.AuthMeResponse;
+import com.horseracing.horseracingmanagement.module.dto.AuthDto.RegisterRequest;
 import com.horseracing.horseracingmanagement.module.service.AdminUserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +37,13 @@ public class AdminController {
             @RequestParam(required = false) UserStatus status) {
         return ResponseEntity.ok(ApiResponse.success("Users fetched",
                 adminUserService.getUsers(page, size, keyword, role, status)));
+    }
+    @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Operation(summary = "create a new user account")
+    public ResponseEntity<ApiResponse<AuthMeResponse>> register(@Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Register success", adminUserService.createUserAccout(request)));
     }
 
     @PutMapping("/users/{id}/role")

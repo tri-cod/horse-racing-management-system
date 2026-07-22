@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Bell, Trophy, Target, CheckCircle, Wallet, Info, CheckCheck, Trash2 } from 'lucide-react';
 import { useNotifications } from '@/hooks/useNotifications';
 import EmptyState from '@/components/ui/EmptyState';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -108,6 +109,8 @@ function NotifItem({
 export default function NotificationsPage() {
   const addToast = useToast();
   const [tab, setTab] = useState<'all' | 'unread'>('all');
+  const [confirmClearAll, setConfirmClearAll] = useState(false);
+  const [clearingAll, setClearingAll] = useState(false);
   const {
     notifications, unreadCount, loading, error,
     markAsRead, markAllAsRead, deleteNotification, deleteAllNotifications,
@@ -120,9 +123,10 @@ export default function NotificationsPage() {
   };
 
   const handleDeleteAll = async () => {
-    if (!window.confirm('Delete all notifications? This cannot be undone.')) return;
+    setClearingAll(true);
     try { await deleteAllNotifications(); }
     catch (e: unknown) { addToast(getErrorMessage(e, 'Failed to delete notifications.'), 'error'); }
+    finally { setClearingAll(false); setConfirmClearAll(false); }
   };
 
   return (
@@ -146,7 +150,7 @@ export default function NotificationsPage() {
               )}
               <button
                 type="button"
-                onClick={handleDeleteAll}
+                onClick={() => setConfirmClearAll(true)}
                 className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:border-fail/30 hover:bg-fail-subtle hover:text-fail"
               >
                 <Trash2 size={13} /> Clear all
@@ -203,6 +207,17 @@ export default function NotificationsPage() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmClearAll}
+        onClose={() => setConfirmClearAll(false)}
+        onConfirm={handleDeleteAll}
+        loading={clearingAll}
+        title="Clear All Notifications?"
+        message="Delete all notifications? This cannot be undone."
+        confirmLabel="Clear All"
+        variant="danger"
+      />
     </div>
   );
 }

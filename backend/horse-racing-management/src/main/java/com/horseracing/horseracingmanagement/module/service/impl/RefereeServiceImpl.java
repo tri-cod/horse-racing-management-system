@@ -138,6 +138,21 @@ public class RefereeServiceImpl implements RefereeService {
             throw new RuntimeException("Can only issue penalty during ONGOING race");
         }
 
+        // Chỉ được phạt ngựa đang thực sự tham gia đua — chặn phạt ngựa đã bị
+        // DISQUALIFIED, WITHDRAWN, hay chưa từng được duyệt (FE đã lọc theo status
+        // APPROVED nhưng phải chặn cả ở BE, phòng gọi thẳng API).
+        if (raceHorse.getStatus() != RaceHorseStatus.APPROVED) {
+            throw new RuntimeException("This horse is not currently racing (status: " + raceHorse.getStatus() + ") — it cannot be penalised");
+        }
+
+        if ("FINE".equals(request.getPenaltyType()) && (request.getAmount() == null || request.getAmount() <= 0)) {
+            throw new RuntimeException("Fine amount must be greater than zero");
+        }
+        if ("TIME_PENALTY".equals(request.getPenaltyType())
+                && (request.getTimePenaltySeconds() == null || request.getTimePenaltySeconds() <= 0)) {
+            throw new RuntimeException("Time penalty must be greater than zero seconds");
+        }
+
         Penalty penalty = Penalty.builder()
                 .raceHorse(raceHorse)
                 .referee(referee)
@@ -512,10 +527,15 @@ public class RefereeServiceImpl implements RefereeService {
     }
 
     private PenaltyResponse mapToPenaltyResponse(Penalty penalty) {
+        HorseOwner owner = horseOwnerRepository.findById(penalty.getRaceHorse().getHorse().getOwnerId()).orElse(null);
         return PenaltyResponse.builder()
                 .id(penalty.getId())
                 .raceHorseId(penalty.getRaceHorse().getId())
+                .horseId(penalty.getRaceHorse().getHorse().getId())
                 .horseName(penalty.getRaceHorse().getHorse().getHorseName())
+                .raceId(penalty.getRaceHorse().getRace().getId())
+                .raceName(penalty.getRaceHorse().getRace().getRaceName())
+                .ownerName(owner != null ? owner.getName() : null)
                 .refereeId(penalty.getReferee().getId())
                 .refereeName(penalty.getReferee().getUser().getFullName())
                 .reason(penalty.getReason())

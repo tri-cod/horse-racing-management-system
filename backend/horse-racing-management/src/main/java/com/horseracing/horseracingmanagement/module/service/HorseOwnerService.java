@@ -4,6 +4,7 @@ import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseCurrentSta
 import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseRaceHistoryResponse;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.*;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
+import com.horseracing.horseracingmanagement.module.dto.RefereeDto.PenaltyResponse;
 import com.horseracing.horseracingmanagement.module.entity.Horse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,6 @@ import java.util.List;
 @Service
 public interface HorseOwnerService {
     SignHorseResponse signHorse(SignHorseRequest request, Long userId);
-    SignHorseResponse assignTrainer(Long horseId, Long trainerId, Long userId);
     SignHorseResponse getHorse(Long horseId);
     List<SignHorseResponse> getHorseList(Long userId);
 
@@ -25,7 +25,6 @@ public interface HorseOwnerService {
     HorseRaceHistoryResponse getCurrentRace(Long horseId);
 
     List<HorseCurrentStatusResponse> getAllHorsesWithCurrentRace();
-    List<HorseCurrentStatusResponse> getHorsesByRaceId(Long raceId);
     SignHorseResponse updateHorse(Long horseId, UpdateHorse request, Long userId);
     void deleteHorse(Long horseId, Long userId);
     HorseCurrentStatusResponse mapToCurrentStatusResponse(Horse horse);
@@ -41,5 +40,8 @@ public interface HorseOwnerService {
     OwnerStatsResponse getStats(Long ownerId);
     HorseOwnerProfileResponse completeProfile(CompleteHorseOwnerProfileRequest request, Long userId);
     HorseOwnerProfileResponse getMyProfile(Long userId);
+
+    List<PenaltyResponse> getHorsePenalties(Long horseId, Long userId);
+    List<PenaltyResponse> getMyPenalties(Long userId);
 
 }

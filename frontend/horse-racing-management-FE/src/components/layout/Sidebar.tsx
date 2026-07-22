@@ -17,6 +17,7 @@ const ROLE_ITEMS: Partial<Record<UserRole, NavItem[]>> = {
         { icon: UserCog, label: 'Manage Users', href: '/admin/users' },
         { icon: Undo2, label: 'Horse Withdrawals', href: '/admin/withdrawal-requests' },
         { icon: PencilLine, label: 'Manage Races', href: '/admin/races', end: true },
+        { icon: Gavel, label: 'Penalties', href: '/admin/penalties' },
         { icon: Landmark, label: 'System Wallet', href: '/admin/wallet' },
     ],
 REFEREE: [
@@ -31,6 +32,7 @@ REFEREE: [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/horse-owner/dashboard' },
         { icon: Shield, label: 'My Horses', href: '/horse-owner/horses' },
         { icon: ClipboardList, label: 'My Registrations', href: '/horse-owner/race-registrations' },
+        { icon: Flag, label: 'My Races', href: '/horse-owner/my-races' },
         { icon: Dumbbell, label: 'Training Contracts', href: '/horse-owner/training-contracts' },
         { icon: UserCog, label: 'My Profile', href: '/horse-owner/profile' },
         { icon: Wallet, label: 'My Wallet', href: '/my-wallet' },
@@ -39,6 +41,7 @@ REFEREE: [
     TRAINER: [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/trainer/dashboard' },
         { icon: Shield, label: 'Managed Horses', href: '/trainer/horses' },
+        { icon: Flag, label: 'My Races', href: '/trainer/my-races' },
         { icon: Dumbbell, label: 'Training Contracts', href: '/trainer/contracts' },
         { icon: UserCog, label: 'My Profile', href: '/trainer/profile' },
         { icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
@@ -50,6 +53,7 @@ REFEREE: [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/jockey/dashboard' },
         { icon: UserCog, label: 'My Profile', href: '/jockey/profile' },
         { icon: Send, label: 'Race Requests', href: '/jockey/race-requests' },
+        { icon: Flag, label: 'My Races', href: '/jockey/my-races' },
         { icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
     STAFF: [
         { icon: TrendingUp, label: 'Set Odds', href: '/admin/races?tab=odds' },],

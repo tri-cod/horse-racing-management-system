@@ -1,6 +1,7 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
+import com.horseracing.horseracingmanagement.common.constant.RoleName;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SendTrainingContractRequest;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.TrainingContractResponse;
 import com.horseracing.horseracingmanagement.module.entity.*;
@@ -11,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
@@ -25,6 +27,7 @@ public class TrainingContractServiceImpl implements TrainingContractService {
     private final TrainerRepository trainerRepository;
     private final HorseOwnerRepository horseOwnerRepository;
     private final WalletRepository walletRepository;
+    private final UserRepository userRepository;
     private final NotificationService notificationService;
 
     @Override
@@ -134,6 +137,13 @@ public class TrainingContractServiceImpl implements TrainingContractService {
         ownerWallet.setBalance(ownerWallet.getBalance().subtract(contract.getFee()));
         walletRepository.save(ownerWallet);
 
+        // ← Escrow: giữ tiền ở ví admin cho đến khi hợp đồng hoàn tất hoặc bị hủy giữa chừng
+        userRepository.findFirstByRole_Rolename(RoleName.ADMIN).ifPresent(adminUser ->
+                walletRepository.findByUser_Id(adminUser.getId()).ifPresent(adminWallet -> {
+                    adminWallet.setBalance(adminWallet.getBalance().add(contract.getFee()));
+                    walletRepository.save(adminWallet);
+                }));
+
         // ← Cập nhật Horse — gán trainerId
         Horse horse = contract.getHorse();
         horse.setTrainerId(contract.getTrainer().getId());
@@ -208,20 +218,98 @@ public class TrainingContractServiceImpl implements TrainingContractService {
             throw new RuntimeException("This contract is not yours");
         }
 
-        if (!"PENDING".equals(contract.getStatus())) {
-            throw new RuntimeException("Can only cancel PENDING contracts");
+        boolean wasActive = "ACTIVE".equals(contract.getStatus());
+        if (!"PENDING".equals(contract.getStatus()) && !wasActive) {
+            throw new RuntimeException("Can only cancel a pending request or terminate an active contract");
+        }
+
+        String trainerMessage;
+        if (wasActive) {
+            // Early termination of an ACTIVE contract — split the fee already escrowed
+            // in the admin wallet: 50% back to the owner, 20% to the trainer as
+            // compensation for work already done, the remaining 30% stays with the
+            // platform as an early-termination fee.
+            BigDecimal ownerShare = contract.getFee().multiply(new BigDecimal("0.50"));
+            BigDecimal trainerShare = contract.getFee().multiply(new BigDecimal("0.20"));
+
+            Wallet ownerWallet = walletRepository.findByUser_Id(owner.getUser().getId())
+                    .orElseThrow(() -> new RuntimeException("Owner wallet not found"));
+            Wallet trainerWallet = walletRepository.findByUser_Id(contract.getTrainer().getUser().getId())
+                    .orElseThrow(() -> new RuntimeException("Trainer wallet not found"));
+
+            userRepository.findFirstByRole_Rolename(RoleName.ADMIN).ifPresent(adminUser ->
+                    walletRepository.findByUser_Id(adminUser.getId()).ifPresent(adminWallet -> {
+                        adminWallet.setBalance(adminWallet.getBalance().subtract(ownerShare).subtract(trainerShare));
+                        walletRepository.save(adminWallet);
+                    }));
+
+            ownerWallet.setBalance(ownerWallet.getBalance().add(ownerShare));
+            walletRepository.save(ownerWallet);
+            trainerWallet.setBalance(trainerWallet.getBalance().add(trainerShare));
+            walletRepository.save(trainerWallet);
+
+            trainerMessage = String.format(
+                    "Owner '%s' ended the training contract for horse '%s' early. %s has been paid to you as compensation.",
+                    owner.getName(), contract.getHorse().getHorseName(), trainerShare);
+        } else {
+            trainerMessage = String.format("Owner '%s' cancelled the training contract for horse '%s'.",
+                    owner.getName(), contract.getHorse().getHorseName());
         }
 
         contract.setStatus("CANCELLED");
         TrainingContract saved = contractRepository.save(contract);
 
-        // Notify trainer
         notificationService.sendToUser(
                 contract.getTrainer().getUser().getId(),
-                "Contract Cancelled",
-                String.format("Owner '%s' cancelled the training contract for horse '%s'.",
-                        owner.getName(),
-                        contract.getHorse().getHorseName()),
+                wasActive ? "Training Contract Terminated Early" : "Contract Cancelled",
+                trainerMessage,
+                NotificationType.SYSTEM,
+                contractId
+        );
+
+        return mapToResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public TrainingContractResponse completeContract(Long contractId) {
+        TrainingContract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+
+        if (!"ACTIVE".equals(contract.getStatus())) {
+            throw new RuntimeException("Contract is not active");
+        }
+
+        // Release the fee escrowed in the admin wallet out to the trainer now that
+        // the contract has run its full term.
+        Wallet trainerWallet = walletRepository.findByUser_Id(contract.getTrainer().getUser().getId())
+                .orElseThrow(() -> new RuntimeException("Trainer wallet not found"));
+
+        userRepository.findFirstByRole_Rolename(RoleName.ADMIN).ifPresent(adminUser ->
+                walletRepository.findByUser_Id(adminUser.getId()).ifPresent(adminWallet -> {
+                    adminWallet.setBalance(adminWallet.getBalance().subtract(contract.getFee()));
+                    walletRepository.save(adminWallet);
+                }));
+
+        trainerWallet.setBalance(trainerWallet.getBalance().add(contract.getFee()));
+        walletRepository.save(trainerWallet);
+
+        contract.setStatus("COMPLETED");
+        TrainingContract saved = contractRepository.save(contract);
+
+        notificationService.sendToUser(
+                contract.getTrainer().getUser().getId(),
+                "🎉 Training Contract Completed",
+                String.format("Your training contract for horse '%s' has ended. The full fee of %s has been paid out to your wallet.",
+                        contract.getHorse().getHorseName(), contract.getFee()),
+                NotificationType.SYSTEM,
+                contractId
+        );
+        notificationService.sendToUser(
+                contract.getOwner().getUser().getId(),
+                "Training Contract Completed",
+                String.format("The training contract for horse '%s' with trainer '%s' has ended.",
+                        contract.getHorse().getHorseName(), contract.getTrainer().getUser().getFullName()),
                 NotificationType.SYSTEM,
                 contractId
         );
