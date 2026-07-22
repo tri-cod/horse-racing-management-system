@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Users, ClipboardCheck, ArrowDownLeft, Landmark, BadgeDollarSign, Flag,
-  ShieldAlert, Trophy, Rabbit, ArrowRight,
+  Trophy, Rabbit, ArrowRight,
 } from 'lucide-react';
 import { getUsers, getAdminStats } from '@/api/adminApi';
 import { getPendingHorses } from '@/api/raceHorseApi';
@@ -227,19 +227,6 @@ export default function AdminDashboardPage() {
             hint="Total funds held by Royal Derby"
             tone="gold"
           />
-          </FadeInItem>
-          <FadeInItem>
-          <Link to="/admin/reports" className="block">
-            <StatCard
-              icon={ShieldAlert}
-              label="Pending Reports"
-              value={stats?.totalPendingReports ?? 0}
-              loading={statsLoading}
-              error={statsError}
-              hint="Reports from members awaiting review"
-              tone={!statsLoading && (stats?.totalPendingReports ?? 0) > 0 ? 'warn' : 'default'}
-            />
-          </Link>
           </FadeInItem>
         </FadeInStagger>
       </div>

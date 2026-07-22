@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard, Flag,
     Shield, ClipboardList, Ticket, Wallet, UserCog, TrendingUp,
-    User, LogOut, Landmark, PencilLine, FlagTriangleRight, Send, Undo2, Gavel, Dumbbell, ShieldAlert,
+    User, LogOut, Landmark, PencilLine, FlagTriangleRight, Send, Undo2, Gavel, Dumbbell,
     type LucideIcon,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -18,7 +18,6 @@ const ROLE_ITEMS: Partial<Record<UserRole, NavItem[]>> = {
         { icon: Undo2, label: 'Horse Withdrawals', href: '/admin/withdrawal-requests' },
         { icon: PencilLine, label: 'Manage Races', href: '/admin/races', end: true },
         { icon: Landmark, label: 'System Wallet', href: '/admin/wallet' },
-        { icon: ShieldAlert, label: 'Reports', href: '/admin/reports' },
     ],
 REFEREE: [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/referee/dashboard' },

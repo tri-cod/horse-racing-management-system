@@ -7,7 +7,6 @@ import { silkColor } from '@/utils/jockeySilks';
 import { calculateAge } from '@/utils/age';
 import Container from '@/components/ui/Container';
 import Seo from '@/components/seo/Seo';
-import ReportButton from '@/components/features/report/ReportButton';
 import type { Jockey } from '@/types';
 
 // Chiều cao header cố định của site (Layout.tsx: pt-[113px]).
@@ -178,14 +177,6 @@ export default function JockeyProfilePage() {
             <Link to="/jockeys" className="inline-flex items-center gap-1.5 text-sm font-medium text-white/75 transition-colors hover:text-white">
               <ChevronLeft size={14} /> All Jockeys
             </Link>
-            {jockey.userId != null && (
-              <ReportButton
-                targetType="USER"
-                targetId={jockey.userId}
-                targetName={jockey.name}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/60 transition-colors hover:text-fail"
-              />
-            )}
           </div>
 
           <motion.div

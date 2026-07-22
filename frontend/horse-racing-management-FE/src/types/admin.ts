@@ -37,9 +37,6 @@ export interface AdminStats {
  totalActiveHorses: number;
  totalRacingHorses: number;
 
- // Report
- totalPendingReports: number;
-
  // Transactions
  totalPendingDeposits: number;
  totalPendingWithdraws: number;

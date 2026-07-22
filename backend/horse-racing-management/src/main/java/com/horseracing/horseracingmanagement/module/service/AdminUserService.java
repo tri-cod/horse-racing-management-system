@@ -5,10 +5,6 @@ import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import com.horseracing.horseracingmanagement.common.response.PageResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminStatsResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminUserItemResponse;
-import com.horseracing.horseracingmanagement.module.dto.ReportDto.CreateReportRequest;
-import com.horseracing.horseracingmanagement.module.dto.ReportDto.ReportResponse;
-
-import java.util.List;
 
 public interface AdminUserService {
     PageResponse<AdminUserItemResponse> getUsers(int page, int size, String keyword, RoleName role, UserStatus status);
@@ -18,14 +14,7 @@ public interface AdminUserService {
     void deleteUser(Long userId);           // ← thêm
     void deleteHorse(Long horseId);         // ← thêm
 
-    // Report
-    ReportResponse createReport(CreateReportRequest request, Long reporterId);
-    List<ReportResponse> getPendingReports();
-    List<ReportResponse> getAllReports();
-    ReportResponse reviewReport(Long reportId, String action, String adminNote, Long adminId);
-
     // Stats
     AdminStatsResponse getStats();
-
 
 }
