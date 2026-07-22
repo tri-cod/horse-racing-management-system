@@ -17,8 +17,8 @@ public enum DistanceCategory {
     public int getMinMeters() { return minMeters; }
     public int getMaxMeters() { return maxMeters; }
 
-    /** Suy ra nhóm cự ly từ số mét của race */
-    public static DistanceCategory fromMeters(Integer meters) {
+    /** Suy ra nhóm cự ly từ số mét của race (nhận số thực để hỗ trợ cự ly có phần lẻ) */
+    public static DistanceCategory fromMeters(Double meters) {
         if (meters == null) return null;
         for (DistanceCategory c : values()) {
             if (meters >= c.minMeters && meters <= c.maxMeters) return c;

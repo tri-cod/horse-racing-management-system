@@ -80,6 +80,15 @@ public class RaceHorseServiceImpl implements RaceHorseService {
             throw new RuntimeException("Horse must have a trainer before registering");
         }
 
+        // ← checkEligibility() đã tính đủ điều kiện tuổi/giới tính/hạng đua/tiền thưởng/cân
+        // nặng — trước đây chỉ dùng để FE xem trước (advisory), chưa hề được gọi ở bước
+        // đăng ký thật, nên chủ ngựa vẫn đăng ký được ngựa không đủ điều kiện qua API trực tiếp.
+        HorseEligibilityResponse eligibility = checkEligibility(race.getId(), horse.getId());
+        if (!eligibility.isEligible()) {
+            throw new RuntimeException("Horse is not eligible for this race: "
+                    + String.join("; ", eligibility.getReasons()));
+        }
+
         if (raceHorseRepository.existsByRace_IdAndHorse_Id(race.getId(), horse.getId())) {
             throw new RuntimeException("Horse already registered in this race");
         }
@@ -748,6 +757,12 @@ public class RaceHorseServiceImpl implements RaceHorseService {
         if (race.getGenderRestriction() != null && !race.getGenderRestriction().isBlank()
                 && !race.getGenderRestriction().equalsIgnoreCase(horse.getGender())) {
             reasons.add("This race is restricted to " + race.getGenderRestriction() + " horses");
+        }
+
+// ---- Weight ----
+        if (race.getMinWeight() != null
+                && (horse.getWeight() == null || horse.getWeight() < race.getMinWeight())) {
+            reasons.add("Horse does not meet the minimum weight requirement (" + race.getMinWeight() + " kg)");
         }
 
 // ---- Race Class & Earnings ----

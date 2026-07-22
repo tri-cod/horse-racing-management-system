@@ -1,8 +1,9 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { signHorse, updateHorse, uploadAvatar } from '@/api/horseOwnerApi';
+import { signHorse, updateHorse, uploadAvatar, type SignHorsePayload } from '@/api/horseOwnerApi';
 import { getErrorMessage } from '@/utils/errors';
+import { DISTANCE_CATEGORY_LABELS } from '@/utils/horsePreferences';
 import type { Horse } from '@/types';
 
 // ─── Field definitions (exported so the form component can render them) ───────
@@ -13,7 +14,11 @@ export interface FieldDef {
  type: 'text' | 'number' | 'select' | 'file';
  placeholder?: string;
  options?: string[];
+ /** Display label per option value — falls back to the raw option string when absent. */
+ optionLabels?: Record<string, string>;
 }
+
+const DISTANCE_LABELS: Record<string, string> = { '': 'No preference', ...DISTANCE_CATEGORY_LABELS };
 
 export const FIELDS: FieldDef[] = [
  { name: 'horseName', label: 'Horse Name', type: 'text', placeholder: 'Thunder' },
@@ -24,6 +29,11 @@ export const FIELDS: FieldDef[] = [
  { name: 'history_rank', label: 'Achievements', type: 'text', placeholder: 'Champion 2024' },
  { name: 'avatar_url', label: 'Avatar', type: 'file', placeholder: '' },
  { name: 'weight', label: 'Weight (kg)', type: 'number', placeholder: '480' },
+ {
+   name: 'preferredDistance', label: 'Preferred Distance', type: 'select',
+   options: ['', 'SPRINT', 'MILE', 'MIDDLE', 'LONG'], optionLabels: DISTANCE_LABELS,
+ },
+ { name: 'preferredSurface', label: 'Preferred Surface', type: 'text', placeholder: 'e.g. Turf' },
  { name: 'status', label: 'Status', type: 'select', options: ['ACTIVE', 'INACTIVE', 'RETIRED'] },
 ];
 
@@ -38,6 +48,8 @@ export interface HorseFormData {
  history_rank: string;
  avatar_url: string;
  weight: string;
+ preferredDistance: string;
+ preferredSurface: string;
  status: string;
  [key: string]: string;
 }
@@ -99,7 +111,8 @@ function validate(name: keyof HorseFormData, value: unknown): string {
 
 const initialForm: HorseFormData = {
  horseName: '', breed: '', age: '', gender: 'Male',
- speedRating: '', history_rank: '', avatar_url: '', weight: '', status: 'ACTIVE',
+ speedRating: '', history_rank: '', avatar_url: '', weight: '',
+ preferredDistance: '', preferredSurface: '', status: 'ACTIVE',
 };
 
 function formFromHorse(horse: Horse): HorseFormData {
@@ -112,6 +125,8 @@ function formFromHorse(horse: Horse): HorseFormData {
  history_rank: horse.historyRank ?? '',
  avatar_url: horse.avatarUrl ?? '',
  weight: horse.weight != null ? String(horse.weight) : '',
+ preferredDistance: horse.preferredDistance ?? '',
+ preferredSurface: horse.preferredSurface ?? '',
  status: horse.status ?? 'ACTIVE',
  };
 }
@@ -199,6 +214,8 @@ export function useHorseForm({ mode = 'create', horseId, initialValues }: UseHor
  history_rank: form.history_rank.trim() || undefined,
  avatar_url: avatarUrl || undefined,
  weight: form.weight ? Number(form.weight) : undefined,
+ preferredDistance: (form.preferredDistance || undefined) as SignHorsePayload['preferredDistance'],
+ preferredSurface: form.preferredSurface.trim() || undefined,
  status: form.status || undefined,
  };
 

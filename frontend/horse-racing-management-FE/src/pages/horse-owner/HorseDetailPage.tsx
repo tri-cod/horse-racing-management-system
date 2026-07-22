@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Dna, Cake, VenetianMask, Scale, Zap, Trophy, UserCog, Pencil, Trash2, Dumbbell, Gavel } from 'lucide-react';
+import { ArrowLeft, Dna, Cake, VenetianMask, Scale, Zap, Trophy, UserCog, Pencil, Trash2, Dumbbell, Gavel, Flag, Waves } from 'lucide-react';
+import { formatPreferredDistance } from '@/utils/horsePreferences';
 import { useHorseDetail } from '@/hooks/useHorseDetail';
 import { deleteHorse, getHorsePenalties } from '@/api/horseOwnerApi';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -201,6 +202,32 @@ export default function HorseDetailPage() {
               ))}
             </div>
           </div>
+
+          {/* Racing Preferences */}
+          {(h.preferredDistance || h.preferredSurface) && (
+            <div className="overflow-hidden border border-rim bg-surface-raised">
+              <div className="border-b border-rim px-5 py-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Racing</p>
+                <h2 className="mt-0.5 font-serif text-base font-bold text-ink">Preferences</h2>
+              </div>
+              <div className="grid grid-cols-2 divide-x divide-rim">
+                <div className="flex flex-col gap-1.5 px-5 py-4">
+                  <div className="flex items-center gap-1.5 text-ink-4">
+                    <Flag size={13} />
+                    <span className="text-[10px] font-semibold uppercase tracking-wider">Preferred Distance</span>
+                  </div>
+                  <p className="text-base font-semibold text-ink">{formatPreferredDistance(h.preferredDistance) ?? '—'}</p>
+                </div>
+                <div className="flex flex-col gap-1.5 px-5 py-4">
+                  <div className="flex items-center gap-1.5 text-ink-4">
+                    <Waves size={13} />
+                    <span className="text-[10px] font-semibold uppercase tracking-wider">Preferred Surface</span>
+                  </div>
+                  <p className="text-base font-semibold text-ink">{h.preferredSurface ?? '—'}</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Performance */}
           {(h.speedRating != null || achievements) && (

@@ -3,11 +3,29 @@ import { Upload, X, ArrowLeft } from 'lucide-react';
 import { uploadAvatar } from '@/api/horseOwnerApi';
 import { useReferees } from '@/hooks/useReferees';
 import Button from '@/components/ui/Button';
-import type { CreateRacePayload, RaceStatus } from '@/types';
+import type { CreateRacePayload, RaceStatus, RaceClass, GenderRestriction } from '@/types';
 
 const TRACK_CONDITIONS = ['Dry', 'Wet', 'Muddy', 'Fast', 'Soft'];
 const SURFACE_TYPES = ['Turf', 'Dirt', 'Synthetic'];
-const STEPS = ['Basic Info & Referee', 'Track & Schedule', 'Prize & Capacity', 'Media'];
+const STEPS = ['Basic Info & Referee', 'Track & Schedule', 'Eligibility', 'Prize & Capacity', 'Media'];
+
+const RACE_CLASSES: { value: RaceClass | ''; label: string; hint: string }[] = [
+ { value: '', label: 'No restriction', hint: '' },
+ { value: 'MAIDEN', label: 'Maiden', hint: 'Only horses that have never won a race' },
+ { value: 'CLASS_4', label: 'Class 4', hint: 'Career earnings up to 50,000,000₫' },
+ { value: 'CLASS_3', label: 'Class 3', hint: 'Career earnings up to 150,000,000₫' },
+ { value: 'CLASS_2', label: 'Class 2', hint: 'Career earnings up to 400,000,000₫' },
+ { value: 'CLASS_1', label: 'Class 1', hint: 'Career earnings up to 1,000,000,000₫' },
+ { value: 'LISTED', label: 'Listed', hint: 'Career earnings at least 200,000,000₫' },
+ { value: 'GRADE_1', label: 'Grade 1', hint: 'Career earnings at least 500,000,000₫' },
+];
+
+const GENDER_RESTRICTIONS: { value: GenderRestriction | ''; label: string }[] = [
+ { value: '', label: 'Any gender' },
+ { value: 'MALE', label: 'Male only' },
+ { value: 'FEMALE', label: 'Female only' },
+ { value: 'GELDING', label: 'Gelding only' },
+];
 
 // Every race runs at the same physical venue — locked so it can't drift per-race.
 const LOCKED_TRACK_NAME = 'Derby Track';
@@ -28,15 +46,18 @@ function toISO(local: string) {
 interface FormData {
  raceName: string; startTime: string; registrationOpenDate: string; registrationDeadline: string;
  trackName: string; trackCondition: string; surfaceType: string;
- totalprizepool: string; distance: string; location: string; capacity: string;
+ totalprizepool: string; distance: string; distanceMeters: string; location: string; capacity: string;
  bannerImageurl: string; refereeId: string; entryFee: string;
+ minAge: string; maxAge: string; genderRestriction: string; raceClass: string;
+ minEarnings: string; maxEarnings: string; minWeight: string;
 }
 
 type Errors = Partial<Record<keyof FormData | 'submit', string>>;
 
 const EMPTY: FormData = {
  raceName: '', startTime: '', registrationOpenDate: '', registrationDeadline: '', trackName: LOCKED_TRACK_NAME, trackCondition: 'Dry',
- surfaceType: 'Turf', totalprizepool: '', distance: '', location: LOCKED_LOCATION, capacity: '', bannerImageurl: '', refereeId: '', entryFee: '',
+ surfaceType: 'Turf', totalprizepool: '', distance: '', distanceMeters: '', location: LOCKED_LOCATION, capacity: '', bannerImageurl: '', refereeId: '', entryFee: '',
+ minAge: '', maxAge: '', genderRestriction: '', raceClass: '', minEarnings: '', maxEarnings: '', minWeight: '',
 };
 
 function Field({ id, label, required, optional, hint, error, children }: { id: string; label: string; required?: boolean; optional?: boolean; hint?: string; error?: string; children: ReactNode }) {
@@ -151,6 +172,29 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  <input id={id} type={type} className={inputCls(errors[field])} value={form[field]} onChange={set(field)} {...extra} />
  );
 
+ // Money fields (VND) — shown with thousand separators for readability (e.g. "5.000.000")
+ // while the underlying form state still stores plain digits, so parsing on submit is unchanged.
+ const formatMoney = (raw: string) => {
+ if (raw === '') return '';
+ const n = Number(raw);
+ return isNaN(n) ? raw : n.toLocaleString('vi-VN');
+ };
+
+ const moneyInp = (id: string, field: keyof FormData, placeholder?: string) => (
+ <div className="relative">
+ <input
+ id={id}
+ type="text"
+ inputMode="numeric"
+ className={`${inputCls(errors[field])} pr-8`}
+ value={formatMoney(form[field])}
+ onChange={(e) => setField(field, e.target.value.replace(/\D/g, ''))}
+ placeholder={placeholder}
+ />
+ <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-ink-4">₫</span>
+ </div>
+ );
+
  const validateStep = (s: number): Errors => {
  const errs: Errors = {};
  if (s === 1) {
@@ -167,11 +211,21 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  }
  }
  if (s === 3) {
+ if (form.distanceMeters !== '' && (isNaN(Number(form.distanceMeters)) || Number(form.distanceMeters) < 0)) errs.distanceMeters = 'Distance must be a positive number.';
+ if (form.minAge !== '' && (isNaN(Number(form.minAge)) || Number(form.minAge) < 0)) errs.minAge = 'Minimum age must be a positive number.';
+ if (form.maxAge !== '' && (isNaN(Number(form.maxAge)) || Number(form.maxAge) < 0)) errs.maxAge = 'Maximum age must be a positive number.';
+ if (form.minAge !== '' && form.maxAge !== '' && Number(form.minAge) > Number(form.maxAge)) errs.maxAge = 'Maximum age must be greater than or equal to minimum age.';
+ if (form.minWeight !== '' && (isNaN(Number(form.minWeight)) || Number(form.minWeight) < 0)) errs.minWeight = 'Minimum weight must be a positive number.';
+ if (form.minEarnings !== '' && (isNaN(Number(form.minEarnings)) || Number(form.minEarnings) < 0)) errs.minEarnings = 'Minimum earnings must be a positive number.';
+ if (form.maxEarnings !== '' && (isNaN(Number(form.maxEarnings)) || Number(form.maxEarnings) < 0)) errs.maxEarnings = 'Maximum earnings must be a positive number.';
+ if (form.minEarnings !== '' && form.maxEarnings !== '' && Number(form.minEarnings) > Number(form.maxEarnings)) errs.maxEarnings = 'Maximum earnings must be greater than or equal to minimum earnings.';
+ }
+ if (s === 4) {
  if (!form.totalprizepool || isNaN(Number(form.totalprizepool)) || Number(form.totalprizepool) < 0) errs.totalprizepool = 'Prize pool must be a positive number.';
  if (!form.capacity || isNaN(Number(form.capacity)) || Number(form.capacity) < 1) errs.capacity = 'Capacity must be at least 1.';
  if (form.entryFee !== '' && (isNaN(Number(form.entryFee)) || Number(form.entryFee) < 0)) errs.entryFee = 'Entry fee must be a positive number.';
  }
- if (s === 4) {
+ if (s === 5) {
  if (!form.bannerImageurl.trim()) errs.bannerImageurl = 'Banner image is required.';
  }
  return errs;
@@ -186,7 +240,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  const handleBack = () => { setErrors({}); setStep(displayedStep - 1); };
 
  const handleSubmit = async () => {
- const errs = validateStep(4);
+ const errs = validateStep(5);
  if (Object.keys(errs).length) { setErrors(errs); return; }
  setErrors({});
  const payload: CreateRacePayload & { status?: RaceStatus } = {
@@ -200,6 +254,14 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  };
  if (form.refereeId !== '') payload.refereeId = Number(form.refereeId);
  if (mode === 'create' && form.entryFee !== '') payload.entryFee = Number(form.entryFee);
+ if (form.distanceMeters !== '') payload.distanceMeters = Number(form.distanceMeters);
+ if (form.minAge !== '') payload.minAge = Number(form.minAge);
+ if (form.maxAge !== '') payload.maxAge = Number(form.maxAge);
+ if (form.genderRestriction !== '') payload.genderRestriction = form.genderRestriction as CreateRacePayload['genderRestriction'];
+ if (form.raceClass !== '') payload.raceClass = form.raceClass as CreateRacePayload['raceClass'];
+ if (form.minEarnings !== '') payload.minEarnings = Number(form.minEarnings);
+ if (form.maxEarnings !== '') payload.maxEarnings = Number(form.maxEarnings);
+ if (form.minWeight !== '') payload.minWeight = Number(form.minWeight);
  try { await onSubmit(payload); }
  catch (err: unknown) {
  const e = err as { response?: { data?: { message?: string; data?: Record<string, string> } }; message?: string };
@@ -247,6 +309,9 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  <Field id="rf-deadline" label="Registration Deadline" error={errors.registrationDeadline} hint="Auto-close 1 day before start if blank.">{inp('rf-deadline', 'registrationDeadline', 'datetime-local')}</Field>
  <Field id="rf-track" label="Track Name" required>{inp('rf-track', 'trackName', 'text', { disabled: true, className: `${inputCls()} cursor-not-allowed bg-surface-overlay text-ink-3` })}</Field>
  <Field id="rf-distance" label="Distance" required error={errors.distance}>{inp('rf-distance', 'distance', 'text', { placeholder: 'e.g. 1600m' })}</Field>
+ <Field id="rf-distance-m" label="Distance (meters)" optional error={errors.distanceMeters} hint="Real number — used to match a horse's preferred distance category. Leave blank to skip.">
+ {inp('rf-distance-m', 'distanceMeters', 'number', { placeholder: 'e.g. 1609.5', min: 0, step: 'any' })}
+ </Field>
  <Field id="rf-cond" label="Track Condition" required error={errors.trackCondition}>
  <select id="rf-cond" className={inputCls()} value={form.trackCondition} onChange={set('trackCondition')}>
  {TRACK_CONDITIONS.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -262,19 +327,53 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  )}
  {displayedStep === 3 && (
  <section className="flex flex-col gap-5">
+ <SectionHeader title="Eligibility Requirements" />
+ <p className="text-xs text-ink-3">All optional — leave blank for no restriction. A horse that doesn't meet these is blocked from registering.</p>
+ <div className="flex flex-col gap-4">
+ <div className="grid grid-cols-2 gap-4">
+ <Field id="rf-min-age" label="Min Age (years)" optional error={errors.minAge}>{inp('rf-min-age', 'minAge', 'number', { placeholder: 'e.g. 3', min: 0 })}</Field>
+ <Field id="rf-max-age" label="Max Age (years)" optional error={errors.maxAge}>{inp('rf-max-age', 'maxAge', 'number', { placeholder: 'e.g. 6', min: 0 })}</Field>
+ </div>
+ <Field id="rf-gender" label="Gender Restriction" optional error={errors.genderRestriction}>
+ <select id="rf-gender" className={inputCls()} value={form.genderRestriction} onChange={set('genderRestriction')}>
+ {GENDER_RESTRICTIONS.map((g) => <option key={g.value} value={g.value}>{g.label}</option>)}
+ </select>
+ </Field>
+ <Field id="rf-min-weight" label="Min Weight (kg)" optional error={errors.minWeight} hint="Horse must weigh at least this much to register.">
+ {inp('rf-min-weight', 'minWeight', 'number', { placeholder: 'e.g. 450', min: 0 })}
+ </Field>
+ <Field id="rf-class" label="Race Class" optional error={errors.raceClass}
+ hint={RACE_CLASSES.find((c) => c.value === form.raceClass)?.hint || 'Determines the default career-earnings range below.'}>
+ <select id="rf-class" className={inputCls()} value={form.raceClass} onChange={set('raceClass')}>
+ {RACE_CLASSES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+ </select>
+ </Field>
+ <div className="grid grid-cols-2 gap-4">
+ <Field id="rf-min-earnings" label="Min Career Earnings (VND)" optional error={errors.minEarnings} hint="Overrides the class default.">
+ {moneyInp('rf-min-earnings', 'minEarnings', 'e.g. 0')}
+ </Field>
+ <Field id="rf-max-earnings" label="Max Career Earnings (VND)" optional error={errors.maxEarnings} hint="Overrides the class default.">
+ {moneyInp('rf-max-earnings', 'maxEarnings', 'e.g. 150.000.000')}
+ </Field>
+ </div>
+ </div>
+ </section>
+ )}
+ {displayedStep === 4 && (
+ <section className="flex flex-col gap-5">
  <SectionHeader title="Prize & Capacity" />
  <div className="flex flex-col gap-4">
- <Field id="rf-prize" label="Prize Pool (VND)" required error={errors.totalprizepool}>{inp('rf-prize', 'totalprizepool', 'number', { placeholder: 'e.g. 500000000', min: 0 })}</Field>
+ <Field id="rf-prize" label="Prize Pool (VND)" required error={errors.totalprizepool}>{moneyInp('rf-prize', 'totalprizepool', 'e.g. 500.000.000')}</Field>
  <Field id="rf-capacity" label="Capacity (horses)" required error={errors.capacity}>{inp('rf-capacity', 'capacity', 'number', { placeholder: 'e.g. 12', min: 1 })}</Field>
  {mode === 'create' && (
  <Field id="rf-entry-fee" label="Entry Fee (VND)" optional error={errors.entryFee} hint="Charged to the horse owner's wallet on registration. Leave blank for a free race.">
- {inp('rf-entry-fee', 'entryFee', 'number', { placeholder: 'e.g. 100000', min: 0 })}
+ {moneyInp('rf-entry-fee', 'entryFee', 'e.g. 100.000')}
  </Field>
  )}
  </div>
  </section>
  )}
- {displayedStep === 4 && (
+ {displayedStep === 5 && (
  <section className="flex flex-col gap-5">
  <SectionHeader title="Media" />
  <Field id="rf-banner" label="Banner Image" required error={errors.bannerImageurl}>

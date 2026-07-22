@@ -1,11 +1,16 @@
 export type HorseStatus = 'ACTIVE' | 'RACING' | 'FINISHED' | 'INACTIVE' | 'RETIRED' | 'BANNED';
 
+// Backend enum DistanceCategory — the distance band a horse runs best at.
+export type DistanceCategory = 'SPRINT' | 'MILE' | 'MIDDLE' | 'LONG';
+
 export interface HorseCurrentStatusResponse {
   horseId: number;
   horseName: string;
   breed?: string;
   avatarUrl?: string;
   status?: string;
+  preferredDistance?: DistanceCategory | string | null;
+  preferredSurface?: string | null;
   currentRaceId?: number;
   currentRaceName?: string;
   currentRaceStatus?: string;
@@ -36,6 +41,9 @@ export interface Horse {
  historyRank?: string;
  color?: string;
  avatarUrl?: string;
+ description?: string;
+ preferredDistance?: DistanceCategory | string | null;
+ preferredSurface?: string | null;
  status: HorseStatus;
  ownerId: number;
  ownerName?: string;

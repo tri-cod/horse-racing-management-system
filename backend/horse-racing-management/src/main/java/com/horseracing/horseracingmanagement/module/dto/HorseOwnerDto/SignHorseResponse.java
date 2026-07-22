@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto;
 
+import com.horseracing.horseracingmanagement.common.constant.DistanceCategory;
 import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +27,8 @@ public class SignHorseResponse {
     private String avatarUrl;
     private Long weight;
     private String description;
+    private DistanceCategory preferredDistance;
+    private String preferredSurface;
     private HorseStatus status;
 
     private String trainerName;

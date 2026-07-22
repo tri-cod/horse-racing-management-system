@@ -147,6 +147,22 @@ public class RaceServiceImpl implements RaceService {
                 ? request.getStatus()
                 : determineInitialStatus(request.getRegistrationOpenDate());
 
+        // ← raceClass mang theo mức thưởng mặc định (VD: MAIDEN = 0-0, CLASS_3 = 0-150tr) —
+        // chỉ áp dụng mặc định khi admin không tự nhập minEarnings/maxEarnings riêng.
+        Long minEarnings = request.getMinEarnings();
+        Long maxEarnings = request.getMaxEarnings();
+        if (request.getRaceClass() != null) {
+            if (minEarnings == null) minEarnings = request.getRaceClass().getDefaultMinEarnings();
+            if (maxEarnings == null) maxEarnings = request.getRaceClass().getDefaultMaxEarnings();
+        }
+
+        // ← distance (chuỗi tự do, VD "1600m") vẫn được nhiều màn hình cũ dùng để hiển thị —
+        // nếu admin chỉ nhập distanceMeters (số thực) thì tự suy ra chuỗi hiển thị tương ứng.
+        String distance = request.getDistance();
+        if ((distance == null || distance.isBlank()) && request.getDistanceMeters() != null) {
+            distance = formatDistanceMeters(request.getDistanceMeters());
+        }
+
         Race race = Race.builder()
                 .raceName(request.getRaceName())
                 .startTime(request.getStartTime())
@@ -155,7 +171,7 @@ public class RaceServiceImpl implements RaceService {
                 .trackCondition(request.getTrackCondition())
                 .surfaceType(request.getSurfaceType())
                 .totalprizepool(request.getTotalprizepool())
-                .distance(request.getDistance())
+                .distance(distance)
                 .location(request.getLocation())
                 .capacity(request.getCapacity())
                 .bannerImageurl(request.getBannerImageurl())
@@ -163,9 +179,25 @@ public class RaceServiceImpl implements RaceService {
                 .registrationDeadline(request.getRegistrationDeadline())
                 .status(initialStatus)
                 .referee(referee)
+                .minAge(request.getMinAge())
+                .maxAge(request.getMaxAge())
+                .genderRestriction(request.getGenderRestriction())
+                .raceClass(request.getRaceClass())
+                .minEarnings(minEarnings)
+                .maxEarnings(maxEarnings)
+                .distanceMeters(request.getDistanceMeters())
+                .minWeight(request.getMinWeight())
                 .build();
 
         return mapToResponse(raceRepository.save(race));
+    }
+
+    private String formatDistanceMeters(Double meters) {
+        // Bỏ phần thập phân khi nó tròn số (1600.0 → "1600m"), giữ lại khi có số lẻ (1600.5 → "1600.5m")
+        if (meters == Math.floor(meters)) {
+            return meters.longValue() + "m";
+        }
+        return meters + "m";
     }
 
     private RaceStatus determineInitialStatus(Instant registrationOpenDate) {
@@ -307,13 +339,34 @@ public class RaceServiceImpl implements RaceService {
         race.setTrackCondition(request.getTrackCondition());
         race.setSurfaceType(request.getSurfaceType());
         race.setTotalprizepool(request.getTotalprizepool());
-        race.setDistance(request.getDistance());
+
+        String distance = request.getDistance();
+        if ((distance == null || distance.isBlank()) && request.getDistanceMeters() != null) {
+            distance = formatDistanceMeters(request.getDistanceMeters());
+        }
+        race.setDistance(distance);
+        race.setDistanceMeters(request.getDistanceMeters());
+
         race.setRegistrationOpenDate(request.getRegistrationOpenDate());
         race.setRegistrationDeadline(request.getRegistrationDeadline());
         race.setLocation(request.getLocation());
         race.setCapacity(request.getCapacity());
         race.setBannerImageurl(request.getBannerImageurl());
 
+        race.setMinAge(request.getMinAge());
+        race.setMaxAge(request.getMaxAge());
+        race.setGenderRestriction(request.getGenderRestriction());
+        race.setMinWeight(request.getMinWeight());
+
+        race.setRaceClass(request.getRaceClass());
+        Long minEarnings = request.getMinEarnings();
+        Long maxEarnings = request.getMaxEarnings();
+        if (request.getRaceClass() != null) {
+            if (minEarnings == null) minEarnings = request.getRaceClass().getDefaultMinEarnings();
+            if (maxEarnings == null) maxEarnings = request.getRaceClass().getDefaultMaxEarnings();
+        }
+        race.setMinEarnings(minEarnings);
+        race.setMaxEarnings(maxEarnings);
 
         Race saved = raceRepository.save(race);
         return mapToResponse(saved);
@@ -417,6 +470,14 @@ public class RaceServiceImpl implements RaceService {
                 .raceInspectedAt(race.getRaceInspectedAt())
                 .refereeId(refereeId)
                 .refereeName(refereeName)
+                .minAge(race.getMinAge())
+                .maxAge(race.getMaxAge())
+                .genderRestriction(race.getGenderRestriction())
+                .raceClass(race.getRaceClass() != null ? race.getRaceClass().name() : null)
+                .minEarnings(race.getMinEarnings())
+                .maxEarnings(race.getMaxEarnings())
+                .distanceMeters(race.getDistanceMeters())
+                .minWeight(race.getMinWeight())
                 .build();
     }
 }

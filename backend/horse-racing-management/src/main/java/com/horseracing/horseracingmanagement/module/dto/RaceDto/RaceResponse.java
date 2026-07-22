@@ -30,4 +30,14 @@ public class    RaceResponse {
     // referee info
     private Long refereeId;
     private String refereeName;  // ← lấy từ user.fullName
+
+    // Horse eligibility requirements
+    private Integer minAge;
+    private Integer maxAge;
+    private String genderRestriction;
+    private String raceClass;
+    private Long minEarnings;
+    private Long maxEarnings;
+    private Double distanceMeters;
+    private Long minWeight;
 }

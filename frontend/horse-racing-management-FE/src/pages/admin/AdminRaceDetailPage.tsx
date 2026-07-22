@@ -20,6 +20,7 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import Seo from '@/components/seo/Seo';
 import { isStatus, isAnyStatus, type RaceHorseStatusKey } from '@/utils/raceHorseStatus';
 import { assignLanes } from '@/utils/laneUtils';
+import { buildRaceRequirements } from '@/utils/raceRequirements';
 import type { Horse } from '@/types';
 
 const CLOSEABLE = new Set(['UPCOMING', 'OPEN_REGISTRATION']);
@@ -397,6 +398,7 @@ export default function AdminRaceDetailPage() {
   // A finished race is a closed historical record — none of its information
   // (fields, odds, or entry decisions) may be changed anymore. This flag freezes
   // every mutating control below.
+  const requirements = buildRaceRequirements(race);
   const isFinished = race.status === 'FINISHED';
   // An ONGOING race is mid-run — deleting it now would wipe a race in progress,
   // so the Delete action is withheld until the race is no longer running.
@@ -610,7 +612,16 @@ export default function AdminRaceDetailPage() {
             </label>
             <label className="flex flex-col gap-1">
               <span className="text-xs font-semibold uppercase tracking-wide text-ink-4">Prize Pool (VND)</span>
-              <input type="number" min={0} value={editForm.totalprizepool} onChange={(e) => setField('totalprizepool', e.target.value)} className={editInputCls} />
+              <div className="relative">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={editForm.totalprizepool === '' ? '' : Number(editForm.totalprizepool).toLocaleString('vi-VN')}
+                  onChange={(e) => setField('totalprizepool', e.target.value.replace(/\D/g, ''))}
+                  className={`${editInputCls} pr-8`}
+                />
+                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-ink-4">₫</span>
+              </div>
             </label>
           </div>
         ) : (
@@ -656,6 +667,19 @@ export default function AdminRaceDetailPage() {
               ) : (
                 <span className="text-ink-4">Not assigned</span>
               )}
+            </div>
+          </div>
+        )}
+
+        {!editing && requirements.length > 0 && (
+          <div className="border-t border-rim px-6 py-4">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-ink-4">Entry Requirements</p>
+            <div className="flex flex-wrap gap-2">
+              {requirements.map((r) => (
+                <span key={r} className="border border-gold/30 bg-gold/5 px-2.5 py-1 text-xs font-medium text-ink-2">
+                  {r}
+                </span>
+              ))}
             </div>
           </div>
         )}

@@ -50,7 +50,10 @@ export interface TrainerStats {
  trainerId: number;
  name?: string;
  avatarUrl?: string;
+ coverImageUrl?: string;
+ dateOfBirth?: string;
  experienceYears?: number;
+ description?: string;
  totalHorses?: number;
  totalRaces?: number;
  totalWins?: number;
