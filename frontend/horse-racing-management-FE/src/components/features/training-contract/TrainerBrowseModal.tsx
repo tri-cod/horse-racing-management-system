@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Award, Cake, FileSignature } from 'lucide-react';
+import { ArrowLeft, Award, Cake, FileSignature, Wallet } from 'lucide-react';
 import { getTrainerList } from '@/api/trainerApi';
 import { getErrorMessage } from '@/utils/errors';
 import { calculateAge } from '@/utils/age';
 import Modal from '@/components/ui/Modal';
 import type { Trainer } from '@/types';
+
+const fmtVnd = (n?: number) =>
+  n != null ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(n)) : null;
 
 interface Props {
   open: boolean;
@@ -85,29 +88,46 @@ export default function TrainerBrowseModal({ open, onClose, onSign }: Props) {
       ) : selected ? (
         /* ── Trainer detail ─────────────────────────── */
         <div>
+          {/* Identity */}
           <div className="flex items-center gap-4">
-            <TrainerAvatar trainer={selected} size={72} />
+            <TrainerAvatar trainer={selected} size={64} />
             <div className="min-w-0">
-              <h4 className="font-serif text-xl font-bold text-ink">{selected.name ?? selected.fullName ?? 'Trainer'}</h4>
-              <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-3">
-                {selected.experienceYears != null && (
-                  <span className="flex items-center gap-1"><Award size={12} className="text-gold" /> {selected.experienceYears} yr experience</span>
-                )}
-                {calculateAge(selected.dateOfBirth) != null && (
-                  <span className="flex items-center gap-1"><Cake size={12} className="text-ink-4" /> Age {calculateAge(selected.dateOfBirth)}</span>
-                )}
+              <div className="flex flex-wrap items-center gap-2">
+                <h4 className="font-serif text-xl font-bold text-ink">{selected.name ?? selected.fullName ?? 'Trainer'}</h4>
                 {selected.status && (
                   <span className="inline-flex items-center rounded-full bg-ok-subtle px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ok">
                     {selected.status}
                   </span>
                 )}
               </div>
+              {selected.specialization && (
+                <p className="mt-0.5 text-xs text-ink-4">{selected.specialization}</p>
+              )}
             </div>
           </div>
 
-          <div className="mt-5">
+          {/* Stat tiles */}
+          <div className="mt-4 grid grid-cols-3 divide-x divide-rim border border-rim">
+            <div className="px-3 py-3">
+              <p className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-ink-4"><Award size={11} className="text-gold" /> Experience</p>
+              <p className="tnum mt-1 text-sm font-bold text-ink">{selected.experienceYears ?? 0} <span className="text-xs font-normal text-ink-4">yrs</span></p>
+            </div>
+            <div className="px-3 py-3">
+              <p className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-ink-4"><Cake size={11} className="text-ink-4" /> Age</p>
+              <p className="tnum mt-1 text-sm font-bold text-ink">{calculateAge(selected.dateOfBirth) ?? '—'}</p>
+            </div>
+            <div className="bg-gold/5 px-3 py-3">
+              <p className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-ink-4"><Wallet size={11} className="text-gold" /> Monthly Fee</p>
+              <p className="mt-1 text-sm font-bold text-gold-hi">
+                {fmtVnd(selected.monthlyFee) ?? <span className="text-xs font-normal text-ink-4">Not set</span>}
+              </p>
+            </div>
+          </div>
+
+          {/* About */}
+          <div className="mt-4 border border-rim bg-surface-overlay/30 px-4 py-3.5">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">About</p>
-            <p className="mt-1.5 whitespace-pre-line text-sm text-ink-2">
+            <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-ink-2">
               {selected.description?.trim() || 'This trainer has not added a description yet.'}
             </p>
           </div>
@@ -127,8 +147,11 @@ export default function TrainerBrowseModal({ open, onClose, onSign }: Props) {
               <TrainerAvatar trainer={t} size={44} />
               <div className="min-w-0 flex-1">
                 <p className="font-serif text-sm font-bold text-ink">{t.name ?? t.fullName ?? `Trainer #${t.id}`}</p>
-                <p className="mt-0.5 flex items-center gap-1 text-[11px] text-ink-4">
-                  <Award size={11} className="text-gold" /> {t.experienceYears ?? 0} yr exp
+                <p className="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[11px] text-ink-4">
+                  <span className="flex items-center gap-1"><Award size={11} className="text-gold" /> {t.experienceYears ?? 0} yr exp</span>
+                  {fmtVnd(t.monthlyFee) && (
+                    <span className="tnum font-semibold text-gold-hi">{fmtVnd(t.monthlyFee)}/mo</span>
+                  )}
                 </p>
                 {t.description && (
                   <p className="mt-1 line-clamp-2 text-xs text-ink-3">{t.description}</p>

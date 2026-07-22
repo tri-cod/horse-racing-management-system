@@ -10,6 +10,7 @@ export interface CompleteTrainerProfilePayload {
  dateOfBirth?: string;
  experienceYears?: number;
  description?: string;
+ monthlyFee?: number | null;
 }
 
 export const getTrainerProfile = () =>

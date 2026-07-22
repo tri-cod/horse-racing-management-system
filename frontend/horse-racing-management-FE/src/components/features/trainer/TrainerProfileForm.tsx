@@ -17,11 +17,12 @@ interface FormData {
   experienceYears: string;
   description: string;
   avatarUrl: string;
+  monthlyFee: string;
 }
 
 interface TrainerProfileFormProps {
   initialValues?: Partial<Trainer>;
-  onSubmit: (payload: { dateOfBirth: string; experienceYears: number; description: string; avatarUrl: string | null }) => void;
+  onSubmit: (payload: { dateOfBirth: string; experienceYears: number; description: string; avatarUrl: string | null; monthlyFee: number | null }) => void;
   loading?: boolean;
 }
 
@@ -35,6 +36,7 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
     experienceYears: initialValues.experienceYears?.toString() ?? '',
     description: initialValues.description ?? '',
     avatarUrl: initialValues.avatarUrl ?? '',
+    monthlyFee: initialValues.monthlyFee != null ? String(initialValues.monthlyFee) : '',
   });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [uploading, setUploading] = useState(false);
@@ -78,6 +80,10 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
     const exp = Number(form.experienceYears);
     if (form.experienceYears === '' || isNaN(exp) || exp < 0 || exp > 70) errs.experienceYears = 'Experience must be between 0 and 70.';
     if (form.description.length > 1000) errs.description = 'Maximum 1000 characters.';
+    if (form.monthlyFee !== '') {
+      const fee = Number(form.monthlyFee);
+      if (isNaN(fee) || fee < 0) errs.monthlyFee = 'Monthly fee must be a positive number.';
+    }
     return errs;
   };
 
@@ -91,6 +97,7 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
       experienceYears: Number(form.experienceYears),
       description: form.description,
       avatarUrl: form.avatarUrl || null,
+      monthlyFee: form.monthlyFee === '' ? null : Number(form.monthlyFee),
     });
   };
 
@@ -155,6 +162,17 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
         <input id="tf-exp" type="number" className={inputCls(errors.experienceYears)}
           value={form.experienceYears} onChange={set('experienceYears')} min={0} max={70} placeholder="e.g. 10" />
         {errors.experienceYears && <p className="mt-1.5 text-xs text-fail">{errors.experienceYears}</p>}
+      </div>
+
+      {/* Monthly Fee — the fixed price owners see and pay per month. */}
+      <div className="px-6 py-5">
+        <label htmlFor="tf-fee" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-ink-4">
+          Monthly Fee (VND)
+        </label>
+        <input id="tf-fee" type="number" className={inputCls(errors.monthlyFee)}
+          value={form.monthlyFee} onChange={set('monthlyFee')} min={0} placeholder="e.g. 5000000" />
+        <p className="mt-1.5 text-xs text-ink-4">Shown to horse owners; charged per month of the contract.</p>
+        {errors.monthlyFee && <p className="mt-1 text-xs text-fail">{errors.monthlyFee}</p>}
       </div>
 
       {/* Description */}

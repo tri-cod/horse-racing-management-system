@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard, Flag,
     Shield, ClipboardList, Ticket, Wallet, UserCog, TrendingUp,
+    User, LogOut, Landmark, PencilLine, FlagTriangleRight, Send, Undo2, Gavel, Dumbbell, ShieldAlert,
     type LucideIcon,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';

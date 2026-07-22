@@ -12,6 +12,8 @@ interface Props {
   onSuccess: (msg: string) => void;
 }
 
+const MIN_MONTHS = 3;
+
 const inputCls =
   'w-full border border-rim bg-surface-input px-3 py-2 text-sm text-ink outline-none focus:border-gold focus:ring-1 focus:ring-gold';
 const labelCls = 'mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-ink-4';
@@ -36,8 +38,7 @@ export default function SendTrainingContractModal({ trainer, onClose, onSuccess 
 
   const [horseId, setHorseId] = useState('');
   const [startDate, setStartDate] = useState('');
-  const [months, setMonths] = useState('1');
-  const [monthlyFee, setMonthlyFee] = useState('');
+  const [months, setMonths] = useState(String(MIN_MONTHS));
   const [ownerNote, setOwnerNote] = useState('');
 
   const [submitting, setSubmitting] = useState(false);
@@ -46,8 +47,7 @@ export default function SendTrainingContractModal({ trainer, onClose, onSuccess 
   useEffect(() => {
     if (!trainer) return;
     // Reset the form each time a trainer is picked.
-    setHorseId(''); setStartDate(''); setMonths('1');
-    setMonthlyFee(''); setOwnerNote(''); setError(null);
+    setHorseId(''); setStartDate(''); setMonths(String(MIN_MONTHS)); setOwnerNote(''); setError(null);
     setLoadingHorses(true);
     getMyHorses()
       .then((h) => setHorses(h ?? []))
@@ -55,21 +55,22 @@ export default function SendTrainingContractModal({ trainer, onClose, onSuccess 
       .finally(() => setLoadingHorses(false));
   }, [trainer]);
 
-  // Live preview of the derived end date + total charged.
+  // The monthly rate is the trainer's fixed price — the owner can't change it.
+  const monthlyFee = trainer?.monthlyFee != null ? Number(trainer.monthlyFee) : null;
+  const hasFee = monthlyFee != null && monthlyFee > 0;
+
   const monthsNum = Number(months);
-  const monthlyFeeNum = Number(monthlyFee);
-  const validPreview =
-    startDate !== '' && Number.isInteger(monthsNum) && monthsNum >= 1 &&
-    monthlyFee !== '' && !isNaN(monthlyFeeNum) && monthlyFeeNum > 0;
+  const validPreview = startDate !== '' && Number.isInteger(monthsNum) && monthsNum >= MIN_MONTHS && hasFee;
   const endDate = validPreview ? addMonths(startDate, monthsNum) : '';
-  const totalFee = validPreview ? monthlyFeeNum * monthsNum : 0;
+  const totalFee = validPreview ? (monthlyFee as number) * monthsNum : 0;
 
   const handleSubmit = async () => {
     if (!trainer) return;
+    if (!hasFee) { setError('This trainer has not set a monthly fee yet.'); return; }
     if (!horseId) { setError('Please select a horse.'); return; }
     if (!startDate) { setError('Please pick a start date.'); return; }
-    if (!Number.isInteger(monthsNum) || monthsNum < 1) { setError('Duration must be at least 1 month.'); return; }
-    if (monthlyFee === '' || isNaN(monthlyFeeNum) || monthlyFeeNum <= 0) { setError('Monthly fee must be greater than 0.'); return; }
+    if (isNaN(monthsNum) || monthsNum < MIN_MONTHS) { setError(`Duration must be at least ${MIN_MONTHS} months.`); return; }
+    if (!Number.isInteger(monthsNum)) { setError('Duration must be a whole number of months.'); return; }
 
     setSubmitting(true); setError(null);
     try {
@@ -78,8 +79,8 @@ export default function SendTrainingContractModal({ trainer, onClose, onSuccess 
         trainerId: trainer.id,
         startDate,
         endDate: addMonths(startDate, monthsNum),
-        // Backend charges `fee` as the full escrow amount, so send the total.
-        fee: monthlyFeeNum * monthsNum,
+        // Backend charges `fee` as the full escrow amount → send the total.
+        fee: (monthlyFee as number) * monthsNum,
         feeType: 'MONTHLY',
         ownerNote: ownerNote.trim() || undefined,
       });
@@ -103,7 +104,7 @@ export default function SendTrainingContractModal({ trainer, onClose, onSuccess 
       <button
         type="button"
         onClick={handleSubmit}
-        disabled={submitting || loadingHorses}
+        disabled={submitting || loadingHorses || !hasFee}
         className="bg-navy px-4 py-2 text-sm font-semibold text-on-blue transition-colors hover:bg-navy-hi disabled:opacity-50"
       >
         {submitting ? 'Sending…' : 'Send Request'}
@@ -126,6 +127,14 @@ export default function SendTrainingContractModal({ trainer, onClose, onSuccess 
         <p className="py-6 text-center text-sm text-ink-3">Loading…</p>
       ) : (
         <div className="flex flex-col gap-4">
+          {/* Trainer's fixed monthly rate — read-only. */}
+          <div className="flex items-center justify-between border border-rim bg-surface-overlay/40 px-3 py-2.5">
+            <span className={labelCls + ' mb-0'}>Monthly Fee</span>
+            {hasFee
+              ? <span className="tnum text-sm font-bold text-gold-hi">{fmtVnd(monthlyFee as number)}</span>
+              : <span className="text-xs text-fail">Not set by this trainer</span>}
+          </div>
+
           <div>
             <label htmlFor="tc-horse" className={labelCls}>Horse</label>
             <select id="tc-horse" className={inputCls} value={horseId} onChange={(e) => setHorseId(e.target.value)}>
@@ -143,16 +152,21 @@ export default function SendTrainingContractModal({ trainer, onClose, onSuccess 
             </div>
             <div>
               <label htmlFor="tc-months" className={labelCls}>Duration (months)</label>
-              <input id="tc-months" type="number" min={1} step={1} className={inputCls} value={months} onChange={(e) => setMonths(e.target.value)} />
+              <input
+                id="tc-months"
+                type="number"
+                min={MIN_MONTHS}
+                step={1}
+                inputMode="numeric"
+                className={inputCls}
+                value={months}
+                onChange={(e) => setMonths(e.target.value.replace(/[^0-9]/g, ''))}
+              />
+              <p className="mt-1 text-[11px] text-ink-4">Minimum {MIN_MONTHS} months.</p>
             </div>
           </div>
 
-          <div>
-            <label htmlFor="tc-monthly-fee" className={labelCls}>Monthly Fee (VND)</label>
-            <input id="tc-monthly-fee" type="number" min={0} className={inputCls} value={monthlyFee} placeholder="e.g. 5000000" onChange={(e) => setMonthlyFee(e.target.value)} />
-          </div>
-
-          {/* Derived summary so the owner sees end date + total before sending. */}
+          {/* Derived summary — end date + total the owner will pay. */}
           {validPreview && (
             <div className="border border-rim bg-surface-overlay/40 px-3 py-2.5 text-xs text-ink-2">
               <div className="flex justify-between">
@@ -160,7 +174,7 @@ export default function SendTrainingContractModal({ trainer, onClose, onSuccess 
                 <span className="font-semibold text-ink">{fmtDateLabel(endDate)}</span>
               </div>
               <div className="mt-1 flex justify-between">
-                <span className="text-ink-4">Total ({monthsNum} × {fmtVnd(monthlyFeeNum)})</span>
+                <span className="text-ink-4">Total ({monthsNum} × {fmtVnd(monthlyFee as number)})</span>
                 <span className="tnum font-bold text-gold-hi">{fmtVnd(totalFee)}</span>
               </div>
             </div>
