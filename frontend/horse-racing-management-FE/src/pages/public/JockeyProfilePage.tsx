@@ -9,11 +9,11 @@ import Container from '@/components/ui/Container';
 import Seo from '@/components/seo/Seo';
 import type { Jockey } from '@/types';
 
-// Chiều cao header cố định của site (Layout.tsx: pt-[113px]).
-const HEADER_HEIGHT = 113;
+// Chiều cao header cố định của site (Layout.tsx: pt-[109px]).
+const HEADER_HEIGHT = 109;
 // Header + sub-nav — các section trong trang này cần trừ hao khoảng này khi
 // cuộn tới, kẻo bị header + sub-nav che mất.
-const SCROLL_OFFSET = 172;
+const SCROLL_OFFSET = 168;
 
 const STAT_ICONS: Record<string, LucideIcon> = {
   'Races Entered': Flag,

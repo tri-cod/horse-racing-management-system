@@ -56,6 +56,13 @@ public class BetServiceImpl implements BetService {
         wallet.setBalance(wallet.getBalance().subtract(BigDecimal.valueOf(totalAmount)));
         walletRepository.save(wallet);
 
+        User adminUser = userRepository.findFirstByRole_Rolename(RoleName.ADMIN)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        Wallet adminWalletAtPlace = walletRepository.findByUser_Id(adminUser.getId())
+                .orElseThrow(() -> new RuntimeException("Admin wallet not found"));
+        adminWalletAtPlace.setBalance(adminWalletAtPlace.getBalance().add(BigDecimal.valueOf(totalAmount)));
+        walletRepository.save(adminWalletAtPlace);
+
         // Tạo Bet
         Bet bet = Bet.builder()
                 .race(race)
@@ -150,11 +157,7 @@ public class BetServiceImpl implements BetService {
             bet.setStatus(hasWon ? "WON" : "LOST");
             betRepository.save(bet);
 
-            // Every losing item's stake goes to the admin wallet exactly once, regardless
-            // of whether other items in the same bet won.
-            if (totalLost.compareTo(BigDecimal.ZERO) > 0) {
-                adminWallet.setBalance(adminWallet.getBalance().add(totalLost));
-            }
+
             if (hasWon && totalPayout.compareTo(BigDecimal.ZERO) > 0) {
                 Wallet wallet = walletRepository.findByUser_Id(bet.getUser().getId()).orElseThrow();
                 wallet.setBalance(wallet.getBalance().add(totalPayout));
@@ -183,7 +186,7 @@ public class BetServiceImpl implements BetService {
         walletRepository.save(adminWallet);
     }
 
-            @Override
+    @Override
     public List<BetResponse> getMyBets(Long userId) {
         List<Bet> bets = betRepository.findByUserId(userId);
         return bets.stream()

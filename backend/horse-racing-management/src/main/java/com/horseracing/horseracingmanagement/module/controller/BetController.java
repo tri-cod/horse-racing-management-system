@@ -3,6 +3,7 @@ package com.horseracing.horseracingmanagement.module.controller;
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.module.dto.Bet.BetResponse;
 import com.horseracing.horseracingmanagement.module.dto.Bet.CreateBetRequest;
+import com.horseracing.horseracingmanagement.module.responsitory.BetItemRepository;
 import com.horseracing.horseracingmanagement.module.service.BetService;
 import com.horseracing.horseracingmanagement.module.service.impl.BetServiceImpl;
 import com.horseracing.horseracingmanagement.security.CustomUserDetails;
@@ -22,7 +23,7 @@ import java.util.List;
 public class BetController {
 
     private final BetService betService;
-
+    private final BetItemRepository betItemRepository;
     @PostMapping
 
     // FIX: trước đây là @PreAuthorize("hasAuthority('SPECTATOR ')") — dấu cách thừa gây lỗi 403 cho tất cả user.

@@ -17,4 +17,6 @@ public class TrainerListItemResponse {
     private String avatarUrl;
     private String status;
     private BigDecimal monthlyFee;  // ← giá thuê/tháng do trainer đặt
+    private String specialization;  // ← chuyên môn / thế mạnh
+    private Boolean isAvailable;    // ← còn nhận ngựa mới không
 }

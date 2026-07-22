@@ -38,7 +38,7 @@ export default function AboutPage() {
       />
 
       {/* Hero */}
-      <section className="relative -mt-[113px] flex min-h-[78dvh] items-end overflow-hidden">
+      <section className="relative -mt-[109px] flex min-h-[78dvh] items-end overflow-hidden">
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/9/94/SantaAnitaTrackMtns_wb.jpg"
           alt="Santa Anita Park's dirt oval with the San Gabriel Mountains in the background"

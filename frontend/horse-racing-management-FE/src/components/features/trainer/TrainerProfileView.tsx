@@ -25,6 +25,21 @@ export default function TrainerProfileView({ profile }: { profile: Trainer }) {
         </span>
       </div>
 
+      <div className="flex items-center justify-between px-6 py-4">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-4">Specialization</span>
+        <span className="text-sm font-medium text-ink">
+          {profile.specialization?.trim() || <span className="text-ink-4">Not set</span>}
+        </span>
+      </div>
+
+      <div className="flex items-center justify-between px-6 py-4">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-4">Accepting New Horses</span>
+        <span className={`inline-flex items-center gap-1.5 text-sm font-semibold ${profile.isAvailable === false ? 'text-warn' : 'text-ok'}`}>
+          <span className={`h-1.5 w-1.5 rounded-full ${profile.isAvailable === false ? 'bg-warn' : 'bg-ok'}`} />
+          {profile.isAvailable === false ? 'Not available' : 'Available'}
+        </span>
+      </div>
+
       {profile.description ? (
         <div className="px-6 py-6">
           <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-4">About</p>

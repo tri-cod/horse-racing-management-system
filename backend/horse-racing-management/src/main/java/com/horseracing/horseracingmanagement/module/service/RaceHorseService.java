@@ -3,10 +3,7 @@ package com.horseracing.horseracingmanagement.module.service;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.WithdrawalRequest;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyRequestDto;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyResponse;
-import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceHorseResponse;
-import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RegisterRaceHorseRequest;
-import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetAllOddsRequest;
-import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.SetOddsRequest;
+import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.*;
 import com.horseracing.horseracingmanagement.module.entity.Jockey;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +30,8 @@ public interface RaceHorseService {
     RaceHorseResponse approveWithdrawal(Long raceHorseId);
     RaceHorseResponse rejectWithdrawal(Long raceHorseId);
     List<RaceHorseResponse> getWithdrawPending();
+
+    HorseEligibilityResponse checkEligibility(Long raceId, Long horseId);
 
     // Same checks as the referee's pre-race inspection (horse fitness, jockey assigned/active,
     // odds set, no double-booked jockeys) — empty list means the race is clear to start.

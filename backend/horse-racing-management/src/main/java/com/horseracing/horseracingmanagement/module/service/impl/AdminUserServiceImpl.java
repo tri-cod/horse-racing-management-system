@@ -40,6 +40,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final WalletRepository walletRepository;
     private final TransactionRepostitory transactionRepository;
     private final AuthService authService;
+    private final BetItemRepository betItemRepository;
 
 
 
@@ -175,6 +176,17 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .filter(r -> r.getTotalprizepool() != null)
                 .map(r -> BigDecimal.valueOf(r.getTotalprizepool()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+
+        // Tổng tiền bet thua → về ví admin
+        BigDecimal totalBetLost = betItemRepository.findAll().stream()
+                .filter(item -> "LOST".equals(item.getResultStatus()))
+                .map(item -> item.getBetAmount() != null
+                        ? BigDecimal.valueOf(item.getBetAmount())
+                        : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+
         // User stats
         List<User> allUsers = userRepository.findAll();
         long totalUsers = allUsers.size();
@@ -229,6 +241,7 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .totalWithdrawApproved(totalWithdraw)
                 .totalEntryFeeCollected(totalEntryFee)
                 .totalPrizePoolFunded(totalPrizeFunded)
+                .totalBetLost(totalBetLost)
                 .totalRaces(totalRaces)
                 .totalFinishedRaces(finishedRaces)
                 .totalOngoingRaces(ongoingRaces)

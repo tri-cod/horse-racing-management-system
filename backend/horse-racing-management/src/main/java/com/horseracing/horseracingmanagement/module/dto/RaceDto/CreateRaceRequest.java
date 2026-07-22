@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.dto.RaceDto;
 
+import com.horseracing.horseracingmanagement.common.constant.RaceClass;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.common.validation.NoSpecialCharacters;
 import jakarta.validation.constraints.NotBlank;
@@ -27,6 +28,14 @@ public class CreateRaceRequest {
     @Size(max = 150, message = "Track name must not exceed 150 characters")
     @NoSpecialCharacters(message = "Track name must not contain special characters")
     private String trackName;
+
+    private Integer minAge;
+    private Integer maxAge;
+    private String genderRestriction;
+    private RaceClass raceClass;
+    private Long minEarnings;
+    private Long maxEarnings;
+    private Integer distanceMeters;
 
     private String trackCondition;
     private String surfaceType;

@@ -40,6 +40,7 @@ REFEREE: [
     ],
     TRAINER: [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/trainer/dashboard' },
+        { icon: Shield, label: 'Managed Horses', href: '/trainer/horses' },
         { icon: Flag, label: 'My Races', href: '/trainer/my-races' },
         { icon: Dumbbell, label: 'Training Contracts', href: '/trainer/contracts' },
         { icon: UserCog, label: 'My Profile', href: '/trainer/profile' },

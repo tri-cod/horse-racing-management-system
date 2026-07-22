@@ -18,11 +18,16 @@ interface FormData {
   description: string;
   avatarUrl: string;
   monthlyFee: string;
+  specialization: string;
+  isAvailable: boolean;
 }
 
 interface TrainerProfileFormProps {
   initialValues?: Partial<Trainer>;
-  onSubmit: (payload: { dateOfBirth: string; experienceYears: number; description: string; avatarUrl: string | null; monthlyFee: number | null }) => void;
+  onSubmit: (payload: {
+    dateOfBirth: string; experienceYears: number; description: string; avatarUrl: string | null;
+    monthlyFee: number | null; specialization: string | null; isAvailable: boolean;
+  }) => void;
   loading?: boolean;
 }
 
@@ -37,6 +42,8 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
     description: initialValues.description ?? '',
     avatarUrl: initialValues.avatarUrl ?? '',
     monthlyFee: initialValues.monthlyFee != null ? String(initialValues.monthlyFee) : '',
+    specialization: initialValues.specialization ?? '',
+    isAvailable: initialValues.isAvailable ?? true,
   });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [uploading, setUploading] = useState(false);
@@ -98,6 +105,8 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
       description: form.description,
       avatarUrl: form.avatarUrl || null,
       monthlyFee: form.monthlyFee === '' ? null : Number(form.monthlyFee),
+      specialization: form.specialization.trim() || null,
+      isAvailable: form.isAvailable,
     });
   };
 
@@ -173,6 +182,34 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
           value={form.monthlyFee} onChange={set('monthlyFee')} min={0} placeholder="e.g. 5000000" />
         <p className="mt-1.5 text-xs text-ink-4">Shown to horse owners; charged per month of the contract.</p>
         {errors.monthlyFee && <p className="mt-1 text-xs text-fail">{errors.monthlyFee}</p>}
+      </div>
+
+      {/* Specialization — the trainer's strength shown on their card/profile. */}
+      <div className="px-6 py-5">
+        <label htmlFor="tf-spec" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-ink-4">
+          Specialization
+        </label>
+        <input id="tf-spec" type="text" className={inputCls()}
+          value={form.specialization} onChange={set('specialization')} maxLength={255}
+          placeholder="e.g. Sprint, Endurance, Young horses" />
+        <p className="mt-1.5 text-xs text-ink-4">Your strengths — what you're best at training.</p>
+      </div>
+
+      {/* Availability toggle */}
+      <div className="flex items-center justify-between px-6 py-5">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-4">Accepting New Horses</p>
+          <p className="mt-0.5 text-xs text-ink-4">Turn off if you're at full capacity.</p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={form.isAvailable}
+          onClick={() => setForm((prev) => ({ ...prev, isAvailable: !prev.isAvailable }))}
+          className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${form.isAvailable ? 'bg-ok' : 'bg-rim-hi'}`}
+        >
+          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${form.isAvailable ? 'translate-x-5' : 'translate-x-0.5'}`} />
+        </button>
       </div>
 
       {/* Description */}

@@ -33,6 +33,16 @@ public interface RaceResultRepository extends JpaRepository<RaceResult, Long> {
         """)
     List<RaceResult> findByHorseIdOrderByRaceDesc(@Param("horseId") Long horseId);
 
+    /** Tổng tiền thưởng ngựa đã kiếm được trong sự nghiệp */
+    @Query("SELECT COALESCE(SUM(rr.rewards), 0) FROM RaceResult rr " +
+            "WHERE rr.raceHorse.horse.id = :horseId")
+    Long sumRewardsByHorseId(@Param("horseId") Long horseId);
+
+    /** Số lần về nhất — dùng để check điều kiện MAIDEN */
+    @Query("SELECT COUNT(rr) FROM RaceResult rr " +
+            "WHERE rr.raceHorse.horse.id = :horseId AND rr.rank = 1")
+    long countWinsByHorseId(@Param("horseId") Long horseId);
+
     // Đếm số ngựa tham gia trong 1 race (dùng để tính tổng participant)
     long countByRace_Id(Long raceId);
 

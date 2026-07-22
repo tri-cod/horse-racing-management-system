@@ -6,6 +6,7 @@ import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
+import com.horseracing.horseracingmanagement.common.constant.RoleName;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.RaceStatusUpdate;
 import com.horseracing.horseracingmanagement.module.dto.RaceResult.RaceHistoryResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceResult.RaceResultResponse;
@@ -43,6 +44,7 @@ public class RaceResultServiceImpl implements RaceResultService {
     private final TrainerRepository trainerRepository;  // ← thêm (dùng trong distributeRewards)
     private final PenaltyRepository penaltyRepository;
     private final RaceRefereeRepository raceRefereeRepository;
+    private final UserRepository userRepository;  // ← thêm (dùng để hoàn tiền giải dư về ví admin)
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -120,6 +122,8 @@ public class RaceResultServiceImpl implements RaceResultService {
             throw new RuntimeException("No valid horses to set result for");
         }
 
+        long totalDistributed = 0L;  // ← FIX: tích luỹ tổng đã chia để hoàn phần dư về admin
+
         for (int i = 0; i < sorted.size(); i++) {
             RaceResultItemRequest item = sorted.get(i);
             long rank = i + 1;
@@ -128,6 +132,7 @@ public class RaceResultServiceImpl implements RaceResultService {
                     .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
 
             Long rewards = calculateRewards(race.getTotalprizepool(), rank, sorted.size());
+            totalDistributed += rewards;
 
             raceResultRepository.save(RaceResult.builder()
                     .race(race)
@@ -148,6 +153,20 @@ public class RaceResultServiceImpl implements RaceResultService {
 
             if (rewards > 0) {
                 distributeRewards(raceHorse, race, rank, rewards);
+            }
+        }
+
+        // ← FIX: totalprizepool đã bị trừ TOÀN BỘ khỏi ví admin lúc tạo race (createRace),
+        // nhưng chỉ hạng 1/2/3 mới nhận thưởng (50%/30%/20%). Nếu race có dưới 3 ngựa
+        // về đích hợp lệ, phần % còn lại sẽ bị "kẹt" mãi mãi nếu không hoàn lại admin.
+        if (race.getTotalprizepool() != null && race.getTotalprizepool() > 0) {
+            long leftover = race.getTotalprizepool() - totalDistributed;
+            if (leftover > 0) {
+                userRepository.findFirstByRole_Rolename(RoleName.ADMIN).ifPresent(adminUser ->
+                        walletRepository.findByUser_Id(adminUser.getId()).ifPresent(adminWallet -> {
+                            adminWallet.setBalance(adminWallet.getBalance().add(BigDecimal.valueOf(leftover)));
+                            walletRepository.save(adminWallet);
+                        }));
             }
         }
 
