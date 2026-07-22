@@ -40,11 +40,14 @@ const HorseDetailPage = lazy(() => import('@/pages/horse-owner/HorseDetailPage')
 const HorseEditPage = lazy(() => import('@/pages/horse-owner/HorseEditPage'));
 const HorseOwnerRacePage = lazy(() => import('@/pages/horse-owner/HorseOwnerRacePage'));
 const MyRaceRegistrationsPage = lazy(() => import('@/pages/horse-owner/MyRaceRegistrationsPage'));
+const TrainingContractsPage = lazy(() => import('@/pages/horse-owner/TrainingContractsPage'));
+const TrainingContractDetailPage = lazy(() => import('@/pages/shared/TrainingContractDetailPage'));
 const HorseOwnerMyProfilePage = lazy(() => import('@/pages/horse-owner/HorseOwnerMyProfilePage'));
 
 // Trainer
 const TrainerDashboardPage = lazy(() => import('@/pages/trainer/TrainerDashboardPage'));
 const TrainerProfilePage = lazy(() => import('@/pages/trainer/TrainerProfilePage'));
+const TrainerContractsPage = lazy(() => import('@/pages/trainer/TrainerContractsPage'));
 
 // Jockey
 const JockeyDashboardPage = lazy(() => import('@/pages/jockey/JockeyDashboardPage'));
@@ -182,6 +185,11 @@ export default function App() {
               <AppLayout><HorseOwnerMyProfilePage /></AppLayout>
             </ProtectedRoute>
           } />
+          <Route path="/horse-owner/training-contracts" element={
+            <ProtectedRoute allowedRoles={['HORSE_OWNER']}>
+              <AppLayout><TrainingContractsPage /></AppLayout>
+            </ProtectedRoute>
+          } />
 
           {/* Trainer */}
           <Route path="/trainer/dashboard" element={
@@ -192,6 +200,16 @@ export default function App() {
           <Route path="/trainer/profile" element={
             <ProtectedRoute allowedRoles={['TRAINER']}>
               <AppLayout><TrainerProfilePage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/trainer/contracts" element={
+            <ProtectedRoute allowedRoles={['TRAINER']}>
+              <AppLayout><TrainerContractsPage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/training-contracts/:id" element={
+            <ProtectedRoute allowedRoles={['HORSE_OWNER', 'TRAINER']}>
+              <AppLayout><TrainingContractDetailPage /></AppLayout>
             </ProtectedRoute>
           } />
 

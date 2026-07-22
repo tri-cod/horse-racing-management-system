@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Dna, Cake, VenetianMask, Scale, Zap, Trophy, UserCog, Pencil, Trash2 } from 'lucide-react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { ArrowLeft, Dna, Cake, VenetianMask, Scale, Zap, Trophy, UserCog, Pencil, Trash2, Dumbbell } from 'lucide-react';
 import { useHorseDetail } from '@/hooks/useHorseDetail';
 import { deleteHorse } from '@/api/horseOwnerApi';
 import { useToast } from '@/components/ui/ToastProvider';
-import AssignTrainerCard from '@/components/features/horse-owner/AssignTrainerCard';
 import HorseStatusBadge from '@/components/features/horse-owner/HorseStatusBadge';
 import Button from '@/components/ui/Button';
 import Seo from '@/components/seo/Seo';
@@ -236,7 +235,7 @@ export default function HorseDetailPage() {
               </div>
               <div className="px-5 py-5">
                 {h.trainerName ? (
-                  <div className="mb-4 flex items-center gap-3 rounded border border-rim bg-surface px-3 py-3">
+                  <div className="flex items-center gap-3 rounded border border-rim bg-surface px-3 py-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy/10 font-serif text-sm font-bold text-navy">
                       {h.trainerName.charAt(0).toUpperCase()}
                     </div>
@@ -246,13 +245,17 @@ export default function HorseDetailPage() {
                     </div>
                   </div>
                 ) : (
-                  <p className="mb-4 text-sm text-ink-3">No trainer assigned yet.</p>
+                  <>
+                    <p className="mb-3 text-sm text-ink-3">No trainer assigned yet.</p>
+                    {/* Trainer assignment goes through the training-contract flow now. */}
+                    <Link
+                      to="/horse-owner/training-contracts"
+                      className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:border-gold/40 hover:bg-surface-overlay hover:text-gold-hi"
+                    >
+                      <Dumbbell size={13} /> Hire via Training Contracts
+                    </Link>
+                  </>
                 )}
-                <AssignTrainerCard
-                  horseId={h.id}
-                  currentTrainerId={h.trainerId}
-                  onAssigned={() => refetch()}
-                />
               </div>
             </div>
           </div>

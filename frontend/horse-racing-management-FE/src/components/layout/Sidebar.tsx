@@ -2,7 +2,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard, Flag,
     Shield, ClipboardList, Ticket, Wallet, UserCog, TrendingUp,
-    User, LogOut, Landmark, PencilLine, FlagTriangleRight, Send, Undo2, Gavel, ShieldAlert,
     type LucideIcon,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -32,12 +31,14 @@ REFEREE: [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/horse-owner/dashboard' },
         { icon: Shield, label: 'My Horses', href: '/horse-owner/horses' },
         { icon: ClipboardList, label: 'My Registrations', href: '/horse-owner/race-registrations' },
+        { icon: Dumbbell, label: 'Training Contracts', href: '/horse-owner/training-contracts' },
         { icon: UserCog, label: 'My Profile', href: '/horse-owner/profile' },
         { icon: Wallet, label: 'My Wallet', href: '/my-wallet' },
         { icon: FlagTriangleRight, label: 'Register to Race', href: '/horse-owner/register-race' },
     ],
     TRAINER: [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/trainer/dashboard' },
+        { icon: Dumbbell, label: 'Training Contracts', href: '/trainer/contracts' },
         { icon: UserCog, label: 'My Profile', href: '/trainer/profile' },
         { icon: Wallet, label: 'My Wallet', href: '/my-wallet' }],
     USER: [

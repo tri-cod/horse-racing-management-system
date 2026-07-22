@@ -1,5 +1,9 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { Camera, Loader2 } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import ImageCropModal from '@/components/ui/ImageCropModal';
+import { uploadAvatar } from '@/api/authApi';
+import { getErrorMessage } from '@/utils/errors';
 import { isoDateYearsAgo } from '@/utils/age';
 import type { Trainer } from '@/types';
 
@@ -33,6 +37,35 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
     avatarUrl: initialValues.avatarUrl ?? '',
   });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const initials = (initialValues.name ?? 'T').charAt(0).toUpperCase();
+
+  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setCropSrc(reader.result as string);
+    reader.readAsDataURL(file);
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
+  const handleCropConfirm = async (blob: Blob) => {
+    setCropSrc(null);
+    setUploading(true);
+    setUploadError('');
+    try {
+      const croppedFile = new File([blob], 'avatar.png', { type: 'image/png' });
+      const url = await uploadAvatar(croppedFile);
+      setForm((prev) => ({ ...prev, avatarUrl: url }));
+    } catch (err: unknown) {
+      setUploadError(getErrorMessage(err, 'Upload failed. Please try again.'));
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const set = (field: keyof FormData) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -62,7 +95,47 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
   };
 
   return (
+    <>
+    {cropSrc && (
+      <ImageCropModal
+        imageSrc={cropSrc}
+        onCancel={() => setCropSrc(null)}
+        onConfirm={handleCropConfirm}
+      />
+    )}
     <form onSubmit={handleSubmit} noValidate className="divide-y divide-rim">
+
+      {/* Avatar */}
+      <div className="flex items-center gap-4 px-6 py-5">
+        <div className="relative shrink-0">
+          <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-rim-hi bg-gold/10">
+            {form.avatarUrl ? (
+              <img src={form.avatarUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <span className="font-serif text-xl font-bold text-gold">{initials}</span>
+            )}
+          </div>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={handleFileSelect}
+            id="tf-avatar-file"
+          />
+          <label
+            htmlFor="tf-avatar-file"
+            className="absolute -bottom-1 -right-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-2 border-surface-raised bg-gold text-on-gold transition-colors hover:bg-gold-hi"
+          >
+            {uploading ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
+          </label>
+        </div>
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-4">Photo</p>
+          <p className="mt-0.5 text-xs text-ink-3">Shown on your public trainer profile.</p>
+          {uploadError && <p className="mt-1 text-xs text-fail">{uploadError}</p>}
+        </div>
+      </div>
 
       {/* Date of Birth */}
       <div className="px-6 py-5">
@@ -98,10 +171,11 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
 
       {/* Submit */}
       <div className="flex justify-end px-6 py-4">
-        <Button type="submit" variant="primary" disabled={loading}>
+        <Button type="submit" variant="primary" disabled={loading || uploading}>
           {loading ? 'Saving…' : 'Save Profile'}
         </Button>
       </div>
     </form>
+    </>
   );
 }
