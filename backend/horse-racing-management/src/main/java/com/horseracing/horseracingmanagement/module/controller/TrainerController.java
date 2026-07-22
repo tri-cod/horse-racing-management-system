@@ -67,6 +67,7 @@ public class TrainerController {
                             .description(t.getDescription())
                             .avatarUrl(t.getAvatarUrl())
                             .status(t.getStatus())
+                            .monthlyFee(t.getMonthlyFee())
                             .build();
                 })
                 .collect(Collectors.toList());

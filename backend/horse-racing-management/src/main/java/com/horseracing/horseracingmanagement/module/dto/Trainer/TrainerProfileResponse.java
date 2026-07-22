@@ -3,6 +3,7 @@ package com.horseracing.horseracingmanagement.module.dto.Trainer;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -17,4 +18,5 @@ public class TrainerProfileResponse {
     private String avatarUrl;       // ← ảnh đại diện
     private String coverImageUrl;
     private String status;
+    private BigDecimal monthlyFee;  // ← giá thuê/tháng do trainer đặt
 }
