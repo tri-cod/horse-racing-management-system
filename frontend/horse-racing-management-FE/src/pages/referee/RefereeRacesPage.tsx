@@ -12,6 +12,7 @@ import PenaltyList from '@/components/features/referee/PenaltyList';
 import RegisteredHorsesList from '@/components/features/race-horse/RegisteredHorsesList';
 import { useToast } from '@/components/ui/ToastProvider';
 import EmptyState from '@/components/ui/EmptyState';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
@@ -87,6 +88,7 @@ export default function RefereeRacesPage() {
   const [resultRace, setResultRace] = useState<Race | null>(null);
   const [showFinished, setShowFinished] = useState(false);
   const [startingId, setStartingId] = useState<number | null>(null);
+  const [confirmStartRace, setConfirmStartRace] = useState<Race | null>(null);
 
   // Inspection state
   const [inspectingRace, setInspectingRace] = useState<Race | null>(null);
@@ -125,7 +127,6 @@ export default function RefereeRacesPage() {
   // A dedicated action, separate from the Check button — starting only becomes available
   // once a clean inspection has stamped race.raceInspectedAt (checked server-side too).
   const handleStartRace = async (race: Race) => {
-    if (!window.confirm(`Start "${race.raceName}"? Betting will close and the race goes live.`)) return;
     setStartingId(race.id);
     try {
       await startRace(race.id);
@@ -136,6 +137,7 @@ export default function RefereeRacesPage() {
       addToast(err?.response?.data?.message ?? 'Failed to start race.', 'error');
     } finally {
       setStartingId(null);
+      setConfirmStartRace(null);
     }
   };
 
@@ -244,7 +246,7 @@ export default function RefereeRacesPage() {
               <button
                 type="button"
                 disabled={startingId === race.id}
-                onClick={() => handleStartRace(race)}
+                onClick={() => setConfirmStartRace(race)}
                 className="inline-flex items-center gap-1.5 bg-navy px-3.5 py-1.5 text-xs font-semibold text-on-blue transition-colors hover:bg-navy-hi disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Play size={12} /> {startingId === race.id ? 'Starting…' : 'Start Race'}
@@ -387,6 +389,17 @@ export default function RefereeRacesPage() {
           onError={(msg) => addToast(msg, 'error')}
         />
       )}
+
+      <ConfirmDialog
+        open={confirmStartRace != null}
+        onClose={() => setConfirmStartRace(null)}
+        onConfirm={() => confirmStartRace && handleStartRace(confirmStartRace)}
+        loading={startingId === confirmStartRace?.id}
+        title="Start This Race?"
+        message={confirmStartRace ? `Start "${confirmStartRace.raceName}"? Betting will close and the race goes live.` : undefined}
+        confirmLabel="Start Race"
+        variant="primary"
+      />
     </div>
   );
 }

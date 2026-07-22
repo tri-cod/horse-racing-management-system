@@ -10,7 +10,11 @@ import java.time.Instant;
 public class PenaltyResponse {
     private Long id;
     private Long raceHorseId;
+    private Long horseId;
     private String horseName;
+    private Long raceId;
+    private String raceName;
+    private String ownerName;
     private Long refereeId;
     private String refereeName;
     private String reason;

@@ -16,6 +16,7 @@ import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
 import RaceHorseStatusBadge from '@/components/features/race-horse/RaceHorseStatusBadge';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import Seo from '@/components/seo/Seo';
 import { isStatus, isAnyStatus, type RaceHorseStatusKey } from '@/utils/raceHorseStatus';
 import { assignLanes } from '@/utils/laneUtils';
@@ -110,6 +111,7 @@ export default function AdminRaceDetailPage() {
   const [oddsInputs, setOddsInputs] = useState<Record<number, string>>({});
   const [savingAllOdds, setSavingAllOdds] = useState(false);
   const [activeTab, setActiveTab] = useState<EntryTabKey>('PENDING_ADMIN');
+  const [confirmAction, setConfirmAction] = useState<'closeReg' | 'openBetting' | 'start' | 'delete' | null>(null);
 
   // Race-horse entries don't carry breed/age/speed/rank — fetch them per unique
   // horse (same N+1 pattern used in SetOddsPanel), deduped via a ref
@@ -299,7 +301,6 @@ export default function AdminRaceDetailPage() {
 
   const handleOpenBetting = async () => {
     if (!race) return;
-    if (!window.confirm(`Open betting for "${race.raceName}"? Every approved horse must already have odds set.`)) return;
     setOpeningBetting(true);
     try {
       await openBetting(race.id);
@@ -308,12 +309,11 @@ export default function AdminRaceDetailPage() {
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
       addToast(err?.response?.data?.message ?? 'Failed to open betting.', 'error');
-    } finally { setOpeningBetting(false); }
+    } finally { setOpeningBetting(false); setConfirmAction(null); }
   };
 
   const handleCloseRegistration = async () => {
     if (!race) return;
-    if (!window.confirm(`Close registration for "${race.raceName}"? Odds can be set right after.`)) return;
     setClosing(true);
     try {
       await closeRace(race.id);
@@ -322,12 +322,11 @@ export default function AdminRaceDetailPage() {
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
       addToast(err?.response?.data?.message ?? 'Failed to close registration.', 'error');
-    } finally { setClosing(false); }
+    } finally { setClosing(false); setConfirmAction(null); }
   };
 
   const handleStartRace = async () => {
     if (!race) return;
-    if (!window.confirm(`Start "${race.raceName}"? Betting and registration will close.`)) return;
     setStarting(true);
     try {
       await startRace(race.id);
@@ -336,13 +335,12 @@ export default function AdminRaceDetailPage() {
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
       addToast(err?.response?.data?.message ?? 'Failed to start race.', 'error');
-    } finally { setStarting(false); }
+    } finally { setStarting(false); setConfirmAction(null); }
   };
 
   const handleDelete = async () => {
     // A race that's currently running must not be deleted mid-run.
     if (!race || race.status === 'ONGOING') return;
-    if (!window.confirm(`Delete race "${race.raceName}"? This cannot be undone.`)) return;
     setDeleting(true);
     try {
       await deleteRace(race.id);
@@ -352,8 +350,34 @@ export default function AdminRaceDetailPage() {
       const err = e as { response?: { data?: { message?: string } } };
       addToast(err?.response?.data?.message ?? 'Failed to delete race.', 'error');
       setDeleting(false);
+      setConfirmAction(null);
     }
   };
+
+  const CONFIRM_CONFIG: Record<'closeReg' | 'openBetting' | 'start' | 'delete', {
+    title: string; message: string; confirmLabel: string; variant: 'danger' | 'primary'; onConfirm: () => void;
+  }> | null = race ? {
+    closeReg: {
+      title: 'Close Registration?',
+      message: `Close registration for "${race.raceName}"? Odds can be set right after.`,
+      confirmLabel: 'Close Registration', variant: 'primary', onConfirm: handleCloseRegistration,
+    },
+    openBetting: {
+      title: 'Open Betting?',
+      message: `Open betting for "${race.raceName}"? Every approved horse must already have odds set.`,
+      confirmLabel: 'Open Betting', variant: 'primary', onConfirm: handleOpenBetting,
+    },
+    start: {
+      title: 'Start This Race?',
+      message: `Start "${race.raceName}"? Betting and registration will close.`,
+      confirmLabel: 'Start Race', variant: 'primary', onConfirm: handleStartRace,
+    },
+    delete: {
+      title: 'Delete This Race?',
+      message: `Delete race "${race.raceName}"? This cannot be undone.`,
+      confirmLabel: 'Delete Race', variant: 'danger', onConfirm: handleDelete,
+    },
+  } : null;
 
   if (raceLoading) {
     return <div className="flex justify-center py-24"><LoadingSpinner size="lg" /></div>;
@@ -450,7 +474,7 @@ export default function AdminRaceDetailPage() {
                 <button
                   type="button"
                   disabled={closing}
-                  onClick={handleCloseRegistration}
+                  onClick={() => setConfirmAction('closeReg')}
                   className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-warn-subtle hover:text-warn disabled:opacity-50"
                 >
                   <Lock size={13} /> {closing ? 'Closing…' : 'Close Registration'}
@@ -470,7 +494,7 @@ export default function AdminRaceDetailPage() {
                 <button
                   type="button"
                   disabled={openingBetting}
-                  onClick={handleOpenBetting}
+                  onClick={() => setConfirmAction('openBetting')}
                   className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-ok-subtle hover:text-ok disabled:opacity-50"
                 >
                   <TrendingUp size={13} /> {openingBetting ? 'Opening…' : 'Open Betting'}
@@ -489,7 +513,7 @@ export default function AdminRaceDetailPage() {
                   <button
                     type="button"
                     disabled={starting}
-                    onClick={handleStartRace}
+                    onClick={() => setConfirmAction('start')}
                     className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-ok-subtle hover:text-ok disabled:opacity-50"
                   >
                     <PlayCircle size={13} /> {starting ? 'Starting…' : 'Start Race'}
@@ -513,7 +537,7 @@ export default function AdminRaceDetailPage() {
                 <button
                   type="button"
                   disabled={deleting}
-                  onClick={handleDelete}
+                  onClick={() => setConfirmAction('delete')}
                   className="inline-flex items-center gap-1.5 border border-fail/30 px-3 py-2 text-xs font-semibold text-fail transition-colors hover:bg-fail-subtle disabled:opacity-50"
                 >
                   <Trash2 size={13} /> {deleting ? 'Deleting…' : 'Delete'}
@@ -909,6 +933,17 @@ export default function AdminRaceDetailPage() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmAction != null}
+        onClose={() => setConfirmAction(null)}
+        onConfirm={() => confirmAction && CONFIRM_CONFIG?.[confirmAction].onConfirm()}
+        loading={closing || openingBetting || starting || deleting}
+        title={confirmAction ? CONFIRM_CONFIG?.[confirmAction].title : undefined}
+        message={confirmAction ? CONFIRM_CONFIG?.[confirmAction].message : undefined}
+        confirmLabel={confirmAction ? CONFIRM_CONFIG?.[confirmAction].confirmLabel : undefined}
+        variant={confirmAction ? CONFIRM_CONFIG?.[confirmAction].variant : 'danger'}
+      />
     </div>
   );
 }

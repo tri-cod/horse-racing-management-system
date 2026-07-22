@@ -1,6 +1,6 @@
 import axiosInstance from './axiosInstance';
 import type {
- ApiResponse, PageResponse, User, UserRole, UserStatus, UserListParams, AdminStats,
+ ApiResponse, PageResponse, User, UserRole, UserStatus, UserListParams, AdminStats, Penalty,
 } from '@/types';
 
 export const getUsers = ({ page = 0, size = 10, keyword, role, status }: UserListParams = {}) => {
@@ -28,3 +28,6 @@ export const banHorse = (id: number) =>
 
 export const getAdminStats = () =>
  axiosInstance.get<ApiResponse<AdminStats>>('/admin/stats').then((r) => r.data.data);
+
+export const getAllPenalties = () =>
+ axiosInstance.get<ApiResponse<Penalty[]>>('/admin/penalties').then((r) => r.data.data);

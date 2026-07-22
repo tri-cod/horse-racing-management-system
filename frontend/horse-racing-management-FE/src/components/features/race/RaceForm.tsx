@@ -131,9 +131,10 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  setUploading(true);
  const url = await uploadAvatar(file);
  setField('bannerImageurl', url);
+ setErrors((prev) => ({ ...prev, bannerImageurl: undefined }));
  } catch (err: unknown) {
  const e = err as { response?: { data?: { message?: string } }; message?: string };
- alert('Upload failed: ' + (e?.response?.data?.message ?? e.message));
+ setErrors((prev) => ({ ...prev, bannerImageurl: 'Upload failed: ' + (e?.response?.data?.message ?? e.message) }));
  } finally { setUploading(false); }
  };
 

@@ -1,11 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Eye, Pencil, Trash2, Search } from 'lucide-react';
+import { Plus, Eye, Pencil, Trash2, Search, Gavel } from 'lucide-react';
 import { useMyHorses } from '@/hooks/useMyHorses';
-import { deleteHorse } from '@/api/horseOwnerApi';
+import { deleteHorse, getMyPenalties } from '@/api/horseOwnerApi';
 import { useToast } from '@/components/ui/ToastProvider';
 import HorseStatusBadge from '@/components/features/horse-owner/HorseStatusBadge';
 import Button from '@/components/ui/Button';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
 import { getErrorMessage } from '@/utils/errors';
@@ -13,7 +14,7 @@ import type { Horse, HorseStatus } from '@/types';
 
 /* Shared column ratio for the horses table — MUST stay identical between the
  * header row and each data row, or columns will visibly drift out of alignment. */
-const HORSES_GRID_COLS = '2fr_1.1fr_0.8fr_0.6fr_0.7fr_0.9fr_120px';
+const HORSES_GRID_COLS = '2fr_1fr_0.7fr_0.6fr_0.7fr_0.8fr_0.9fr_120px';
 
 const STATUS_TABS: { value: HorseStatus | ''; label: string }[] = [
   { value: '', label: 'All' },
@@ -47,9 +48,27 @@ export default function MyHorsesPage() {
   const addToast = useToast();
   const { horses, loading, error, refetch } = useMyHorses();
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<Horse | null>(null);
   const [search, setSearch] = useState('');
   const [breedFilter, setBreedFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState<HorseStatus | ''>('');
+  const [penaltyCounts, setPenaltyCounts] = useState<Record<number, number>>({});
+
+  useEffect(() => {
+    let alive = true;
+    getMyPenalties()
+      .then((list) => {
+        if (!alive) return;
+        const counts: Record<number, number> = {};
+        (list ?? []).forEach((p) => {
+          if (p.horseId == null) return;
+          counts[p.horseId] = (counts[p.horseId] ?? 0) + 1;
+        });
+        setPenaltyCounts(counts);
+      })
+      .catch(() => { if (alive) setPenaltyCounts({}); });
+    return () => { alive = false; };
+  }, []);
 
   const active = horses.filter((h) => h.status === 'ACTIVE').length;
   const other = horses.length - active;
@@ -70,14 +89,18 @@ export default function MyHorsesPage() {
 
   const clearFilters = () => { setSearch(''); setBreedFilter(''); setStatusFilter(''); };
 
-  const handleDelete = async (horse: Horse) => {
+  const requestDelete = (horse: Horse) => {
     // Chặn ngay từ FE nếu ngựa đang đua, thay vì để lỗi constraint của DB hiện ra
     if (horse.status === 'RACING') {
       addToast('This horse is currently racing and cannot be deleted.', 'error');
       return;
     }
+    setConfirmDelete(horse);
+  };
 
-    if (!window.confirm(`Delete "${horse.horseName}"? This cannot be undone.`)) return;
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
+    const horse = confirmDelete;
     setDeletingId(horse.id);
     try {
       await deleteHorse(horse.id);
@@ -94,6 +117,7 @@ export default function MyHorsesPage() {
       );
     } finally {
       setDeletingId(null);
+      setConfirmDelete(null);
     }
   };
 
@@ -221,7 +245,7 @@ export default function MyHorsesPage() {
             className="grid items-center gap-4 border-b border-rim bg-surface-overlay px-5 py-2.5"
             style={{ gridTemplateColumns: HORSES_GRID_COLS.split('_').join(' ') }}
           >
-            {['Horse', 'Breed', 'Gender', 'Age', 'Speed', 'Status', 'Action'].map((h) => (
+            {['Horse', 'Breed', 'Gender', 'Age', 'Speed', 'Penalties', 'Status', 'Action'].map((h) => (
               <span key={h} className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">
                 {h}
               </span>
@@ -269,6 +293,17 @@ export default function MyHorsesPage() {
                   {/* Speed */}
                   <span className="tnum text-sm text-ink-2">{h.speedRating ?? '—'}</span>
 
+                  {/* Penalties */}
+                  <div className="justify-self-start">
+                    {penaltyCounts[h.id] ? (
+                      <span className="tnum inline-flex items-center gap-1 border border-fail/30 bg-fail-subtle px-2 py-0.5 text-xs font-bold text-fail">
+                        <Gavel size={11} /> {penaltyCounts[h.id]}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-ink-4">—</span>
+                    )}
+                  </div>
+
                   {/* Status — justify-self-start keeps the pill hugging its text instead of
                       stretching to fill the grid column (grid items stretch by default). */}
                   <div className="justify-self-start">
@@ -297,7 +332,7 @@ export default function MyHorsesPage() {
                       type="button"
                       title="Delete"
                       disabled={isDeleting}
-                      onClick={() => handleDelete(h)}
+                      onClick={() => requestDelete(h)}
                       className="flex h-7 w-7 items-center justify-center border border-rim text-ink-3 transition-colors hover:border-fail hover:text-fail disabled:opacity-50"
                     >
                       <Trash2 size={13} />
@@ -309,6 +344,17 @@ export default function MyHorsesPage() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmDelete != null}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={handleDelete}
+        loading={deletingId === confirmDelete?.id}
+        title="Delete This Horse?"
+        message={confirmDelete ? `Delete "${confirmDelete.horseName}"? This cannot be undone.` : undefined}
+        confirmLabel="Delete"
+        variant="danger"
+      />
     </div>
   );
 }

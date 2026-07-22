@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance';
-import type { ApiResponse, Trainer } from '@/types';
+import type { ApiResponse, Trainer, RaceParticipation } from '@/types';
 
 export interface CompleteTrainerProfilePayload {
  fullName?: string;
@@ -23,3 +23,12 @@ export const completeTrainerProfile = (payload: CompleteTrainerProfilePayload) =
 
 export const getTrainerList = () =>
   axiosInstance.get<ApiResponse<Trainer[]>>('/trainer/list').then((r) => r.data.data);
+
+export const getMyRaceHistory = () =>
+  axiosInstance.get<ApiResponse<RaceParticipation[]>>('/trainer/my-race-history').then((r) => r.data.data);
+
+export const getMyUpcomingRaces = () =>
+  axiosInstance.get<ApiResponse<RaceParticipation[]>>('/trainer/my-upcoming-races').then((r) => r.data.data);
+
+export const getMyCurrentRaces = () =>
+  axiosInstance.get<ApiResponse<RaceParticipation[]>>('/trainer/my-current-races').then((r) => r.data.data);

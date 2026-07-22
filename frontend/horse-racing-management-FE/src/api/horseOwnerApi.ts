@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance';
-import type { ApiResponse, Horse, HorseOwnerProfile, CompleteHorseOwnerProfilePayload, HorseOwnerPublicProfile } from '@/types';
+import type { ApiResponse, Horse, HorseOwnerProfile, CompleteHorseOwnerProfilePayload, HorseOwnerPublicProfile, Penalty, RaceParticipation } from '@/types';
 
 export interface SignHorsePayload {
  horseName: string;
@@ -61,3 +61,20 @@ export const getOwnerStats = (ownerId: number) =>
  axiosInstance
  .get<ApiResponse<HorseOwnerPublicProfile>>(`/horse-owner/${ownerId}/stats`)
  .then((r) => r.data.data);
+
+export const getHorsePenalties = (horseId: number) =>
+ axiosInstance
+ .get<ApiResponse<Penalty[]>>(`/horse-owner/horses/${horseId}/penalties`)
+ .then((r) => r.data.data);
+
+export const getMyPenalties = () =>
+ axiosInstance.get<ApiResponse<Penalty[]>>('/horse-owner/penalties').then((r) => r.data.data);
+
+export const getMyRaceHistory = () =>
+ axiosInstance.get<ApiResponse<RaceParticipation[]>>('/horse-owner/race-history').then((r) => r.data.data);
+
+export const getMyUpcomingRaces = () =>
+ axiosInstance.get<ApiResponse<RaceParticipation[]>>('/horse-owner/upcoming-races').then((r) => r.data.data);
+
+export const getMyCurrentRaces = () =>
+ axiosInstance.get<ApiResponse<RaceParticipation[]>>('/horse-owner/current-races').then((r) => r.data.data);

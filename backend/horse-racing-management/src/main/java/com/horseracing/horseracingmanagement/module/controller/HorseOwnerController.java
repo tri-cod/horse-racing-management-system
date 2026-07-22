@@ -73,21 +73,29 @@ public class HorseOwnerController {
                         horseOwnerService.signHorse(request, userId)));
     }
 
-    @PutMapping("/horses/{horseId}/assign-trainer")
-    public ResponseEntity<ApiResponse<SignHorseResponse>> assignTrainer(
-            @PathVariable Long horseId,
-            @RequestParam Long trainerId,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        Long userId = userDetails.getId();
-        return ResponseEntity.ok(ApiResponse.success("Trainer assigned successfully",
-                horseOwnerService.assignTrainer(horseId, trainerId, userId)));
-    }
-
     @GetMapping("/horses/{horseId}")
     public ResponseEntity<ApiResponse<SignHorseResponse>> getHorse(@PathVariable Long horseId) {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 horseOwnerService.getHorse(horseId)));
+    }
+
+    // Xem lịch sử phạt của 1 con ngựa mình sở hữu
+    @GetMapping("/horses/{horseId}/penalties")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<List<com.horseracing.horseracingmanagement.module.dto.RefereeDto.PenaltyResponse>>> getHorsePenalties(
+            @PathVariable Long horseId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getHorsePenalties(horseId, userDetails.getId())));
+    }
+
+    // Toàn bộ phạt trên tất cả ngựa của mình — dùng cho bảng My Horses
+    @GetMapping("/penalties")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<List<com.horseracing.horseracingmanagement.module.dto.RefereeDto.PenaltyResponse>>> getMyPenalties(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getMyPenalties(userDetails.getId())));
     }
 
     @GetMapping("/horses")
