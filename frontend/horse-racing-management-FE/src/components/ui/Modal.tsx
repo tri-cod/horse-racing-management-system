@@ -1,7 +1,8 @@
 import { useEffect, type ReactNode } from 'react';
+import { motion } from 'motion/react';
 import { X } from 'lucide-react';
 
-type ModalSize = 'sm' | 'md' | 'lg' | 'xl';
+type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl';
 type ModalBackdrop = 'dark' | 'navy';
 
 const SIZE_CLASSES: Record<ModalSize, string> = {
@@ -9,6 +10,9 @@ const SIZE_CLASSES: Record<ModalSize, string> = {
   md: 'max-w-md',
   lg: 'max-w-lg',
   xl: 'max-w-2xl',
+  '2xl': 'max-w-4xl',
+  '3xl': 'max-w-6xl',
+  '4xl': 'max-w-7xl',
 };
 
 const BACKDROP_CLASSES: Record<ModalBackdrop, string> = {
@@ -55,15 +59,21 @@ export default function Modal({
   if (!open) return null;
 
   return (
-    <div
+    <motion.div
       className={`fixed inset-0 z-50 flex items-center justify-center ${BACKDROP_CLASSES[backdrop]} backdrop-blur-sm p-4`}
       onMouseDown={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.15, ease: 'easeOut' }}
     >
-      <div
+      <motion.div
         className={`relative flex max-h-[90vh] w-full ${SIZE_CLASSES[size]} flex-col overflow-hidden border border-rim bg-surface-raised shadow-2xl ${rounded ? 'rounded-lg' : ''}`}
         onMouseDown={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
+        initial={{ opacity: 0, scale: 0.97, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
       >
         {accentClassName && <div className={`absolute inset-x-0 top-0 h-0.5 ${accentClassName}`} />}
         {(title || showCloseButton) && (
@@ -85,7 +95,7 @@ export default function Modal({
         <div className={`min-h-0 flex-1 overflow-y-auto ${bodyClassName}`}>{children}</div>
 
         {footer && <div className="shrink-0 border-t border-rim px-5 py-4">{footer}</div>}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

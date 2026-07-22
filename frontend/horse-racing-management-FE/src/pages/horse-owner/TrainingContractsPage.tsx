@@ -8,8 +8,9 @@ import EmptyState from '@/components/ui/EmptyState';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
 import TrainingContractsTable from '@/components/features/training-contract/TrainingContractsTable';
-import SendTrainingContractModal from '@/components/features/training-contract/SendTrainingContractModal';
 import TrainerBrowseModal from '@/components/features/training-contract/TrainerBrowseModal';
+import SendTrainingContractModal from '@/components/features/training-contract/SendTrainingContractModal';
+import TrainingContractDetailModal from '@/components/features/training-contract/TrainingContractDetailModal';
 import type { TrainingContract, Trainer } from '@/types';
 
 type TabKey = 'PENDING' | 'ACTIVE' | 'CLOSED';
@@ -46,6 +47,7 @@ export default function TrainingContractsPage() {
   // Two-step hire flow: browse trainers → pick one → fill the contract form.
   const [browsing, setBrowsing] = useState(false);
   const [pickedTrainer, setPickedTrainer] = useState<Trainer | null>(null);
+  const [viewing, setViewing] = useState<TrainingContract | null>(null);
 
   const fetchContracts = useCallback(async () => {
     setLoading(true);
@@ -101,6 +103,13 @@ export default function TrainingContractsPage() {
         onSuccess={(msg) => { addToast(msg, 'success'); fetchContracts(); }}
       />
 
+      <TrainingContractDetailModal
+        contract={viewing}
+        perspective="owner"
+        onClose={() => setViewing(null)}
+        onChanged={fetchContracts}
+      />
+
       {error && (
         <div className="mb-5 flex items-center justify-between border border-fail/20 bg-fail-subtle px-4 py-3 text-sm text-fail">
           <span>{error}</span>
@@ -153,7 +162,7 @@ export default function TrainingContractsPage() {
               <p className="text-sm text-ink-2">{activeTabConfig.emptyText}</p>
             </div>
           ) : (
-            <TrainingContractsTable contracts={tabContracts} perspective="owner" />
+            <TrainingContractsTable contracts={tabContracts} perspective="owner" onView={setViewing} />
           )}
         </div>
       )}

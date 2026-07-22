@@ -4,6 +4,7 @@ import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.CompleteTrainerProfileRequest;
+import com.horseracing.horseracingmanagement.module.dto.Trainer.TrainerHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.TrainerListItemResponse;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.TrainerProfileResponse;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.TrainerStatsResponse;
@@ -68,6 +69,8 @@ public class TrainerController {
                             .avatarUrl(t.getAvatarUrl())
                             .status(t.getStatus())
                             .monthlyFee(t.getMonthlyFee())
+                            .specialization(t.getSpecialization())
+                            .isAvailable(t.getIsAvailable())
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -115,6 +118,14 @@ public class TrainerController {
             @PathVariable Long trainerId) {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 trainerService.getStats(trainerId)));
+    }
+
+    // Danh sách ngựa trainer đang huấn luyện (public)
+    @GetMapping("/{trainerId}/horses")
+    public ResponseEntity<ApiResponse<List<TrainerHorseResponse>>> getTrainerHorses(
+            @PathVariable Long trainerId) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                trainerService.getTrainerHorses(trainerId)));
     }
 
 

@@ -41,13 +41,13 @@ const HorseEditPage = lazy(() => import('@/pages/horse-owner/HorseEditPage'));
 const HorseOwnerRacePage = lazy(() => import('@/pages/horse-owner/HorseOwnerRacePage'));
 const MyRaceRegistrationsPage = lazy(() => import('@/pages/horse-owner/MyRaceRegistrationsPage'));
 const TrainingContractsPage = lazy(() => import('@/pages/horse-owner/TrainingContractsPage'));
-const TrainingContractDetailPage = lazy(() => import('@/pages/shared/TrainingContractDetailPage'));
 const HorseOwnerMyProfilePage = lazy(() => import('@/pages/horse-owner/HorseOwnerMyProfilePage'));
 
 // Trainer
 const TrainerDashboardPage = lazy(() => import('@/pages/trainer/TrainerDashboardPage'));
 const TrainerProfilePage = lazy(() => import('@/pages/trainer/TrainerProfilePage'));
 const TrainerContractsPage = lazy(() => import('@/pages/trainer/TrainerContractsPage'));
+const TrainerHorsesPage = lazy(() => import('@/pages/trainer/TrainerHorsesPage'));
 
 // Jockey
 const JockeyDashboardPage = lazy(() => import('@/pages/jockey/JockeyDashboardPage'));
@@ -206,9 +206,9 @@ export default function App() {
               <AppLayout><TrainerContractsPage /></AppLayout>
             </ProtectedRoute>
           } />
-          <Route path="/training-contracts/:id" element={
-            <ProtectedRoute allowedRoles={['HORSE_OWNER', 'TRAINER']}>
-              <AppLayout><TrainingContractDetailPage /></AppLayout>
+          <Route path="/trainer/horses" element={
+            <ProtectedRoute allowedRoles={['TRAINER']}>
+              <AppLayout><TrainerHorsesPage /></AppLayout>
             </ProtectedRoute>
           } />
 

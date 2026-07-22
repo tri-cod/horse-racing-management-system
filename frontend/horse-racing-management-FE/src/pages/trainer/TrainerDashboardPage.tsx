@@ -8,6 +8,8 @@ import StatCard from '@/components/shared/StatCard';
 import ActivityList, { type ActivityItem } from '@/components/shared/ActivityList';
 import QuickActions from '@/components/shared/QuickActions';
 import { FadeInStagger, FadeInItem } from '@/components/shared/FadeIn';
+import TrainerStatsSection from '@/components/features/trainer/TrainerStatsSection';
+import TrainerHorsesSection from '@/components/features/trainer/TrainerHorsesSection';
 import Seo from '@/components/seo/Seo';
 import type { Trainer } from '@/types';
 
@@ -18,6 +20,7 @@ const fmt = (n: number | null | undefined) =>
 
 export default function TrainerDashboardPage() {
   const { user } = useAuth();
+  const [profileId, setProfileId] = useState<number | null>(null);
   const [profileAvatarUrl, setProfileAvatarUrl] = useState<string | null>(null);
   const [experienceYears, setExperienceYears] = useState<number | null>(null);
   const [profileComplete, setProfileComplete] = useState<boolean | null>(null);
@@ -39,6 +42,7 @@ export default function TrainerDashboardPage() {
 
     if (profileR.status === 'fulfilled') {
       const p = profileR.value;
+      setProfileId(p?.id ?? null);
       setProfileAvatarUrl(p?.avatarUrl ?? null);
       setExperienceYears(p?.experienceYears ?? null);
       setProfileComplete(!!(p?.dateOfBirth && p?.experienceYears != null));
@@ -120,6 +124,25 @@ export default function TrainerDashboardPage() {
           </FadeInItem>
         </FadeInStagger>
       </div>
+
+      {profileId != null && (
+        <div className="space-y-6 px-8 pt-8">
+          <div>
+            <div className="mb-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Performance</p>
+              <h2 className="font-serif text-lg font-bold text-ink">Your Track Record</h2>
+            </div>
+            <TrainerStatsSection trainerId={profileId} showRecentRaces={false} />
+          </div>
+          <div>
+            <div className="mb-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Stable</p>
+              <h2 className="font-serif text-lg font-bold text-ink">Horses You Train</h2>
+            </div>
+            <TrainerHorsesSection trainerId={profileId} />
+          </div>
+        </div>
+      )}
 
       <div className="px-8 pb-8 pt-8">
         <div className="mb-4">

@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { FileText } from 'lucide-react';
 import Badge from '@/components/ui/Badge';
 import { isStatus } from '@/utils/trainingContractStatus';
@@ -43,11 +42,12 @@ function computeProgress(c: TrainingContract): { pct: number; daysLeft: number }
 interface Props {
   contracts: TrainingContract[];
   // 'owner' shows the Trainer column; 'trainer' shows the Owner column (with
-  // their note). All state changes happen on the contract detail page.
+  // their note). Clicking View opens the contract detail popup.
   perspective: 'owner' | 'trainer';
+  onView: (c: TrainingContract) => void;
 }
 
-export default function TrainingContractsTable({ contracts, perspective }: Props) {
+export default function TrainingContractsTable({ contracts, perspective, onView }: Props) {
   const isTrainer = perspective === 'trainer';
   const counterpartyHeader = isTrainer ? 'Owner' : 'Trainer';
 
@@ -114,13 +114,14 @@ export default function TrainingContractsTable({ contracts, perspective }: Props
                   </Badge>
                 </td>
                 <td className="px-5 py-3.5">
-                  <Link
-                    to={`/training-contracts/${c.id}`}
+                  <button
+                    type="button"
+                    onClick={() => onView(c)}
                     title="View contract"
                     className="inline-flex items-center gap-1 whitespace-nowrap border border-rim-hi px-2.5 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:border-gold/40 hover:bg-surface-overlay hover:text-gold-hi"
                   >
                     <FileText size={12} /> View
-                  </Link>
+                  </button>
                 </td>
               </tr>
             );
