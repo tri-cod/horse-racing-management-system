@@ -50,6 +50,19 @@ export default function TrainerProfilePage() {
     } finally { setSaving(false); }
   };
 
+  /* Quick availability flip from view mode — backend only updates non-null
+     fields, so sending isAvailable alone leaves the rest of the profile intact. */
+  const handleToggleAvailability = async (next: boolean) => {
+    setSaving(true);
+    try {
+      await save({ isAvailable: next });
+      addToast(next ? 'You are now accepting new horses.' : 'You are no longer accepting new horses.', 'success');
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } }; message?: string };
+      addToast(err.response?.data?.message ?? 'Failed to update availability.', 'error');
+    } finally { setSaving(false); }
+  };
+
   if (loading) return (
     <div className="flex min-h-[40vh] items-center justify-center">
       <LoadingSpinner size="lg" />
@@ -174,7 +187,7 @@ export default function TrainerProfilePage() {
             {isEditing
               ? <TrainerProfileForm initialValues={profile ?? {}} onSubmit={handleSave} loading={saving} />
               : profile
-                ? <TrainerProfileView profile={profile} />
+                ? <TrainerProfileView profile={profile} onToggleAvailability={handleToggleAvailability} toggling={saving} />
                 : (
                   <div className="px-6 py-12 text-center">
                     <p className="text-sm text-ink-3">No profile data available.</p>

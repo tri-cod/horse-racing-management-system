@@ -13,6 +13,22 @@ export const getUsers = ({ page = 0, size = 10, keyword, role, status }: UserLis
  .then((r) => r.data.data);
 };
 
+export interface AdminCreateUserPayload {
+ role: UserRole;
+ fullName: string;
+ username: string;
+ email: string;
+ password: string;
+ phone?: string;
+}
+
+// Admin-only — POST /admin/create reuses the register flow but skips email
+// verification, so privileged roles (STAFF, REFEREE…) can be created directly.
+export const createUserAccount = (payload: AdminCreateUserPayload) =>
+ axiosInstance
+ .post<ApiResponse<User>>('/admin/create', payload)
+ .then((r) => r.data.data);
+
 export const updateUserRole = (id: number, roleName: UserRole) =>
  axiosInstance
  .put<ApiResponse<User>>(`/admin/users/${id}/role`, { roleName })
