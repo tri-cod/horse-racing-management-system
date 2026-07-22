@@ -78,11 +78,8 @@ function RacecardBoard({ race }: { race: Race | null }) {
  return (
  <div className=" rounded-md border border-rim bg-surface-raised/80 p-6 shadow-modal backdrop-blur-md">
  {/* Header */}
- <div className="mb-3 flex items-center justify-between">
+ <div className="mb-3">
  <span className="eyebrow">Next Race</span>
- <span className="rounded-full bg-gold/20 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-gold">
- Upcoming
- </span>
  </div>
 
  {/* Race name */}
@@ -146,7 +143,7 @@ export default function HeroSection() {
  const betHref = !user ? '/login' : user.role === 'USER' ? '/bet/races' : null;
 
  return (
- <section className="relative flex min-h-[calc(100dvh-113px)] items-center overflow-hidden">
+ <section className="relative flex min-h-[calc(100dvh-109px)] items-center overflow-hidden">
  {/* Video background */}
  <video
  src="https://res.cloudinary.com/dxg3w2joa/video/upload/v1782285815/hero_hisssl.mp4"
@@ -165,12 +162,6 @@ export default function HeroSection() {
  initial={reduce ? false : 'hidden'}
  animate={reduce ? undefined : 'show'}
  >
- {/* Eyebrow */}
- <motion.div variants={fadeUp} className="mb-6 flex items-center gap-4">
- <div className="h-px w-12 bg-gold" />
- <span className="eyebrow tracking-[0.2em] !text-gold">Royal Derby 2026</span>
- </motion.div>
-
  {/* h1 — Cormorant Garamond at large display scale */}
  <motion.h1 variants={fadeUp} className="font-serif text-6xl font-bold leading-[1.05] text-on-blue sm:text-7xl lg:text-8xl">
  Glory On<br />

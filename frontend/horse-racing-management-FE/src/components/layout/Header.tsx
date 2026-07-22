@@ -255,7 +255,7 @@ export default function Header() {
       {/* Thin brass top rule */}
       <div className="h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
       {/* Utility strip */}
-      <div className="bg-navy-deep border-b border-on-blue/10">
+      <div className="bg-navy-deep">
         <Container className="flex h-9 items-center justify-between">
           <span className="text-[11px] text-on-blue/50">Season {new Date().getFullYear()}</span>
           <div className="flex items-center gap-3">
@@ -322,7 +322,7 @@ export default function Header() {
       </div>
 
       {/* Main nav */}
-      <div className="py-4 border-b border-on-blue/10">
+      <div className="py-4">
         <Container className="flex items-center gap-10">
           <Link to="/" aria-label="Royal Derby home">
             <img src="/logopage.png" alt="Royal Derby" className="h-10 object-contain" />

@@ -6,6 +6,7 @@ import type { RaceResultFlat } from '@/types';
 export interface NormalizedRaceResult {
   id: number;
   position: number;
+  horseId?: number;
   horseName: string;
   jockeyName: string;
   time?: string;
@@ -26,6 +27,7 @@ function normalize(r: RaceResultFlat, oddsByHorseId: Map<number, number>): Norma
   return {
     id: r.id,
     position: r.rank ?? 0,
+    horseId: r.horseId,
     horseName: r.horseName ?? '—',
     jockeyName: r.jockeyName ?? '—',
     time: r.completionTimeFormatted ?? fmtSeconds(r.completionTimeSeconds),

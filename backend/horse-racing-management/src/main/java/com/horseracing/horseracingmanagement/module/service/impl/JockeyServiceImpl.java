@@ -319,10 +319,15 @@ public class JockeyServiceImpl implements JockeyService {
     }
 
     private @NonNull List<RaceHorse> getCollect(Jockey jockey) {
+        // Khi race kết thúc, status entry chuyển APPROVED → FINISHED/DISQUALIFIED,
+        // nên phải nhận cả các status đó (giữ APPROVED cho dữ liệu cũ chưa chuyển).
         return raceHorseRepository
-                .findByJockey_IdAndStatus(jockey.getId(), RaceHorseStatus.APPROVED)
+                .findByJockey_Id(jockey.getId())
                 .stream()
                 .filter(rh -> rh.getRace().getStatus() == RaceStatus.FINISHED)
+                .filter(rh -> rh.getStatus() == RaceHorseStatus.FINISHED
+                        || rh.getStatus() == RaceHorseStatus.DISQUALIFIED
+                        || rh.getStatus() == RaceHorseStatus.APPROVED)
                 .collect(Collectors.toList());
     }
 }
