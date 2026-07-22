@@ -37,9 +37,6 @@ public class AdminStatsResponse {
     private Long totalActiveHorses;
     private Long totalRacingHorses;
 
-    // Report
-    private Long totalPendingReports;
-
     // Transactions
     private Long totalPendingDeposits;
     private Long totalPendingWithdraws;

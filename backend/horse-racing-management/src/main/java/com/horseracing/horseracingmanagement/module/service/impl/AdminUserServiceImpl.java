@@ -6,8 +6,6 @@ import com.horseracing.horseracingmanagement.common.response.PageResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminStatsResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminUserItemResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.RecentRaceStats;
-import com.horseracing.horseracingmanagement.module.dto.ReportDto.CreateReportRequest;
-import com.horseracing.horseracingmanagement.module.dto.ReportDto.ReportResponse;
 import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
 import com.horseracing.horseracingmanagement.module.service.AdminUserService;
@@ -23,7 +21,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +32,6 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final RoleRepository roleRepository;
     private final RaceHorseRepository raceHorseRepository;
     private final HorseRepository horseRepository;
-    private  final  ReportRepository reportRepository;
     private final RaceRepository raceRepository;
     private final BetRepository betRepository;
     private final WalletRepository walletRepository;
@@ -108,112 +104,6 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         horse.setStatus(HorseStatus.BANNED);  // ← thêm BANNED vào HorseStatus enum
         horseRepository.save(horse);
-    }
-
-    private static final java.util.Set<String> VALID_TARGET_TYPES = java.util.Set.of("USER", "HORSE");
-    private static final java.util.Set<String> VALID_REASONS =
-            java.util.Set.of("CHEATING", "ABUSE", "FAKE_INFO", "RULE_VIOLATION", "OTHER");
-
-    @Override
-    @Transactional
-    public ReportResponse createReport(CreateReportRequest request, Long reporterId) {
-        User reporter = userRepository.findById(reporterId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", reporterId));
-
-        if (!VALID_TARGET_TYPES.contains(request.getTargetType())) {
-            throw new RuntimeException("targetType must be USER or HORSE");
-        }
-        if (!VALID_REASONS.contains(request.getReason())) {
-            throw new RuntimeException("reason must be one of: " + VALID_REASONS);
-        }
-
-        // Xác định tên target — báo lỗi nếu target không tồn tại thay vì âm thầm ghi "Unknown"
-        String targetName;
-        if ("USER".equals(request.getTargetType())) {
-            if (request.getTargetId().equals(reporterId)) {
-                throw new RuntimeException("You cannot report yourself");
-            }
-            User target = userRepository.findById(request.getTargetId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.getTargetId()));
-            targetName = target.getFullName() != null ? target.getFullName() : target.getEmail();
-        } else {
-            Horse target = horseRepository.findById(request.getTargetId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Horse", "id", request.getTargetId()));
-            targetName = target.getHorseName();
-        }
-
-        // Chặn spam — không cho gửi report trùng (cùng người, cùng target) khi report trước
-        // vẫn còn PENDING chưa được admin xử lý.
-        boolean alreadyPending = reportRepository
-                .findByTargetTypeAndTargetId(request.getTargetType(), request.getTargetId())
-                .stream()
-                .anyMatch(r -> r.getReporter().getId().equals(reporterId) && "PENDING".equals(r.getStatus()));
-        if (alreadyPending) {
-            throw new RuntimeException("You already have a pending report for this " +
-                    request.getTargetType().toLowerCase());
-        }
-
-        Report report = Report.builder()
-                .reporter(reporter)
-                .targetType(request.getTargetType())
-                .targetId(request.getTargetId())
-                .targetName(targetName)
-                .reason(request.getReason())
-                .detail(request.getDetail())
-                .status("PENDING")
-                .build();
-
-        return mapToReportResponse(reportRepository.save(report));
-    }
-
-
-    @Override
-    public List<ReportResponse> getPendingReports() {
-        return reportRepository.findByStatusOrderByCreatedAtDesc("PENDING")
-                .stream().map(this::mapToReportResponse).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<ReportResponse> getAllReports() {
-        return reportRepository.findAll()
-                .stream()
-                .sorted(Comparator.comparing(Report::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
-                .map(this::mapToReportResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional
-    public ReportResponse reviewReport(Long reportId, String action, String adminNote, Long adminId) {
-        Report report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new ResourceNotFoundException("Report", "id", reportId));
-
-        switch (action) {
-            case "DISMISS" -> {
-                report.setStatus("DISMISSED");
-                report.setAdminNote(adminNote);
-            }
-            case "BAN_USER" -> {
-                User target = userRepository.findById(report.getTargetId())
-                        .orElseThrow(() -> new ResourceNotFoundException("User", "id", report.getTargetId()));
-                if (target.getRole() != null && (target.getRole().getRolename() == RoleName.ADMIN
-                        || target.getRole().getRolename() == RoleName.STAFF)) {
-                    throw new RuntimeException("Cannot ban an admin or staff account through a report");
-                }
-                deleteUser(report.getTargetId());
-                report.setStatus("ACTION_TAKEN");
-                report.setAdminNote("User banned. " + (adminNote != null ? adminNote : ""));
-            }
-            case "BAN_HORSE" -> {
-                deleteHorse(report.getTargetId());
-                report.setStatus("ACTION_TAKEN");
-                report.setAdminNote("Horse banned. " + (adminNote != null ? adminNote : ""));
-            }
-            default -> throw new RuntimeException("Invalid action: " + action);
-        }
-
-        report.setReviewedAt(Instant.now());
-        return mapToReportResponse(reportRepository.save(report));
     }
 
     @Override
@@ -303,10 +193,6 @@ public class AdminUserServiceImpl implements AdminUserService {
         long racingHorses = allHorses.stream()
                 .filter(h -> h.getStatus() == HorseStatus.RACING).count();
 
-
-        // Reports
-        long pendingReports = reportRepository.countByStatus("PENDING");
-
         // Recent 5 races
         List<RecentRaceStats> recentRaces = allRaces.stream()
                 .filter(r -> r.getStatus() == RaceStatus.FINISHED)
@@ -348,30 +234,12 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .totalHorses(totalHorses)
                 .totalActiveHorses(activeHorses)
                 .totalRacingHorses(racingHorses)
-                .totalPendingReports(pendingReports)
                 .totalPendingDeposits(pendingDeposits)
                 .totalPendingWithdraws(pendingWithdraws)
                 .recentRaces(recentRaces)
                 .build();
     }
 
-
-    private ReportResponse mapToReportResponse(Report r) {
-        return ReportResponse.builder()
-                .id(r.getId())
-                .reporterId(r.getReporter().getId())
-                .reporterName(r.getReporter().getFullName())
-                .targetType(r.getTargetType())
-                .targetId(r.getTargetId())
-                .targetName(r.getTargetName())
-                .reason(r.getReason())
-                .detail(r.getDetail())
-                .status(r.getStatus())
-                .adminNote(r.getAdminNote())
-                .createdAt(r.getCreatedAt())
-                .reviewedAt(r.getReviewedAt())
-                .build();
-    }
 
     private AdminUserItemResponse toItem(User user) {
         String roleName = user.getRole() != null

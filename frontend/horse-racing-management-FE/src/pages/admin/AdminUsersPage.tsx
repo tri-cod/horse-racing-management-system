@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { useAdminUsers } from '@/hooks/useAdminUsers';
 import UsersTable from '@/components/features/admin/UsersTable';
@@ -54,10 +53,7 @@ function TableSkeleton() {
 
 export default function AdminUsersPage() {
   const addToast = useToast();
-  // Lets other pages (e.g. Reports) deep-link straight into a filtered search,
-  // since there's no dedicated single-user admin view to link to instead.
-  const [searchParams] = useSearchParams();
-  const [keyword, setKeyword] = useState(searchParams.get('keyword') ?? '');
+  const [keyword, setKeyword] = useState('');
   const [role, setRole] = useState<UserRole | ''>('');
   const [status, setStatus] = useState<UserStatus | ''>('');
   const [roleUser, setRoleUser] = useState<User | null>(null);

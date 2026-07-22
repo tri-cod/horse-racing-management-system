@@ -5,7 +5,6 @@ import { ChevronLeft, User, BadgeCheck, Quote } from 'lucide-react';
 import { useRefereeProfile } from '@/hooks/useRefereeProfile';
 import Container from '@/components/ui/Container';
 import Seo from '@/components/seo/Seo';
-import ReportButton from '@/components/features/report/ReportButton';
 
 const GOLD = '#d9bc76';
 
@@ -148,12 +147,6 @@ export default function RefereeProfilePage() {
             <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-white/80 transition-colors hover:text-gold">
               <ChevronLeft size={14} /> Home
             </Link>
-            <ReportButton
-              targetType="USER"
-              targetId={referee.userId}
-              targetName={referee.name}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/60 transition-colors hover:text-fail"
-            />
           </div>
 
           <div className="flex flex-col items-center gap-8 text-center sm:flex-row sm:items-start sm:text-left">
