@@ -8,15 +8,12 @@ import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminStatsRespo
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminUserItemResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.UpdateUserRoleRequest;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.UpdateUserStatusRequest;
-import com.horseracing.horseracingmanagement.module.dto.RefereeDto.PenaltyResponse;
 import com.horseracing.horseracingmanagement.module.service.AdminUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -55,6 +52,13 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("User status updated", null));
     }
 
+    @DeleteMapping("/users/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable Long id) {
+        adminUserService.deleteUser(id);
+        return ResponseEntity.ok(ApiResponse.success("User banned successfully", null));
+    }
+
     // ============ HORSE MANAGEMENT ============
     @DeleteMapping("/horses/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -68,13 +72,5 @@ public class AdminController {
     public ResponseEntity<ApiResponse<AdminStatsResponse>> getStats() {
         return ResponseEntity.ok(ApiResponse.success("Stats fetched",
                 adminUserService.getStats()));
-    }
-
-    // ============ PENALTIES ============
-    // Giám sát toàn bộ phạt trong hệ thống — theo dõi hành vi của referee
-    @GetMapping("/penalties")
-    public ResponseEntity<ApiResponse<List<PenaltyResponse>>> getAllPenalties() {
-        return ResponseEntity.ok(ApiResponse.success("Success",
-                adminUserService.getAllPenalties()));
     }
 }

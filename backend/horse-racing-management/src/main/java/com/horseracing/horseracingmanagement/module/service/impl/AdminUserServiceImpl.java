@@ -6,7 +6,6 @@ import com.horseracing.horseracingmanagement.common.response.PageResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminStatsResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminUserItemResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.RecentRaceStats;
-import com.horseracing.horseracingmanagement.module.dto.RefereeDto.PenaltyResponse;
 import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
 import com.horseracing.horseracingmanagement.module.service.AdminUserService;
@@ -37,8 +36,6 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final BetRepository betRepository;
     private final WalletRepository walletRepository;
     private final TransactionRepostitory transactionRepository;
-    private final PenaltyRepository penaltyRepository;
-    private final HorseOwnerRepository horseOwnerRepository;
 
 
 
@@ -72,6 +69,17 @@ public class AdminUserServiceImpl implements AdminUserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         user.setStatus(status);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+        // Xóa mềm — set status BANNED thay vì xóa thật (giữ data lịch sử)
+        user.setStatus(UserStatus.BANNED);
         userRepository.save(user);
     }
 
@@ -253,32 +261,5 @@ public class AdminUserServiceImpl implements AdminUserService {
                         )
                 )
                 .build();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<PenaltyResponse> getAllPenalties() {
-        return penaltyRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(p -> {
-                    HorseOwner owner = horseOwnerRepository.findById(p.getRaceHorse().getHorse().getOwnerId()).orElse(null);
-                    return PenaltyResponse.builder()
-                            .id(p.getId())
-                            .raceHorseId(p.getRaceHorse().getId())
-                            .horseId(p.getRaceHorse().getHorse().getId())
-                            .horseName(p.getRaceHorse().getHorse().getHorseName())
-                            .raceId(p.getRaceHorse().getRace().getId())
-                            .raceName(p.getRaceHorse().getRace().getRaceName())
-                            .ownerName(owner != null ? owner.getName() : null)
-                            .refereeId(p.getReferee().getId())
-                            .refereeName(p.getReferee().getUser().getFullName())
-                            .reason(p.getReason())
-                            .penaltyType(p.getPenaltyType())
-                            .amount(p.getAmount())
-                            .timePenaltySeconds(p.getTimePenaltySeconds())
-                            .isDisqualified(p.getIsDisqualified())
-                            .createdAt(p.getCreatedAt())
-                            .build();
-                })
-                .collect(Collectors.toList());
     }
 }
