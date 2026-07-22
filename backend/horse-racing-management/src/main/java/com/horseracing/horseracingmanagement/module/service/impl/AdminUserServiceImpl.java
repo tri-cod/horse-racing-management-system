@@ -6,9 +6,12 @@ import com.horseracing.horseracingmanagement.common.response.PageResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminStatsResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminUserItemResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.RecentRaceStats;
+import com.horseracing.horseracingmanagement.module.dto.AuthDto.AuthMeResponse;
+import com.horseracing.horseracingmanagement.module.dto.AuthDto.RegisterRequest;
 import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
 import com.horseracing.horseracingmanagement.module.service.AdminUserService;
+import com.horseracing.horseracingmanagement.module.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +39,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final BetRepository betRepository;
     private final WalletRepository walletRepository;
     private final TransactionRepostitory transactionRepository;
+    private final AuthService authService;
 
 
 
@@ -104,6 +108,11 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         horse.setStatus(HorseStatus.BANNED);  // ← thêm BANNED vào HorseStatus enum
         horseRepository.save(horse);
+    }
+
+    @Override
+    public AuthMeResponse createUserAccout(RegisterRequest request) {
+        return authService.register(request);
     }
 
     @Override
