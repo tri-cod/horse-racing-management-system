@@ -1,113 +1,74 @@
 import { useState } from 'react';
-import { Flag, Trophy, Percent } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import Container from '@/components/ui/Container';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { useTopJockeys } from '@/hooks/useTopJockeys';
 import type { Jockey } from '@/types';
 
-const RING_HEIGHT = 460;
 const PORTRAIT_HEIGHT = 680;
 
-const CARD_WIDTH = 300;
-const CARD_HEIGHT = 260; // estimate, used only to vertically center the ring
-const STEP_X = 175; // px between adjacent ring positions
-const STEP_ROTATE = 28; // deg of Y-rotation per step
-const STEP_SCALE = 0.15;
-const STEP_OPACITY = 0.28;
-
-/** Shortest signed distance from `selected` to `index` around a ring of `total` cards. */
-function ringOffset(index: number, selected: number, total: number) {
-  let diff = index - selected;
-  if (diff > total / 2) diff -= total;
-  if (diff < -total / 2) diff += total;
-  return diff;
-}
-
-function JockeyThumb({ jockey, offset, onSelect, reduce }: {
-  jockey: Jockey; offset: number; onSelect: () => void; reduce: boolean;
+function JockeyRow({ jockey, rank, active, onSelect }: {
+  jockey: Jockey; rank: number; active: boolean; onSelect: () => void;
 }) {
-  const active = offset === 0;
-  const abs = Math.abs(offset);
   const initial = jockey.name.charAt(0).toUpperCase();
 
   return (
-    <motion.div
-      role="button"
-      tabIndex={0}
-      aria-pressed={active}
-      onClick={onSelect}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(); } }}
-      animate={{
-        x: offset * STEP_X,
-        y: active ? -10 : 0,
-        rotateY: offset * -STEP_ROTATE,
-        scale: Math.max(1 - abs * STEP_SCALE, 0.55),
-        opacity: Math.max(1 - abs * STEP_OPACITY, 0.3),
-      }}
-      transition={reduce ? { duration: 0.2, ease: 'easeOut' } : {
-        x: { type: 'spring', stiffness: 130, damping: 15 },
-        y: { type: 'spring', stiffness: 130, damping: 12 },
-        rotateY: { type: 'spring', stiffness: 130, damping: 15 },
-        scale: { type: 'spring', stiffness: 160, damping: 13 },
-        opacity: { duration: 0.5, ease: 'easeOut' },
-      }}
-      style={{ width: CARD_WIDTH, marginLeft: -CARD_WIDTH / 2, marginTop: -CARD_HEIGHT / 2, zIndex: 10 - abs }}
-      className={`absolute left-1/2 top-1/2 cursor-pointer rounded-md border p-7 text-center backdrop-blur-md ${
-        active ? 'border-gold/50 bg-surface-raised/90 shadow-hero' : 'border-rim bg-surface-raised/70 shadow-modal'
-      }`}
-    >
-      {/* Header */}
-      <div className="mb-4 flex items-center justify-between gap-2">
-        <span className="eyebrow whitespace-nowrap">Jockey</span>
-      </div>
+    <li>
+      <button
+        type="button"
+        onClick={onSelect}
+        aria-pressed={active}
+        className={`flex w-full items-center gap-4 px-5 py-3 text-left transition-colors ${
+          active ? 'bg-gold/10' : 'hover:bg-surface-overlay/60'
+        }`}
+      >
+        {/* Rank */}
+        <span className={`tnum w-7 shrink-0 text-lg font-bold ${
+          rank === 1 ? 'text-gold-hi' : active ? 'text-ink' : 'text-ink-4'
+        }`}>
+          {String(rank).padStart(2, '0')}
+        </span>
 
-      {/* Identity */}
-      <div className="mb-5 flex items-center gap-3">
-        <div className={`flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border ${
+        {/* Avatar */}
+        <div className={`flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border ${
           active ? 'border-gold bg-gold/20' : 'border-rim-hi bg-gold/10'
         }`}>
           {jockey.avatarUrl ? (
             <img src={jockey.avatarUrl} alt="" className="h-full w-full object-cover" />
           ) : (
-            <span className="font-serif text-xl font-bold text-gold">{initial}</span>
+            <span className="font-serif text-base font-bold text-gold">{initial}</span>
           )}
         </div>
-        <h3 className="truncate text-left text-xl font-bold text-ink">{jockey.name}</h3>
-      </div>
 
-      <hr className="mb-5 border-rim" />
+        {/* Name */}
+        <p className="min-w-0 flex-1 truncate text-base font-bold text-ink">{jockey.name}</p>
 
-      {/* Stats */}
-      <ul className="space-y-2 text-left">
-        <li className="flex items-center gap-2 text-base text-ink-2">
-          <Flag size={15} className="shrink-0 text-ink-4" />{jockey.totalRaces ?? 0} races
-        </li>
-        <li className="flex items-center gap-2 text-base text-ink-2">
-          <Trophy size={15} className="shrink-0 text-gold" />{jockey.totalWins ?? 0} wins
-        </li>
-        <li className="flex items-center gap-2 text-base text-ink-2">
-          <Percent size={15} className="shrink-0 text-ink-4" />{(jockey.winRate ?? 0).toFixed(1)}% win rate
-        </li>
-      </ul>
-    </motion.div>
+        {/* Stats */}
+        <div className="hidden shrink-0 items-center gap-5 text-sm sm:flex">
+          <span className="text-ink-4">
+            Races: <span className="tnum font-semibold text-ink-2">{jockey.totalRaces ?? 0}</span>
+          </span>
+          <span className="text-ink-4">
+            Wins: <span className="tnum font-semibold text-gold-hi">{jockey.totalWins ?? 0}</span>
+          </span>
+          <span className="text-ink-4">
+            Win rate: <span className="tnum font-semibold text-ink-2">{(jockey.winRate ?? 0).toFixed(1)}%</span>
+          </span>
+        </div>
+      </button>
+    </li>
   );
 }
 
 export default function JockeysSection() {
-  const { jockeys, loading, error } = useTopJockeys(5);
+  const { jockeys, loading, error } = useTopJockeys(10);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const reduce = useReducedMotion() ?? false;
   const selected = jockeys[selectedIndex];
 
   return (
-    <section className="overflow-hidden bg-surface-overlay pt-10 ">
+    <section className="overflow-hidden bg-surface-overlay pt-10">
       <Container>
-        <SectionHeader
-          title={<>Top <span className="[font-variant-numeric:lining-nums]">5</span> Championship Jockeys in <span className="[font-variant-numeric:lining-nums]">2026</span></>}
-          subtitle="The talented riders chasing glory across the Royal Derby season."
-        />
-
         {loading && (
           <p className="text-center text-sm text-ink-3">Loading jockeys…</p>
         )}
@@ -118,7 +79,27 @@ export default function JockeysSection() {
 
         {!loading && !error && selected && (
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-5">
-            {/* Left — portrait of the selected jockey, stretched to the section's full height */}
+            {/* Left — section header + top-10 list */}
+            <div className="lg:col-span-3">
+              <SectionHeader
+                align="left"
+                title={<>Top <span className="[font-variant-numeric:lining-nums]">10</span> Championship Jockeys in <span className="[font-variant-numeric:lining-nums]">2026</span></>}
+                subtitle="The talented riders chasing glory across the Royal Derby season."
+              />
+              <ol className="divide-y divide-rim overflow-hidden rounded-md border border-rim bg-surface-raised shadow-card">
+                {jockeys.map((jockey, i) => (
+                  <JockeyRow
+                    key={jockey.id}
+                    jockey={jockey}
+                    rank={i + 1}
+                    active={i === selectedIndex}
+                    onSelect={() => setSelectedIndex(i)}
+                  />
+                ))}
+              </ol>
+            </div>
+
+            {/* Right — portrait of the selected jockey, stretched to the column's full height */}
             <div className="relative mx-auto w-full self-stretch overflow-hidden rounded-md lg:col-span-2" style={{ minHeight: PORTRAIT_HEIGHT }}>
               <AnimatePresence initial={false}>
                 {selected.avatarUrl ? (
@@ -147,19 +128,6 @@ export default function JockeysSection() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
-
-            {/* Right — larger 3D ring selector, centered against the taller portrait column */}
-            <div className="relative mx-auto w-full self-center lg:col-span-3" style={{ height: RING_HEIGHT, perspective: 1600 }}>
-              {jockeys.map((jockey, i) => (
-                <JockeyThumb
-                  key={jockey.id}
-                  jockey={jockey}
-                  offset={ringOffset(i, selectedIndex, jockeys.length)}
-                  onSelect={() => setSelectedIndex(i)}
-                  reduce={reduce}
-                />
-              ))}
             </div>
           </div>
         )}
