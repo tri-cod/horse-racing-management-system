@@ -36,4 +36,7 @@ public class SignHorseResponse {
 
     private Instant  createdAt;
     private Instant updatedAt;
+
+    // Gallery ảnh chi tiết của ngựa (ngoài avatarUrl chính) — danh sách URL
+    private List<String> images;
 }

@@ -50,6 +50,10 @@ public class Horse {
     @Column(name = "race_history", columnDefinition = "TEXT")
     private String raceHistory;
 
+    // Gallery ảnh chi tiết của ngựa, lưu dạng JSON list các URL — giống cơ chế raceHistory
+    @Column(name = "images", columnDefinition = "TEXT")
+    private String images;
+
     @Size(max = 255)
     @Column(name = "avatar_url")
     private String avatarUrl;

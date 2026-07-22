@@ -202,4 +202,75 @@ public class HorseOwnerController {
                 horseOwnerService.getMyProfile(userDetails.getId())));
     }
 
+    // ===== Horse image gallery =====
+
+    // Upload file ảnh trực tiếp lên server và thêm luôn vào gallery của ngựa (tiện nhất cho FE)
+    @PostMapping("/horses/{horseId}/images/upload")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<List<String>>> uploadHorseImage(
+            @PathVariable Long horseId,
+            @RequestParam("file") MultipartFile file,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        try {
+            String uploadDir = System.getProperty("user.dir") + "/uploads";
+            java.io.File dir = new java.io.File(uploadDir);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            String originalName = file.getOriginalFilename();
+            String extension = "";
+            if (originalName != null && originalName.contains(".")) {
+                extension = originalName.substring(originalName.lastIndexOf("."));
+            }
+            String uniqueFileName = java.util.UUID.randomUUID() + extension;
+
+            java.io.File destFile = new java.io.File(uploadDir, uniqueFileName);
+            file.transferTo(destFile);
+
+            String imageUrl = "http://localhost:8080/uploads/" + uniqueFileName;
+
+            AddHorseImageRequest request = AddHorseImageRequest.builder()
+                    .imageUrl(imageUrl)
+                    .build();
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ApiResponse.success("Image uploaded successfully",
+                            horseOwnerService.addHorseImage(horseId, request, userDetails.getId())));
+        } catch (java.io.IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to upload image: " + e.getMessage()));
+        }
+    }
+
+    // Thêm ảnh bằng URL có sẵn (VD: đã upload lên Cloudinary/S3 từ FE)
+    @PostMapping("/horses/{horseId}/images")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<List<String>>> addHorseImage(
+            @PathVariable Long horseId,
+            @Valid @RequestBody AddHorseImageRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Image added successfully",
+                        horseOwnerService.addHorseImage(horseId, request, userDetails.getId())));
+    }
+
+    @GetMapping("/horses/{horseId}/images")
+    public ResponseEntity<ApiResponse<List<String>>> getHorseImages(
+            @PathVariable Long horseId) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                horseOwnerService.getHorseImages(horseId)));
+    }
+
+    // Xóa 1 ảnh bằng chính URL của nó (không có id riêng vì ảnh chỉ lưu chung 1 cột JSON)
+    @DeleteMapping("/horses/{horseId}/images")
+    @PreAuthorize("hasAuthority('HORSE_OWNER')")
+    public ResponseEntity<ApiResponse<List<String>>> deleteHorseImage(
+            @PathVariable Long horseId,
+            @RequestParam String imageUrl,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Image deleted successfully",
+                horseOwnerService.deleteHorseImage(horseId, imageUrl, userDetails.getId())));
+    }
+
 }

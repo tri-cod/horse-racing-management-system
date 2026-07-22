@@ -44,4 +44,9 @@ public interface HorseOwnerService {
     List<PenaltyResponse> getHorsePenalties(Long horseId, Long userId);
     List<PenaltyResponse> getMyPenalties(Long userId);
 
+    // Gallery ảnh ngựa (lưu chung 1 cột JSON trong bảng horse, giống avatarUrl/raceHistory)
+    List<String> addHorseImage(Long horseId, AddHorseImageRequest request, Long userId);
+    List<String> getHorseImages(Long horseId);
+    List<String> deleteHorseImage(Long horseId, String imageUrl, Long userId);
+
 }

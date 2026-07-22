@@ -170,9 +170,9 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
 
         return raceHorses.stream()
                 .map(rh -> {
-                    Long rank = raceResultRepository.findByRaceHorse_Id(rh.getId())
-                            .map(RaceResult::getRank)
-                            .orElse(null);
+                    Optional<RaceResult> result = raceResultRepository.findByRaceHorse_Id(rh.getId());
+                    Long rank = result.map(RaceResult::getRank).orElse(null);
+                    String title = result.map(RaceResult::getTitle).orElse(null);
 
                     return HorseRaceHistoryResponse.builder()
                             .raceHorseId(rh.getId())
@@ -185,6 +185,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                             .jockeyName(rh.getJockey() != null
                                     ? rh.getJockey().getUser().getFullName() : null)
                             .rank(rank)
+                            .title(title)
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -574,6 +575,14 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
             } catch (Exception ignored) {}
         }
 
+        List<String> images = new ArrayList<>();
+        if (horse.getImages() != null) {
+            try {
+                images = objectMapper.readValue(horse.getImages(),
+                        new TypeReference<List<String>>() {});
+            } catch (Exception ignored) {}
+        }
+
         return SignHorseResponse.builder()
                 .id(horse.getId())
                 .horseName(horse.getHorseName())
@@ -589,6 +598,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .ownerName(ownerName)
                 .trainerId(trainerId)
                 .trainerName(trainerName)
+                .images(images)
                 .build();
     }
 
@@ -650,5 +660,77 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                         .createdAt(p.getCreatedAt())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    // ===== Horse image gallery (lưu chung trong cột "images" của bảng horse, dạng JSON list) =====
+
+    @Override
+    public List<String> addHorseImage(Long horseId, AddHorseImageRequest request, Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
+
+        Horse horse = horseRepository.findById(horseId)
+                .orElseThrow(() -> new RuntimeException("Horse not found"));
+
+        if (!horse.getOwnerId().equals(owner.getId())) {
+            throw new RuntimeException("You are not the owner of this horse");
+        }
+
+        List<String> images = readImages(horse);
+        images.add(request.getImageUrl());
+        writeImages(horse, images);
+        horseRepository.save(horse);
+
+        return images;
+    }
+
+    @Override
+    public List<String> getHorseImages(Long horseId) {
+        Horse horse = horseRepository.findById(horseId)
+                .orElseThrow(() -> new RuntimeException("Horse not found"));
+
+        return readImages(horse);
+    }
+
+    @Override
+    public List<String> deleteHorseImage(Long horseId, String imageUrl, Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
+
+        Horse horse = horseRepository.findById(horseId)
+                .orElseThrow(() -> new RuntimeException("Horse not found"));
+
+        if (!horse.getOwnerId().equals(owner.getId())) {
+            throw new RuntimeException("You are not the owner of this horse");
+        }
+
+        List<String> images = readImages(horse);
+        boolean removed = images.remove(imageUrl);
+        if (!removed) {
+            throw new RuntimeException("Image not found in this horse's gallery");
+        }
+        writeImages(horse, images);
+        horseRepository.save(horse);
+
+        return images;
+    }
+
+    private List<String> readImages(Horse horse) {
+        List<String> images = new ArrayList<>();
+        if (horse.getImages() != null) {
+            try {
+                images = objectMapper.readValue(horse.getImages(),
+                        new TypeReference<List<String>>() {});
+            } catch (Exception ignored) {}
+        }
+        return images;
+    }
+
+    private void writeImages(Horse horse, List<String> images) {
+        try {
+            horse.setImages(objectMapper.writeValueAsString(images));
+        } catch (Exception e) {
+            horse.setImages("[]");
+        }
     }
 }

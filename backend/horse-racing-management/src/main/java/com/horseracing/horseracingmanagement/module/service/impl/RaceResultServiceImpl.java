@@ -92,7 +92,8 @@ public class RaceResultServiceImpl implements RaceResultService {
                             .sum();
                     return new RaceResultItemRequest(
                             item.getRaceHorseId(),
-                            item.getCompletionTimeSeconds() + timePenalty
+                            item.getCompletionTimeSeconds() + timePenalty,
+                            item.getTitle()
                     );
                 })
                 .collect(Collectors.toList());
@@ -134,8 +135,9 @@ public class RaceResultServiceImpl implements RaceResultService {
                     .rank(rank)
                     .completionTimeSeconds(item.getCompletionTimeSeconds())
                     .rewards(rewards)
+                    .title(item.getTitle())
                     .build());
-            appendRaceHistory(raceHorse.getHorse(), race, rank);
+            appendRaceHistory(raceHorse.getHorse(), race, rank, item.getTitle());
 
             raceHorse.setStatus(RaceHorseStatus.FINISHED);
             raceHorseRepository.save(raceHorse);
@@ -245,7 +247,7 @@ public class RaceResultServiceImpl implements RaceResultService {
         }
     }
 
-    private void appendRaceHistory(Horse horse, Race race, long rank) {
+    private void appendRaceHistory(Horse horse, Race race, long rank, String title) {
         try {
             List<String> history = new ArrayList<>();
             if (horse.getRaceHistory() != null) {
@@ -254,12 +256,13 @@ public class RaceResultServiceImpl implements RaceResultService {
             }
 
             String rankLabel = rank == 1 ? "1st" : rank == 2 ? "2nd" : rank == 3 ? "3rd" : rank + "th";
-            String entry = String.format("%s %s (%s)",
+            String entry = String.format("%s %s (%s)%s",
                     rankLabel,
                     race.getRaceName(),
                     race.getStartTime() != null
                             ? race.getStartTime().toString().substring(0, 10)
-                            : "N/A");
+                            : "N/A",
+                    (title != null && !title.isBlank()) ? " — " + title : "");
             history.add(entry);
 
             horse.setRaceHistory(objectMapper.writeValueAsString(history));
@@ -332,6 +335,7 @@ public class RaceResultServiceImpl implements RaceResultService {
                 .raceName(rr.getRace().getRaceName())
                 .raceStartTime(rr.getRace().getStartTime())
                 .rewards(rr.getRewards())
+                .title(rr.getTitle())
                 .build();
     }
 
@@ -348,6 +352,7 @@ public class RaceResultServiceImpl implements RaceResultService {
                 .jockeyName(rr.getRaceHorse().getJockey() != null
                         ? rr.getRaceHorse().getJockey().getUser().getFullName() : null)
                 .totalParticipants(totalParticipants)
+                .title(rr.getTitle())
                 .build();
     }
 

@@ -14,4 +14,7 @@ public class RaceResultItemRequest {
     @NotNull
     private Double completionTimeSeconds;  // ← chỉ nhập giây
     // ← bỏ rank, system tự tính
+
+    // Danh hiệu tùy chọn, referee tự gõ (VD: "Ngựa xuất sắc nhất"). Để trống nếu không có.
+    private String title;
 }

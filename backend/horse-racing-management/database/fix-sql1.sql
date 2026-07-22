@@ -186,3 +186,8 @@ CREATE TABLE IF NOT EXISTS report (
                                       created_at  TIMESTAMP DEFAULT NOW(),
                                       reviewed_at TIMESTAMP
 );
+-- 1. Thêm cột title (danh hiệu) vào bảng race_result
+ALTER TABLE race_result ADD COLUMN IF NOT EXISTS title VARCHAR(255);
+
+-- 2. Thêm cột images vào bảng horse (lưu JSON list các URL ảnh, giống cách race_history đang lưu)
+ALTER TABLE horse ADD COLUMN IF NOT EXISTS images TEXT;

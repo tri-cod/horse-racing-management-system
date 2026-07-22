@@ -30,4 +30,7 @@ public class RaceResultResponse {
 
     // Reward
     private Long rewards;
+
+    // Danh hiệu (VD: "Vô địch", "Ngựa xuất sắc nhất"), null nếu không có
+    private String title;
 }
