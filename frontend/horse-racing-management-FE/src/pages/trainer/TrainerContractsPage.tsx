@@ -7,6 +7,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
 import TrainingContractsTable from '@/components/features/training-contract/TrainingContractsTable';
+import TrainingContractDetailModal from '@/components/features/training-contract/TrainingContractDetailModal';
 import type { TrainingContract } from '@/types';
 // (accept/decline now live on the contract detail page)
 
@@ -39,6 +40,7 @@ export default function TrainerContractsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<TabKey>('PENDING');
+  const [viewing, setViewing] = useState<TrainingContract | null>(null);
 
   const fetchContracts = useCallback(async () => {
     setLoading(true);
@@ -73,6 +75,13 @@ export default function TrainerContractsPage() {
         eyebrow="Trainer"
         title="Training Contracts"
         subtitle={pendingCount > 0 ? `${pendingCount} awaiting your response` : 'Requests from horse owners'}
+      />
+
+      <TrainingContractDetailModal
+        contract={viewing}
+        perspective="trainer"
+        onClose={() => setViewing(null)}
+        onChanged={fetchContracts}
       />
 
       {error && (
@@ -127,7 +136,7 @@ export default function TrainerContractsPage() {
               <p className="text-sm text-ink-2">{activeTabConfig.emptyText}</p>
             </div>
           ) : (
-            <TrainingContractsTable contracts={tabContracts} perspective="trainer" />
+            <TrainingContractsTable contracts={tabContracts} perspective="trainer" onView={setViewing} />
           )}
         </div>
       )}

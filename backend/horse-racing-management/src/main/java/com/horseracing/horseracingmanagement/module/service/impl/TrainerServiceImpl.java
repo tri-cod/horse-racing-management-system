@@ -3,12 +3,15 @@ package com.horseracing.horseracingmanagement.module.service.impl;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.CompleteTrainerProfileRequest;
+import com.horseracing.horseracingmanagement.module.dto.Trainer.TrainerHorseResponse;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.TrainerProfileResponse;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.TrainerStatsResponse;
 import com.horseracing.horseracingmanagement.module.entity.Horse;
+import com.horseracing.horseracingmanagement.module.entity.HorseOwner;
 import com.horseracing.horseracingmanagement.module.entity.RaceHorse;
 import com.horseracing.horseracingmanagement.module.entity.RaceResult;
 import com.horseracing.horseracingmanagement.module.entity.Trainer;
+import com.horseracing.horseracingmanagement.module.responsitory.HorseOwnerRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.HorseRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.RaceHorseRepository;
 import com.horseracing.horseracingmanagement.module.responsitory.RaceResultRepository;
@@ -31,6 +34,7 @@ public class TrainerServiceImpl implements TrainerService {
     private final HorseRepository horseRepository;
     private final RaceHorseRepository raceHorseRepository;
     private final RaceResultRepository raceResultRepository;
+    private final HorseOwnerRepository horseOwnerRepository;
 
 
 
@@ -46,6 +50,8 @@ public class TrainerServiceImpl implements TrainerService {
         if (request.getAvatarUrl() != null) trainer.setAvatarUrl(request.getAvatarUrl());            // ← thêm
         if (request.getCoverImageUrl() != null) trainer.setCoverImageUrl(request.getCoverImageUrl()); // ← thêm
         if (request.getMonthlyFee() != null) trainer.setMonthlyFee(request.getMonthlyFee());          // ← giá thuê/tháng
+        if (request.getSpecialization() != null) trainer.setSpecialization(request.getSpecialization());
+        if (request.getIsAvailable() != null) trainer.setIsAvailable(request.getIsAvailable());
 
         Trainer saved = trainerRepository.save(trainer);
         return mapToResponse(saved);
@@ -235,6 +241,32 @@ public class TrainerServiceImpl implements TrainerService {
                 .avatarUrl(trainer.getAvatarUrl())
                 .status(trainer.getStatus())
                 .monthlyFee(trainer.getMonthlyFee())
+                .specialization(trainer.getSpecialization())
+                .isAvailable(trainer.getIsAvailable())
                 .build();
+    }
+
+    @Override
+    public List<TrainerHorseResponse> getTrainerHorses(Long trainerId) {
+        return horseRepository.findByTrainerId(trainerId).stream()
+                .map(h -> {
+                    String ownerName = null;
+                    if (h.getOwnerId() != null) {
+                        HorseOwner owner = horseOwnerRepository.findById(h.getOwnerId()).orElse(null);
+                        if (owner != null) ownerName = owner.getName();
+                    }
+                    return TrainerHorseResponse.builder()
+                            .horseId(h.getId())
+                            .horseName(h.getHorseName())
+                            .breed(h.getBreed())
+                            .age(h.getAge())
+                            .speedRating(h.getSpeedRating())
+                            .avatarUrl(h.getAvatarUrl())
+                            .status(h.getStatus() != null ? h.getStatus().name() : null)
+                            .ownerId(h.getOwnerId())
+                            .ownerName(ownerName)
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 }

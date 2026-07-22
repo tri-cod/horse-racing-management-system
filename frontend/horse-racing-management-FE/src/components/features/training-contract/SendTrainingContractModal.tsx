@@ -12,7 +12,7 @@ interface Props {
   onSuccess: (msg: string) => void;
 }
 
-const MIN_MONTHS = 3;
+const MIN_MONTHS = 1;
 
 const inputCls =
   'w-full border border-rim bg-surface-input px-3 py-2 text-sm text-ink outline-none focus:border-gold focus:ring-1 focus:ring-gold';
@@ -69,7 +69,7 @@ export default function SendTrainingContractModal({ trainer, onClose, onSuccess 
     if (!hasFee) { setError('This trainer has not set a monthly fee yet.'); return; }
     if (!horseId) { setError('Please select a horse.'); return; }
     if (!startDate) { setError('Please pick a start date.'); return; }
-    if (isNaN(monthsNum) || monthsNum < MIN_MONTHS) { setError(`Duration must be at least ${MIN_MONTHS} months.`); return; }
+    if (isNaN(monthsNum) || monthsNum < MIN_MONTHS) { setError(`Duration must be at least ${MIN_MONTHS} month${MIN_MONTHS !== 1 ? 's' : ''}.`); return; }
     if (!Number.isInteger(monthsNum)) { setError('Duration must be a whole number of months.'); return; }
 
     setSubmitting(true); setError(null);
@@ -162,7 +162,7 @@ export default function SendTrainingContractModal({ trainer, onClose, onSuccess 
                 value={months}
                 onChange={(e) => setMonths(e.target.value.replace(/[^0-9]/g, ''))}
               />
-              <p className="mt-1 text-[11px] text-ink-4">Minimum {MIN_MONTHS} months.</p>
+              <p className="mt-1 text-[11px] text-ink-4">Minimum {MIN_MONTHS} month{MIN_MONTHS !== 1 ? 's' : ''}.</p>
             </div>
           </div>
 
