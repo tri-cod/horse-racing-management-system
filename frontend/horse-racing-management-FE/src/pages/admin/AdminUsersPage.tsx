@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, UserPlus } from 'lucide-react';
 import { useAdminUsers } from '@/hooks/useAdminUsers';
 import UsersTable from '@/components/features/admin/UsersTable';
 import ChangeRoleModal from '@/components/features/admin/ChangeRoleModal';
 import ChangeStatusModal from '@/components/features/admin/ChangeStatusModal';
+import CreateUserModal from '@/components/features/admin/CreateUserModal';
 import Pagination from '@/components/ui/Pagination';
 import { useToast } from '@/components/ui/ToastProvider';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
@@ -58,6 +59,7 @@ export default function AdminUsersPage() {
   const [status, setStatus] = useState<UserStatus | ''>('');
   const [roleUser, setRoleUser] = useState<User | null>(null);
   const [statusUser, setStatusUser] = useState<User | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const { users, totalPages, currentPage, setCurrentPage, loading, error, refetch } = useAdminUsers({
     keyword, role, status, size: 10,
@@ -72,6 +74,15 @@ export default function AdminUsersPage() {
         eyebrow="Admin"
         title="User Management"
         subtitle="Manage roles and status of all Royal Derby members"
+        action={
+          <button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            className="inline-flex items-center gap-1.5 bg-navy px-4 py-2 text-sm font-semibold text-on-blue transition-colors hover:bg-navy-hi"
+          >
+            <UserPlus size={15} /> Create User
+          </button>
+        }
       />
 
       {/* Filters */}
@@ -121,6 +132,7 @@ export default function AdminUsersPage() {
 
       <ChangeRoleModal user={roleUser} onClose={() => setRoleUser(null)} onSuccess={handleSuccess} />
       <ChangeStatusModal user={statusUser} onClose={() => setStatusUser(null)} onSuccess={handleSuccess} />
+      {createOpen && <CreateUserModal onClose={() => setCreateOpen(false)} onSuccess={handleSuccess} />}
     </div>
   );
 }

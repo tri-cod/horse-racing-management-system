@@ -45,6 +45,7 @@ public class AuthServiceImpl  implements AuthService {
     private final EmailValidatorService emailValidatorService;
     private final RedisTemplate<String, String> redisTemplate;
     private final JockeyRepository jockeyRepository;
+    private final RaceRefereeRepository raceRefereeRepository;
 
 
     @Value("${app.jwt.expiration:86400000}")
@@ -209,6 +210,16 @@ public class AuthServiceImpl  implements AuthService {
                     .status("Active")
                     .build();
             jockeyRepository.save(jockey);
+        }
+
+        // Referee cũng cần bản ghi profile riêng — thiếu nó thì mọi API /referee/* sẽ
+        // ném "Referee profile not found" khi tài khoản REFEREE đăng nhập.
+        if (role.getRolename().name().equals("REFEREE")) {
+            RaceReferee referee = RaceReferee.builder()
+                    .user(saved)
+                    .status("Active")
+                    .build();
+            raceRefereeRepository.save(referee);
         }
 
 

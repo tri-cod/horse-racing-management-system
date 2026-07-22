@@ -1,11 +1,12 @@
 import { useState, type ReactNode } from 'react';
 import { CheckCircle2, XCircle, PenLine } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { cancelTrainingContract } from '@/api/trainingContractApi';
+import { getOwnerHorsesPublic } from '@/api/horseOwnerApi';
 import { getErrorMessage } from '@/utils/errors';
 import { isStatus } from '@/utils/trainingContractStatus';
 import { useToast } from '@/components/ui/ToastProvider';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import Badge from '@/components/ui/Badge';
 import Modal from '@/components/ui/Modal';
 import RespondTrainingContractModal from './RespondTrainingContractModal';
 import type { TrainingContract } from '@/types';
@@ -16,15 +17,6 @@ const fmtDateTime = (iso?: string) =>
   iso ? new Date(iso).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : null;
 const fmtVnd = (n?: number) =>
   n != null ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(n)) : '—';
-
-const STATUS_CLS: Record<string, string> = {
-  PENDING: 'bg-warn-subtle text-warn border-warn/30', ACTIVE: 'bg-ok-subtle text-ok border-ok/30',
-  REJECTED: 'bg-fail-subtle text-fail border-fail/30', CANCELLED: 'bg-surface-overlay text-ink-3 border-rim',
-  COMPLETED: 'bg-gold/10 text-gold border-gold/30',
-};
-const STATUS_LABEL: Record<string, string> = {
-  PENDING: 'Pending', ACTIVE: 'Active', REJECTED: 'Rejected', CANCELLED: 'Cancelled', COMPLETED: 'Completed',
-};
 
 function monthsBetween(start?: string, end?: string): number | null {
   if (!start || !end) return null;
@@ -90,6 +82,16 @@ export default function TrainingContractDetailModal({ contract, perspective, onC
   const pending = c ? isStatus(c.status, 'PENDING') : false;
   const months = c ? monthsBetween(c.startDate, c.endDate) : null;
 
+  /* The contract only carries the horse's name/avatar — fetch the owner's
+     public horse list and pick this horse out of it for the full details. */
+  const { data: ownerHorses } = useQuery({
+    queryKey: ['owner-horses-public', c?.ownerId],
+    queryFn: () => getOwnerHorsesPublic(c!.ownerId),
+    enabled: !!c?.ownerId,
+    staleTime: 60_000,
+  });
+  const horse = ownerHorses?.find(h => h.id === c?.horseId);
+
   const handleCancel = async () => {
     if (!c) return;
     setCancelLoading(true);
@@ -139,13 +141,6 @@ export default function TrainingContractDetailModal({ contract, perspective, onC
       <Modal open={!!c} onClose={onClose} title={header} backdrop="navy" size="xl" bodyClassName="p-0" footer={footer || undefined}>
         {c && (
           <div>
-            {/* Status */}
-            <div className="border-b border-rim px-6 py-3 text-center">
-              <Badge className={STATUS_CLS[c.status] ?? 'bg-surface-overlay text-ink-3 border-rim'}>
-                {STATUS_LABEL[c.status] ?? c.status}
-              </Badge>
-            </div>
-
             {/* Parties */}
             <div className="grid grid-cols-1 divide-y divide-rim border-b border-rim sm:grid-cols-2 sm:divide-x sm:divide-y-0">
               <Party label="Horse Owner" name={c.ownerName} />
@@ -165,6 +160,17 @@ export default function TrainingContractDetailModal({ contract, perspective, onC
                 )}
                 <p className="font-serif text-lg font-bold text-ink">{c.horseName ?? `Horse #${c.horseId}`}</p>
               </div>
+
+              {/* Extra horse details, when the public horse record is found */}
+              {horse && (
+                <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
+                  {horse.breed && <Term label="Breed" value={horse.breed} />}
+                  {horse.age != null && <Term label="Age" value={`${horse.age} yrs`} />}
+                  {horse.gender && <Term label="Gender" value={horse.gender} />}
+                  {horse.weight != null && <Term label="Weight" value={`${horse.weight} kg`} />}
+                  {horse.speedRating != null && <Term label="Speed Rating" value={horse.speedRating} />}
+                </dl>
+              )}
             </section>
 
             {/* Terms */}

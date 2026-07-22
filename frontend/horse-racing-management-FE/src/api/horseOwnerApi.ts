@@ -58,6 +58,13 @@ export const completeProfile = (payload: CompleteHorseOwnerProfilePayload) =>
  .put<ApiResponse<HorseOwnerProfile>>('/horse-owner/profile/complete', payload)
  .then((r) => r.data.data);
 
+// Public — an owner's horse list with full details (breed, age, weight…),
+// used by the training-contract modal where both parties need to see the horse.
+export const getOwnerHorsesPublic = (ownerId: number) =>
+ axiosInstance
+ .get<ApiResponse<Horse[]>>(`/horse-owner/${ownerId}/horses`)
+ .then((r) => r.data.data);
+
 // Public — no auth required, used by the public horse-owner profile page.
 export const getOwnerStats = (ownerId: number) =>
  axiosInstance

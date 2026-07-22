@@ -8,7 +8,13 @@ const STATUS_VARIANT: Record<string, 'ocean' | 'neutral' | 'dark'> = {
 const fmtVnd = (n: number) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(n));
 
-export default function TrainerProfileView({ profile }: { profile: Trainer }) {
+export default function TrainerProfileView({ profile, onToggleAvailability, toggling }: {
+  profile: Trainer;
+  /** When provided, the availability row becomes an inline switch — no need to enter Edit. */
+  onToggleAvailability?: (next: boolean) => void;
+  toggling?: boolean;
+}) {
+  const available = profile.isAvailable !== false;
   return (
     <div className="divide-y divide-rim">
       <div className="flex items-center justify-between px-6 py-4">
@@ -34,10 +40,24 @@ export default function TrainerProfileView({ profile }: { profile: Trainer }) {
 
       <div className="flex items-center justify-between px-6 py-4">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-4">Accepting New Horses</span>
-        <span className={`inline-flex items-center gap-1.5 text-sm font-semibold ${profile.isAvailable === false ? 'text-warn' : 'text-ok'}`}>
-          <span className={`h-1.5 w-1.5 rounded-full ${profile.isAvailable === false ? 'bg-warn' : 'bg-ok'}`} />
-          {profile.isAvailable === false ? 'Not available' : 'Available'}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className={`inline-flex items-center gap-1.5 text-sm font-semibold ${available ? 'text-ok' : 'text-warn'}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${available ? 'bg-ok' : 'bg-warn'}`} />
+            {available ? 'Available' : 'Not available'}
+          </span>
+          {onToggleAvailability && (
+            <button
+              type="button"
+              role="switch"
+              aria-checked={available}
+              disabled={toggling}
+              onClick={() => onToggleAvailability(!available)}
+              className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${available ? 'bg-ok' : 'bg-rim-hi'}`}
+            >
+              <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${available ? 'translate-x-5' : 'translate-x-0'}`} />
+            </button>
+          )}
+        </div>
       </div>
 
       {profile.description ? (
