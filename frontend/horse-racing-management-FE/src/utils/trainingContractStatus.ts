@@ -1,5 +1,8 @@
 import type { TrainingContractStatus } from '@/types';
 
+// Re-exported so pages can import the status type alongside these helpers.
+export type { TrainingContractStatus };
+
 /** Case/format-insensitive compare of a training-contract status against a key. */
 const squash = (s?: string | null) => (s ?? '').toUpperCase().replace(/[\s_-]/g, '');
 
