@@ -18,6 +18,7 @@ const RefereeProfilePage = lazy(() => import('@/pages/public/RefereeProfilePage'
 const HorsesPage = lazy(() => import('@/pages/public/HorsesPage'));
 const HorseProfilePage = lazy(() => import('@/pages/public/HorseProfilePage'));
 const HorseOwnerProfilePage = lazy(() => import('@/pages/public/HorseOwnerProfilePage'));
+const TrainerPublicProfilePage = lazy(() => import('@/pages/public/TrainerProfilePage'));
 const RacesPage = lazy(() => import('@/pages/public/RacesPage'));
 const RaceDetailPage = lazy(() => import('@/pages/public/RaceDetailPage'));
 const RaceResultsPage = lazy(() => import('@/pages/public/RaceResultsPage'));
@@ -25,6 +26,8 @@ const AboutPage = lazy(() => import('@/pages/public/AboutPage'));
 const RulesPage = lazy(() => import('@/pages/public/RulesPage'));
 const ContactPage = lazy(() => import('@/pages/public/ContactPage'));
 const NewsPage = lazy(() => import('@/pages/public/NewsPage'));
+const PrivacyPolicyPage = lazy(() => import('@/pages/public/PrivacyPolicyPage'));
+const TermsPage = lazy(() => import('@/pages/public/TermsPage'));
 const BetRacesPage = lazy(() => import('@/pages/public/BetRacesPage'));
 const NotFoundPage = lazy(() => import('@/pages/public/NotFoundPage'));
 
@@ -102,6 +105,7 @@ export default function App() {
           <Route path="/horses" element={<Layout><HorsesPage /></Layout>} />
           <Route path="/horses/:id" element={<Layout><HorseProfilePage /></Layout>} />
           <Route path="/horse-owners/:id" element={<Layout><HorseOwnerProfilePage /></Layout>} />
+          <Route path="/trainers/:id" element={<Layout><TrainerPublicProfilePage /></Layout>} />
           <Route path="/races" element={<Layout><RacesPage /></Layout>} />
           <Route path="/races/:id" element={<Layout><RaceDetailPage /></Layout>} />
           <Route path="/bet" element={<Navigate to="/bet/races" replace />} />
@@ -111,6 +115,8 @@ export default function App() {
           <Route path="/rules" element={<Layout><RulesPage /></Layout>} />
           <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
           <Route path="/news" element={<Layout><NewsPage /></Layout>} />
+          <Route path="/privacy" element={<Layout><PrivacyPolicyPage /></Layout>} />
+          <Route path="/terms" element={<Layout><TermsPage /></Layout>} />
 
           {/* ── Authenticated (AppLayout: sidebar + app header) ───────── */}
 

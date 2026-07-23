@@ -52,7 +52,9 @@ export default function HorseForm({
             className={inputCls(err)}
             onChange={handleChange} onBlur={handleBlur} disabled={loading}
           >
-            {field.options?.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+            {field.options?.map((opt) => (
+              <option key={opt} value={opt}>{field.optionLabels?.[opt] ?? opt}</option>
+            ))}
           </select>
         ) : (
           <input
@@ -93,6 +95,15 @@ export default function HorseForm({
         <div className="grid grid-cols-2 gap-4">
           {renderField('speedRating')}
           {renderField('history_rank')}
+        </div>
+      </div>
+
+      {/* Racing Preferences */}
+      <div className="flex flex-col gap-4">
+        <SectionHeader title="Racing Preferences" />
+        <div className="grid grid-cols-2 gap-4">
+          {renderField('preferredDistance')}
+          {renderField('preferredSurface')}
         </div>
       </div>
 

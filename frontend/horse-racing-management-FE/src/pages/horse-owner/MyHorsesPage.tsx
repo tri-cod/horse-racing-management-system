@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Eye, Pencil, Trash2, Search, Gavel } from 'lucide-react';
+import { Plus, Eye, Pencil, Trash2, Search, Gavel, Flag, Waves } from 'lucide-react';
 import { useMyHorses } from '@/hooks/useMyHorses';
 import { deleteHorse, getMyPenalties } from '@/api/horseOwnerApi';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -10,11 +10,12 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import Seo from '@/components/seo/Seo';
 import { getErrorMessage } from '@/utils/errors';
+import { formatPreferredDistance } from '@/utils/horsePreferences';
 import type { Horse, HorseStatus } from '@/types';
 
 /* Shared column ratio for the horses table — MUST stay identical between the
  * header row and each data row, or columns will visibly drift out of alignment. */
-const HORSES_GRID_COLS = '2fr_1fr_0.7fr_0.6fr_0.7fr_0.8fr_0.9fr_120px';
+const HORSES_GRID_COLS = '2fr_1fr_0.7fr_0.6fr_0.7fr_0.9fr_0.8fr_0.9fr_120px';
 
 const STATUS_TABS: { value: HorseStatus | ''; label: string }[] = [
   { value: '', label: 'All' },
@@ -245,7 +246,7 @@ export default function MyHorsesPage() {
             className="grid items-center gap-4 border-b border-rim bg-surface-overlay px-5 py-2.5"
             style={{ gridTemplateColumns: HORSES_GRID_COLS.split('_').join(' ') }}
           >
-            {['Horse', 'Breed', 'Gender', 'Age', 'Speed', 'Penalties', 'Status', 'Action'].map((h) => (
+            {['Horse', 'Breed', 'Gender', 'Age', 'Speed', 'Prefers', 'Penalties', 'Status', 'Action'].map((h) => (
               <span key={h} className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">
                 {h}
               </span>
@@ -292,6 +293,21 @@ export default function MyHorsesPage() {
 
                   {/* Speed */}
                   <span className="tnum text-sm text-ink-2">{h.speedRating ?? '—'}</span>
+
+                  {/* Prefers — preferred distance category / racing surface */}
+                  <div className="flex flex-col gap-0.5 text-xs text-ink-3">
+                    {h.preferredDistance && (
+                      <span className="flex items-center gap-1 truncate">
+                        <Flag size={10} className="shrink-0 text-ink-4" /> {formatPreferredDistance(h.preferredDistance, true)}
+                      </span>
+                    )}
+                    {h.preferredSurface && (
+                      <span className="flex items-center gap-1 truncate">
+                        <Waves size={10} className="shrink-0 text-ink-4" /> {h.preferredSurface}
+                      </span>
+                    )}
+                    {!h.preferredDistance && !h.preferredSurface && '—'}
+                  </div>
 
                   {/* Penalties */}
                   <div className="justify-self-start">

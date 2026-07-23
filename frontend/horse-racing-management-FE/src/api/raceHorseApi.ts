@@ -1,12 +1,19 @@
 import axiosInstance from './axiosInstance';
 import type {
  ApiResponse, RaceHorse, RegisterHorseToRacePayload, SetOddsPayload,
- SendJockeyRequestPayload, WithdrawRaceHorsePayload,
+ SendJockeyRequestPayload, WithdrawRaceHorsePayload, HorseEligibility,
 } from '@/types';
 
 export const registerHorseToRace = (payload: RegisterHorseToRacePayload) =>
  axiosInstance
  .post<ApiResponse<RaceHorse>>('/race-horse/register', payload)
+ .then((r) => r.data.data);
+
+// Preview whether a horse meets a race's age/gender/class/earnings/weight requirements
+// before actually registering — registerHorseToRace() now enforces the same check server-side.
+export const checkHorseEligibility = (raceId: number, horseId: number) =>
+ axiosInstance
+ .get<ApiResponse<HorseEligibility>>('/race-horse/eligibility', { params: { raceId, horseId } })
  .then((r) => r.data.data);
 
 export const getHorsesByRace = (raceId: number) =>

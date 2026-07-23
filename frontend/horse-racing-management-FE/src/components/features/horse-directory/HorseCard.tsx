@@ -1,5 +1,6 @@
-import { Rabbit, Flag } from 'lucide-react';
+import { Rabbit, Flag, Waves } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
+import { formatPreferredDistance } from '@/utils/horsePreferences';
 import type { HorseCurrentStatusResponse } from '@/types';
 
 interface HorseCardProps {
@@ -31,6 +32,20 @@ export default function HorseCard({ horse, onClick }: HorseCardProps) {
             {horse.horseName}
           </h3>
           {horse.breed && <p className="mt-1 text-sm text-ink-3">{horse.breed}</p>}
+          {(horse.preferredDistance || horse.preferredSurface) && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {horse.preferredDistance && (
+                <span className="flex items-center gap-1 rounded-full border border-rim bg-surface-overlay px-2 py-0.5 text-[10px] font-medium text-ink-3">
+                  <Flag size={9} className="text-gold/70" /> {formatPreferredDistance(horse.preferredDistance, true)}
+                </span>
+              )}
+              {horse.preferredSurface && (
+                <span className="flex items-center gap-1 rounded-full border border-rim bg-surface-overlay px-2 py-0.5 text-[10px] font-medium text-ink-3">
+                  <Waves size={9} className="text-gold/70" /> {horse.preferredSurface}
+                </span>
+              )}
+            </div>
+          )}
         </div>
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gold/40 bg-surface-overlay">
           <span className="tnum text-xs font-bold text-gold-hi">#{horse.horseId}</span>
