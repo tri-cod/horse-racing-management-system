@@ -88,6 +88,7 @@ export default function TrainingContractDetailModal({ contract, perspective, onC
 
   const c = contract;
   const pending = c ? isStatus(c.status, 'PENDING') : false;
+  const active = c ? isStatus(c.status, 'ACTIVE') : false;
   const months = c ? monthsBetween(c.startDate, c.endDate) : null;
 
   const handleCancel = async () => {
@@ -95,12 +96,12 @@ export default function TrainingContractDetailModal({ contract, perspective, onC
     setCancelLoading(true);
     try {
       await cancelTrainingContract(c.id);
-      addToast('Training request cancelled.', 'success');
+      addToast(active ? 'Training contract terminated.' : 'Training request cancelled.', 'success');
       setCancelOpen(false);
       onChanged();
       onClose();
     } catch (e: unknown) {
-      addToast(getErrorMessage(e, 'Failed to cancel the request.'), 'error');
+      addToast(getErrorMessage(e, active ? 'Failed to terminate the contract.' : 'Failed to cancel the request.'), 'error');
     } finally { setCancelLoading(false); }
   };
 
@@ -112,7 +113,7 @@ export default function TrainingContractDetailModal({ contract, perspective, onC
     </div>
   );
 
-  const footer = c && pending && (
+  const footer = c && (pending || (active && !isTrainer)) && (
     <div className="flex flex-wrap justify-end gap-2.5">
       {isTrainer ? (
         <>
@@ -128,7 +129,7 @@ export default function TrainingContractDetailModal({ contract, perspective, onC
       ) : (
         <button type="button" onClick={() => setCancelOpen(true)}
           className="inline-flex items-center gap-1.5 border border-fail/30 px-4 py-2 text-sm font-semibold text-fail transition-colors hover:bg-fail-subtle">
-          <XCircle size={14} /> Cancel Request
+          <XCircle size={14} /> {active ? 'Terminate Contract' : 'Cancel Request'}
         </button>
       )}
     </div>
@@ -214,9 +215,13 @@ export default function TrainingContractDetailModal({ contract, perspective, onC
         onClose={() => setCancelOpen(false)}
         onConfirm={handleCancel}
         loading={cancelLoading}
-        title="Cancel Training Request?"
-        message={`Cancel the request to hire ${c?.trainerName ?? 'this trainer'} for "${c?.horseName ?? 'this horse'}"?`}
-        confirmLabel="Cancel Request"
+        title={active ? 'Terminate Training Contract?' : 'Cancel Training Request?'}
+        message={
+          active
+            ? `End this contract with ${c?.trainerName ?? 'this trainer'} for "${c?.horseName ?? 'this horse'}" early? The escrowed fee will be split: 50% refunded to you, 20% paid to the trainer as compensation, and 30% retained by the platform.`
+            : `Cancel the request to hire ${c?.trainerName ?? 'this trainer'} for "${c?.horseName ?? 'this horse'}"?`
+        }
+        confirmLabel={active ? 'Terminate Contract' : 'Cancel Request'}
         variant="danger"
       />
 
