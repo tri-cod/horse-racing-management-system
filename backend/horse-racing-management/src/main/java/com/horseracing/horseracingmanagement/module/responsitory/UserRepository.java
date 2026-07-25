@@ -29,6 +29,11 @@ public interface UserRepository  extends JpaRepository<User, Long> {
     Optional<User> findFirstByRole_Rolename(RoleName roleName);
 
 
+    @Query("SELECT COUNT(u) FROM User u WHERE u.role.rolename = :role")
+    long countByRoleName(@Param("role") RoleName role);
+
+
+
     @Query("""
 SELECT DISTINCT u
 FROM User u

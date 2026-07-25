@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
@@ -50,6 +51,16 @@ public interface RaceHorseRepository extends JpaRepository<RaceHorse, Long> {
 
     List<RaceHorse> findByJockey_IdAndStatus(Long jockeyId, RaceHorseStatus status);
 
+
+    @Query("""
+    SELECT COALESCE(SUM(r.entryFee), 0)
+    FROM RaceHorse rh
+    JOIN rh.race r
+    WHERE (rh.status = 'FINISHED' OR rh.status = 'APPROVED')
+    AND r.status = 'FINISHED'
+    AND r.entryFee IS NOT NULL
+    """)
+    BigDecimal sumEntryFeeCollected();
 
 
     @Modifying

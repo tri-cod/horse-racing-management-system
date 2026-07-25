@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.responsitory;
 
+import com.horseracing.horseracingmanagement.common.constant.HorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RoleName;
 import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import com.horseracing.horseracingmanagement.module.entity.Horse;
@@ -33,6 +34,9 @@ public interface HorseRepository extends JpaRepository<Horse, Long> {
     Page<Horse> findWithFilters(@Param("keyword") String keyword,
                                 @Param("status") String status,
                                 Pageable pageable);
+
+    @Query("SELECT COUNT(h) FROM Horse h WHERE h.status = :status")
+    long countByStatus(@Param("status") HorseStatus status);
 
     // Lấy danh sách horseId đã đăng ký trong 1 race cụ thể (để loại khi chọn ngựa khác cho race đó)
     @Query("SELECT rh.horse.id FROM RaceHorse rh WHERE rh.race.id = :raceId")

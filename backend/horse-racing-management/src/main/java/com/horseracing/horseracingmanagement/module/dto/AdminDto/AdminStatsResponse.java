@@ -20,6 +20,7 @@ public class AdminStatsResponse {
     private BigDecimal totalEntryFeeCollected;  // tổng phí tham gia thu được
     private BigDecimal totalPrizePoolFunded;    // tổng tiền giải đã chi
     private BigDecimal totalBetLost;            // tổng tiền bet thua → vào admin
+    private Long totalPendingReports;
 
     // Race
     private Long totalRaces;

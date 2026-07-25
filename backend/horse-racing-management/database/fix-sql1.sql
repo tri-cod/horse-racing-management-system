@@ -202,3 +202,6 @@ ALTER TABLE race
 ALTER TABLE horse
     ADD COLUMN preferred_distance  VARCHAR(20),
     ADD COLUMN preferred_surface   VARCHAR(50);
+
+
+DROP TABLE IF EXISTS forgot_password;

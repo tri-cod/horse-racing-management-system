@@ -5,6 +5,7 @@ import com.horseracing.horseracingmanagement.module.responsitory.TrainingContrac
 import com.horseracing.horseracingmanagement.module.service.TrainingContractService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,7 @@ import java.util.List;
 public class TrainingContractSchedule {
 
     private final TrainingContractRepository contractRepository;
+    @Qualifier("trainingContractService")
     private final TrainingContractService contractService;
 
     @Scheduled(cron = "0 0 1 * * *") // once a day, 1am
