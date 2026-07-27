@@ -1,6 +1,6 @@
 package com.horseracing.horseracingmanagement.common.constant;
 
-public enum NotificationType {
+    public enum NotificationType {
 
     // Race Horse
     RACE_REGISTRATION,      // HorseOwner đăng ký horse vào race → gửi Admin

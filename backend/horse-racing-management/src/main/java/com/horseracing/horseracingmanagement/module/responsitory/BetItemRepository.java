@@ -14,6 +14,9 @@ public interface BetItemRepository extends JpaRepository<BetItem, Long> {
     List<BetItem> findByRaceHorse_Id(Long raceHorseId);
     void deleteByBet_Race_Id(Long raceId);
 
+    @Query("SELECT COALESCE(SUM(bi.betAmount), 0) FROM BetItem bi WHERE bi.resultStatus = 'LOST'")
+    BigDecimal sumLostBetAmount();
+
     @Query("SELECT SUM(bi.betAmount) FROM BetItem bi WHERE bi.raceHorse.id = :raceHorseId AND bi.resultStatus = 'PENDING'")
     BigDecimal getTotalBetAmountByRaceHorse(@Param("raceHorseId") Long raceHorseId);
 

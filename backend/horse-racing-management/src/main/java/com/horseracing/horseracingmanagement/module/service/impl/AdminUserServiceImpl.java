@@ -118,123 +118,65 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     public AdminStatsResponse getStats() {
-        // Wallet admin
+        // ← Wallet admin
         BigDecimal adminBalance = userRepository.findFirstByRole_Rolename(RoleName.ADMIN)
                 .flatMap(u -> walletRepository.findByUser_Id(u.getId()))
                 .map(Wallet::getBalance)
                 .orElse(BigDecimal.ZERO);
 
-        // Transaction stats
-        List<TransactionRequest> allTx = transactionRepository.findAll();
-        BigDecimal totalDeposit = allTx.stream()
-                .filter(t -> "DEPOSIT".equals(t.getRequestType())
-                        && "APPROVED".equals(t.getRequestStatus()))
-                .map(t -> BigDecimal.valueOf(t.getAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // ← Transaction — dùng aggregate thay vì findAll()
+        BigDecimal totalDeposit = transactionRepository.sumApprovedByType("DEPOSIT");
+        BigDecimal totalWithdraw = transactionRepository.sumApprovedByType("WITHDRAW");
+        long pendingDeposits = transactionRepository.countPendingByType("DEPOSIT");
+        long pendingWithdraws = transactionRepository.countPendingByType("WITHDRAW");
 
-        BigDecimal totalWithdraw = allTx.stream()
-                .filter(t -> "WITHDRAW".equals(t.getRequestType())
-                        && "APPROVED".equals(t.getRequestStatus()))
-                .map(t -> BigDecimal.valueOf(t.getAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // ← Race — dùng countByStatus
+        long totalRaces = raceRepository.count();
+        long finishedRaces = raceRepository.countByStatus(RaceStatus.FINISHED);
+        long ongoingRaces = raceRepository.countByStatus(RaceStatus.ONGOING);
+        long upcomingRaces = raceRepository.countByStatus(RaceStatus.UPCOMING)
+                + raceRepository.countByStatus(RaceStatus.OPEN_REGISTRATION);
+        long cancelledRaces = raceRepository.countByStatus(RaceStatus.CANCELLED);
 
-        long pendingDeposits = allTx.stream()
-                .filter(t -> "DEPOSIT".equals(t.getRequestType())
-                        && "PENDING".equals(t.getRequestStatus())).count();
+        // ← Entry fee — dùng query thay vì flatMap
+        BigDecimal totalEntryFee = raceHorseRepository.sumEntryFeeCollected();
 
-        long pendingWithdraws = allTx.stream()
-                .filter(t -> "WITHDRAW".equals(t.getRequestType())
-                        && "PENDING".equals(t.getRequestStatus())).count();
+        // ← Prize pool
+        BigDecimal totalPrizeFunded = raceRepository.sumTotalPrizePool();
 
+        // ← Bet lost
+        BigDecimal totalBetLost = betItemRepository.sumLostBetAmount();
 
-        // Race stats
-        List<Race> allRaces = raceRepository.findAll();
-        long totalRaces = allRaces.size();
-        long finishedRaces = allRaces.stream()
-                .filter(r -> r.getStatus() == RaceStatus.FINISHED).count();
-        long ongoingRaces = allRaces.stream()
-                .filter(r -> r.getStatus() == RaceStatus.ONGOING).count();
-        long upcomingRaces = allRaces.stream()
-                .filter(r -> r.getStatus() == RaceStatus.UPCOMING
-                        || r.getStatus() == RaceStatus.OPEN_REGISTRATION).count();
-        long cancelledRaces = allRaces.stream()
-                .filter(r -> r.getStatus() == RaceStatus.CANCELLED).count();
+        // ← User — dùng countByRoleName
+        long totalUsers = userRepository.count();
+        long totalHorseOwners = userRepository.countByRoleName(RoleName.HORSE_OWNER);
+        long totalTrainers = userRepository.countByRoleName(RoleName.TRAINER);
+        long totalJockeys = userRepository.countByRoleName(RoleName.JOCKEY);
+        long totalReferees = userRepository.countByRoleName(RoleName.REFEREE);
+        long totalSpectators = userRepository.countByRoleName(RoleName.SPECTATOR);
 
-        // Entry fee collected
-        BigDecimal totalEntryFee = allRaces.stream()
-                .filter(r -> r.getStatus() == RaceStatus.FINISHED && r.getEntryFee() != null)
-                .flatMap(r -> raceHorseRepository.findByRace_Id(r.getId()).stream())
-                .filter(rh -> rh.getStatus() == RaceHorseStatus.FINISHED
-                        || rh.getStatus() == RaceHorseStatus.APPROVED)
-                .map(rh -> rh.getRace().getEntryFee() != null
-                        ? BigDecimal.valueOf(rh.getRace().getEntryFee())
-                        : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // ← Horse
+        long totalHorses = horseRepository.count();
+        long activeHorses = horseRepository.countByStatus(HorseStatus.ACTIVE);
+        long racingHorses = horseRepository.countByStatus(HorseStatus.RACING);
 
-        // Prize pool funded
-        BigDecimal totalPrizeFunded = allRaces.stream()
-                .filter(r -> r.getTotalprizepool() != null)
-                .map(r -> BigDecimal.valueOf(r.getTotalprizepool()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-
-        // Tổng tiền bet thua → về ví admin
-        BigDecimal totalBetLost = betItemRepository.findAll().stream()
-                .filter(item -> "LOST".equals(item.getResultStatus()))
-                .map(item -> item.getBetAmount() != null
-                        ? BigDecimal.valueOf(item.getBetAmount())
-                        : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-
-        // User stats
-        List<User> allUsers = userRepository.findAll();
-        long totalUsers = allUsers.size();
-        long totalHorseOwners = allUsers.stream()
-                .filter(u -> u.getRole() != null
-                        && u.getRole().getRolename() == RoleName.HORSE_OWNER).count();
-        long totalTrainers = allUsers.stream()
-                .filter(u -> u.getRole() != null
-                        && u.getRole().getRolename() == RoleName.TRAINER).count();
-        long totalJockeys = allUsers.stream()
-                .filter(u -> u.getRole() != null
-                        && u.getRole().getRolename() == RoleName.JOCKEY).count();
-        long totalReferees = allUsers.stream()
-                .filter(u -> u.getRole() != null
-                        && u.getRole().getRolename() == RoleName.REFEREE).count();
-        long totalSpectators = allUsers.stream()
-                .filter(u -> u.getRole() != null
-                        && u.getRole().getRolename() == RoleName.SPECTATOR).count();
-
-        // Horse stats
-        List<Horse> allHorses = horseRepository.findAll();
-        long totalHorses = allHorses.size();
-        long activeHorses = allHorses.stream()
-                .filter(h -> h.getStatus() == HorseStatus.ACTIVE).count();
-        long racingHorses = allHorses.stream()
-                .filter(h -> h.getStatus() == HorseStatus.RACING).count();
-
-        // Recent 5 races
-        List<RecentRaceStats> recentRaces = allRaces.stream()
-                .filter(r -> r.getStatus() == RaceStatus.FINISHED)
-                .sorted(Comparator.comparing(
-                        r -> r.getStartTime() != null ? r.getStartTime() : Instant.EPOCH,
-                        Comparator.reverseOrder()))
-                .limit(5)
-                .map(r -> {
-                    long totalHorsesInRace = raceHorseRepository.countByRace_Id(r.getId());
-                    long totalBetsInRace = betRepository.countByRace_Id(r.getId());
-                    return RecentRaceStats.builder()
-                            .raceId(r.getId())
-                            .raceName(r.getRaceName())
-                            .status(r.getStatus().name())
-                            .startTime(r.getStartTime())
-                            .totalHorses(totalHorsesInRace)
-                            .totalBets(totalBetsInRace)
-                            .prizePool(r.getTotalprizepool())
-                            .build();
-                })
+        // ← Recent 5 races — dùng Pageable
+        List<RecentRaceStats> recentRaces = raceRepository
+                .findByStatusOrderByStartTimeDesc(
+                        RaceStatus.FINISHED,
+                        PageRequest.of(0, 5))
+                .stream()
+                .map(r -> RecentRaceStats.builder()
+                        .raceId(r.getId())
+                        .raceName(r.getRaceName())
+                        .status(r.getStatus().name())
+                        .startTime(r.getStartTime())
+                        .totalHorses(raceHorseRepository.countByRace_Id(r.getId()))
+                        .totalBets(betRepository.countByRace_Id(r.getId()))
+                        .prizePool(r.getTotalprizepool())
+                        .build())
                 .collect(Collectors.toList());
+
         return AdminStatsResponse.builder()
                 .adminWalletBalance(adminBalance)
                 .totalDepositApproved(totalDeposit)

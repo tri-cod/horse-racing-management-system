@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
+import com.horseracing.horseracingmanagement.common.constant.BetStatus;
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.common.constant.RoleName;
@@ -124,8 +125,7 @@ public class BetServiceImpl implements BetService {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Winner (rank 1) not found"));
         Long winnerRaceHorseId = winner.getRaceHorse().getId();
-        List<Bet> bets = betRepository.findByRace_IdAndStatus(raceId, "PENDING");
-
+        List<Bet> bets = betRepository.findByRace_IdAndStatus(raceId, String.valueOf(BetStatus.PENDING));
         // ← tìm wallet admin để nhận tiền thua
         User adminUser = userRepository.findFirstByRole_Rolename(RoleName.ADMIN)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));

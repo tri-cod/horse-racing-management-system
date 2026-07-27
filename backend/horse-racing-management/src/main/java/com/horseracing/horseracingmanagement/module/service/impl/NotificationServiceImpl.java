@@ -30,7 +30,6 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendToUser(Long userId, String title, String content,
                            NotificationType type, Long referenceId) {// ← đổi String → NoiStatus
-        System.out.println("Tuổi của bạn là: " + userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

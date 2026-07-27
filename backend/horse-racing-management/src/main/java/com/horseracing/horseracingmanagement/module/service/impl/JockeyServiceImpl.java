@@ -225,45 +225,41 @@ public class JockeyServiceImpl implements JockeyService {
         Jockey jockey = jockeyRepository.findById(jockeyId)
                 .orElseThrow(() -> new RuntimeException("Jockey not found"));
 
-        // Chỉ tính các lượt thực sự thi đấu: FINISHED / DISQUALIFIED / APPROVED
-        // (loại WITHDRAWN, REJECTED, PENDING... để không đếm trận đã rút lui)
-        List<RaceHorse> finishedRaces = raceHorseRepository.findByJockey_Id(jockeyId)
-                .stream()
+        List<RaceHorse> allRaceHorses = raceHorseRepository.findByJockey_Id(jockeyId);
+        List<RaceHorse> finishedRaces = allRaceHorses.stream()
                 .filter(rh -> rh.getRace().getStatus() == RaceStatus.FINISHED)
-                .filter(rh -> rh.getStatus() == RaceHorseStatus.FINISHED
-                        || rh.getStatus() == RaceHorseStatus.DISQUALIFIED
-                        || rh.getStatus() == RaceHorseStatus.APPROVED)
                 .collect(Collectors.toList());
 
         long totalRaces = finishedRaces.size();
         long totalWins = 0L;
-        long totalTop3 = 0L;
-        long totalRewards = 0L;
+        long totalTop3 = 0L;        // ← thêm
+        long totalRewards = 0L;     // ← thêm
 
         for (RaceHorse rh : finishedRaces) {
-            RaceResult result = raceResultRepository.findByRaceHorse_Id(rh.getId()).orElse(null);
-            if (result == null || result.getRank() == null) continue;  // ← null-safe, hết NPE
+            Optional<RaceResult> result = raceResultRepository.findByRaceHorse_Id(rh.getId());
+            if (result.isPresent()) {
+                long rank = result.get().getRank() != null ? result.get().getRank() : 99L;
+                if (rank == 1L) totalWins++;
+                if (rank <= 3L) totalTop3++;    // ← tính top3
 
-            long rank = result.getRank();
-            if (rank == 1L) totalWins++;
-            if (rank <= 3L) totalTop3++;
-
-            if (result.getRewards() != null && result.getRewards() > 0) {
-                BigDecimal jockeyPercent = rh.getJockeyRevenuePercent() != null
-                        ? rh.getJockeyRevenuePercent()
-                        : BigDecimal.valueOf(10);
-                totalRewards += BigDecimal.valueOf(result.getRewards())
-                        .multiply(jockeyPercent)
-                        .divide(BigDecimal.valueOf(100), 0, RoundingMode.FLOOR)
-                        .longValue();
+                // ← tính rewards theo % jockey
+                if (result.get().getRewards() != null) {
+                    BigDecimal jockeyPercent = rh.getJockeyRevenuePercent() != null
+                            ? rh.getJockeyRevenuePercent()
+                            : BigDecimal.valueOf(10);
+                    totalRewards += BigDecimal.valueOf(result.get().getRewards())
+                            .multiply(jockeyPercent)
+                            .divide(BigDecimal.valueOf(100), 0, RoundingMode.FLOOR)
+                            .longValue();
+                }
             }
         }
 
-        // Giữ 1 chữ số thập phân thay vì làm tròn hẳn (vd 66.7 thay vì 67.0)
         double winRate = totalRaces > 0
                 ? Math.round((double) totalWins / totalRaces * 1000.0) / 10.0
                 : 0.0;
 
+        // 5 trận gần nhất
         List<RaceParticipationResponse> recentHistory = finishedRaces.stream()
                 .map(rh -> buildParticipationResponse(rh, jockeyId))
                 .sorted(Comparator.comparing(
@@ -284,13 +280,12 @@ public class JockeyServiceImpl implements JockeyService {
                 .description(jockey.getDescription())
                 .totalRaces(totalRaces)
                 .totalWins(totalWins)
-                .totalTop3(totalTop3)
+                .totalTop3(totalTop3)       // ← thêm
                 .winRate(winRate)
-                .totalRewards(totalRewards)
+                .totalRewards(totalRewards) // ← thêm
                 .recentHistory(recentHistory)
                 .build();
     }
-
     private JockeyProfileResponse mapToProfileResponse(Jockey jockey) {
         // Tính thống kê race
         List<RaceHorse> raceHorses = getCollect(jockey);
