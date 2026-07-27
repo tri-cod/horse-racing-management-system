@@ -43,12 +43,22 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
     private final PenaltyRepository penaltyRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private HorseOwner getActiveOwner(Long userId) {
+        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
+        if (!"Active".equalsIgnoreCase(owner.getStatus())) {
+            throw new AppException(
+                    "Your Horse Owner role is no longer active. Please contact admin.",
+                    HttpStatus.FORBIDDEN);
+        }
+        return owner;
+    }
+
 
 
     @Override
     public SignHorseResponse signHorse(SignHorseRequest request, Long userId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
+        HorseOwner owner = getActiveOwner(userId);
 
 
         String raceHistoryJson = null;
@@ -69,8 +79,6 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .speedRating(request.getSpeedRating())
                 .description(request.getDescription())
                 .raceHistory(raceHistoryJson)
-                .preferredDistance(request.getPreferredDistance())
-                .preferredSurface(request.getPreferredSurface())
                 .avatarUrl(request.getAvatar_url())
                 .weight(request.getWeight())
                 .status(request.getStatus())
@@ -99,8 +107,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
 
     @Override
     public List<SignHorseResponse> getHorseList(Long userId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
+        HorseOwner owner = getActiveOwner(userId);
 
         List<Horse> horses = horseRepository.findByOwnerId(owner.getId());
 
@@ -119,8 +126,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
 
     @Override
     public List<SignHorseResponse> getAvailableHorseList(Long userId, Long raceId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
+        HorseOwner owner = getActiveOwner(userId);
 
         Race race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new RuntimeException("Race not found"));
@@ -367,8 +373,6 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .breed(horse.getBreed())
                 .avatarUrl(horse.getAvatarUrl())
                 .status(String.valueOf(horse.getStatus()))
-                .preferredDistance(horse.getPreferredDistance() != null ? horse.getPreferredDistance().name() : null)
-                .preferredSurface(horse.getPreferredSurface())
                 .currentRaceId(currentRaceHorse.map(rh -> rh.getRace().getId()).orElse(null))
                 .currentRaceName(currentRaceHorse.map(rh -> rh.getRace().getRaceName()).orElse(null))
                 .currentRaceStatus(currentRaceHorse.map(rh -> rh.getRace().getStatus().name()).orElse(null))
@@ -378,15 +382,13 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
 
     @Override
     public void SendWithdrawalApplication(WithdrawalRequest with, Long userId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
+        HorseOwner owner = getActiveOwner(userId);
 
     }
 
     @Override
     public SignHorseResponse updateHorse(Long horseId, UpdateHorse request, Long userId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
+        HorseOwner owner = getActiveOwner(userId);
 
         Horse horse = horseRepository.findById(horseId)
                 .orElseThrow(() -> new RuntimeException("Horse not found"));
@@ -399,8 +401,6 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
         if (request.getBreed() != null)        horse.setBreed(request.getBreed());
         if (request.getAge() != null)          horse.setAge(request.getAge());
         if (request.getGender() != null)       horse.setGender(request.getGender());
-        if (request.getPreferredDistance() != null) horse.setPreferredDistance(request.getPreferredDistance());
-        if (request.getPreferredSurface() != null)  horse.setPreferredSurface(request.getPreferredSurface());
         if (request.getSpeedRating() != null)  horse.setSpeedRating(request.getSpeedRating());
         if (request.getHistory_rank() != null) horse.setRaceHistory(request.getHistory_rank());
         if (request.getAvatar_url() != null)   horse.setAvatarUrl(request.getAvatar_url());
@@ -418,8 +418,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
     }
     @Override
     public HorseOwnerProfileResponse completeProfile(CompleteHorseOwnerProfileRequest request, Long userId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new AppException("Horse owner profile not found", HttpStatus.NOT_FOUND));
+        HorseOwner owner = getActiveOwner(userId);
 
         owner.setName(request.getName());
 
@@ -438,8 +437,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
 
     @Override
     public HorseOwnerProfileResponse getMyProfile(Long userId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new AppException("Horse owner profile not found", HttpStatus.NOT_FOUND));
+        HorseOwner owner = getActiveOwner(userId);
 
         HorseOwnerProfileResponse resp = mapToProfileResponse(owner);
         resp.setUserId(userId);
@@ -464,8 +462,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
 
     @Override
     public void deleteHorse(Long horseId, Long userId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Horse owner profile not found"));
+        HorseOwner owner = getActiveOwner(userId);
 
         Horse horse = horseRepository.findById(horseId)
                 .orElseThrow(() -> new RuntimeException("Horse not found"));
@@ -478,8 +475,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
     }
     @Override
     public List<RaceParticipationResponse> getOwnerRaceHistory(Long userId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Horse owner not found"));
+        HorseOwner owner = getActiveOwner(userId);
         List<Horse> myHorses = horseRepository.findByOwnerId(owner.getId());
 
         return myHorses.stream()
@@ -494,8 +490,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
     // Trận sắp tới — tất cả ngựa owner đã đăng ký nhưng chưa đua
     @Override
     public List<RaceParticipationResponse> getOwnerUpcomingRaces(Long userId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Horse owner not found"));
+        HorseOwner owner = getActiveOwner(userId);
         List<Horse> myHorses = horseRepository.findByOwnerId(owner.getId());
 
         return myHorses.stream()
@@ -512,8 +507,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
     // Trận đang diễn ra
     @Override
     public List<RaceParticipationResponse> getOwnerCurrentRaces(Long userId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Horse owner not found"));
+        HorseOwner owner = getActiveOwner(userId);
         List<Horse> myHorses = horseRepository.findByOwnerId(owner.getId());
 
         return myHorses.stream()
@@ -590,9 +584,6 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .raceHistory(raceHistory)  // ← trả về List
                 .avatarUrl(horse.getAvatarUrl())
                 .weight(horse.getWeight())
-                .description(horse.getDescription())
-                .preferredDistance(horse.getPreferredDistance())
-                .preferredSurface(horse.getPreferredSurface())
                 .status(horse.getStatus())
                 .ownerId(horse.getOwnerId())
                 .ownerName(ownerName)
@@ -603,8 +594,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
 
     @Override
     public List<PenaltyResponse> getHorsePenalties(Long horseId, Long userId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Horse owner not found"));
+        HorseOwner owner = getActiveOwner(userId);
 
         Horse horse = horseRepository.findById(horseId)
                 .orElseThrow(() -> new RuntimeException("Horse not found"));
@@ -637,8 +627,7 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
     // Toàn bộ phạt trên tất cả ngựa của owner — dùng để hiện số phạt ngay ở bảng My Horses
     @Override
     public List<PenaltyResponse> getMyPenalties(Long userId) {
-        HorseOwner owner = horseOwnerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Horse owner not found"));
+        HorseOwner owner = getActiveOwner(userId);
 
         return penaltyRepository.findByRaceHorse_Horse_OwnerIdOrderByCreatedAtDesc(owner.getId()).stream()
                 .map(p -> PenaltyResponse.builder()

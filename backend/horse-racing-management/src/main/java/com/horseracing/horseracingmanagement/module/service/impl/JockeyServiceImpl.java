@@ -3,6 +3,8 @@ package com.horseracing.horseracingmanagement.module.service.impl;
 import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.common.constant.UserStatus;
+import com.horseracing.horseracingmanagement.common.exception.AppException;
+import org.springframework.http.HttpStatus;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.CompleteJockeyProfileRequest;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyProfileResponse;
 import com.horseracing.horseracingmanagement.module.dto.JockeyDto.JockeyResponse;
@@ -36,10 +38,21 @@ public class JockeyServiceImpl implements JockeyService {
     private final RaceHorseRepository raceHorseRepository;
     private final RaceResultRepository raceResultRepository;
     private final TrainerRepository trainerRepository;
-    @Override
-    public JockeyProfileResponse completeProfile(CompleteJockeyProfileRequest request, Long userId) {
+
+    private Jockey getActiveJockey(Long userId) {
         Jockey jockey = jockeyRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("Jockey profile not found"));
+        if (!"Active".equalsIgnoreCase(jockey.getStatus())) {
+            throw new AppException(
+                    "Your Jockey role is no longer active. Please contact admin.",
+                    HttpStatus.FORBIDDEN);
+        }
+        return jockey;
+    }
+
+    @Override
+    public JockeyProfileResponse completeProfile(CompleteJockeyProfileRequest request, Long userId) {
+        Jockey jockey = getActiveJockey(userId);
 
         if(request.getDateOfBirth()!=null)jockey.setDateOfBirth(request.getDateOfBirth());
         if (request.getExperienceYear() != null) jockey.setExperienceYear(request.getExperienceYear());
@@ -52,8 +65,7 @@ public class JockeyServiceImpl implements JockeyService {
 
     @Override
     public JockeyProfileResponse getMyProfile(Long userId) {
-        Jockey jockey = jockeyRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Jockey profile not found"));
+        Jockey jockey = getActiveJockey(userId);
         return mapToProfileResponse(jockey);
     }
 
@@ -110,8 +122,7 @@ public class JockeyServiceImpl implements JockeyService {
     }
     @Override
     public List<RaceParticipationResponse> getMyRaceHistory(Long userId) {
-        Jockey jockey = jockeyRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Jockey not found"));
+        Jockey jockey = getActiveJockey(userId);
         return raceHorseRepository.findByJockey_Id(jockey.getId())
                 .stream()
                 .filter(rh -> rh.getRace().getStatus() == RaceStatus.FINISHED)
@@ -124,8 +135,7 @@ public class JockeyServiceImpl implements JockeyService {
     // Trận sắp tới — UPCOMING, OPEN_REGISTRATION, CLOSED_REGISTRATION, OPEN_BETTING
     @Override
     public List<RaceParticipationResponse> getUpcomingRaces(Long userId) {
-        Jockey jockey = jockeyRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Jockey not found"));
+        Jockey jockey = getActiveJockey(userId);
         return raceHorseRepository.findByJockey_Id(jockey.getId())
                 .stream()
                 .filter(rh -> rh.getRace().getStatus() != RaceStatus.FINISHED
@@ -139,8 +149,7 @@ public class JockeyServiceImpl implements JockeyService {
     // Trận đang diễn ra — ONGOING
     @Override
     public List<RaceParticipationResponse> getCurrentRaces(Long userId) {
-        Jockey jockey = jockeyRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Jockey not found"));
+        Jockey jockey = getActiveJockey(userId);
         return raceHorseRepository.findByJockey_Id(jockey.getId())
                 .stream()
                 .filter(rh -> rh.getRace().getStatus() == RaceStatus.ONGOING)

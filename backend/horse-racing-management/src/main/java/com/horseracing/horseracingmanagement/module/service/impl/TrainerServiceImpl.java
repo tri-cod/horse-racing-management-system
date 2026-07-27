@@ -1,6 +1,8 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
+import com.horseracing.horseracingmanagement.common.exception.AppException;
+import org.springframework.http.HttpStatus;
 import com.horseracing.horseracingmanagement.module.dto.RaceHorseDto.RaceParticipationResponse;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.CompleteTrainerProfileRequest;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.TrainerHorseResponse;
@@ -36,13 +38,23 @@ public class TrainerServiceImpl implements TrainerService {
     private final RaceResultRepository raceResultRepository;
     private final HorseOwnerRepository horseOwnerRepository;
 
+    private Trainer getActiveTrainer(Long userId) {
+        Trainer trainer = trainerRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Trainer profile not found"));
+        if (!"Active".equalsIgnoreCase(trainer.getStatus())) {
+            throw new AppException(
+                    "Your Trainer role is no longer active. Please contact admin.",
+                    HttpStatus.FORBIDDEN);
+        }
+        return trainer;
+    }
+
 
 
 
     @Override
     public TrainerProfileResponse completeProfile(CompleteTrainerProfileRequest request, Long userId) {
-        Trainer trainer = trainerRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Trainer profile not found"));
+        Trainer trainer = getActiveTrainer(userId);
 
         if (request.getDateOfBirth() != null) trainer.setDateOfBirth(request.getDateOfBirth());
         if (request.getExperienceYears() != null) trainer.setExperienceYears(request.getExperienceYears());
@@ -59,14 +71,12 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public TrainerProfileResponse getProfile(Long userId) {
-        Trainer trainer = trainerRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Trainer profile not found"));
+        Trainer trainer = getActiveTrainer(userId);
         return mapToResponse(trainer);
     }
     @Override
     public List<RaceParticipationResponse> getMyRaceHistory(Long userId) {
-        Trainer trainer = trainerRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Trainer not found"));
+        Trainer trainer = getActiveTrainer(userId);
 // Tìm tất cả horse mà trainer này đang/đã huấn luyện
         List<Horse> myHorses = horseRepository.findByTrainerId(trainer.getId());
 
@@ -81,8 +91,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
     @Override
     public List<RaceParticipationResponse> getUpcomingRaces(Long userId) {
-        Trainer trainer = trainerRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Trainer not found"));
+        Trainer trainer = getActiveTrainer(userId);
         List<Horse> myHorses = horseRepository.findByTrainerId(trainer.getId());
 
         return myHorses.stream()
@@ -97,8 +106,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
     @Override
     public List<RaceParticipationResponse> getCurrentRaces(Long userId) {
-        Trainer trainer = trainerRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Trainer not found"));
+        Trainer trainer = getActiveTrainer(userId);
         List<Horse> myHorses = horseRepository.findByTrainerId(trainer.getId());
 
         return myHorses.stream()
