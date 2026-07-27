@@ -7,6 +7,8 @@ import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.common.constant.RoleName;
 import com.horseracing.horseracingmanagement.common.constant.UserStatus;
+import com.horseracing.horseracingmanagement.common.exception.AppException;
+import org.springframework.http.HttpStatus;
 import com.horseracing.horseracingmanagement.module.dto.RefereeDto.*;
 import com.horseracing.horseracingmanagement.module.entity.*;
 import com.horseracing.horseracingmanagement.module.responsitory.*;
@@ -37,10 +39,20 @@ public class RefereeServiceImpl implements RefereeService {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
 
-    @Override
-    public RefereeProfileResponse completeProfile(CompleteRefereeProfileRequest request, Long userId) {
+    private RaceReferee getActiveRaceReferee(Long userId) {
         RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("Referee profile not found"));
+        if (!"Active".equalsIgnoreCase(referee.getStatus())) {
+            throw new AppException(
+                    "Your Referee role is no longer active. Please contact admin.",
+                    HttpStatus.FORBIDDEN);
+        }
+        return referee;
+    }
+
+    @Override
+    public RefereeProfileResponse completeProfile(CompleteRefereeProfileRequest request, Long userId) {
+        RaceReferee referee = getActiveRaceReferee(userId);
 
         if (request.getExperienceYears() != null) referee.setExperienceyears(request.getExperienceYears());
         if (request.getDescription() != null) referee.setDescription(request.getDescription());
@@ -52,8 +64,7 @@ public class RefereeServiceImpl implements RefereeService {
 
     @Override
     public RefereeProfileResponse getMyProfile(Long userId) {
-        RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Referee profile not found"));
+        RaceReferee referee = getActiveRaceReferee(userId);
         return mapToProfileResponse(referee);
     }
 
@@ -77,8 +88,7 @@ public class RefereeServiceImpl implements RefereeService {
     // Race sắp tới mà referee này được assign
     @Override
     public List<RefereeRaceResponse> getMyUpcomingRaces(Long userId) {
-        RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Referee not found"));
+        RaceReferee referee = getActiveRaceReferee(userId);
 
         return raceRepository.findByReferee_Id(referee.getId()).stream()
                 .filter(r -> r.getStatus() != RaceStatus.FINISHED
@@ -93,8 +103,7 @@ public class RefereeServiceImpl implements RefereeService {
     // Race đang diễn ra
     @Override
     public List<RefereeRaceResponse> getMyCurrentRaces(Long userId) {
-        RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Referee not found"));
+        RaceReferee referee = getActiveRaceReferee(userId);
 
         return raceRepository.findByReferee_Id(referee.getId()).stream()
                 .filter(r -> r.getStatus() == RaceStatus.ONGOING)
@@ -105,8 +114,7 @@ public class RefereeServiceImpl implements RefereeService {
     // Lịch sử race đã làm trọng tài
     @Override
     public List<RefereeRaceResponse> getMyRaceHistory(Long userId) {
-        RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Referee not found"));
+        RaceReferee referee = getActiveRaceReferee(userId);
 
         return raceRepository.findByReferee_Id(referee.getId()).stream()
                 .filter(r -> r.getStatus() == RaceStatus.FINISHED)
@@ -121,8 +129,7 @@ public class RefereeServiceImpl implements RefereeService {
     @Override
     @Transactional
     public PenaltyResponse issuePenalty(PenaltyRequest request, Long userId) {
-        RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Referee not found"));
+        RaceReferee referee = getActiveRaceReferee(userId);
 
         RaceHorse raceHorse = raceHorseRepository.findById(request.getRaceHorseId())
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
@@ -245,8 +252,7 @@ public class RefereeServiceImpl implements RefereeService {
 
     @Override
     public List<PenaltyResponse> getMyPenaltyHistory(Long userId) {
-        RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Referee not found"));
+        RaceReferee referee = getActiveRaceReferee(userId);
 
         return penaltyRepository.findByReferee_Id(referee.getId())
                 .stream()
@@ -257,8 +263,7 @@ public class RefereeServiceImpl implements RefereeService {
     @Override
     @Transactional
     public void cancelPenalty(Long penaltyId, Long userId) {
-        RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Referee not found"));
+        RaceReferee referee = getActiveRaceReferee(userId);
 
         Penalty penalty = penaltyRepository.findById(penaltyId)
                 .orElseThrow(() -> new RuntimeException("Penalty not found"));
@@ -312,8 +317,7 @@ public class RefereeServiceImpl implements RefereeService {
     // Implement
     @Override
     public PreRaceInspectionResponse inspectRace(Long raceId, Long userId) {
-        RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Referee not found"));
+        RaceReferee referee = getActiveRaceReferee(userId);
 
         Race race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new RuntimeException("Race not found"));
@@ -426,8 +430,7 @@ public class RefereeServiceImpl implements RefereeService {
     @Override
     @Transactional
     public void verifyHorse(VerifyHorseRequest request, Long userId) {
-        RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Referee not found"));
+        RaceReferee referee = getActiveRaceReferee(userId);
 
         RaceHorse raceHorse = raceHorseRepository.findById(request.getRaceHorseId())
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));
@@ -448,8 +451,7 @@ public class RefereeServiceImpl implements RefereeService {
     @Override
     @Transactional
     public void reportInspectionIssue(InspectionIssueRequest request, Long userId) {
-        RaceReferee referee = raceRefereeRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Referee not found"));
+        RaceReferee referee = getActiveRaceReferee(userId);
 
         RaceHorse raceHorse = raceHorseRepository.findById(request.getRaceHorseId())
                 .orElseThrow(() -> new RuntimeException("RaceHorse not found"));

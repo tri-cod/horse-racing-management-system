@@ -41,6 +41,10 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final TransactionRepostitory transactionRepository;
     private final AuthService authService;
     private final BetItemRepository betItemRepository;
+    private final HorseOwnerRepository horseOwnerRepository;
+    private final JockeyRepository jockeyRepository;
+    private final TrainerRepository trainerRepository;
+    private final RaceRefereeRepository raceRefereeRepository;
 
 
 
@@ -64,8 +68,104 @@ public class AdminUserServiceImpl implements AdminUserService {
         Role role = roleRepository.findByRolename(roleName)
                 .orElseThrow(() -> new ResourceNotFoundException("Role", "name", roleName));
 
+        RoleName oldRoleName = user.getRole() != null ? user.getRole().getRolename() : null;
+
         user.setRole(role);
         userRepository.save(user);
+
+        if (oldRoleName == roleName) {
+            return;
+        }
+
+        deactivateProfileForRole(user, oldRoleName);
+
+        activateOrCreateProfileForRole(user, roleName);
+    }
+
+    private void deactivateProfileForRole(User user, RoleName oldRole) {
+        if (oldRole == null) return;
+        switch (oldRole) {
+            case HORSE_OWNER -> horseOwnerRepository.findByUserId(user.getId())
+                    .ifPresent(o -> {
+                        o.setStatus("Inactive");
+                        horseOwnerRepository.save(o);
+                    });
+            case JOCKEY -> jockeyRepository.findByUser_Id(user.getId())
+                    .ifPresent(j -> {
+                        j.setStatus("Inactive");
+                        jockeyRepository.save(j);
+                    });
+            case TRAINER -> trainerRepository.findByUser_Id(user.getId())
+                    .ifPresent(t -> {
+                        t.setStatus("Inactive");
+                        trainerRepository.save(t);
+                    });
+            case REFEREE -> raceRefereeRepository.findByUser_Id(user.getId())
+                    .ifPresent(r -> {
+                        r.setStatus("Inactive");
+                        raceRefereeRepository.save(r);
+                    });
+            default -> { /* ADMIN, STAFF, SPECTATOR, USER, MANAGER — không có profile riêng */ }
+        }
+    }
+
+    private void activateOrCreateProfileForRole(User user, RoleName newRole) {
+        String displayName = user.getFullName() != null ? user.getFullName() : user.getUsername();
+
+        switch (newRole) {
+            case HORSE_OWNER -> {
+                HorseOwner owner = horseOwnerRepository.findByUserId(user.getId()).orElse(null);
+                if (owner != null) {
+                    owner.setStatus("Active");
+                    horseOwnerRepository.save(owner);
+                } else {
+                    horseOwnerRepository.save(HorseOwner.builder()
+                            .user(user)
+                            .name(displayName)
+                            .status("Active")
+                            .totalHorses(0)
+                            .build());
+                }
+            }
+            case JOCKEY -> {
+                Jockey jockey = jockeyRepository.findByUser_Id(user.getId()).orElse(null);
+                if (jockey != null) {
+                    jockey.setStatus("Active");
+                    jockeyRepository.save(jockey);
+                } else {
+                    jockeyRepository.save(Jockey.builder()
+                            .user(user)
+                            .status("Active")
+                            .build());
+                }
+            }
+            case TRAINER -> {
+                Trainer trainer = trainerRepository.findByUser_Id(user.getId()).orElse(null);
+                if (trainer != null) {
+                    trainer.setStatus("Active");
+                    trainerRepository.save(trainer);
+                } else {
+                    trainerRepository.save(Trainer.builder()
+                            .user(user)
+                            .name(displayName)
+                            .status("Active")
+                            .build());
+                }
+            }
+            case REFEREE -> {
+                RaceReferee referee = raceRefereeRepository.findByUser_Id(user.getId()).orElse(null);
+                if (referee != null) {
+                    referee.setStatus("Active");
+                    raceRefereeRepository.save(referee);
+                } else {
+                    raceRefereeRepository.save(RaceReferee.builder()
+                            .user(user)
+                            .status("Active")
+                            .build());
+                }
+            }
+            default -> { /* ADMIN, STAFF, SPECTATOR, USER, MANAGER — không cần profile riêng */ }
+        }
     }
 
     @Override
