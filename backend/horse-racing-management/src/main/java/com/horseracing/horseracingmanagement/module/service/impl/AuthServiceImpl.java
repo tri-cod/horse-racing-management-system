@@ -54,7 +54,7 @@ public class AuthServiceImpl  implements AuthService {
 
 
     // --- Email Verification ---c
-    @Async
+
     public void sendEmailVerificationOtp(String email) {
         log.info("→ Checking email format: {}", email);
 
