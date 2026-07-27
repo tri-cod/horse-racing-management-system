@@ -13,14 +13,11 @@ import Seo from '@/components/seo/Seo';
 import StatCard from '@/components/shared/StatCard';
 import type { HorseRaceHistoryItem, Horse } from '@/types';
 
-function DetailFact({ icon: Icon, label, value }: { icon: typeof Rabbit; label: string; value: string }) {
+function DetailFact({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-center gap-2.5 px-4 py-3 text-center">
-      <Icon size={15} className="shrink-0 text-ink-4" />
-      <div className="min-w-0">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-4">{label}</p>
-        <p className="truncate text-sm font-medium text-ink">{value}</p>
-      </div>
+    <div className="flex flex-col items-center justify-center gap-1 px-4 py-4 text-center">
+      <p className="text-xs font-semibold uppercase tracking-wider text-ink-4">{label}</p>
+      <p className="truncate text-lg font-semibold text-ink">{value}</p>
     </div>
   );
 }
