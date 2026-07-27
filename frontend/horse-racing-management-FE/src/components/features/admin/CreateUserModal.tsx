@@ -3,7 +3,6 @@ import { UserPlus } from 'lucide-react';
 import { createUserAccount } from '@/api/adminApi';
 import { getErrorMessage } from '@/utils/errors';
 import Modal from '@/components/ui/Modal';
-import RoleBadge from './RoleBadge';
 import type { UserRole } from '@/types';
 
 /* ── Create User Modal ──────────────────────────────────────────
@@ -12,7 +11,7 @@ import type { UserRole } from '@/types';
    register + email-OTP flow. Client-side rules mirror the backend
    RegisterRequest validation so errors surface before the request. */
 
-const ROLES: UserRole[] = ['STAFF', 'REFEREE', 'HORSE_OWNER', 'TRAINER', 'JOCKEY', 'USER', 'ADMIN'];
+const ROLES: UserRole[] = ['STAFF', 'REFEREE', 'HORSE_OWNER', 'TRAINER', 'JOCKEY', 'USER'];
 
 const ROLE_LABELS: Record<UserRole, string> = {
   ADMIN: 'Admin', STAFF: 'Staff', REFEREE: 'Referee', HORSE_OWNER: 'Horse Owner',
@@ -124,12 +123,9 @@ export default function CreateUserModal({ onClose, onSuccess }: Props) {
           <label htmlFor="cu-role" className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-ink-4">
             Role <span className="text-fail">*</span>
           </label>
-          <div className="flex items-center gap-3">
-            <select id="cu-role" value={form.role} onChange={set('role')} className={inputCls()}>
-              {ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
-            </select>
-            <RoleBadge role={form.role} />
-          </div>
+          <select id="cu-role" value={form.role} onChange={set('role')} className={inputCls()}>
+            {ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
+          </select>
         </div>
 
         {/* Full name */}

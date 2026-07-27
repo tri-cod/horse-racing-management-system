@@ -15,7 +15,7 @@ import type { HorseRaceHistoryItem, Horse } from '@/types';
 
 function DetailFact({ icon: Icon, label, value }: { icon: typeof Rabbit; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2.5 px-4 py-3">
+    <div className="flex items-center justify-center gap-2.5 px-4 py-3 text-center">
       <Icon size={15} className="shrink-0 text-ink-4" />
       <div className="min-w-0">
         <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-4">{label}</p>
@@ -250,6 +250,11 @@ export default function HorseProfilePage() {
             {detailFacts.length > 0 && (
               <div className="grid grid-cols-2 divide-x divide-y divide-rim border border-t-0 border-rim bg-surface-raised sm:grid-cols-3 sm:divide-y-0">
                 {detailFacts.map((f) => <DetailFact key={f.label} {...f} />)}
+                {/* Invisible filler cells so an incomplete last row still carries the
+                    column divider all the way to the bottom border at the sm:3-col layout. */}
+                {Array.from({ length: (3 - (detailFacts.length % 3)) % 3 }).map((_, i) => (
+                  <div key={`filler-${i}`} aria-hidden="true" className="hidden sm:block" />
+                ))}
               </div>
             )}
 

@@ -9,26 +9,26 @@ import { ToastProvider } from '@/components/ui/ToastProvider';
 import { RaceSocketProvider } from '@/context/RaceSocketContext';
 
 const queryClient = new QueryClient({
- defaultOptions: {
- queries: {
- staleTime: 30_000,
- retry: 1,
- },
- },
+    defaultOptions: {
+        queries: {
+            staleTime: 30_000,
+            retry: 1,
+        },
+    },
 });
 
 createRoot(document.getElementById('root')!).render(
- <StrictMode>
- <QueryClientProvider client={queryClient}>
- <BrowserRouter>
- <AuthProvider>
- <ToastProvider>
- <RaceSocketProvider>
- <App />
- </RaceSocketProvider>
- </ToastProvider>
- </AuthProvider>
- </BrowserRouter>
- </QueryClientProvider>
- </StrictMode>,
+    <StrictMode>
+        <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+                <AuthProvider>
+                    <ToastProvider>
+                        <RaceSocketProvider>
+                            <App />
+                        </RaceSocketProvider>
+                    </ToastProvider>
+                </AuthProvider>
+            </BrowserRouter>
+        </QueryClientProvider>
+    </StrictMode>,
 );

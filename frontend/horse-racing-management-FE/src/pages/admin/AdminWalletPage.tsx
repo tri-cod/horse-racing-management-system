@@ -68,14 +68,23 @@ function SystemStats({
   reloadKey, balanceKey, onRefresh,
 }: { reloadKey: number; balanceKey: number; onRefresh: () => void }) {
   const [balance, setBalance] = useState<number | null>(null);
+  const [pendingDeposits, setPendingDeposits] = useState<number | null>(null);
+  const [pendingWithdraws, setPendingWithdraws] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const fetchBalance = useCallback(async () => {
+  const fetchStats = useCallback(async () => {
     setLoading(true); setError('');
     try {
-      const data = await getSystemBalance();
-      setBalance((data as unknown as { balance?: number }).balance ?? (data as unknown as number));
+      const [balanceData, deposits, withdraws] = await Promise.all([
+        getSystemBalance(),
+        getPendingDeposits(),
+        getPendingWithdraws(),
+      ]);
+      setBalance((balanceData as unknown as { balance?: number }).balance ?? (balanceData as unknown as number));
+      // Filter client-side: backend /deposit/pending returns ALL pending (both types)
+      setPendingDeposits((deposits ?? []).filter((d) => d.requestType === 'DEPOSIT').length);
+      setPendingWithdraws((withdraws ?? []).length);
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
       setError(err?.response?.data?.message ?? 'Failed to load system wallet.');
@@ -83,7 +92,7 @@ function SystemStats({
   }, []);
 
   // refetch khi bấm Refresh (reloadKey) HOẶC sau khi duyệt 1 giao dịch (balanceKey)
-  useEffect(() => { fetchBalance(); }, [fetchBalance, reloadKey, balanceKey]);
+  useEffect(() => { fetchStats(); }, [fetchStats, reloadKey, balanceKey]);
 
   return (
     <>
@@ -124,40 +133,48 @@ function SystemStats({
           </div>
         </div>
 
-        {/* Total Deposits (placeholder) */}
-        <div className="group relative overflow-hidden border border-rim bg-surface-raised opacity-60">
+        {/* Pending Deposits — count of deposit requests awaiting approval */}
+        <div className="group relative overflow-hidden border border-rim bg-surface-raised">
           <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gold transition-transform group-hover:scale-x-100" />
           <div className="flex items-center gap-4 px-5 py-5">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center bg-ok-subtle text-ok">
               <ArrowUpCircle size={22} />
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Total Deposits</p>
-              <p className="tnum mt-1 text-2xl font-bold text-ink">—</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Pending Deposits</p>
+              {loading ? (
+                <div className="mt-2 h-7 w-16 animate-pulse bg-surface-overlay" />
+              ) : (
+                <p className="tnum mt-1 text-2xl font-bold text-ink">{pendingDeposits ?? 0}</p>
+              )}
             </div>
           </div>
           <div className="border-t border-rim bg-surface-overlay/50 px-5 py-2.5">
             <p className="flex items-center gap-1.5 text-xs text-ink-3">
-              <ArrowUpCircle size={11} /> Cumulative approved deposits
+              <ArrowUpCircle size={11} /> Requests awaiting approval
             </p>
           </div>
         </div>
 
-        {/* Total Payouts (placeholder) */}
-        <div className="group relative overflow-hidden border border-rim bg-surface-raised opacity-60">
+        {/* Pending Withdrawals — count of withdrawal requests awaiting approval */}
+        <div className="group relative overflow-hidden border border-rim bg-surface-raised">
           <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gold transition-transform group-hover:scale-x-100" />
           <div className="flex items-center gap-4 px-5 py-5">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center bg-fail-subtle text-fail">
               <ArrowDownCircle size={22} />
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Total Payouts</p>
-              <p className="tnum mt-1 text-2xl font-bold text-ink">—</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Pending Withdrawals</p>
+              {loading ? (
+                <div className="mt-2 h-7 w-16 animate-pulse bg-surface-overlay" />
+              ) : (
+                <p className="tnum mt-1 text-2xl font-bold text-ink">{pendingWithdraws ?? 0}</p>
+              )}
             </div>
           </div>
           <div className="border-t border-rim bg-surface-overlay/50 px-5 py-2.5">
             <p className="flex items-center gap-1.5 text-xs text-ink-3">
-              <ArrowDownCircle size={11} /> Cumulative winnings paid out
+              <ArrowDownCircle size={11} /> Requests awaiting approval
             </p>
           </div>
         </div>

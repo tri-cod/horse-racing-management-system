@@ -88,7 +88,7 @@ export default function RegisterForm({ roles, roleConfig }: RegisterFormProps) {
  <div className="overflow-hidden">
 
  {/* ── Tabs header ──────────────────────────────────────── */}
- <div className="flex justify-center border-b border-rim px-8 pt-6">
+ <div className="flex border-b border-rim px-8 pt-6">
  <Link to="/login" className="px-4 pb-3 text-sm font-medium text-ink-3 hover:text-ink transition-colors">
  Sign In
  </Link>
