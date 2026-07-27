@@ -2,7 +2,7 @@ import { useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Camera, Loader2 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import ImageCropModal from '@/components/ui/ImageCropModal';
-import { uploadAvatar } from '@/api/authApi';
+import { uploadImage } from '@/api/fileApi';
 import { getErrorMessage } from '@/utils/errors';
 import { isoDateYearsAgo } from '@/utils/age';
 import type { Trainer } from '@/types';
@@ -67,7 +67,7 @@ export default function TrainerProfileForm({ initialValues = {}, onSubmit, loadi
     setUploadError('');
     try {
       const croppedFile = new File([blob], 'avatar.png', { type: 'image/png' });
-      const url = await uploadAvatar(croppedFile);
+      const url = await uploadImage(croppedFile);
       setForm((prev) => ({ ...prev, avatarUrl: url }));
     } catch (err: unknown) {
       setUploadError(getErrorMessage(err, 'Upload failed. Please try again.'));

@@ -5,7 +5,8 @@ import {
   LogOut, Pencil, X, Check, AlertCircle, Camera, Loader2,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { updateInfo, uploadAvatar } from '@/api/authApi';
+import { updateInfo } from '@/api/authApi';
+import { uploadImage } from '@/api/fileApi';
 import { getErrorMessage } from '@/utils/errors';
 import UserAvatar from '@/components/features/admin/UserAvatar';
 import ImageCropModal from '@/components/ui/ImageCropModal';
@@ -86,7 +87,7 @@ export default function ProfilePage() {
     setUploadError('');
     try {
       const croppedFile = new File([blob], 'avatar.png', { type: 'image/png' });
-      const url = await uploadAvatar(croppedFile);
+      const url = await uploadImage(croppedFile);
       setForm((p) => ({ ...p, avatarUrl: url }));
     } catch (err: unknown) {
       setUploadError(getErrorMessage(err, 'Upload failed. Please try again.'));

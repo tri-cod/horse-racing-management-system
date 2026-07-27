@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,41 +24,8 @@ public class HorseOwnerController {
 
     private final HorseOwnerService horseOwnerService;
 
-    @PostMapping("/horses/avatar")
-    public ResponseEntity<ApiResponse<String>> uploadAvatar(
-            @RequestParam("file") MultipartFile file
-    ) {
-        try {
-            // Tạo thư mục uploads nếu chưa có
-            String uploadDir = System.getProperty("user.dir") + "/uploads";
-            java.io.File dir = new java.io.File(uploadDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            // Đặt tên file unique để tránh trùng (giữ extension gốc)
-            String originalName = file.getOriginalFilename();
-            String extension = "";
-            if (originalName != null && originalName.contains(".")) {
-                extension = originalName.substring(originalName.lastIndexOf("."));
-            }
-            String uniqueFileName = java.util.UUID.randomUUID() + extension;
-
-            // Lưu file vào ổ đĩa
-            java.io.File destFile = new java.io.File(uploadDir, uniqueFileName);
-            file.transferTo(destFile);
-
-            // Trả về URL đầy đủ để frontend hiển thị được
-            String imageUrl = "http://localhost:8080/uploads/" + uniqueFileName;
-
-            return ResponseEntity.ok(
-                    ApiResponse.success("Avatar uploaded successfully", imageUrl)
-            );
-        } catch (java.io.IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error("Failed to upload avatar: " + e.getMessage()));
-        }
-    }
+    // Avatar upload moved to FileUploadController (POST /api/files/images) — it was
+    // never horse-owner specific and now stores to Cloudinary instead of local disk.
 
     @PostMapping("/horses")
     public ResponseEntity<ApiResponse<SignHorseResponse>> signHorse(

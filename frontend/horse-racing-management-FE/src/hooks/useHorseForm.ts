@@ -1,7 +1,8 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { signHorse, updateHorse, uploadAvatar, type SignHorsePayload } from '@/api/horseOwnerApi';
+import { signHorse, updateHorse, type SignHorsePayload } from '@/api/horseOwnerApi';
+import { uploadImage } from '@/api/fileApi';
 import { getErrorMessage } from '@/utils/errors';
 import { DISTANCE_CATEGORY_LABELS } from '@/utils/horsePreferences';
 import type { Horse } from '@/types';
@@ -203,7 +204,7 @@ export function useHorseForm({ mode = 'create', horseId, initialValues }: UseHor
 
  setLoading(true);
  try {
- const avatarUrl = avatarFile ? await uploadAvatar(avatarFile) : form.avatar_url || undefined;
+ const avatarUrl = avatarFile ? await uploadImage(avatarFile) : form.avatar_url || undefined;
 
  const payload = {
  horseName: form.horseName.trim(),

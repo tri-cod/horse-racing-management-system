@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, type ReactNode, type ChangeEvent } from 'react';
 import { Upload, X, ArrowLeft } from 'lucide-react';
-import { uploadAvatar } from '@/api/horseOwnerApi';
+import { uploadImage } from '@/api/fileApi';
 import { useReferees } from '@/hooks/useReferees';
 import Button from '@/components/ui/Button';
 import type { CreateRacePayload, RaceStatus, RaceClass, GenderRestriction } from '@/types';
@@ -150,7 +150,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  if (!file) return;
  try {
  setUploading(true);
- const url = await uploadAvatar(file);
+ const url = await uploadImage(file);
  setField('bannerImageurl', url);
  setErrors((prev) => ({ ...prev, bannerImageurl: undefined }));
  } catch (err: unknown) {

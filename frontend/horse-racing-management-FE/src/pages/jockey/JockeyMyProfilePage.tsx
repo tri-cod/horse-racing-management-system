@@ -8,7 +8,7 @@ import { useMyJockeyProfile } from '@/hooks/useMyJockeyProfile';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { getErrorMessage } from '@/utils/errors';
-import { uploadAvatar } from '@/api/authApi';
+import { uploadImage } from '@/api/fileApi';
 import { isoDateYearsAgo, calculateAge } from '@/utils/age';
 import UserAvatar from '@/components/features/admin/UserAvatar';
 import ImageCropModal from '@/components/ui/ImageCropModal';
@@ -85,7 +85,7 @@ export default function JockeyMyProfilePage() {
     setUploadError('');
     try {
       const croppedFile = new File([blob], 'avatar.png', { type: 'image/png' });
-      const url = await uploadAvatar(croppedFile);
+      const url = await uploadImage(croppedFile);
       setAvatarUrl(url);
     } catch (err: unknown) {
       setUploadError(getErrorMessage(err, 'Upload failed. Please try again.'));

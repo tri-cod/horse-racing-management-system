@@ -51,14 +51,3 @@ export const updateInfo = ({ avatarUrl, ...rest }: UpdateInfoPayload) =>
   axiosInstance
     .put<ApiResponse<RawUser>>('/auth/me', { ...rest, avatar_url: avatarUrl })
     .then((r) => mapUser(r.data.data));
-
-// Reuses the generic file-upload endpoint (open to any authenticated user,
-// not horse-specific in its implementation) since there is no dedicated
-// /auth avatar route on the backend.
-export const uploadAvatar = (file: File): Promise<string> => {
-  const formData = new FormData();
-  formData.append('file', file);
-  return axiosInstance
-    .post<ApiResponse<string>>('/horse-owner/horses/avatar', formData)
-    .then((r) => r.data.data);
-};

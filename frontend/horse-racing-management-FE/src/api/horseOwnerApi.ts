@@ -26,17 +26,6 @@ export const updateHorse = (horseId: number, payload: UpdateHorsePayload) =>
 export const deleteHorse = (horseId: number) =>
  axiosInstance.delete<ApiResponse<null>>(`/horse-owner/horses/${horseId}`).then((r) => r.data);
 
-export const uploadAvatar = (file: File): Promise<string> => {
- const formData = new FormData();
- formData.append('file', file);
- return axiosInstance
- .post<ApiResponse<{ avatarUrl: string } | string>>('/horse-owner/horses/avatar', formData)
- .then((r) => {
- const data = r.data.data;
- return typeof data === 'string' ? data : data.avatarUrl;
- });
-};
-
 export const getMyHorses = () =>
  axiosInstance.get<ApiResponse<Horse[]>>('/horse-owner/horses').then((r) => r.data.data);
 
