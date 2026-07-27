@@ -43,7 +43,6 @@ public class CorsConfig {
                 new UrlBasedCorsConfigurationSource();
 
         source.registerCorsConfiguration("/**", config);
-        source.registerCorsConfiguration("/ws/**", config);
         return new CorsFilter(source);
     }
 }
