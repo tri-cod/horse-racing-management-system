@@ -87,9 +87,9 @@ export default function AuthSplitLayout({ children, wide = false }: AuthSplitLay
  >
  {children}
  <div className="mt-8 flex justify-center gap-5 text-xs text-ink-4">
- <a href="#" className="hover:text-ink-2 transition-colors">Privacy</a>
- <a href="#" className="hover:text-ink-2 transition-colors">Terms</a>
- <a href="#" className="hover:text-ink-2 transition-colors">Contact</a>
+ <Link to="/privacy" className="hover:text-ink-2 transition-colors">Privacy</Link>
+ <Link to="/terms" className="hover:text-ink-2 transition-colors">Terms</Link>
+ <Link to="/contact" className="hover:text-ink-2 transition-colors">Contact</Link>
  </div>
  </motion.div>
  </div>

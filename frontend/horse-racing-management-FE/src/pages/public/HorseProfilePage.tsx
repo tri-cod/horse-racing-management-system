@@ -13,14 +13,11 @@ import Seo from '@/components/seo/Seo';
 import StatCard from '@/components/shared/StatCard';
 import type { HorseRaceHistoryItem, Horse } from '@/types';
 
-function DetailFact({ icon: Icon, label, value }: { icon: typeof Rabbit; label: string; value: string }) {
+function DetailFact({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2.5 px-4 py-3">
-      <Icon size={15} className="shrink-0 text-ink-4" />
-      <div className="min-w-0">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-4">{label}</p>
-        <p className="truncate text-sm font-medium text-ink">{value}</p>
-      </div>
+    <div className="flex flex-col items-center justify-center gap-1 px-4 py-4 text-center">
+      <p className="text-xs font-semibold uppercase tracking-wider text-ink-4">{label}</p>
+      <p className="truncate text-lg font-semibold text-ink">{value}</p>
     </div>
   );
 }
@@ -250,6 +247,11 @@ export default function HorseProfilePage() {
             {detailFacts.length > 0 && (
               <div className="grid grid-cols-2 divide-x divide-y divide-rim border border-t-0 border-rim bg-surface-raised sm:grid-cols-3 sm:divide-y-0">
                 {detailFacts.map((f) => <DetailFact key={f.label} {...f} />)}
+                {/* Invisible filler cells so an incomplete last row still carries the
+                    column divider all the way to the bottom border at the sm:3-col layout. */}
+                {Array.from({ length: (3 - (detailFacts.length % 3)) % 3 }).map((_, i) => (
+                  <div key={`filler-${i}`} aria-hidden="true" className="hidden sm:block" />
+                ))}
               </div>
             )}
 
