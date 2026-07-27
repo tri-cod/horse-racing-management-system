@@ -122,6 +122,14 @@
             <version>1.6.3</version>
         </dependency>
 
+        <!-- Cloudinary — image hosting. Uploaded avatars must not live on the
+             container filesystem, which is wiped on every redeploy. -->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http5</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
 
 
 

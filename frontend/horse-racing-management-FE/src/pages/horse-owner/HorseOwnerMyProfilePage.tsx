@@ -8,7 +8,7 @@ import { useMyHorseOwnerProfile } from '@/hooks/useMyHorseOwnerProfile';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { getErrorMessage } from '@/utils/errors';
-import { uploadAvatar } from '@/api/authApi';
+import { uploadImage } from '@/api/fileApi';
 import UserAvatar from '@/components/features/admin/UserAvatar';
 import ImageCropModal from '@/components/ui/ImageCropModal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -84,7 +84,7 @@ export default function HorseOwnerMyProfilePage() {
     setUploadError('');
     try {
       const croppedFile = new File([blob], 'avatar.png', { type: 'image/png' });
-      const url = await uploadAvatar(croppedFile);
+      const url = await uploadImage(croppedFile);
       setAvatarUrl(url);
     } catch (err: unknown) {
       setUploadError(getErrorMessage(err, 'Upload failed. Please try again.'));
@@ -99,7 +99,7 @@ export default function HorseOwnerMyProfilePage() {
     setCoverUploading(true);
     setUploadError('');
     try {
-      const url = await uploadAvatar(file);
+      const url = await uploadImage(file);
       setCoverImageUrl(url);
     } catch (err: unknown) {
       setUploadError(getErrorMessage(err, 'Upload failed. Please try again.'));
