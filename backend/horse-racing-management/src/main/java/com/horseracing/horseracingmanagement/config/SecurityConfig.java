@@ -35,19 +35,25 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_URLS = {
             "/error",
-            "/api/jockeys/**",
-            "/api/trainer/**",
             "/uploads/**",
             "/v3/api-docs.yaml",
             "/api/auth/**",
             "/api/health",
             "/api/products/**",
             "/api/categories/**",
-            "/api/trainer/list",
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-ui.html",
-            "/ws/**",
+            "/ws/**"
+    };
+
+    // Những nhánh này chỉ mở CHO ĐỌC. Trước đây chúng nằm trong PUBLIC_URLS nên
+    // permitAll áp cho MỌI HTTP method — tức POST/PUT/DELETE dưới /api/races/**
+    // cũng đi qua được filter chain. Hiện tại @PreAuthorize ở controller đang đỡ
+    // được, nhưng bất kỳ endpoint mới nào quên annotation sẽ thành public hoàn toàn.
+    private static final String[] PUBLIC_GET_URLS = {
+            "/api/jockeys/**",
+            "/api/trainer/**",
             "/api/horses/**",
             "/api/races/**"
     };
@@ -60,8 +66,8 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/races", "/api/races/**").permitAll()
                         .requestMatchers(PUBLIC_URLS).permitAll()
+                        .requestMatchers(HttpMethod.GET, PUBLIC_GET_URLS).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

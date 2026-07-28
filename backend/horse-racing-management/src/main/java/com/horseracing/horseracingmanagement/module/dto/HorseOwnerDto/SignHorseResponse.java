@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.List;
 
 
 @Builder
@@ -23,7 +22,8 @@ public class SignHorseResponse {
     private int age;
     private String gender;
     private int speedRating;
-    private List<String> raceHistory;  // ← đổi từ historyRank sang List
+    // Thành tích KHÔNG còn lưu trên bản ghi horse nữa — gọi
+    // GET /api/horses/{id}/career để lấy số liệu suy ra từ race_result.
     private String avatarUrl;
     private Long weight;
     private String description;

@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.service;
 
+import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseCareerStatsResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceResult.RaceHistoryResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceResult.RaceResultResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceResult.SetRaceResultRequest;
@@ -11,4 +12,5 @@ public interface RaceResultService {
     List<RaceResultResponse> getRaceResults(Long raceId);        // kết quả 1 race
     List<RaceHistoryResponse> getHorseRaceHistory(Long horseId); // lịch sử 1 horse
     RaceHistoryResponse getHorseBestResult(Long horseId);
+    HorseCareerStatsResponse getHorseCareerStats(Long horseId);
 }

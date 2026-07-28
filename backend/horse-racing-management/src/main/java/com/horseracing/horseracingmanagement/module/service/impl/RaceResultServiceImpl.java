@@ -8,6 +8,7 @@ import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.common.constant.RoleName;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.RaceStatusUpdate;
+import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseCareerStatsResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceResult.RaceHistoryResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceResult.RaceResultResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceResult.SetRaceResultRequest;
@@ -26,6 +27,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,14 +135,24 @@ public class RaceResultServiceImpl implements RaceResultService {
             Long rewards = calculateRewards(race.getTotalprizepool(), rank, sorted.size());
             totalDistributed += rewards;
 
+            // Chốt danh tính ngay tại đây. Từ giây này trở đi, sửa tên hay xóa ngựa
+            // đều không động được vào bản ghi lịch sử này nữa.
+            Horse snapHorse = raceHorse.getHorse();
+            Jockey snapJockey = raceHorse.getJockey();
+
             raceResultRepository.save(RaceResult.builder()
                     .race(race)
                     .raceHorse(raceHorse)
                     .rank(rank)
                     .completionTimeSeconds(item.getCompletionTimeSeconds())
                     .rewards(rewards)
+                    .horseId(snapHorse != null ? snapHorse.getId() : null)
+                    .horseName(snapHorse != null ? snapHorse.getHorseName() : null)
+                    .jockeyId(snapJockey != null ? snapJockey.getId() : null)
+                    .jockeyName(snapJockey != null && snapJockey.getUser() != null
+                            ? snapJockey.getUser().getFullName()
+                            : null)
                     .build());
-            appendRaceHistory(raceHorse.getHorse(), race, rank);
 
             raceHorse.setStatus(RaceHorseStatus.FINISHED);
             raceHorseRepository.save(raceHorse);
@@ -264,31 +276,6 @@ public class RaceResultServiceImpl implements RaceResultService {
         }
     }
 
-    private void appendRaceHistory(Horse horse, Race race, long rank) {
-        try {
-            List<String> history = new ArrayList<>();
-            if (horse.getRaceHistory() != null) {
-                history = objectMapper.readValue(horse.getRaceHistory(),
-                        new TypeReference<List<String>>() {});
-            }
-
-            String rankLabel = rank == 1 ? "1st" : rank == 2 ? "2nd" : rank == 3 ? "3rd" : rank + "th";
-            String entry = String.format("%s %s (%s)",
-                    rankLabel,
-                    race.getRaceName(),
-                    race.getStartTime() != null
-                            ? race.getStartTime().toString().substring(0, 10)
-                            : "N/A");
-            history.add(entry);
-
-            horse.setRaceHistory(objectMapper.writeValueAsString(history));
-            horseRepository.save(horse);
-        } catch (Exception e) {
-            // log error nhưng không crash flow chính
-        }
-    }
-
-
     // Tính rewards theo hạng
     private Long calculateRewards(Long totalPrizePool, long rank, int totalHorses) {
         if (totalPrizePool == null || totalPrizePool == 0) return 0L;
@@ -310,14 +297,51 @@ public class RaceResultServiceImpl implements RaceResultService {
 
     @Override
     public List<RaceHistoryResponse> getHorseRaceHistory(Long horseId) {
-        return raceResultRepository.findByHorseIdOrderByRaceDesc(horseId)
-                .stream()
-                .map(rr -> {
-                    long totalParticipants = raceResultRepository
-                            .countByRace_Id(rr.getRace().getId());
-                    return mapToHistoryResponse(rr, totalParticipants);
-                })
+        List<RaceResult> results = raceResultRepository.findByHorseIdOrderByRaceDesc(horseId);
+        if (results.isEmpty()) return List.of();
+
+        // Một query duy nhất cho toàn bộ danh sách thay vì countByRace_Id() trong vòng lặp (N+1).
+        List<Long> raceIds = results.stream()
+                .map(rr -> rr.getRace().getId())
+                .distinct()
                 .collect(Collectors.toList());
+        Map<Long, Long> participantsByRace = raceResultRepository
+                .countParticipantsByRaceIds(raceIds)
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> (Long) row[1]));
+
+        return results.stream()
+                .map(rr -> mapToHistoryResponse(
+                        rr,
+                        participantsByRace.getOrDefault(rr.getRace().getId(), 0L)))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public HorseCareerStatsResponse getHorseCareerStats(Long horseId) {
+        long starts   = raceResultRepository.countStartsByHorseId(horseId);
+        long wins     = raceResultRepository.countWinsByHorseId(horseId);
+        long podiums  = raceResultRepository.countPodiumsByHorseId(horseId);
+        Long earnings = raceResultRepository.sumRewardsByHorseId(horseId);
+        Long bestRank = raceResultRepository.findBestRankByHorseId(horseId);
+
+        double winRate = starts == 0 ? 0d
+                : Math.round((wins * 10000d) / starts) / 100d;   // 2 chữ số thập phân
+        double podiumRate = starts == 0 ? 0d
+                : Math.round((podiums * 10000d) / starts) / 100d;
+
+        return HorseCareerStatsResponse.builder()
+                .horseId(horseId)
+                .totalStarts(starts)
+                .totalWins(wins)
+                .totalPodiums(podiums)
+                .totalEarnings(earnings == null ? 0L : earnings)
+                .bestRank(bestRank)
+                .winRate(winRate)
+                .podiumRate(podiumRate)
+                .build();
     }
 
     @Override
@@ -339,14 +363,12 @@ public class RaceResultServiceImpl implements RaceResultService {
                 .rank(rr.getRank())
                 .completionTimeSeconds(rr.getCompletionTimeSeconds())
                 .completionTimeFormatted(formatTime(rr.getCompletionTimeSeconds()))
-                .horseId(rr.getRaceHorse().getHorse().getId())
-                .horseName(rr.getRaceHorse().getHorse().getHorseName())
+                .horseId(rr.getHorseId())
+                .horseName(rr.getHorseName())
                 .breed(rr.getRaceHorse().getHorse().getBreed())
                 .avatarUrl(rr.getRaceHorse().getHorse().getAvatarUrl())
-                .jockeyId(rr.getRaceHorse().getJockey() != null
-                        ? rr.getRaceHorse().getJockey().getId() : null)
-                .jockeyName(rr.getRaceHorse().getJockey() != null
-                        ? rr.getRaceHorse().getJockey().getUser().getFullName() : null)
+                .jockeyId(rr.getJockeyId())
+                .jockeyName(rr.getJockeyName())
                 .raceId(rr.getRace().getId())
                 .raceName(rr.getRace().getRaceName())
                 .raceStartTime(rr.getRace().getStartTime())
@@ -364,8 +386,8 @@ public class RaceResultServiceImpl implements RaceResultService {
                 .completionTimeSeconds(rr.getCompletionTimeSeconds())
                 .completionTimeFormatted(formatTime(rr.getCompletionTimeSeconds()))
                 .rewards(rr.getRewards())
-                .jockeyName(rr.getRaceHorse().getJockey() != null
-                        ? rr.getRaceHorse().getJockey().getUser().getFullName() : null)
+                .horseName(rr.getHorseName())      // ← tên lúc đua, không phải tên hiện tại
+                .jockeyName(rr.getJockeyName())
                 .totalParticipants(totalParticipants)
                 .build();
     }

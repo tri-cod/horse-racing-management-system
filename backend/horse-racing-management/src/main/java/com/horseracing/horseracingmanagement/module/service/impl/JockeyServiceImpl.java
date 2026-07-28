@@ -123,13 +123,11 @@ public class JockeyServiceImpl implements JockeyService {
     @Override
     public List<RaceParticipationResponse> getMyRaceHistory(Long userId) {
         Jockey jockey = getActiveJockey(userId);
-        return raceHorseRepository.findByJockey_Id(jockey.getId())
+        // Đọc từ race_result (snapshot) chứ không duyệt race_horse.jockey_id sống:
+        // gỡ nài khỏi một lượt đăng ký sẽ không còn làm mất thành tích đã đua.
+        return raceResultRepository.findByJockeyIdOrderByRaceDesc(jockey.getId())
                 .stream()
-                .filter(rh -> rh.getRace().getStatus() == RaceStatus.FINISHED)
-                .map(rh -> buildParticipationResponse(rh, jockey.getId()))
-                .sorted(Comparator.comparing(
-                        r -> r.getStartTime() != null ? r.getStartTime() : Instant.EPOCH,
-                        Comparator.reverseOrder()))
+                .map(this::buildParticipationFromResult)
                 .collect(Collectors.toList());
     }
     // Trận sắp tới — UPCOMING, OPEN_REGISTRATION, CLOSED_REGISTRATION, OPEN_BETTING
@@ -156,6 +154,48 @@ public class JockeyServiceImpl implements JockeyService {
                 .map(rh -> buildParticipationResponse(rh, jockey.getId()))
                 .collect(Collectors.toList());
     }
+    /**
+     * Build response từ RaceResult — dùng cho LịCH SỬ (race đã xong).
+     * Tên ngựa/nài lấy từ snapshot nên phản ánh đúng thời điểm đua.
+     * buildParticipationResponse(RaceHorse) vẫn giữ nguyên cho race SẮP/ĐANG diễn ra,
+     * vì lúc đó dữ liệu sống mới là đúng.
+     */
+    private RaceParticipationResponse buildParticipationFromResult(RaceResult rr) {
+        RaceHorse rh = rr.getRaceHorse();
+
+        String trainerName = null;
+        Long trainerId = (rh != null && rh.getHorse() != null)
+                ? rh.getHorse().getTrainerId() : null;
+        if (trainerId != null) {
+            trainerName = trainerRepository.findById(trainerId)
+                    .map(t -> t.getUser().getFullName()).orElse(null);
+        }
+
+        return RaceParticipationResponse.builder()
+                .raceId(rr.getRace().getId())
+                .raceName(rr.getRace().getRaceName())
+                .raceStatus(rr.getRace().getStatus() != null
+                        ? rr.getRace().getStatus().name() : null)
+                .location(rr.getRace().getLocation())
+                .startTime(rr.getRace().getStartTime())
+                .horseId(rr.getHorseId())
+                .horseName(rr.getHorseName())
+                .horseAvatarUrl(rh != null && rh.getHorse() != null
+                        ? rh.getHorse().getAvatarUrl() : null)
+                .jockeyId(rr.getJockeyId())
+                .jockeyName(rr.getJockeyName())
+                .trainerId(trainerId)
+                .trainerName(trainerName)
+                .rank(rr.getRank())
+                .completionTimeSeconds(rr.getCompletionTimeSeconds())
+                .completionTimeFormatted(formatTime(rr.getCompletionTimeSeconds()))
+                .rewards(rr.getRewards())
+                .registrationStatus(rh != null && rh.getStatus() != null
+                        ? rh.getStatus().name() : null)
+                .registerAt(rh != null ? rh.getRegisterAt() : null)
+                .build();
+    }
+
     private RaceParticipationResponse buildParticipationResponse(RaceHorse rh, Long jockeyId) {
 // Lấy kết quả nếu race đã FINISHED
         RaceResult result = raceResultRepository.findByRaceHorse_Id(rh.getId()).orElse(null);
@@ -203,13 +243,9 @@ public class JockeyServiceImpl implements JockeyService {
         Jockey jockey = jockeyRepository.findById(jockeyId)
                 .orElseThrow(() -> new RuntimeException("Jockey not found"));
 
-        return raceHorseRepository.findByJockey_Id(jockey.getId())
+        return raceResultRepository.findByJockeyIdOrderByRaceDesc(jockey.getId())
                 .stream()
-                .filter(rh -> rh.getRace().getStatus() == RaceStatus.FINISHED)
-                .map(rh -> buildParticipationResponse(rh, jockeyId))
-                .sorted(Comparator.comparing(
-                        r -> r.getStartTime() != null ? r.getStartTime() : Instant.EPOCH,
-                        Comparator.reverseOrder()))
+                .map(this::buildParticipationFromResult)
                 .collect(Collectors.toList());
     }
 

@@ -16,7 +16,7 @@ public class    RaceResponse {
     private String trackCondition;
     private String surfaceType;
     private Long totalprizepool;
-    private String distance;
+    private String distance;        // ← chuỗi hiển thị, SUY RA từ distanceMeters (không còn cột riêng trong DB)
     private String location;
     private Long capacity;
     private String bannerImageurl;
@@ -38,6 +38,7 @@ public class    RaceResponse {
     private String raceClass;
     private Long minEarnings;
     private Long maxEarnings;
-    private Double distanceMeters;
+    private Double distanceMeters;  // ← nguồn sự thật duy nhất cho mọi so sánh/điều kiện
+    private String distanceCategory; // SPRINT / MILE / MIDDLE / LONG — suy ra từ distanceMeters
     private Long minWeight;
 }

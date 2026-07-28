@@ -3,7 +3,10 @@ package com.horseracing.horseracingmanagement.module.dto.RaceDto;
 import com.horseracing.horseracingmanagement.common.constant.RaceClass;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.common.validation.NoSpecialCharacters;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,13 +38,15 @@ public class CreateRaceRequest {
     private RaceClass raceClass;
     private Long minEarnings;
     private Long maxEarnings;
+    @NotNull(message = "Distance (meters) is required")
+    @DecimalMin(value = "800.0", message = "Distance must be at least 800m")
+    @DecimalMax(value = "5000.0", message = "Distance must not exceed 5000m")
     private Double distanceMeters;
     private Long minWeight;
 
     private String trackCondition;
     private String surfaceType;
     private Long totalprizepool;
-    private String distance;
     private String location;
     private Long capacity;
     private String bannerImageurl;

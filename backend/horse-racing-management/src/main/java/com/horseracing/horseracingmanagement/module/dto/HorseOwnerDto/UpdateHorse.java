@@ -26,7 +26,6 @@ public class UpdateHorse {
     private Integer age;
     private String gender;
     private Integer speedRating;
-    private String history_rank;
     private String avatar_url;
     private Long weight;
     private HorseStatus status;

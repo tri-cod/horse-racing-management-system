@@ -1,5 +1,6 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
+import com.horseracing.horseracingmanagement.common.constant.DistanceCategory;
 import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.common.constant.RaceStatus;
 import com.horseracing.horseracingmanagement.common.constant.RoleName;
@@ -156,13 +157,6 @@ public class RaceServiceImpl implements RaceService {
             if (maxEarnings == null) maxEarnings = request.getRaceClass().getDefaultMaxEarnings();
         }
 
-        // ← distance (chuỗi tự do, VD "1600m") vẫn được nhiều màn hình cũ dùng để hiển thị —
-        // nếu admin chỉ nhập distanceMeters (số thực) thì tự suy ra chuỗi hiển thị tương ứng.
-        String distance = request.getDistance();
-        if ((distance == null || distance.isBlank()) && request.getDistanceMeters() != null) {
-            distance = formatDistanceMeters(request.getDistanceMeters());
-        }
-
         Race race = Race.builder()
                 .raceName(request.getRaceName())
                 .startTime(request.getStartTime())
@@ -171,7 +165,6 @@ public class RaceServiceImpl implements RaceService {
                 .trackCondition(request.getTrackCondition())
                 .surfaceType(request.getSurfaceType())
                 .totalprizepool(request.getTotalprizepool())
-                .distance(distance)
                 .location(request.getLocation())
                 .capacity(request.getCapacity())
                 .bannerImageurl(request.getBannerImageurl())
@@ -194,6 +187,7 @@ public class RaceServiceImpl implements RaceService {
 
     private String formatDistanceMeters(Double meters) {
         // Bỏ phần thập phân khi nó tròn số (1600.0 → "1600m"), giữ lại khi có số lẻ (1600.5 → "1600.5m")
+        if (meters == null) return null;
         if (meters == Math.floor(meters)) {
             return meters.longValue() + "m";
         }
@@ -340,11 +334,6 @@ public class RaceServiceImpl implements RaceService {
         race.setSurfaceType(request.getSurfaceType());
         race.setTotalprizepool(request.getTotalprizepool());
 
-        String distance = request.getDistance();
-        if ((distance == null || distance.isBlank()) && request.getDistanceMeters() != null) {
-            distance = formatDistanceMeters(request.getDistanceMeters());
-        }
-        race.setDistance(distance);
         race.setDistanceMeters(request.getDistanceMeters());
 
         race.setRegistrationOpenDate(request.getRegistrationOpenDate());
@@ -458,7 +447,7 @@ public class RaceServiceImpl implements RaceService {
                 .trackCondition(race.getTrackCondition())
                 .surfaceType(race.getSurfaceType())
                 .totalprizepool(race.getTotalprizepool())
-                .distance(race.getDistance())
+                .distance(formatDistanceMeters(race.getDistanceMeters()))
                 .location(race.getLocation())
                 .capacity(race.getCapacity())
                 .bannerImageurl(race.getBannerImageurl())
@@ -477,6 +466,10 @@ public class RaceServiceImpl implements RaceService {
                 .minEarnings(race.getMinEarnings())
                 .maxEarnings(race.getMaxEarnings())
                 .distanceMeters(race.getDistanceMeters())
+                .distanceCategory(
+                        DistanceCategory.fromMeters(race.getDistanceMeters()) != null
+                                ? DistanceCategory.fromMeters(race.getDistanceMeters()).name()
+                                : null)
                 .minWeight(race.getMinWeight())
                 .build();
     }

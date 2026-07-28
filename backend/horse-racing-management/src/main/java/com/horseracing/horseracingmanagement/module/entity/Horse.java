@@ -48,9 +48,6 @@ public class Horse {
     @Column(name = "speed_rating")
     private Integer speedRating;
 
-    @Column(name = "race_history", columnDefinition = "TEXT")
-    private String raceHistory;
-
     @Size(max = 255)
     @Column(name = "avatar_url")
     private String avatarUrl;

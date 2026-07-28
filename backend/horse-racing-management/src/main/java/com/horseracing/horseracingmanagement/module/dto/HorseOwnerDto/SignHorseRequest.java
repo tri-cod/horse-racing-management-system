@@ -10,8 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Builder
 @Data
 @NoArgsConstructor   // ← thêm cái này
@@ -27,7 +25,6 @@ public class SignHorseRequest
     public int age;
     public String gender;
     public int speedRating;
-    public List<String> raceHistory;  // ← đổi từ String history_rank sang List
     public String avatar_url;
     public String description;
     public Long weight;

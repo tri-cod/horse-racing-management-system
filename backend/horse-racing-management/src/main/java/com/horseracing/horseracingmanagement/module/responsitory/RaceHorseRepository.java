@@ -2,7 +2,7 @@ package com.horseracing.horseracingmanagement.module.responsitory;
 
 import com.horseracing.horseracingmanagement.common.constant.RaceHorseStatus;
 import com.horseracing.horseracingmanagement.module.entity.RaceHorse;
-import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.repository.query.Param;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -90,4 +90,19 @@ public interface RaceHorseRepository extends JpaRepository<RaceHorse, Long> {
     List<Long> findHorseIdsByRaceId(@Param("raceId") Long raceId);
 
     List<RaceHorse> findByJockey_Id(Long jockeyId);
-    }// ← thêm (bỏ filter status để lấy hết)}
+
+    /** Phí đăng ký thực thu của 1 race — chỉ tính ngựa đã được duyệt/đã đua. */
+    @Query("""
+    SELECT COALESCE(SUM(r.entryFee), 0)
+    FROM RaceHorse rh
+    JOIN rh.race r
+    WHERE r.id = :raceId
+      AND rh.status IN ('APPROVED', 'FINISHED')
+    """)
+    BigDecimal sumEntryFeeByRaceId(@Param("raceId") Long raceId);
+
+    /** Số ngựa được duyệt tham gia 1 race. */
+    @Query("SELECT COUNT(rh) FROM RaceHorse rh \n" +
+            "WHERE rh.race.id = :raceId AND rh.status IN ('APPROVED', 'FINISHED')")
+    long countApprovedByRaceId(@Param("raceId") Long raceId);
+}// ← thêm (bỏ filter status để lấy hết)}

@@ -5,6 +5,7 @@ import com.horseracing.horseracingmanagement.common.exception.ResourceNotFoundEx
 import com.horseracing.horseracingmanagement.common.response.PageResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminStatsResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminUserItemResponse;
+import com.horseracing.horseracingmanagement.module.dto.AdminDto.RaceRevenueResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.RecentRaceStats;
 import com.horseracing.horseracingmanagement.module.dto.AuthDto.AuthMeResponse;
 import com.horseracing.horseracingmanagement.module.dto.AuthDto.RegisterRequest;
@@ -20,8 +21,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
@@ -45,6 +48,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final JockeyRepository jockeyRepository;
     private final TrainerRepository trainerRepository;
     private final RaceRefereeRepository raceRefereeRepository;
+    private final RaceResultRepository raceResultRepository;
 
 
 
@@ -173,6 +177,14 @@ public class AdminUserServiceImpl implements AdminUserService {
     public void updateStatus(Long userId, UserStatus status) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+        // Không cho hạ trạng thái một tài khoản ADMIN qua endpoint này. Trước đây STAFF
+        // thừa quyền từ @PreAuthorize ở cấp class nên có thể ban chính admin — khoá cả ở
+        // tầng service để không phụ thuộc vào annotation ở controller.
+        if (user.getRole() != null && user.getRole().getRolename() == RoleName.ADMIN) {
+            throw new IllegalStateException("Cannot change status of an ADMIN account");
+        }
+
         user.setStatus(status);
         userRepository.save(user);
     }
@@ -304,6 +316,59 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .build();
     }
 
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<RaceRevenueResponse> getRaceRevenue(int page, int size, Instant from, Instant to) {
+        // Truyền biên cụ thể thay vì null: JPQL dạng ":from IS NULL OR ..." hay làm
+        // PostgreSQL báo "could not determine data type of parameter" với kiểu timestamp.
+        Instant fromSafe = (from != null) ? from : Instant.EPOCH;
+        Instant toSafe   = (to   != null) ? to   : Instant.now().plus(365, ChronoUnit.DAYS);
+
+        Page<Race> races = raceRepository.findForRevenueReport(
+                fromSafe, toSafe, PageRequest.of(page, size, Sort.by("startTime").descending()));
+
+        return PageResponse.from(races.map(this::toRaceRevenue));
+    }
+
+    private RaceRevenueResponse toRaceRevenue(Race race) {
+        BigDecimal entryFee  = nz(raceHorseRepository.sumEntryFeeByRaceId(race.getId()));
+        BigDecimal handle    = nz(betItemRepository.sumHandleByRaceId(race.getId()));
+        BigDecimal payout    = nz(betItemRepository.sumPayoutByRaceId(race.getId()));
+        Long prizeRaw        = raceResultRepository.sumRewardsByRaceId(race.getId());
+        BigDecimal prizePaid = prizeRaw == null ? BigDecimal.ZERO : BigDecimal.valueOf(prizeRaw);
+
+        // Phần hệ thống thực sự giữ lại từ cược — không phải toàn bộ handle.
+        BigDecimal betMargin  = handle.subtract(payout);
+        BigDecimal netRevenue = entryFee.add(betMargin).subtract(prizePaid);
+
+        BigDecimal turnover = entryFee.add(handle);
+        Double marginPercent = turnover.compareTo(BigDecimal.ZERO) == 0
+                ? 0d
+                : netRevenue.multiply(BigDecimal.valueOf(100))
+                .divide(turnover, 2, RoundingMode.HALF_UP)
+                .doubleValue();
+
+        return RaceRevenueResponse.builder()
+                .raceId(race.getId())
+                .raceName(race.getRaceName())
+                .status(race.getStatus() != null ? race.getStatus().name() : null)
+                .startTime(race.getStartTime())
+                .totalHorses(raceHorseRepository.countApprovedByRaceId(race.getId()))
+                .totalBets(betRepository.countByRace_Id(race.getId()))
+                .entryFeeCollected(entryFee)
+                .betHandle(handle)
+                .betPayout(payout)
+                .prizePaid(prizePaid)
+                .betMargin(betMargin)
+                .netRevenue(netRevenue)
+                .marginPercent(marginPercent)
+                .build();
+    }
+
+    private BigDecimal nz(BigDecimal v) {
+        return v == null ? BigDecimal.ZERO : v;
+    }
 
     private AdminUserItemResponse toItem(User user) {
         String roleName = user.getRole() != null

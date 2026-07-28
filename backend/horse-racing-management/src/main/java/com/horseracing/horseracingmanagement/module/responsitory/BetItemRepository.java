@@ -22,4 +22,16 @@ public interface BetItemRepository extends JpaRepository<BetItem, Long> {
 
     @Query("SELECT COUNT(bi) FROM BetItem bi WHERE bi.raceHorse.id = :raceHorseId AND bi.resultStatus = 'PENDING'")
     Long getTotalBetCountByRaceHorse(@Param("raceHorseId") Long raceHorseId);
+
+    // ===== Doanh thu theo race =====
+
+    /** Tổng tiền cược nhận vào của 1 race (mọi trạng thái trừ phiếu đã huỷ). */
+    @Query("SELECT COALESCE(SUM(bi.betAmount), 0) FROM BetItem bi \n" +
+            "WHERE bi.bet.race.id = :raceId AND bi.resultStatus <> 'CANCELLED'")
+    BigDecimal sumHandleByRaceId(@Param("raceId") Long raceId);
+
+    /** Tổng tiền đã trả cho phiếu thắng của 1 race. */
+    @Query("SELECT COALESCE(SUM(bi.payout), 0) FROM BetItem bi \n" +
+            "WHERE bi.bet.race.id = :raceId AND bi.resultStatus = 'WON'")
+    BigDecimal sumPayoutByRaceId(@Param("raceId") Long raceId);
 }

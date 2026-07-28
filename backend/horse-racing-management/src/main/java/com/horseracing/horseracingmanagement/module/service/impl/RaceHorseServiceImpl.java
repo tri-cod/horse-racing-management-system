@@ -93,6 +93,17 @@ public class RaceHorseServiceImpl implements RaceHorseService {
             throw new RuntimeException("Horse already registered in this race");
         }
 
+        // capacity trước đây chỉ được lưu và trả về, không hề được kiểm tra ở đâu —
+        // race giới hạn 10 ngựa vẫn nhận được 50 con, mỗi con đều bị trừ entry fee thật.
+        // Đặt trước đoạn trừ tiền để không phải hoàn lại.
+        if (race.getCapacity() != null && race.getCapacity() > 0) {
+            long current = raceHorseRepository.countApprovedByRaceId(race.getId());
+            if (current >= race.getCapacity()) {
+                throw new RuntimeException(
+                        "Race is full (" + race.getCapacity() + " horses)");
+            }
+        }
+
         // Check cùng ngày
         if (race.getStartTime() != null) {
             List<Long> horsesOnSameDay = raceHorseRepository.findHorseIdsOnSameDay(

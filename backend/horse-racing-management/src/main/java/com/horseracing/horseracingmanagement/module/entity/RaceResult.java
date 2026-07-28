@@ -37,4 +37,16 @@ public class RaceResult {
 
     @Column(name = "rewards")
     private Long rewards;
+
+    @Column(name = "horse_id")
+    private Long horseId;
+
+    @Column(name = "horse_name", length = 150)
+    private String horseName;
+
+    @Column(name = "jockey_id")
+    private Long jockeyId;
+
+    @Column(name = "jockey_name", length = 150)
+    private String jockeyName;
 }

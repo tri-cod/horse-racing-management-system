@@ -16,6 +16,7 @@ public class RaceHistoryResponse {
     private Double completionTimeSeconds;
     private String completionTimeFormatted;
     private Long rewards;
-    private String jockeyName;
+    private String horseName;   // tên ngựa TẠI THỜI ĐIỂM đua
+    private String jockeyName;  // tên nài TẠI THỜI ĐIỂM đua
     private Long totalParticipants;
 }

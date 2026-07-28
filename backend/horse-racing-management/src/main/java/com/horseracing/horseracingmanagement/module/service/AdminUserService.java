@@ -5,8 +5,11 @@ import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import com.horseracing.horseracingmanagement.common.response.PageResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminStatsResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminUserItemResponse;
+import com.horseracing.horseracingmanagement.module.dto.AdminDto.RaceRevenueResponse;
 import com.horseracing.horseracingmanagement.module.dto.AuthDto.AuthMeResponse;
 import com.horseracing.horseracingmanagement.module.dto.AuthDto.RegisterRequest;
+
+import java.time.Instant;
 
 public interface AdminUserService {
     PageResponse<AdminUserItemResponse> getUsers(int page, int size, String keyword, RoleName role, UserStatus status);
@@ -18,5 +21,7 @@ public interface AdminUserService {
     AuthMeResponse createUserAccout(RegisterRequest request);
     // Stats
     AdminStatsResponse getStats();
+
+    PageResponse<RaceRevenueResponse> getRaceRevenue(int page, int size, Instant from, Instant to);
 
 }

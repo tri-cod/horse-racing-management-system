@@ -1,6 +1,7 @@
 package com.horseracing.horseracingmanagement.module.controller;
 
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
+import com.horseracing.horseracingmanagement.module.dto.HorseDto.HorseCareerStatsResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceResult.RaceHistoryResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceResult.RaceResultResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceResult.SetRaceResultRequest;
@@ -58,5 +59,14 @@ public class RaceResultController {
             @PathVariable Long horseId) {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 raceResultService.getHorseBestResult(horseId)));
+    }
+
+    // Thành tích sự nghiệp — suy ra từ race_result, không đọc cột lưu sẵn nào.
+    // Ngựa mới tạo trả về toàn số 0 — đúng trạng thái, không phải thiếu dữ liệu.
+    @GetMapping("/horse/{horseId}/career")
+    public ResponseEntity<ApiResponse<HorseCareerStatsResponse>> getHorseCareerStats(
+            @PathVariable Long horseId) {
+        return ResponseEntity.ok(ApiResponse.success(
+                raceResultService.getHorseCareerStats(horseId)));
     }
 }

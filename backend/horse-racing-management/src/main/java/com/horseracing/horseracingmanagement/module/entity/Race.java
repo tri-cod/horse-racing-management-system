@@ -59,9 +59,6 @@ public class Race {
     @Column(name = "totalprizepool")  // ← bỏ NotNull và ColumnDefault sequence
     private Long totalprizepool;
 
-    @Column(name = "distance", length = Integer.MAX_VALUE)  // ← bỏ NotNull
-    private String distance;
-
     @Column(name = "entry_fee")
     private Long entryFee;
 

@@ -61,15 +61,6 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
         HorseOwner owner = getActiveOwner(userId);
 
 
-        String raceHistoryJson = null;
-        if (request.getRaceHistory() != null && !request.getRaceHistory().isEmpty()) {
-            try {
-                raceHistoryJson = objectMapper.writeValueAsString(request.getRaceHistory());
-            } catch (Exception e) {
-                raceHistoryJson = "[]";
-            }
-        }
-
         Horse horse = Horse.builder()
                 .ownerId(owner.getId())
                 .horseName(request.getHorseName())
@@ -78,7 +69,6 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .gender(request.getGender())
                 .speedRating(request.getSpeedRating())
                 .description(request.getDescription())
-                .raceHistory(raceHistoryJson)
                 .avatarUrl(request.getAvatar_url())
                 .weight(request.getWeight())
                 .status(request.getStatus())
@@ -402,7 +392,6 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
         if (request.getAge() != null)          horse.setAge(request.getAge());
         if (request.getGender() != null)       horse.setGender(request.getGender());
         if (request.getSpeedRating() != null)  horse.setSpeedRating(request.getSpeedRating());
-        if (request.getHistory_rank() != null) horse.setRaceHistory(request.getHistory_rank());
         if (request.getAvatar_url() != null)   horse.setAvatarUrl(request.getAvatar_url());
         if (request.getWeight() != null)       horse.setWeight(request.getWeight());
         if (request.getStatus() != null)       horse.setStatus(request.getStatus());
@@ -471,7 +460,21 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
             throw new RuntimeException("You are not the owner of this horse");
         }
 
-        horseRepository.delete(horse);
+        // Chặn đăng ký đang treo — xóa giữa chừng sẽ hỏng đội hình race.
+        boolean inActiveRace = raceHorseRepository.findByHorse_Id(horseId).stream()
+                .anyMatch(rh -> rh.getStatus() == RaceHorseStatus.APPROVED
+                        || rh.getStatus() == RaceHorseStatus.PENDING_ADMIN
+                        || rh.getStatus() == RaceHorseStatus.PENDING_JOCKEY);
+        if (inActiveRace) {
+            throw new RuntimeException(
+                    "Cannot remove a horse that is currently registered in a race");
+        }
+
+        // Trước đây đây là horseRepository.delete(horse) — xóa cứng, kéo theo race_horse
+        // và race_result, làm biến mất lịch sử đua của cả ngựa lẫn nài. Chuyển sang
+        // soft delete cho đồng nhất với AdminUserServiceImpl.deleteHorse().
+        horse.setStatus(HorseStatus.RETIRED);
+        horseRepository.save(horse);
     }
     @Override
     public List<RaceParticipationResponse> getOwnerRaceHistory(Long userId) {
@@ -566,14 +569,6 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                                             String trainerName) {
 
 
-        List<String> raceHistory = new ArrayList<>();
-        if (horse.getRaceHistory() != null) {
-            try {
-                raceHistory = objectMapper.readValue(horse.getRaceHistory(),
-                        new TypeReference<List<String>>() {});
-            } catch (Exception ignored) {}
-        }
-
         return SignHorseResponse.builder()
                 .id(horse.getId())
                 .horseName(horse.getHorseName())
@@ -581,7 +576,6 @@ public class HorseOwnerServiceImpl implements HorseOwnerService {
                 .age(horse.getAge())
                 .gender(horse.getGender())
                 .speedRating(horse.getSpeedRating())
-                .raceHistory(raceHistory)  // ← trả về List
                 .avatarUrl(horse.getAvatarUrl())
                 .weight(horse.getWeight())
                 .status(horse.getStatus())

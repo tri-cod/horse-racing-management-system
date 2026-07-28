@@ -5,6 +5,7 @@ import com.horseracing.horseracingmanagement.common.constant.UserStatus;
 import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.common.response.PageResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminStatsResponse;
+import com.horseracing.horseracingmanagement.module.dto.AdminDto.RaceRevenueResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.AdminUserItemResponse;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.UpdateUserRoleRequest;
 import com.horseracing.horseracingmanagement.module.dto.AdminDto.UpdateUserStatusRequest;
@@ -15,14 +16,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
 public class AdminController {
 
     private final AdminUserService adminUserService;
@@ -56,6 +60,7 @@ public class AdminController {
     }
 
     @PutMapping("/users/{id}/status")
+    @PreAuthorize("hasAuthority('ADMIN')")   // ← STAFF từng thừa quyền này qua @PreAuthorize cấp class
     public ResponseEntity<ApiResponse<Void>> updateStatus(
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserStatusRequest request) {
@@ -80,8 +85,24 @@ public class AdminController {
 
     // ============ STATS ============
     @GetMapping("/stats")
+    @PreAuthorize("hasAuthority('ADMIN')")   // ← số liệu tài chính toàn hệ thống, không mở cho STAFF
     public ResponseEntity<ApiResponse<AdminStatsResponse>> getStats() {
         return ResponseEntity.ok(ApiResponse.success("Stats fetched",
                 adminUserService.getStats()));
+    }
+
+    // ============ REVENUE PER RACE ============
+    // Ví dụ: GET /api/admin/stats/race-revenue?page=0&size=20&from=2026-01-01T00:00:00Z
+    @GetMapping("/stats/race-revenue")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<PageResponse<RaceRevenueResponse>>> getRaceRevenue(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to) {
+        return ResponseEntity.ok(ApiResponse.success(
+                adminUserService.getRaceRevenue(page, size, from, to)));
     }
 }
