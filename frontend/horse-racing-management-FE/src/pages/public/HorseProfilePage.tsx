@@ -9,7 +9,6 @@ import { useHorseRaceHistory } from '@/hooks/useHorseRaceHistory';
 import { getHorseById } from '@/api/horseOwnerApi';
 import { formatPreferredDistance } from '@/utils/horsePreferences';
 import Container from '@/components/ui/Container';
-import Seo from '@/components/seo/Seo';
 import StatCard from '@/components/shared/StatCard';
 import type { HorseRaceHistoryItem, Horse } from '@/types';
 
@@ -188,7 +187,6 @@ export default function HorseProfilePage() {
 
   return (
     <div className="min-h-screen bg-surface pb-20">
-      <Seo title={horse?.horseName ?? 'Horse Profile'} description="Full race history and career stats." />
 
       <Container className="py-6">
         <Link to="/horses" className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-ink-3 hover:text-gold transition-colors">

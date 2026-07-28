@@ -7,7 +7,6 @@ import { getErrorMessage } from '@/utils/errors';
 import { useToast } from '@/components/ui/ToastProvider';
 import EmptyState from '@/components/ui/EmptyState';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import type { RaceHorse, Horse } from '@/types';
 
 const fmtPrize = (n?: number) =>
@@ -94,7 +93,6 @@ export default function JockeyRaceRequestsPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Race Requests" description="Review and respond to horse owner requests to ride." />
       <DashboardPageHeader
         eyebrow="Jockey"
         title="Race Requests"

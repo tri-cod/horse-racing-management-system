@@ -7,7 +7,6 @@ import DashboardHero from '@/components/shared/DashboardHero';
 import StatCard from '@/components/shared/StatCard';
 import ActivityList, { type ActivityItem } from '@/components/shared/ActivityList';
 import { FadeInStagger, FadeInItem } from '@/components/shared/FadeIn';
-import Seo from '@/components/seo/Seo';
 import type { Race } from '@/types';
 const fmt = (n: number | null | undefined) =>
   n != null
@@ -88,7 +87,6 @@ export default function RefereeDashboardPage() {
 
   return (
     <div>
-      <Seo title="My Dashboard" description="Overview of races you oversee." />
       <DashboardHero
         eyebrow="Referee"
         title={`Welcome back, ${user?.fullName ?? user?.username ?? 'Referee'}`}

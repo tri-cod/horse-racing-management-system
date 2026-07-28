@@ -8,7 +8,6 @@ import { useRefereeProfile } from '@/hooks/useRefereeProfile';
 import { useAuth } from '@/context/AuthContext';
 import Container from '@/components/ui/Container';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import Seo from '@/components/seo/Seo';
 import Button from '@/components/ui/Button';
 import { assignLanes } from '@/utils/laneUtils';
 import { buildRaceRequirements } from '@/utils/raceRequirements';
@@ -159,7 +158,6 @@ export default function RaceDetailPage() {
 
   return (
     <div className="min-h-screen bg-surface">
-      <Seo title={race.raceName} description={`${race.raceName} — ${race.location ?? 'Royal Derby'}`} type="article" />
 
       <Container className="py-8">
         <Link to="/races" className="mb-5 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-3 hover:text-navy transition-colors">

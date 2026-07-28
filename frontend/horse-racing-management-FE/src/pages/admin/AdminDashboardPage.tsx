@@ -14,7 +14,6 @@ import StatCard from '@/components/shared/StatCard';
 import ActivityList, { type ActivityItem } from '@/components/shared/ActivityList';
 import { FadeInStagger, FadeInItem } from '@/components/shared/FadeIn';
 import UserGrowthChart from '@/components/shared/UserGrowthChart';
-import Seo from '@/components/seo/Seo';
 import type { RaceHorse, PendingTransaction, AdminStats } from '@/types';
 
 type FullRaceHorse = RaceHorse & { raceName?: string; registerAt?: string };
@@ -153,7 +152,6 @@ export default function AdminDashboardPage() {
 
   return (
     <div>
-      <Seo title="Admin Dashboard" description="Overview of Royal Derby platform activity." />
       <DashboardHero
         eyebrow="Admin"
         title={`Welcome back, ${user?.fullName ?? user?.username ?? 'Admin'}`}

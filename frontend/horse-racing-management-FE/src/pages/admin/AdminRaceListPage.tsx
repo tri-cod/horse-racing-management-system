@@ -6,7 +6,6 @@ import CreateRacePanel from '@/components/features/admin/CreateRacePanel';
 import ApproveHorsesPanel from '@/components/features/admin/ApproveHorsesPanel';
 import SetOddsPanel from '@/components/features/admin/SetOddsPanel';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 
 type Tab = 'races' | 'create' | 'approve' | 'odds';
 
@@ -63,7 +62,6 @@ export default function AdminRaceListPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Manage Races" />
       <DashboardPageHeader
         eyebrow="Admin"
         title="Manage Races"

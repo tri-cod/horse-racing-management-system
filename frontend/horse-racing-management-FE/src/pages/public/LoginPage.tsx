@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useLogin } from '@/hooks/useLogin';
-import Seo from '@/components/seo/Seo';
 import Button from '@/components/ui/Button';
 import AuthSplitLayout from '@/components/layout/AuthSplitLayout';
 
@@ -28,7 +27,6 @@ export default function LoginPage() {
 
  return (
  <AuthSplitLayout>
- <Seo title="Sign In" description="Sign in to your Royal Derby account." />
 
  {/* Heading */}
  <div className="mb-8">

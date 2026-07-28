@@ -44,7 +44,6 @@ function FormSkeleton() {
   );
 }
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import type { CreateRacePayload, RaceStatus } from '@/types';
 
 export default function AdminEditRacePage() {
@@ -71,7 +70,6 @@ export default function AdminEditRacePage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Edit Race" />
       <DashboardPageHeader
         eyebrow="Admin"
         title="Edit Race"

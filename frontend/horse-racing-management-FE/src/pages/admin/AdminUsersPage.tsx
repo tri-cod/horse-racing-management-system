@@ -8,7 +8,6 @@ import CreateUserModal from '@/components/features/admin/CreateUserModal';
 import Pagination from '@/components/ui/Pagination';
 import { useToast } from '@/components/ui/ToastProvider';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import type { User, UserRole, UserStatus } from '@/types';
 
 const ROLES: UserRole[] = ['ADMIN', 'STAFF', 'REFEREE', 'HORSE_OWNER', 'TRAINER', 'JOCKEY', 'USER'];
@@ -69,7 +68,6 @@ export default function AdminUsersPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Admin - Users" />
       <DashboardPageHeader
         eyebrow="Admin"
         title="User Management"

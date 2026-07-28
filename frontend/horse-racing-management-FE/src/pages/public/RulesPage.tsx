@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { ClipboardList, ShieldCheck, Gavel, Coins, Trophy, ArrowRight } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Button from '@/components/ui/Button';
-import Seo from '@/components/seo/Seo';
 import Reveal from '@/components/ui/Reveal';
 
 interface RuleSection {
@@ -64,10 +63,6 @@ const SECTIONS: RuleSection[] = [
 export default function RulesPage() {
   return (
     <div>
-      <Seo
-        title="Rules & Regulations"
-        description="Registration, pre-race inspection, race day conduct, betting and prize distribution rules for Royal Derby."
-      />
 
       {/* Header band */}
       <section className="border-b border-rim bg-navy">

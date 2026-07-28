@@ -12,7 +12,6 @@ import { uploadImage } from '@/api/fileApi';
 import UserAvatar from '@/components/features/admin/UserAvatar';
 import ImageCropModal from '@/components/ui/ImageCropModal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import Seo from '@/components/seo/Seo';
 
 const val = (v?: string | number | null) =>
   v === null || v === undefined || v === '' ? '—' : v;
@@ -179,7 +178,6 @@ export default function HorseOwnerMyProfilePage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Horse Owner Profile" description="Manage your Royal Derby horse owner profile." />
 
       {cropSrc && (
         <ImageCropModal

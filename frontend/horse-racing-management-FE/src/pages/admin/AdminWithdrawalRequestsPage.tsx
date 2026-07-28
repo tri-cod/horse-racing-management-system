@@ -7,7 +7,6 @@ import { getErrorMessage } from '@/utils/errors';
 import { useToast } from '@/components/ui/ToastProvider';
 import EmptyState from '@/components/ui/EmptyState';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import type { RaceHorse, Horse } from '@/types';
 
 function RequestsSkeleton() {
@@ -85,7 +84,6 @@ export default function AdminWithdrawalRequestsPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Horse Withdrawal Requests" description="Review horse owner requests to withdraw a horse from a race." />
       <DashboardPageHeader
         eyebrow="Admin"
         title="Horse Withdrawal Requests"

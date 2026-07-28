@@ -15,7 +15,6 @@ import EmptyState from '@/components/ui/EmptyState';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import { useMyRefereeProfile } from '@/hooks/useMyRefereeProfile';
 import type { Race, Penalty } from '@/types';
 
@@ -301,7 +300,6 @@ export default function RefereeRacesPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Race Control" />
       <DashboardPageHeader
         eyebrow="Referee"
         title="Race Control"

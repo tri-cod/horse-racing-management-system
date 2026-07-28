@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useMyJockeyRaces, type RaceParticipationScope } from '@/hooks/useMyJockeyRaces';
 import MyRaceParticipationList from '@/components/features/race/MyRaceParticipationList';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 
 const TABS: { key: RaceParticipationScope; label: string }[] = [
   { key: 'current', label: 'Ongoing' },
@@ -16,7 +15,6 @@ export default function JockeyMyRacesPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="My Races" description="Races you're booked to ride, past and upcoming." />
       <DashboardPageHeader eyebrow="Jockey" title="My Races" subtitle="Races you're booked to ride" />
 
       <div className="mb-5 flex gap-6 border-b border-rim">

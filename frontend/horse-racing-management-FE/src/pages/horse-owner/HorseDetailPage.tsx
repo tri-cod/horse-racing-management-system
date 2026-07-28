@@ -9,7 +9,6 @@ import HorseStatusBadge from '@/components/features/horse-owner/HorseStatusBadge
 import Button from '@/components/ui/Button';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import PenaltyList from '@/components/features/referee/PenaltyList';
-import Seo from '@/components/seo/Seo';
 import { getErrorMessage } from '@/utils/errors';
 import type { Horse, Penalty } from '@/types';
 
@@ -106,7 +105,6 @@ export default function HorseDetailPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title={h.horseName} description={`Horse detail — ${h.horseName}`} />
 
       <div className="mb-6 flex items-center justify-between">
         <button

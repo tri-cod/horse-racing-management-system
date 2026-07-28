@@ -9,7 +9,6 @@ import { getAvailableHorses } from '@/api/horseOwnerApi';
 import { getAvailableJockeys } from '@/api/jockeyApi';
 import { registerHorseToRace, sendJockeyRequest, checkHorseEligibility } from '@/api/raceHorseApi';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import { calculateAge } from '@/utils/age';
 import type { Race, Horse, Jockey, RaceHorse, HorseEligibility } from '@/types';
 
@@ -195,7 +194,6 @@ export default function HorseOwnerRacePage() {
   /* ── Sent (final confirmation) ── */
   if (view === 'sent') return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-8 py-16 text-center">
-      <Seo title="Jockey Request Sent" />
       {selectedRace && <RaceSummaryChip race={selectedRace} />}
       <div className="mb-4 text-gold"><Send size={52} strokeWidth={1.5} /></div>
       <h2 className="font-serif text-2xl font-bold text-ink">Jockey Request Sent</h2>
@@ -217,7 +215,6 @@ export default function HorseOwnerRacePage() {
   /* ── Assign jockey view ── */
   if (view === 'assign-jockey') return (
     <div className="px-8 py-6">
-      <Seo title="Assign Jockey" />
 
       <button
         type="button"
@@ -322,7 +319,6 @@ export default function HorseOwnerRacePage() {
   /* ── Register view (horse selection) ── */
   if (view === 'register') return (
     <div className="px-8 py-6">
-      <Seo title="Register for Race" />
 
       <button
         type="button"
@@ -469,7 +465,6 @@ export default function HorseOwnerRacePage() {
   /* ── Race list view ── */
   return (
     <div className="px-8 py-6">
-      <Seo title="Register for Race" description="Browse open races and register your horse to compete on Royal Derby." />
       <DashboardPageHeader
         eyebrow="Horse Owner"
         title="Open Races"

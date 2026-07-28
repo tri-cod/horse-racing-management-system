@@ -6,7 +6,6 @@ import { useJockeyProfile } from '@/hooks/useJockeyProfile';
 import { silkColor } from '@/utils/jockeySilks';
 import { calculateAge } from '@/utils/age';
 import Container from '@/components/ui/Container';
-import Seo from '@/components/seo/Seo';
 import type { Jockey } from '@/types';
 
 // Chiều cao header cố định của site (Layout.tsx: pt-[109px]).
@@ -155,7 +154,6 @@ export default function JockeyProfilePage() {
 
   return (
     <div className="min-h-screen bg-surface pb-24">
-      <Seo title={jockey.name} description={`Jockey profile and career stats for ${jockey.name}.`} />
 
       {/* ── Hero — silk-colored banner unique to this jockey ────────────── */}
       <section

@@ -11,7 +11,6 @@ import StatCard from '@/components/shared/StatCard';
 import ActivityList, { type ActivityItem } from '@/components/shared/ActivityList';
 import QuickActions from '@/components/shared/QuickActions';
 import { FadeInStagger, FadeInItem } from '@/components/shared/FadeIn';
-import Seo from '@/components/seo/Seo';
 import type { Horse, RaceHorse, HorseStatus } from '@/types';
 
 type FullRaceHorse = RaceHorse & { raceName?: string; registerAt?: string };
@@ -125,7 +124,6 @@ export default function HorseOwnerDashboardPage() {
 
   return (
     <div>
-      <Seo title="My Dashboard" description="Overview of your horses and race registrations." />
       <DashboardHero
         eyebrow="Horse Owner"
         title={`Welcome back, ${user?.fullName ?? user?.username ?? 'Owner'}`}
