@@ -11,19 +11,19 @@ import { placeBet, getMyBets } from '@/api/betApi';
 import { FadeInStagger, FadeInItem } from '@/components/shared/FadeIn';
 import { assignLanes } from '@/utils/laneUtils';
 import { getErrorMessage } from '@/utils/errors';
-import BetStatusBadge from './BetStatusBadge';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import RaceSelectorCard from './RaceSelectorCard';
 import OddsBoard from './OddsBoard';
 import BetSlip from './BetSlip';
 import FinalStandings from './FinalStandings';
 import {
-  NON_BETTABLE, isRunnerEntry, fmtDate, fmtTime, fmtVnd, fmtPrize, fmtBalance,
+  MIN_BET, NO_VALUE, isBettable, isRunnerEntry, fmtDate, fmtTime, fmtVnd, fmtPrize, fmtBalance,
   type BetAmounts, type HorseEntry, type Selection,
 } from './betHelpers';
 import type { BetResponse } from '@/types';
 
 /* ══════════════════════════════════════════════════════════════════
-   BetBoard — the main betting page/section.
+   BetBoard: the main betting page/section.
 
    Layout:      [ race selector strip ]
                 [ OddsBoard | sticky side panel (wallet / summary / BetSlip) ]
@@ -44,13 +44,14 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
   const [betAmounts, setBetAmounts] = useState<BetAmounts>({});
   const [betLoading, setBetLoading] = useState(false);
   const [betError, setBetError] = useState('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const canBet = user?.role === 'USER';
   const { balance, loading: balanceLoading } = useWalletBalance(!!canBet && !embedded);
   const invalidateBalance = useInvalidateWalletBalance();
   const queryClient = useQueryClient();
 
-  /* The spectator's own bets — used to show what they've already wagered on the selected race */
+  /* The spectator's own bets, used to show what they've already wagered on the selected race */
   const { data: myBets } = useQuery<BetResponse[]>({
     queryKey: ['my-bets'],
     queryFn: getMyBets,
@@ -58,35 +59,40 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
     staleTime: 30_000,
   });
 
-  /* Bettable races first (soonest → latest), then finished ones (most recent first)
-     so punters can review final standings; cancelled/ongoing stay excluded. */
-  const filteredRaces = useMemo(() => {
-    const upcoming = races
-      .filter(r => !NON_BETTABLE.has(r.status))
-      .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
-    const finished = races
-      .filter(r => r.status === 'FINISHED')
-      .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
-    return [...upcoming, ...finished];
-  }, [races]);
+  /* The strip lists only races actually taking wagers, soonest first. A race in
+     any other status is still reachable by id through ?race=, which is how the
+     finished-race standings below stay linkable. */
+  const filteredRaces = useMemo(() =>
+    races
+      .filter(r => isBettable(r.status))
+      .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()),
+    [races]
+  );
 
   const initialRaceId = useMemo(() => {
+    /* Deep link from the race list / race detail pages. Matched against the full race
+       list rather than the filtered strip so an out-of-strip race still resolves;
+       selectedRace below falls back to `races` for exactly this case. */
+    const raceParam = Number(searchParams.get('race'));
+    if (Number.isFinite(raceParam) && races.some(r => r.id === raceParam)) return raceParam;
+
     const date = searchParams.get('date');
     if (date) {
       const match = filteredRaces.find(r => r.startTime?.slice(0, 10) === date);
       if (match) return match.id;
     }
     return filteredRaces[0]?.id ?? null;
-  }, [filteredRaces, searchParams]);
+  }, [filteredRaces, races, searchParams]);
 
   const effectiveId = selectedRaceId ?? initialRaceId;
   const selectedRace = filteredRaces.find(r => r.id === effectiveId) ?? races.find(r => r.id === effectiveId) ?? null;
-  const bettable = !!selectedRace && !NON_BETTABLE.has(selectedRace.status);
+  const bettable = isBettable(selectedRace?.status);
 
   /* Reset bet amounts when race changes */
   useEffect(() => {
     setBetAmounts({});
     setBetError('');
+    setConfirmOpen(false);
   }, [effectiveId]);
 
   /* Horse list for bet slip display */
@@ -101,7 +107,7 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
   /* Selections: horses with a valid non-zero stake */
   const selections = useMemo((): Selection[] =>
     betHorses
-      .filter(h => betAmounts[h.id] && parseInt(betAmounts[h.id]) >= 1000)
+      .filter(h => betAmounts[h.id] && parseInt(betAmounts[h.id]) >= MIN_BET)
       .map(h => ({
         horse: h,
         amount: parseInt(betAmounts[h.id]),
@@ -119,7 +125,7 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
     for (const bet of myBets) {
       if (bet.raceId !== effectiveId) continue;
       for (const item of bet.betItems ?? []) {
-        const cur = map.get(item.raceHorseId) ?? { raceHorseId: item.raceHorseId, horseName: item.horseName ?? '—', amount: 0, statuses: [] };
+        const cur = map.get(item.raceHorseId) ?? { raceHorseId: item.raceHorseId, horseName: item.horseName ?? NO_VALUE, amount: 0, statuses: [] };
         cur.amount += item.betAmount;
         cur.statuses.push(item.resultStatus);
         map.set(item.raceHorseId, cur);
@@ -155,9 +161,29 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
 
   const handleClearAll = () => { setBetAmounts({}); setBetError(''); };
 
+  const maxPayout = selections.reduce((s, s2) => s + s2.payout, 0);
+
+  /* Small-screen affordance only, and never on the embedded homepage board,
+     which does not own the viewport. */
+  const showMobileBar = !embedded && canBet && bettable && selections.length > 0;
+
+  /* Wallet cover check. The balance query only runs on the standalone page, so an
+     embedded board leaves `balance` null and defers the check to the backend. */
+  const insufficientFunds = balance != null && betTotal > balance;
+
+  /* Everything that would make the wager invalid is caught here, before the
+     confirm dialog opens, so the dialog only ever asks about a bet that can
+     actually be placed. */
+  const requestConfirm = () => {
+    if (selections.length === 0) { setBetError('Enter a stake for at least one runner.'); return; }
+    if (insufficientFunds) { setBetError('This stake is more than your wallet balance.'); return; }
+    setBetError('');
+    setConfirmOpen(true);
+  };
+
   const handleSubmit = async () => {
     if (!selectedRace) return;
-    if (selections.length === 0) { setBetError('Enter a stake for at least one runner.'); return; }
+    if (selections.length === 0 || insufficientFunds) { setConfirmOpen(false); return; }
     try {
       setBetLoading(true); setBetError('');
       await placeBet({
@@ -171,14 +197,18 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
     } catch (e: unknown) {
       setBetError(getErrorMessage(e, 'Failed to place bet. Please try again.'));
     } finally {
+      /* Always drop the dialog: on failure the message belongs in the bet slip,
+         which sits behind it. */
       setBetLoading(false);
+      setConfirmOpen(false);
     }
   };
 
-  const scrollBy = (dir: number) => scrollRef.current?.scrollBy({ left: dir * 240, behavior: 'smooth' });
+  /* One card (14rem) plus the 0.75rem gap, so a click lands cleanly on the next card. */
+  const scrollBy = (dir: number) => scrollRef.current?.scrollBy({ left: dir * 236, behavior: 'smooth' });
 
   return (
-    <FadeInStagger className="min-h-screen bg-surface">
+    <FadeInStagger className={`min-h-screen bg-surface ${showMobileBar ? 'pb-24 lg:pb-0' : ''}`}>
       {/* ── Page header (hidden when embedded on the homepage) ────── */}
       {!embedded && (
         <FadeInItem className="border-b border-rim bg-surface-raised">
@@ -202,11 +232,11 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
           {loading ? (
             <div className="flex gap-3 overflow-hidden">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-[72px] w-52 shrink-0 animate-pulse rounded-md bg-rim" />
+                <div key={i} className="h-[148px] w-56 shrink-0 animate-pulse rounded-md bg-rim" />
               ))}
             </div>
           ) : filteredRaces.length === 0 ? (
-            <p className="py-3 text-sm text-ink-3">No races match this filter.</p>
+            <p className="py-3 text-sm text-ink-3">No races are open for betting right now.</p>
           ) : (
             <div className="flex items-center gap-3">
               <button onClick={() => scrollBy(-1)}
@@ -259,7 +289,7 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
                 so the panel pins the moment it meets the header instead of sliding under it. */}
             <div className="flex flex-col gap-4 lg:sticky lg:top-[125px] lg:self-start">
 
-              {/* Wallet balance — shown on the standalone /bet/races page, hidden when embedded on the homepage */}
+              {/* Wallet balance, shown on the standalone /bet/races page, hidden when embedded on the homepage */}
               {canBet && !embedded && (
                 <div className="overflow-hidden rounded-md border border-rim bg-surface-raised">
                   <div className="flex items-center justify-between border-b border-rim px-5 py-3">
@@ -277,7 +307,7 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
                 </div>
               )}
 
-              {/* Race summary — hidden when embedded (the homepage detail panel already shows this) */}
+              {/* Race summary, hidden when embedded (the homepage detail panel already shows this) */}
               {selectedRace && !embedded && (
                 <div className="overflow-hidden rounded-md border border-rim bg-surface-raised">
                   <div className="border-b border-rim px-5 py-4">
@@ -320,7 +350,6 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
                       <li key={b.raceHorseId} className="flex items-center justify-between gap-3 px-5 py-3">
                         <div className="min-w-0">
                           <p className="truncate text-sm font-bold text-ink">{b.horseName}</p>
-                          <div className="mt-1"><BetStatusBadge status={b.status} /></div>
                         </div>
                         <span className="tnum shrink-0 text-sm font-bold text-ink">{fmtVnd(b.amount)}</span>
                       </li>
@@ -341,11 +370,13 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
                 betHorses={betHorses}
                 selections={selections}
                 betTotal={betTotal}
+                maxPayout={maxPayout}
+                insufficientFunds={insufficientFunds}
                 betError={betError}
                 betLoading={betLoading}
                 onRemove={handleRemove}
                 onClearAll={handleClearAll}
-                onSubmit={handleSubmit}
+                onSubmit={requestConfirm}
               />
 
               {!embedded && (
@@ -360,7 +391,7 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
       </FadeInItem>
 
       {/* ── Final standings ──────────────────────────────────────
-          Own full-width section BELOW the betting grid — kept outside it so the
+          Own full-width section BELOW the betting grid, kept outside it so the
           sticky bet-slip column stops at the end of the runners list instead of
           following down over (and covering) the standings table. */}
       {effectiveId != null && selectedRace?.status === 'FINISHED' && (
@@ -370,6 +401,45 @@ export default function BetBoard({ embedded = false }: { embedded?: boolean }) {
           </div>
         </FadeInItem>
       )}
+
+      {/* Mobile stake bar. The slip drops below the runners on small screens, so
+          without this the punter has to scroll past every runner to reach the
+          total and the confirm button. */}
+      {showMobileBar && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-rim bg-surface-raised/95 px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.10)] backdrop-blur lg:hidden">
+          <div className="mx-auto flex max-w-screen-xl items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-ink-4">
+                {selections.length} runner{selections.length !== 1 ? 's' : ''} · max {fmtVnd(maxPayout)}
+              </p>
+              <p className="tnum truncate text-sm font-bold text-ink">{fmtVnd(betTotal)}</p>
+            </div>
+            <button
+              type="button"
+              onClick={requestConfirm}
+              disabled={betLoading || betTotal < MIN_BET || insufficientFunds}
+              className="shrink-0 bg-gold px-5 py-3 text-xs font-bold uppercase tracking-widest text-on-gold transition-all hover:bg-gold-hi active:scale-[0.98] disabled:bg-rim disabled:text-ink-4"
+            >
+              {betLoading ? 'Processing' : insufficientFunds ? 'Low Balance' : 'Review Bet'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Placing a wager moves real money out of the wallet and cannot be undone,
+          so it gets the same confirmation gate as the admin race actions. */}
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleSubmit}
+        loading={betLoading}
+        variant="primary"
+        title="Place this bet?"
+        confirmLabel="Place Bet"
+        message={selectedRace
+          ? `Staking ${fmtVnd(betTotal)} on ${selections.length} runner${selections.length !== 1 ? 's' : ''} in ${selectedRace.raceName}, for a maximum return of ${fmtVnd(maxPayout)}. The stake leaves your wallet immediately and a placed bet cannot be cancelled.`
+          : undefined}
+      />
     </FadeInStagger>
   );
 }

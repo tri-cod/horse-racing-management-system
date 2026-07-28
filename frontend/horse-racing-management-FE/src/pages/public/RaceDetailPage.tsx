@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ChevronLeft, Flag, Ticket, Gavel, ArrowRight } from 'lucide-react';
 import { useRaceDetail } from '@/hooks/useRaceDetail';
@@ -6,16 +6,14 @@ import { useHorsesByRace } from '@/hooks/useHorsesByRace';
 import { useRaceResults, type NormalizedRaceResult } from '@/hooks/useRaceResults';
 import { useRefereeProfile } from '@/hooks/useRefereeProfile';
 import { useAuth } from '@/context/AuthContext';
-import { useToast } from '@/components/ui/ToastProvider';
-import PlaceBetModal from '@/components/features/bet/PlaceBetModal';
 import Container from '@/components/ui/Container';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Seo from '@/components/seo/Seo';
 import Button from '@/components/ui/Button';
 import { assignLanes } from '@/utils/laneUtils';
 import { buildRaceRequirements } from '@/utils/raceRequirements';
-
-const NON_BETTABLE = new Set(['FINISHED', 'CANCELLED', 'ONGOING']);
+/* Single source of truth for "can this race be bet on", shared with the board. */
+import { isBettable } from '@/components/features/bet/betHelpers';
 
 const LANE_CLR: Record<number, string> = {
   1: 'bg-red-600 text-white',
@@ -117,8 +115,6 @@ export default function RaceDetailPage() {
   const { id } = useParams<{ id: string }>();
   const raceId = id ? Number(id) : undefined;
   const { user } = useAuth();
-  const addToast = useToast();
-  const [showBet, setShowBet] = useState(false);
 
   const { race, loading, error, refetch } = useRaceDetail(raceId);
   const { entries: raw, loading: entriesLoading } = useHorsesByRace(raceId);
@@ -134,11 +130,8 @@ export default function RaceDetailPage() {
       .sort((a, b) => (a.odds ?? Infinity) - (b.odds ?? Infinity)),
     [raw]
   );
-const bettableEntries = useMemo(() => entries.filter((e) => e.odds != null), [entries]);
-
-
   const canBet = user?.role === 'USER';
-  const bettable = !!race && !NON_BETTABLE.has(race.status);
+  const bettable = isBettable(race?.status);
   const betReady = bettable && entries.length > 0;
 
   if (loading) return (
@@ -280,11 +273,19 @@ const bettableEntries = useMemo(() => entries.filter((e) => e.odds != null), [en
                   <Ticket size={13} /> Sign In to Bet
                 </Link>
               ) : canBet ? (
-                <button type="button" disabled={!betReady} onClick={() => setShowBet(true)}
-                  className="inline-flex items-center gap-1.5 bg-gold px-4 py-2 text-xs font-bold uppercase tracking-widest text-on-gold transition-colors hover:bg-gold-hi disabled:cursor-not-allowed disabled:bg-rim disabled:text-ink-4">
-                  <Ticket size={13} />
-                  {betReady ? 'Place Bet' : bettable ? 'No Entries To Bet' : 'Betting Closed'}
-                </button>
+                /* Wagering lives on the board at /bet/races, which is the only place
+                   odds, wallet balance and the bet slip are shown together. */
+                betReady ? (
+                  <Link to={`/bet/races?race=${race.id}`}
+                    className="inline-flex items-center gap-1.5 bg-gold px-4 py-2 text-xs font-bold uppercase tracking-widest text-on-gold transition-colors hover:bg-gold-hi">
+                    <Ticket size={13} /> Place Bet
+                  </Link>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 bg-rim px-4 py-2 text-xs font-bold uppercase tracking-widest text-ink-4">
+                    <Ticket size={13} />
+                    {bettable ? 'No Entries To Bet' : 'Betting Closed'}
+                  </span>
+                )
               ) : null}
             </div>
           </div>
@@ -340,16 +341,6 @@ const bettableEntries = useMemo(() => entries.filter((e) => e.odds != null), [en
       </Container>
 
       {race.status === 'FINISHED' && <RaceResultsSection raceId={race.id} />}
-
-      {canBet && (
-        <PlaceBetModal
-          open={showBet}
-          onClose={() => setShowBet(false)}
-          race={race}
-          raceHorses={bettableEntries}
-          onSuccess={() => addToast('Bet placed successfully!', 'success')}
-        />
-      )}
     </div>
   );
 }

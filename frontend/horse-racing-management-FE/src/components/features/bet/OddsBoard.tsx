@@ -4,7 +4,7 @@ import { useRaceDetail } from '@/hooks/useRaceDetail';
 import { useHorsesByRace } from '@/hooks/useHorsesByRace';
 import { assignLanes } from '@/utils/laneUtils';
 import {
-  LANE_STYLE, isRunnerEntry, fmtDate, fmtTime, fmtVnd, fmtPrize,
+  LANE_STYLE, QUICK_STAKES, isRunnerEntry, fmtDate, fmtTime, fmtVnd, fmtPrize, fmtStakeChip,
   type BetAmounts, type HorseEntry,
 } from './betHelpers';
 
@@ -14,7 +14,7 @@ import {
 /* Skeleton mirrors the loaded layout (banner + meta strip + runner rows)
    instead of a generic spinner, so the panel doesn't jump on load. */
 function OddsBoardSkeleton({ showStake }: { showStake: boolean }) {
-  const cols = showStake ? 'grid-cols-[2.5rem_2.5rem_1fr_4rem_7.5rem]' : 'grid-cols-[2.5rem_2.5rem_1fr_5rem]';
+  const cols = showStake ? 'grid-cols-[2.5rem_2.5rem_1fr_4rem_9rem]' : 'grid-cols-[2.5rem_2.5rem_1fr_5rem]';
   return (
     <div className="flex flex-col">
       <div className="h-48 animate-pulse bg-surface-overlay" />
@@ -38,7 +38,12 @@ function OddsBoardSkeleton({ showStake }: { showStake: boolean }) {
               <div className="h-2.5 w-1/3 animate-pulse rounded bg-surface-overlay" />
             </div>
             <div className="ml-auto h-5 w-8 animate-pulse rounded bg-rim" />
-            {showStake && <div className="h-8 animate-pulse rounded bg-surface-overlay" />}
+            {showStake && (
+              <div className="space-y-1">
+                <div className="h-8 animate-pulse rounded bg-surface-overlay" />
+                <div className="h-3.5" />
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -75,6 +80,8 @@ export default function OddsBoard({
 
   const showStake = canBet && bettable;
   const [bannerError, setBannerError] = useState(false);
+  /* Runner whose stake input currently has focus, driving the preset chips below it. */
+  const [focusedId, setFocusedId] = useState<number | null>(null);
   useEffect(() => { setBannerError(false); }, [race?.bannerImageurl]);
 
   if (rl || el) return <OddsBoardSkeleton showStake={showStake} />;
@@ -113,7 +120,7 @@ export default function OddsBoard({
         </div>
       ) : (
         <>
-          {/* Banner — kept as a dark photo-caption island (matches the app's card-on-photo
+          {/* Banner, kept as a dark photo-caption island (matches the app's card-on-photo
               convention elsewhere) so the title stays legible regardless of page theme. */}
           <div className="relative h-48 overflow-hidden">
             {showBanner ? (
@@ -164,7 +171,7 @@ export default function OddsBoard({
       ) : (
         <>
           {/* Table header */}
-          <div className={`grid gap-3 border-b border-rim bg-surface-raised px-6 py-3 ${showStake ? 'grid-cols-[2.5rem_2.5rem_1fr_4rem_7.5rem]' : 'grid-cols-[2.5rem_2.5rem_1fr_5rem]'}`}>
+          <div className={`grid gap-3 border-b border-rim bg-surface-raised px-6 py-3 ${showStake ? 'grid-cols-[2.5rem_2.5rem_1fr_4rem_9rem]' : 'grid-cols-[2.5rem_2.5rem_1fr_5rem]'}`}>
             <span className="text-[10px] font-bold uppercase tracking-widest text-ink-4">#</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-ink-4">PP</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-ink-4">Runner</span>
@@ -181,7 +188,7 @@ export default function OddsBoard({
 
               return (
                 <div key={e.id}
-                  className={`grid gap-3 items-center px-6 py-4 transition-colors ${showStake ? 'grid-cols-[2.5rem_2.5rem_1fr_4rem_7.5rem]' : 'grid-cols-[2.5rem_2.5rem_1fr_5rem]'} ${hasStake ? 'bg-gold/[0.06]' : isFav ? 'bg-gold/[0.035]' : 'hover:bg-surface-overlay/50'}`}>
+                  className={`grid gap-3 items-center px-6 py-4 transition-colors ${showStake ? 'grid-cols-[2.5rem_2.5rem_1fr_4rem_9rem]' : 'grid-cols-[2.5rem_2.5rem_1fr_5rem]'} ${hasStake ? 'bg-gold/[0.06]' : isFav ? 'bg-gold/[0.035]' : 'hover:bg-surface-overlay/50'}`}>
 
                   {/* Row number */}
                   <span className="tabular-nums text-sm font-medium text-ink-4">
@@ -193,7 +200,7 @@ export default function OddsBoard({
                     style={laneStyle
                       ? { backgroundColor: laneStyle.bg, color: laneStyle.color }
                       : { backgroundColor: 'rgba(19,28,21,0.06)', color: 'rgba(19,28,21,0.35)' }}>
-                    {e.laneNumber ?? '—'}
+                    {e.laneNumber ?? '?'}
                   </div>
 
                   {/* Horse info */}
@@ -207,7 +214,7 @@ export default function OddsBoard({
                       )}
                     </div>
                     <p className="mt-0.5 truncate text-xs text-ink-4">
-                      Jockey: <span className="text-ink-3">{e.jockeyName ?? 'TBA'}</span>
+                      Jockey: <span className="text-ink-3">{e.jockeyName ?? 'To be announced'}</span>
                     </p>
                     {(e.ownerName || e.trainerName) && (
                       <p className="mt-0.5 truncate text-[11px] text-ink-4">
@@ -228,23 +235,46 @@ export default function OddsBoard({
                     <span className="tnum text-xl font-bold text-gold-hi leading-none">{e.odds}</span>
                   </div>
 
-                  {/* Inline stake input */}
+                  {/* Inline stake input + one-tap presets */}
                   {showStake && (
-                    <div className="relative">
-                      <input
-                        type="number"
-                        min="0"
-                        step="1000"
-                        placeholder="0"
-                        value={betAmounts[e.id] ?? ''}
-                        onChange={ev => onAmountChange(e.id, ev.target.value)}
-                        className={`w-full appearance-none rounded border py-2 pl-2.5 pr-5 text-right text-xs font-semibold outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none placeholder:text-ink-4 ${
-                          hasStake
-                            ? 'border-gold/50 bg-gold/10 text-gold-hi focus:border-gold/70 focus:ring-1 focus:ring-gold/20'
-                            : 'border-rim bg-surface-input text-ink focus:border-gold/40 focus:bg-surface-raised focus:ring-1 focus:ring-gold/15'
-                        }`}
-                      />
-                      <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-ink-4">₫</span>
+                    <div>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          min="0"
+                          step="1000"
+                          placeholder="0"
+                          value={betAmounts[e.id] ?? ''}
+                          onChange={ev => onAmountChange(e.id, ev.target.value)}
+                          onFocus={() => setFocusedId(e.id)}
+                          onBlur={() => setFocusedId(null)}
+                          className={`w-full appearance-none rounded border py-2 pl-2.5 pr-5 text-right text-xs font-semibold outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none placeholder:text-ink-4 ${
+                            hasStake
+                              ? 'border-gold/50 bg-gold/10 text-gold-hi focus:border-gold/70 focus:ring-1 focus:ring-gold/20'
+                              : 'border-rim bg-surface-input text-ink focus:border-gold/40 focus:bg-surface-raised focus:ring-1 focus:ring-gold/15'
+                          }`}
+                        />
+                        <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-ink-4">₫</span>
+                      </div>
+
+                      {/* Presets stay in the layout at all times and only fade, so rows never
+                          change height as focus moves from one runner to the next. */}
+                      <div className={`mt-1 grid grid-cols-4 gap-0.5 transition-opacity ${
+                        focusedId === e.id || hasStake ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                      }`}>
+                        {QUICK_STAKES.map(amt => (
+                          <button
+                            key={amt}
+                            type="button"
+                            /* Keep focus on the input so the row stays revealed while clicking. */
+                            onMouseDown={ev => ev.preventDefault()}
+                            onClick={() => onAmountChange(e.id, String(amt))}
+                            className="rounded border border-rim py-0.5 text-[9px] font-bold text-ink-4 transition-colors hover:border-gold/50 hover:bg-gold/10 hover:text-gold-hi"
+                          >
+                            {fmtStakeChip(amt)}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Trophy } from 'lucide-react';
 import { useRaceResults } from '@/hooks/useRaceResults';
-import { LANE_STYLE, type HorseEntry } from './betHelpers';
+import { LANE_STYLE, NO_VALUE, type HorseEntry } from './betHelpers';
 
 /* ── Final Standings ────────────────────────────────────────────
    Rendered under the betting grid once a race is FINISHED. Results are
@@ -67,7 +67,7 @@ export default function FinalStandings({ raceId, entries }: { raceId: number; en
 
                   {/* Finish position */}
                   <span className={`tnum text-sm font-bold ${isWinner ? 'text-gold-hi' : r.position > 0 && r.position <= 3 ? 'text-ink' : 'text-ink-4'}`}>
-                    {r.position > 0 ? String(r.position).padStart(2, '0') : '—'}
+                    {r.position > 0 ? String(r.position).padStart(2, '0') : NO_VALUE}
                   </span>
 
                   {/* Post position */}
@@ -75,10 +75,10 @@ export default function FinalStandings({ raceId, entries }: { raceId: number; en
                     style={laneStyle
                       ? { backgroundColor: laneStyle.bg, color: laneStyle.color }
                       : { backgroundColor: 'rgba(19,28,21,0.06)', color: 'rgba(19,28,21,0.35)' }}>
-                    {entry?.laneNumber ?? '—'}
+                    {entry?.laneNumber ?? '?'}
                   </div>
 
-                  {/* Horse info — mirrors the runners list above */}
+                  {/* Horse info, mirroring the runners list above */}
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="truncate text-sm font-bold uppercase tracking-wide text-ink">{r.horseName}</p>
@@ -89,7 +89,7 @@ export default function FinalStandings({ raceId, entries }: { raceId: number; en
                       )}
                     </div>
                     <p className="mt-0.5 truncate text-xs text-ink-4">
-                      Jockey: <span className="text-ink-3">{r.jockeyName || entry?.jockeyName || 'TBA'}</span>
+                      Jockey: <span className="text-ink-3">{r.jockeyName || entry?.jockeyName || 'To be announced'}</span>
                     </p>
                     {entry && (entry.ownerName || entry.trainerName) && (
                       <p className="mt-0.5 truncate text-[11px] text-ink-4">
@@ -101,10 +101,10 @@ export default function FinalStandings({ raceId, entries }: { raceId: number; en
                   </div>
 
                   {/* Completion time */}
-                  <span className="tnum text-right text-sm font-medium text-ink-2">{r.time ?? '—'}</span>
+                  <span className="tnum text-right text-sm font-medium text-ink-2">{r.time ?? NO_VALUE}</span>
 
                   {/* Odds */}
-                  <span className="tnum text-right text-sm font-bold text-gold-hi">{r.odds ?? entry?.odds ?? '—'}</span>
+                  <span className="tnum text-right text-sm font-bold text-gold-hi">{r.odds ?? entry?.odds ?? NO_VALUE}</span>
                 </div>
               );
             })}
