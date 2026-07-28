@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { acceptTrainingContract, rejectTrainingContract } from '@/api/trainingContractApi';
 import { getErrorMessage } from '@/utils/errors';
+import { useInvalidateWalletBalance } from '@/hooks/useWalletBalance';
 import Modal from '@/components/ui/Modal';
 import type { TrainingContract } from '@/types';
 
@@ -21,6 +22,7 @@ export default function RespondTrainingContractModal({ contract, action, onClose
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const invalidateWalletBalance = useInvalidateWalletBalance();
 
   useEffect(() => {
     setNote('');
@@ -34,8 +36,12 @@ export default function RespondTrainingContractModal({ contract, action, onClose
   const handleSubmit = async () => {
     setSubmitting(true); setError(null);
     try {
-      if (isAccept) await acceptTrainingContract(contract.id, note.trim() || undefined);
-      else await rejectTrainingContract(contract.id, note.trim() || undefined);
+      if (isAccept) {
+        await acceptTrainingContract(contract.id, note.trim() || undefined);
+        invalidateWalletBalance(); // fee was just paid straight to the trainer's wallet
+      } else {
+        await rejectTrainingContract(contract.id, note.trim() || undefined);
+      }
       onSuccess(isAccept ? 'Contract accepted.' : 'Contract declined.');
       onClose();
     } catch (e: unknown) {
@@ -87,7 +93,7 @@ export default function RespondTrainingContractModal({ contract, action, onClose
 
       {isAccept && (
         <p className="mb-3 text-xs text-ink-4">
-          Accepting escrows the fee from the owner's wallet and assigns you as this horse's trainer.
+          Accepting deducts the fee from the owner's wallet, pays it straight to your wallet, and assigns you as this horse's trainer.
         </p>
       )}
 

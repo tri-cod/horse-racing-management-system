@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Landmark, TrendingUp, CalendarRange } from 'lucide-react';
+import { Landmark, CalendarRange } from 'lucide-react';
 import { getRaceRevenue } from '@/api/adminApi';
 import { getErrorMessage } from '@/utils/errors';
 import { getRaceStatusLabel, getRaceStatusVariant } from '@/utils/raceStatus';
@@ -212,8 +212,8 @@ export default function AdminRaceRevenuePage() {
                       <td className={`tnum px-4 py-3.5 text-sm font-bold ${signCls(r.netRevenue)}`}>{fmt(r.netRevenue)}</td>
                       <td className="px-4 py-3.5">
                         {r.marginPercent != null && (
-                          <span className={`inline-flex items-center gap-1 text-xs font-semibold ${r.marginPercent >= 0 ? 'text-ok' : 'text-fail'}`}>
-                            <TrendingUp size={11} /> {r.marginPercent.toFixed(1)}%
+                          <span className={`text-xs font-semibold ${r.marginPercent >= 0 ? 'text-ok' : 'text-fail'}`}>
+                            {r.marginPercent.toFixed(1)}%
                           </span>
                         )}
                       </td>

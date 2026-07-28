@@ -5,6 +5,7 @@ import { cancelTrainingContract } from '@/api/trainingContractApi';
 import { getOwnerHorsesPublic } from '@/api/horseOwnerApi';
 import { getErrorMessage } from '@/utils/errors';
 import { isStatus } from '@/utils/trainingContractStatus';
+import { useInvalidateWalletBalance } from '@/hooks/useWalletBalance';
 import { useToast } from '@/components/ui/ToastProvider';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import Modal from '@/components/ui/Modal';
@@ -23,6 +24,17 @@ function monthsBetween(start?: string, end?: string): number | null {
   const a = new Date(start), b = new Date(end);
   const m = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
   return m > 0 ? m : null;
+}
+
+/* Mirrors the backend's halfway-point check in cancelContract — early termination
+   is only allowed during the first half of the contract's term. */
+function isPastMidpoint(start?: string, end?: string): boolean {
+  if (!start || !end) return false;
+  const startMs = new Date(start).getTime();
+  const endMs = new Date(end).getTime();
+  if (endMs <= startMs) return false;
+  const midpointMs = startMs + Math.floor((endMs - startMs) / 2);
+  return Date.now() > midpointMs;
 }
 
 function SectionTitle({ children }: { children: string }) {
@@ -77,10 +89,12 @@ export default function TrainingContractDetailModal({ contract, perspective, onC
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [responding, setResponding] = useState<'accept' | 'reject' | null>(null);
+  const invalidateWalletBalance = useInvalidateWalletBalance();
 
   const c = contract;
   const pending = c ? isStatus(c.status, 'PENDING') : false;
   const active = c ? isStatus(c.status, 'ACTIVE') : false;
+  const canTerminate = active && c ? !isPastMidpoint(c.startDate, c.endDate) : false;
   const months = c ? monthsBetween(c.startDate, c.endDate) : null;
 
   /* The contract only carries the horse's name/avatar — fetch the owner's
@@ -98,6 +112,7 @@ export default function TrainingContractDetailModal({ contract, perspective, onC
     setCancelLoading(true);
     try {
       await cancelTrainingContract(c.id);
+      if (active) invalidateWalletBalance(); // early termination moves money between owner and trainer
       addToast(active ? 'Training contract terminated.' : 'Training request cancelled.', 'success');
       setCancelOpen(false);
       onChanged();
@@ -115,7 +130,7 @@ export default function TrainingContractDetailModal({ contract, perspective, onC
     </div>
   );
 
-  const footer = c && (pending || (active && !isTrainer)) && (
+  const footer = c && (pending || (canTerminate && !isTrainer)) && (
     <div className="flex flex-wrap justify-end gap-2.5">
       {isTrainer ? (
         <>
@@ -183,7 +198,7 @@ export default function TrainingContractDetailModal({ contract, perspective, onC
                 <Term label="Duration" value={months != null ? `${months} month${months !== 1 ? 's' : ''}` : '—'} />
                 <Term label="Total Fee" value={<span className="text-gold-hi">{fmtVnd(c.fee)}</span>} />
                 <Term label="Billing" value={c.feeType === 'MONTHLY' ? 'Monthly' : 'Per period'} />
-                <Term label="Payment" value="Escrowed on acceptance" />
+                <Term label="Payment" value="Paid to trainer on acceptance" />
               </dl>
             </section>
 
@@ -224,7 +239,7 @@ export default function TrainingContractDetailModal({ contract, perspective, onC
         title={active ? 'Terminate Training Contract?' : 'Cancel Training Request?'}
         message={
           active
-            ? `End this contract with ${c?.trainerName ?? 'this trainer'} for "${c?.horseName ?? 'this horse'}" early? The escrowed fee will be split: 50% refunded to you, 20% paid to the trainer as compensation, and 30% retained by the platform.`
+            ? `End this contract with ${c?.trainerName ?? 'this trainer'} for "${c?.horseName ?? 'this horse'}" early? The fee will be split 50/50: 50% refunded to you, and the trainer keeps the other 50%.`
             : `Cancel the request to hire ${c?.trainerName ?? 'this trainer'} for "${c?.horseName ?? 'this horse'}"?`
         }
         confirmLabel={active ? 'Terminate Contract' : 'Cancel Request'}

@@ -1,7 +1,6 @@
 package com.horseracing.horseracingmanagement.module.service.impl;
 
 import com.horseracing.horseracingmanagement.common.constant.NotificationType;
-import com.horseracing.horseracingmanagement.common.constant.RoleName;
 import com.horseracing.horseracingmanagement.module.dto.HorseOwnerDto.SendTrainingContractRequest;
 import com.horseracing.horseracingmanagement.module.dto.Trainer.TrainingContractResponse;
 import com.horseracing.horseracingmanagement.module.entity.*;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +27,6 @@ public class TrainingContractServiceImpl implements TrainingContractService {
     private final TrainerRepository trainerRepository;
     private final HorseOwnerRepository horseOwnerRepository;
     private final WalletRepository walletRepository;
-    private final UserRepository userRepository;
     private final NotificationService notificationService;
 
     @Override
@@ -125,7 +124,7 @@ public class TrainingContractServiceImpl implements TrainingContractService {
             throw new RuntimeException("Contract is not pending");
         }
 
-        // ← Trừ tiền từ ví owner (escrow — giữ tiền cho đến khi hợp đồng xong)
+        // ← Trừ tiền từ ví owner
         Wallet ownerWallet = walletRepository
                 .findByUser_Id(contract.getOwner().getUser().getId())
                 .orElseThrow(() -> new RuntimeException("Owner wallet not found"));
@@ -137,12 +136,12 @@ public class TrainingContractServiceImpl implements TrainingContractService {
         ownerWallet.setBalance(ownerWallet.getBalance().subtract(contract.getFee()));
         walletRepository.save(ownerWallet);
 
-        // ← Escrow: giữ tiền ở ví admin cho đến khi hợp đồng hoàn tất hoặc bị hủy giữa chừng
-        userRepository.findFirstByRole_Rolename(RoleName.ADMIN).ifPresent(adminUser ->
-                walletRepository.findByUser_Id(adminUser.getId()).ifPresent(adminWallet -> {
-                    adminWallet.setBalance(adminWallet.getBalance().add(contract.getFee()));
-                    walletRepository.save(adminWallet);
-                }));
+        // ← Chuyển thẳng phí cho trainer ngay khi accept (không escrow qua ví admin nữa)
+        Wallet trainerWallet = walletRepository
+                .findByUser_Id(trainer.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("Trainer wallet not found"));
+        trainerWallet.setBalance(trainerWallet.getBalance().add(contract.getFee()));
+        walletRepository.save(trainerWallet);
 
         // ← Cập nhật Horse — gán trainerId
         Horse horse = contract.getHorse();
@@ -225,32 +224,33 @@ public class TrainingContractServiceImpl implements TrainingContractService {
 
         String trainerMessage;
         if (wasActive) {
-            // Early termination of an ACTIVE contract — split the fee already escrowed
-            // in the admin wallet: 50% back to the owner, 20% to the trainer as
-            // compensation for work already done, the remaining 30% stays with the
-            // platform as an early-termination fee.
-            BigDecimal ownerShare = contract.getFee().multiply(new BigDecimal("0.50"));
-            BigDecimal trainerShare = contract.getFee().multiply(new BigDecimal("0.20"));
+            // Can only terminate early during the first half of the contract's term —
+            // once past the calendar midpoint between startDate and endDate, the owner
+            // must let it run to completion (or it auto-completes on schedule).
+            long totalDays = ChronoUnit.DAYS.between(contract.getStartDate(), contract.getEndDate());
+            LocalDate midpoint = contract.getStartDate().plusDays(totalDays / 2);
+            if (LocalDate.now().isAfter(midpoint)) {
+                throw new RuntimeException("Cannot terminate: the contract has passed its halfway point");
+            }
+
+            // The fee was paid straight to the trainer's wallet on acceptance (no
+            // escrow). Early termination now simply refunds 50% of it back to the
+            // owner from the trainer's wallet — the trainer keeps the other 50%.
+            BigDecimal refundShare = contract.getFee().multiply(new BigDecimal("0.50"));
 
             Wallet ownerWallet = walletRepository.findByUser_Id(owner.getUser().getId())
                     .orElseThrow(() -> new RuntimeException("Owner wallet not found"));
             Wallet trainerWallet = walletRepository.findByUser_Id(contract.getTrainer().getUser().getId())
                     .orElseThrow(() -> new RuntimeException("Trainer wallet not found"));
 
-            userRepository.findFirstByRole_Rolename(RoleName.ADMIN).ifPresent(adminUser ->
-                    walletRepository.findByUser_Id(adminUser.getId()).ifPresent(adminWallet -> {
-                        adminWallet.setBalance(adminWallet.getBalance().subtract(ownerShare).subtract(trainerShare));
-                        walletRepository.save(adminWallet);
-                    }));
-
-            ownerWallet.setBalance(ownerWallet.getBalance().add(ownerShare));
-            walletRepository.save(ownerWallet);
-            trainerWallet.setBalance(trainerWallet.getBalance().add(trainerShare));
+            trainerWallet.setBalance(trainerWallet.getBalance().subtract(refundShare));
             walletRepository.save(trainerWallet);
+            ownerWallet.setBalance(ownerWallet.getBalance().add(refundShare));
+            walletRepository.save(ownerWallet);
 
             trainerMessage = String.format(
-                    "Owner '%s' ended the training contract for horse '%s' early. %s has been paid to you as compensation.",
-                    owner.getName(), contract.getHorse().getHorseName(), trainerShare);
+                    "Owner '%s' ended the training contract for horse '%s' early. %s has been refunded to the owner from the fee you were already paid.",
+                    owner.getName(), contract.getHorse().getHorseName(), refundShare);
         } else {
             trainerMessage = String.format("Owner '%s' cancelled the training contract for horse '%s'.",
                     owner.getName(), contract.getHorse().getHorseName());
@@ -280,28 +280,16 @@ public class TrainingContractServiceImpl implements TrainingContractService {
             throw new RuntimeException("Contract is not active");
         }
 
-        // Release the fee escrowed in the admin wallet out to the trainer now that
-        // the contract has run its full term.
-        Wallet trainerWallet = walletRepository.findByUser_Id(contract.getTrainer().getUser().getId())
-                .orElseThrow(() -> new RuntimeException("Trainer wallet not found"));
-
-        userRepository.findFirstByRole_Rolename(RoleName.ADMIN).ifPresent(adminUser ->
-                walletRepository.findByUser_Id(adminUser.getId()).ifPresent(adminWallet -> {
-                    adminWallet.setBalance(adminWallet.getBalance().subtract(contract.getFee()));
-                    walletRepository.save(adminWallet);
-                }));
-
-        trainerWallet.setBalance(trainerWallet.getBalance().add(contract.getFee()));
-        walletRepository.save(trainerWallet);
-
+        // No wallet movement here — the fee was already paid straight to the
+        // trainer's wallet when the contract was accepted, so completion just
+        // marks the term as finished.
         contract.setStatus("COMPLETED");
         TrainingContract saved = contractRepository.save(contract);
 
         notificationService.sendToUser(
                 contract.getTrainer().getUser().getId(),
                 "🎉 Training Contract Completed",
-                String.format("Your training contract for horse '%s' has ended. The full fee of %s has been paid out to your wallet.",
-                        contract.getHorse().getHorseName(), contract.getFee()),
+                String.format("Your training contract for horse '%s' has ended.", contract.getHorse().getHorseName()),
                 NotificationType.SYSTEM,
                 contractId
         );
