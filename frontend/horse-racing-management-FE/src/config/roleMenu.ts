@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, Flag,
   Shield, ClipboardList, Ticket, Wallet, UserCog, TrendingUp,
-  Landmark, PencilLine, FlagTriangleRight, Undo2, Gavel, Send, Dumbbell, type LucideIcon,
+  Landmark, PencilLine, FlagTriangleRight, Undo2, Gavel, Send, Dumbbell, BarChart3, type LucideIcon,
 } from 'lucide-react';
 import type { UserRole } from '@/types';
 
@@ -14,6 +14,7 @@ export const ROLE_MENU: Partial<Record<UserRole, NavItem[]>> = {
     { icon: Undo2, label: 'Horse Withdrawals', href: '/admin/withdrawal-requests' },
     { icon: PencilLine, label: 'Manage Races', href: '/admin/races' },
     { icon: Landmark, label: 'System Wallet', href: '/admin/wallet' },
+    { icon: BarChart3, label: 'Race Revenue', href: '/admin/race-revenue' },
   ],
   STAFF: [
     { icon: TrendingUp, label: 'Set Odds', href: '/admin/races?tab=odds' },],

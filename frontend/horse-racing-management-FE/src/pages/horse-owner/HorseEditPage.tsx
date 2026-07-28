@@ -5,7 +5,6 @@ import { useHorseForm } from '@/hooks/useHorseForm';
 import HorseForm from '@/components/features/horse-owner/HorseForm';
 import HorseCard from '@/components/features/horse-owner/HorseCard';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import Button from '@/components/ui/Button';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import type { Horse } from '@/types';
@@ -98,7 +97,6 @@ export default function HorseEditPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Edit Horse" description="Update your horse's details on Royal Derby." />
 
       <DashboardPageHeader
         eyebrow="Horse Owner"

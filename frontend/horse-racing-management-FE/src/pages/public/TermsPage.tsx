@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { FileCheck, ArrowRight } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Button from '@/components/ui/Button';
-import Seo from '@/components/seo/Seo';
 import Reveal from '@/components/ui/Reveal';
 
 // Matches Layout.tsx's fixed header height — sections need to clear it when jumped to.
@@ -98,10 +97,6 @@ export default function TermsPage() {
 
   return (
     <div>
-      <Seo
-        title="Terms of Service"
-        description="The terms governing your use of Royal Derby's racing and betting platform."
-      />
 
       {/* Hero */}
       <section className="border-b border-rim bg-navy">

@@ -10,7 +10,6 @@ import {
 } from '@/api/walletApi';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import EmptyState from '@/components/ui/EmptyState';
-import Seo from '@/components/seo/Seo';
 import type { PendingTransaction } from '@/types';
 
 /* Toggle chỉ đổi bảng bên dưới — 'withdrawals' = Pending Requests, 'deposits' = Deposit Requests */
@@ -28,6 +27,15 @@ const fmtDate = (iso?: string) =>
         hour: '2-digit', minute: '2-digit',
       })
     : '—';
+
+// Backend composes a withdraw's bank details into one string: "Bank: {bankName} -
+// {bankUserName} - {bankNumber}" (see PendingTransaction.verifyNote). Split it back
+// into labeled lines so the admin can actually scan it before approving a payout,
+// instead of parsing a run-on sentence themselves.
+function parseBankNote(note?: string) {
+  const m = note?.match(/^Bank:\s*(.+?)\s*-\s*(.+?)\s*-\s*(.+)$/);
+  return m ? { bank: m[1], holder: m[2], number: m[3] } : null;
+}
 
 /* ── Segmented toggle — 2 ô rộng bằng nhau nên pill trượt canh chuẩn, không lệch ── */
 function TableToggle({ tab, onChange }: { tab: TableTab; onChange: (t: TableTab) => void }) {
@@ -299,7 +307,7 @@ function DepositsPanel({ reloadKey, onBalanceChange, toggle }: { reloadKey: numb
                   <tr key={d.id} className="transition-colors hover:bg-surface-overlay/40">
                     <td className="px-5 py-3.5">
                       <span className="text-sm font-semibold text-ink">
-                        {d.user?.username ?? `#${d.user?.id ?? d.id}`}
+                        {d.user?.username ?? 'Unknown user'}
                       </span>
                     </td>
                     <td className="px-5 py-3.5">
@@ -472,15 +480,25 @@ function WithdrawalsPanel({ reloadKey, onBalanceChange, toggle }: { reloadKey: n
               </tr>
             </thead>
             <tbody className="divide-y divide-rim">
-              {withdraws.map((w) => (
+              {withdraws.map((w) => {
+                const bank = parseBankNote(w.verifyNote);
+                return (
                 <tr key={w.id} className="transition-colors hover:bg-surface-overlay/40">
                   <td className="px-5 py-4">
                     <p className="text-sm font-semibold text-ink">{w.user?.username ?? '—'}</p>
                     {w.user?.fullName && <p className="text-xs text-ink-3">{w.user.fullName}</p>}
                   </td>
                   <td className="tnum px-5 py-4 text-sm font-bold text-ink">{fmt(w.amount)}</td>
-                  <td className="px-5 py-4 text-xs text-ink-3 max-w-[200px]">
-                    <span className="break-words">{w.verifyNote ?? '—'}</span>
+                  <td className="px-5 py-4 text-xs max-w-[220px]">
+                    {bank ? (
+                      <div className="space-y-0.5">
+                        <p className="font-semibold text-ink">{bank.bank}</p>
+                        <p className="text-ink-3">{bank.holder}</p>
+                        <p className="tnum text-ink-3">{bank.number}</p>
+                      </div>
+                    ) : (
+                      <span className="break-words text-ink-3">{w.verifyNote ?? '—'}</span>
+                    )}
                   </td>
                   <td className="tnum px-5 py-4 text-xs text-ink-3">{fmtDate(w.createdAt)}</td>
                   <td className="px-5 py-4">
@@ -502,7 +520,8 @@ function WithdrawalsPanel({ reloadKey, onBalanceChange, toggle }: { reloadKey: n
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -594,7 +613,6 @@ export default function AdminWalletPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="System Wallet" />
       <DashboardPageHeader
         eyebrow="Admin"
         title="System Wallet"

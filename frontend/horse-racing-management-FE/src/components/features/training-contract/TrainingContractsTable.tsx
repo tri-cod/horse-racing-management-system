@@ -78,14 +78,14 @@ export default function TrainingContractsTable({ contracts, perspective, onView 
                         {initial}
                       </div>
                     )}
-                    <span className="font-serif text-sm font-bold text-ink">{c.horseName ?? `Horse #${c.horseId}`}</span>
+                    <span className="font-serif text-sm font-bold text-ink">{c.horseName ?? 'Unknown horse'}</span>
                   </div>
                 </td>
                 <td className="px-5 py-3.5">
                   <p className="text-sm text-ink-2">
                     {isTrainer
-                      ? (c.ownerName ?? `Owner #${c.ownerId}`)
-                      : (c.trainerName ?? `Trainer #${c.trainerId}`)}
+                      ? (c.ownerName ?? 'Unknown owner')
+                      : (c.trainerName ?? 'Unknown trainer')}
                   </p>
                   {/* Owner's note gives the trainer context when deciding. */}
                   {isTrainer && c.ownerNote && (

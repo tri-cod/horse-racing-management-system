@@ -7,8 +7,8 @@ import TrainerProfileForm from '@/components/features/trainer/TrainerProfileForm
 import TrainerProfileView from '@/components/features/trainer/TrainerProfileView';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Button from '@/components/ui/Button';
-import Seo from '@/components/seo/Seo';
 import { calculateAge } from '@/utils/age';
+import { humanizeStatus } from '@/utils/text';
 
 /* Inline avatar — larger size than the form's AvatarPreview */
 function HeaderAvatar({ url, name }: { url?: string; name?: string }) {
@@ -81,7 +81,6 @@ export default function TrainerProfilePage() {
 
   return (
     <div>
-      <Seo title="Trainer Profile" description="Manage your Royal Derby trainer profile." />
 
       {/* ── Identity header band ──────────────────────────────────── */}
       <div className="border-b border-on-blue/10 bg-navy">
@@ -110,7 +109,7 @@ export default function TrainerProfilePage() {
                       ? 'bg-fail/15 text-fail'
                       : 'bg-on-blue/10 text-on-blue/50'
                   }`}>
-                    {profile.status}
+                    {humanizeStatus(profile.status)}
                   </span>
                 )}
               </div>

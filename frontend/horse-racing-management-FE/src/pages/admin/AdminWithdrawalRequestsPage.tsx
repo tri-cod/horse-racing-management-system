@@ -7,7 +7,6 @@ import { getErrorMessage } from '@/utils/errors';
 import { useToast } from '@/components/ui/ToastProvider';
 import EmptyState from '@/components/ui/EmptyState';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import type { RaceHorse, Horse } from '@/types';
 
 function RequestsSkeleton() {
@@ -85,7 +84,6 @@ export default function AdminWithdrawalRequestsPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Horse Withdrawal Requests" description="Review horse owner requests to withdraw a horse from a race." />
       <DashboardPageHeader
         eyebrow="Admin"
         title="Horse Withdrawal Requests"
@@ -178,13 +176,13 @@ export default function AdminWithdrawalRequestsPage() {
                             className="inline-flex items-center gap-1.5 border border-rim-hi px-2.5 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:border-gold/40 hover:bg-surface-overlay hover:text-gold-hi"
                           >
                             <User size={12} className="shrink-0 text-ink-4" />
-                            {r.ownerName ?? `Owner #${r.ownerId}`}
+                            {r.ownerName ?? 'Unknown owner'}
                           </Link>
                         ) : (
                           <span className="text-sm text-ink-4">{r.ownerName ?? '—'}</span>
                         )}
                       </td>
-                      <td className="px-5 py-3.5 text-sm text-ink-2">{r.raceName ?? `Race #${r.raceId}`}</td>
+                      <td className="px-5 py-3.5 text-sm text-ink-2">{r.raceName ?? 'Unknown race'}</td>
                       <td className="px-5 py-3.5">
                         {r.jockeyId != null ? (
                           <Link
@@ -193,7 +191,7 @@ export default function AdminWithdrawalRequestsPage() {
                             className="inline-flex items-center gap-1.5 border border-rim-hi px-2.5 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:border-gold/40 hover:bg-surface-overlay hover:text-gold-hi"
                           >
                             <Flag size={12} className="shrink-0 text-ink-4" />
-                            {r.jockeyName ?? `Jockey #${r.jockeyId}`}
+                            {r.jockeyName ?? 'Unknown jockey'}
                           </Link>
                         ) : (
                           <span className="text-sm text-ink-2">—</span>

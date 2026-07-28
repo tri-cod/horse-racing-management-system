@@ -8,9 +8,9 @@ import { useAuth } from '@/context/AuthContext';
 import { updateInfo } from '@/api/authApi';
 import { uploadImage } from '@/api/fileApi';
 import { getErrorMessage } from '@/utils/errors';
+import { humanizeStatus } from '@/utils/text';
 import UserAvatar from '@/components/features/admin/UserAvatar';
 import ImageCropModal from '@/components/ui/ImageCropModal';
-import Seo from '@/components/seo/Seo';
 
 const val = (v?: string | null) => v || '—';
 
@@ -120,22 +120,22 @@ export default function ProfilePage() {
   if (!user) {
     return (
       <div className="px-8 py-6">
-        <Seo title="My Profile" />
         <ProfileSkeleton />
       </div>
     );
   }
 
+  // Status isn't repeated here — the colored badge next to the name above already
+  // shows it, and duplicating it as plain text below just repeats the same fact
+  // in a less legible form (no color-coding).
   const readonlyFields = [
     { icon: User,   label: 'Username', value: user.username },
     { icon: Mail,   label: 'Email',    value: user.email },
     { icon: Shield, label: 'Role',     value: user.role?.replace(/_/g, ' ') },
-    { icon: CheckCircle, label: 'Status', value: user.status },
   ];
 
   return (
     <div className="px-8 py-6">
-      <Seo title="My Profile" description="Manage your Royal Derby account." />
 
       {cropSrc && (
         <ImageCropModal
@@ -188,7 +188,7 @@ export default function ProfilePage() {
                       ? 'border-ok/30 bg-ok/15 text-ok'
                       : 'border-on-blue/20 bg-on-blue/10 text-on-blue/60'
                   }`}>
-                    {user.status}
+                    {humanizeStatus(user.status)}
                   </span>
                 </div>
               </div>

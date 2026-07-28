@@ -11,7 +11,7 @@ public interface RaceService {
     RaceResponse closeRace(Long raceId);
     RaceResponse getRace(Long raceId);
     Page<RaceResponse> getRaceList(String status, Pageable pageable);
-    RaceResponse updateRace(Long raceId, CreateRaceRequest request);
+    RaceResponse updateRace(Long raceId, CreateRaceRequest request, Long userId);
     void deleteRace(Long raceId);
 
     RaceResponse startRace(Long id);

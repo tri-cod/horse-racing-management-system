@@ -4,7 +4,6 @@ import { useHorseForm } from '@/hooks/useHorseForm';
 import HorseForm from '@/components/features/horse-owner/HorseForm';
 import HorseCard from '@/components/features/horse-owner/HorseCard';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import Button from '@/components/ui/Button';
 import type { Horse } from '@/types';
 
@@ -32,7 +31,6 @@ export default function HorseRegisterPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Register Horse" description="Register a new horse on Royal Derby." />
 
       <DashboardPageHeader
         eyebrow="Horse Owner"

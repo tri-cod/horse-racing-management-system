@@ -1,5 +1,6 @@
 import { Rabbit } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
+import RaceHorseStatusBadge from '@/components/features/race-horse/RaceHorseStatusBadge';
 import type { TrainerHorse, TrainerRaceParticipation } from '@/types';
 
 const fmtDate = (iso?: string) =>
@@ -38,7 +39,7 @@ export default function TrainerHorseDetailModal({ horse, upcoming, onClose }: Pr
                   <p className="text-[11px] text-ink-4">{fmtDate(r.startTime)}{r.location ? ` · ${r.location}` : ''}</p>
                 </div>
                 {r.registrationStatus && (
-                  <span className="shrink-0 text-[11px] uppercase tracking-wide text-ink-4">{r.registrationStatus}</span>
+                  <span className="shrink-0"><RaceHorseStatusBadge status={r.registrationStatus} /></span>
                 )}
               </div>
             ))}

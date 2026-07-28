@@ -3,7 +3,6 @@ import { Search } from 'lucide-react';
 import { getAllPenalties } from '@/api/adminApi';
 import PenaltyList from '@/components/features/referee/PenaltyList';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import type { Penalty, PenaltyType } from '@/types';
 
 const TYPES: { value: PenaltyType | ''; label: string }[] = [
@@ -53,7 +52,6 @@ export default function AdminPenaltiesPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Penalties" description="Every penalty issued across the system, for oversight of referee conduct." />
       <DashboardPageHeader
         eyebrow="Admin"
         title="Penalties"

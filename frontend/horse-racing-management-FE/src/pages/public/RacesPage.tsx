@@ -6,12 +6,8 @@ import { useRaceDetail } from '@/hooks/useRaceDetail';
 import { useHorsesByRace } from '@/hooks/useHorsesByRace';
 import { useRaceResults, type NormalizedRaceResult } from '@/hooks/useRaceResults';
 import { useRefereeProfile } from '@/hooks/useRefereeProfile';
-import { useAuth } from '@/context/AuthContext';
-import { useToast } from '@/components/ui/ToastProvider';
-import PlaceBetModal from '@/components/features/bet/PlaceBetModal';
 import Container from '@/components/ui/Container';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import Seo from '@/components/seo/Seo';
 import { assignLanes } from '@/utils/laneUtils';
 import type { Race } from '@/types';
 
@@ -368,11 +364,8 @@ function RaceResultsSection({ raceId }: { raceId: number }) {
 }
 
 /* ── Main Page ─────────────────────────────────────────────────── */
-export default function RacesPage({ bettingMode = false }: { bettingMode?: boolean }) {
+export default function RacesPage() {
   const { races, loading } = useRaces({ page: 0, size: 200 });
-  const { user } = useAuth();
-  const addToast = useToast();
-  const [showBet, setShowBet] = useState(false);
   const [searchParams] = useSearchParams();
 
   /* Map date → races on that date */
@@ -402,22 +395,8 @@ export default function RacesPage({ bettingMode = false }: { bettingMode?: boole
     setSelectedRaceIdx(0);
   };
 
-  const { entries: rawBetHorses } = useHorsesByRace(selectedRace?.id);
-  const betHorses = useMemo(() =>
-    assignLanes(rawBetHorses.filter((e) =>
-      e.status?.toLowerCase() === 'approved' && e.odds != null
-    ) as Parameters<typeof assignLanes>[0]),
-    [rawBetHorses]
-  );
-
-  const canBet = !user || user.role === 'USER';
-  const NON_BETTABLE = new Set(['FINISHED', 'CANCELLED', 'ONGOING']);
-  const raceIsBettable = !selectedRace || !NON_BETTABLE.has(selectedRace.status);
-  const betReady = !!selectedRace && raceIsBettable && betHorses.length > 0;
-
   return (
     <div className="min-h-screen bg-surface">
-      <Seo title="Race Schedule" description="Browse upcoming and past horse races on Royal Derby." />
 
       <Container className="py-8">
         {loading ? (
@@ -491,31 +470,12 @@ export default function RacesPage({ bettingMode = false }: { bettingMode?: boole
                     className="flex w-full items-center justify-center border-b border-rim bg-navy py-3.5 text-xs font-bold uppercase tracking-widest text-on-blue hover:bg-navy-hi transition-colors">
                     Results &amp; Replays
                   </Link>
-                  {bettingMode ? (
-                    canBet && (
-                      !user ? (
-                        <Link to="/login"
-                          className="flex w-full items-center justify-center gap-1.5 bg-gold py-3.5 text-xs font-bold uppercase tracking-widest text-on-gold hover:bg-gold-hi transition-colors">
-                          <Ticket size={13} /> Sign In To Bet
-                        </Link>
-                      ) : (
-                        <button type="button" disabled={!betReady} onClick={() => setShowBet(true)}
-                          className="flex w-full items-center justify-center gap-1.5 bg-gold py-3.5 text-xs font-bold uppercase tracking-widest text-on-gold transition-colors hover:bg-gold-hi disabled:cursor-not-allowed disabled:bg-rim disabled:text-ink-4">
-                          <Ticket size={13} />
-                          {betReady
-                            ? 'Bet Now'
-                            : selectedRace && NON_BETTABLE.has(selectedRace.status)
-                              ? 'Betting Closed'
-                              : 'No Entries To Bet'}
-                        </button>
-                      )
-                    )
-                  ) : (
-                    <Link to="/bet/races"
-                      className="flex w-full items-center justify-center gap-1.5 bg-gold py-3.5 text-xs font-bold uppercase tracking-widest text-on-gold hover:bg-gold-hi transition-colors">
-                      <Ticket size={13} /> Bet Now
-                    </Link>
-                  )}
+                  {/* Carries the race the visitor is looking at over to the board,
+                      so they land on its odds instead of the first race listed. */}
+                  <Link to={selectedRace ? `/bet/races?race=${selectedRace.id}` : '/bet/races'}
+                    className="flex w-full items-center justify-center gap-1.5 bg-gold py-3.5 text-xs font-bold uppercase tracking-widest text-on-gold hover:bg-gold-hi transition-colors">
+                    <Ticket size={13} /> Bet Now
+                  </Link>
                 </div>
               </div>
             </div>
@@ -528,15 +488,6 @@ export default function RacesPage({ bettingMode = false }: { bettingMode?: boole
         <RaceResultsSection raceId={selectedRace.id} />
       )}
 
-      {bettingMode && selectedRace && (
-        <PlaceBetModal
-          open={showBet}
-          onClose={() => setShowBet(false)}
-          race={selectedRace}
-          raceHorses={betHorses}
-          onSuccess={() => addToast('Bet placed successfully!', 'success')}
-        />
-      )}
     </div>
   );
 }

@@ -66,6 +66,7 @@ const JockeyMyRacesPage = lazy(() => import('@/pages/jockey/JockeyMyRacesPage'))
 // Referee
 const RefereeDashboardPage = lazy(() => import('@/pages/referee/RefereeDashboardPage'));
 const RefereeRacesPage = lazy(() => import('@/pages/referee/RefereeRacesPage'));
+const RefereeEditRacePage = lazy(() => import('@/pages/referee/RefereeEditRacePage'));
 const RefereeMyRacesPage = lazy(() => import('@/pages/referee/RefereeMyRacesPage'));
 const RefereePenaltyHistoryPage = lazy(() => import('@/pages/referee/RefereePenaltyHistoryPage'));
 const RefereeMyProfilePage = lazy(() => import('@/pages/referee/RefereeMyProfilePage'));
@@ -79,6 +80,7 @@ const AdminRaceDetailPage = lazy(() => import('@/pages/admin/AdminRaceDetailPage
 const AdminEditRacePage = lazy(() => import('@/pages/admin/AdminEditRacePage'));
 const AdminWithdrawalRequestsPage = lazy(() => import('@/pages/admin/AdminWithdrawalRequestsPage'));
 const AdminWalletPage = lazy(() => import('@/pages/admin/AdminWalletPage'));
+const AdminRaceRevenuePage = lazy(() => import('@/pages/admin/AdminRaceRevenuePage'));
 
 function RouteFallback() {
   return (
@@ -141,6 +143,11 @@ export default function App() {
           <Route path="/referee/races" element={
             <ProtectedRoute allowedRoles={['REFEREE']}>
               <AppLayout><RefereeRacesPage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/referee/races/:id/edit" element={
+            <ProtectedRoute allowedRoles={['REFEREE']}>
+              <AppLayout><RefereeEditRacePage /></AppLayout>
             </ProtectedRoute>
           } />
           <Route path="/referee/my-races" element={
@@ -319,6 +326,11 @@ export default function App() {
           <Route path="/admin/wallet" element={
             <ProtectedRoute allowedRoles={['ADMIN']}>
               <AppLayout><AdminWalletPage /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/race-revenue" element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AppLayout><AdminRaceRevenuePage /></AppLayout>
             </ProtectedRoute>
           } />
 

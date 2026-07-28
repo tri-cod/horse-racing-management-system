@@ -8,12 +8,12 @@ import { useMyJockeyProfile } from '@/hooks/useMyJockeyProfile';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { getErrorMessage } from '@/utils/errors';
+import { humanizeStatus } from '@/utils/text';
 import { uploadImage } from '@/api/fileApi';
 import { isoDateYearsAgo, calculateAge } from '@/utils/age';
 import UserAvatar from '@/components/features/admin/UserAvatar';
 import ImageCropModal from '@/components/ui/ImageCropModal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import Seo from '@/components/seo/Seo';
 
 const MIN_AGE = 14;
 const MAX_AGE = 70;
@@ -175,7 +175,6 @@ export default function JockeyMyProfilePage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Jockey Profile" description="Manage your Royal Derby jockey profile." />
 
       {cropSrc && (
         <ImageCropModal
@@ -232,7 +231,7 @@ export default function JockeyMyProfilePage() {
                         ? 'border-ok/30 bg-ok/15 text-ok'
                         : 'border-on-blue/20 bg-on-blue/10 text-on-blue/60'
                     }`}>
-                      {status}
+                      {humanizeStatus(status)}
                     </span>
                   )}
                 </div>

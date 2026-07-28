@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Flag, Play, Lock, ChevronDown, ChevronUp, Calendar, MapPin, Gavel, ClipboardCheck,
-  Ruler, Waves, Droplets,
+  Ruler, Waves, Droplets, Pencil,
 } from 'lucide-react';
 import { startRace, getPenaltiesByRace } from '@/api/refereeApi';
 import { getRaces } from '@/api/raceApi';
@@ -15,7 +16,6 @@ import EmptyState from '@/components/ui/EmptyState';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import { useMyRefereeProfile } from '@/hooks/useMyRefereeProfile';
 import type { Race, Penalty } from '@/types';
 
@@ -161,6 +161,9 @@ export default function RefereeRacesPage() {
     // Inspect/Penalty/Set Result are rejected server-side unless this referee is
     // the one assigned to the race — hide them rather than surface a confusing error.
     const isMine = myProfile != null && race.refereeId === myProfile.id;
+    // Mirrors the backend guard (RaceServiceImpl.validateRaceTimeUpdate): a race can't
+    // be edited once it's ONGOING/FINISHED, and there's nothing left to edit once CANCELLED.
+    const isEditable = isMine && race.status !== 'ONGOING' && race.status !== 'FINISHED' && race.status !== 'CANCELLED';
 
     return (
       <div key={race.id} className="overflow-hidden border border-rim bg-surface-raised transition-shadow hover:shadow-card">
@@ -229,6 +232,14 @@ export default function RefereeRacesPage() {
 
           {/* Primary, status-changing actions */}
           <div className="flex shrink-0 flex-wrap items-center gap-2">
+            {isEditable && (
+              <Link
+                to={`/referee/races/${race.id}/edit`}
+                className="inline-flex items-center gap-1.5 border border-rim-hi px-3.5 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:bg-surface-overlay"
+              >
+                <Pencil size={12} /> Edit
+              </Link>
+            )}
             {/* Check and Start are deliberately two separate actions: Check only opens
                 the inspection modal (mark horses OK / report issues), it never starts
                 the race by itself. Start only appears once that check comes back clean
@@ -301,7 +312,6 @@ export default function RefereeRacesPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Race Control" />
       <DashboardPageHeader
         eyebrow="Referee"
         title="Race Control"

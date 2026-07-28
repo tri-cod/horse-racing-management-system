@@ -7,7 +7,6 @@ import { getErrorMessage } from '@/utils/errors';
 import { useToast } from '@/components/ui/ToastProvider';
 import EmptyState from '@/components/ui/EmptyState';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import type { RaceHorse, Horse } from '@/types';
 
 const fmtPrize = (n?: number) =>
@@ -94,7 +93,6 @@ export default function JockeyRaceRequestsPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Race Requests" description="Review and respond to horse owner requests to ride." />
       <DashboardPageHeader
         eyebrow="Jockey"
         title="Race Requests"
@@ -152,7 +150,7 @@ export default function JockeyRaceRequestsPage() {
                           )}
                           <div className="min-w-0">
                             <p className="flex items-center gap-2 font-serif text-sm font-bold text-ink">
-                              {r.horseName ?? `Horse #${r.horseId}`}
+                              {r.horseName ?? 'Unknown horse'}
                               <Link
                                 to={`/horses/${r.horseId}`}
                                 title="View horse profile and race record"
@@ -192,7 +190,7 @@ export default function JockeyRaceRequestsPage() {
                             className="inline-flex items-center gap-1.5 border border-rim-hi px-2.5 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:border-gold/40 hover:bg-surface-overlay hover:text-gold-hi"
                           >
                             <User size={12} className="shrink-0 text-ink-4" />
-                            {r.ownerName ?? `Owner #${r.ownerId}`}
+                            {r.ownerName ?? 'Unknown owner'}
                           </Link>
                         ) : (
                           <span className="text-sm text-ink-4">{r.ownerName ?? '—'}</span>
@@ -204,7 +202,7 @@ export default function JockeyRaceRequestsPage() {
                           title="View race details"
                           className="text-sm font-semibold text-ink-2 transition-colors hover:text-gold-hi hover:underline"
                         >
-                          {r.raceName ?? `Race #${r.raceId}`}
+                          {r.raceName ?? 'Unknown race'}
                         </Link>
                         {r.startTime && <p className="mt-0.5 text-[11px] text-ink-4">{fmtDateTime(r.startTime)}</p>}
                       </td>

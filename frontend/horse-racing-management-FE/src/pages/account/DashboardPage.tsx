@@ -8,7 +8,6 @@ import StatCard from '@/components/shared/StatCard';
 import ActivityList, { type ActivityItem } from '@/components/shared/ActivityList';
 import QuickActions from '@/components/shared/QuickActions';
 import { FadeInStagger, FadeInItem } from '@/components/shared/FadeIn';
-import Seo from '@/components/seo/Seo';
 import type { BetResponse } from '@/types';
 
 const fmt = (n: number | null | undefined) =>
@@ -67,7 +66,6 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <Seo title="My Dashboard" description="Overview of your bets and wallet." />
       <DashboardHero
         eyebrow="Member"
         title={`Welcome back, ${user?.fullName ?? user?.username ?? 'Member'}`}

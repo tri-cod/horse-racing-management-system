@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Clock, ArrowRight } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Button from '@/components/ui/Button';
-import Seo from '@/components/seo/Seo';
 import Reveal from '@/components/ui/Reveal';
 
 const CONTACT_CARDS = [
@@ -35,10 +34,6 @@ const HOURS = [
 export default function ContactPage() {
   return (
     <div>
-      <Seo
-        title="Contact Us"
-        description="Get in touch with Royal Derby's race office — address, phone, email and visiting hours."
-      />
 
       {/* Header band */}
       <section className="border-b border-rim bg-navy">

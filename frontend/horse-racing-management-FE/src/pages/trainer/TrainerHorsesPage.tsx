@@ -10,7 +10,6 @@ import { isStatus } from '@/utils/trainingContractStatus';
 import EmptyState from '@/components/ui/EmptyState';
 import Badge from '@/components/ui/Badge';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import TrainerHorseDetailModal from '@/components/features/trainer/TrainerHorseDetailModal';
 import type { TrainerHorse, TrainingContract, TrainerRaceParticipation } from '@/types';
 
@@ -90,7 +89,6 @@ export default function TrainerHorsesPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Managed Horses" description="Manage the horses under your training." />
       <DashboardPageHeader
         eyebrow="Trainer"
         title="Managed Horses"
@@ -166,7 +164,7 @@ export default function TrainerHorsesPage() {
                           )}
                           <div className="min-w-0">
                             <Link to={`/horses/${h.horseId}`} className="font-serif text-sm font-bold text-ink transition-colors hover:text-gold-hi">
-                              {h.horseName ?? `Horse #${h.horseId}`}
+                              {h.horseName ?? 'Unknown horse'}
                             </Link>
                             {h.breed && <p className="text-[11px] text-ink-4">{h.breed}</p>}
                           </div>

@@ -6,7 +6,6 @@ import { isAnyStatus, type TrainingContractStatus } from '@/utils/trainingContra
 import { useToast } from '@/components/ui/ToastProvider';
 import EmptyState from '@/components/ui/EmptyState';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import TrainingContractsTable from '@/components/features/training-contract/TrainingContractsTable';
 import TrainerBrowseModal from '@/components/features/training-contract/TrainerBrowseModal';
 import SendTrainingContractModal from '@/components/features/training-contract/SendTrainingContractModal';
@@ -75,7 +74,6 @@ export default function TrainingContractsPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Training Contracts" description="Hire trainers for your horses and track contract status." />
       <DashboardPageHeader
         eyebrow="Horse Owner"
         title="Training Contracts"

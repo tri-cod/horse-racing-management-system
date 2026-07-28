@@ -8,11 +8,11 @@ import { useMyRefereeProfile } from '@/hooks/useMyRefereeProfile';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { getErrorMessage } from '@/utils/errors';
+import { humanizeStatus } from '@/utils/text';
 import { uploadImage } from '@/api/fileApi';
 import UserAvatar from '@/components/features/admin/UserAvatar';
 import ImageCropModal from '@/components/ui/ImageCropModal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import Seo from '@/components/seo/Seo';
 
 const val = (v?: string | number | null) =>
   v === null || v === undefined || v === '' ? '—' : v;
@@ -156,7 +156,6 @@ export default function RefereeMyProfilePage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Referee Profile" description="Manage your Royal Derby referee profile." />
 
       {cropSrc && (
         <ImageCropModal
@@ -213,7 +212,7 @@ export default function RefereeMyProfilePage() {
                         ? 'border-ok/30 bg-ok/15 text-ok'
                         : 'border-on-blue/20 bg-on-blue/10 text-on-blue/60'
                     }`}>
-                      {status}
+                      {humanizeStatus(status)}
                     </span>
                   )}
                 </div>

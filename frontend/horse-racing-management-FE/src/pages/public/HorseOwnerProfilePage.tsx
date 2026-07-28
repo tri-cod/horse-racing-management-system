@@ -5,7 +5,6 @@ import { ChevronLeft, User, Trophy, Flag, TrendingUp, Rabbit, Quote } from 'luci
 import { useHorseOwnerProfile } from '@/hooks/useHorseOwnerProfile';
 import { silkColor } from '@/utils/jockeySilks';
 import Container from '@/components/ui/Container';
-import Seo from '@/components/seo/Seo';
 import type { HorseOwnerHorseSummary } from '@/types';
 
 /** One stat in the trophy-cabinet row — icon first, number second. Distinct from
@@ -188,7 +187,6 @@ export default function HorseOwnerProfilePage() {
 
   return (
     <div className="min-h-screen bg-surface pb-24">
-      <Seo title={owner.name} description={`Racing stable profile for ${owner.name}.`} />
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-navy-deep">

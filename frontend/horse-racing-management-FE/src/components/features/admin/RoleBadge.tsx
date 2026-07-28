@@ -10,14 +10,14 @@ const CONFIG: Record<UserRole, string> = {
   USER:        'bg-surface-overlay text-ink-3 border border-rim',
 };
 
-const LABEL: Record<UserRole, string> = {
+export const ROLE_LABEL: Record<UserRole, string> = {
   ADMIN: 'Admin', STAFF: 'Staff', REFEREE: 'Referee', HORSE_OWNER: 'Horse Owner',
   TRAINER: 'Trainer', JOCKEY: 'Jockey', USER: 'Member',
 };
 
 export default function RoleBadge({ role }: { role: string }) {
   const cls = CONFIG[role as UserRole] ?? 'bg-surface-overlay text-ink-3 border border-rim';
-  const label = LABEL[role as UserRole] ?? role;
+  const label = ROLE_LABEL[role as UserRole] ?? role;
   return (
     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${cls}`}>
       {label}

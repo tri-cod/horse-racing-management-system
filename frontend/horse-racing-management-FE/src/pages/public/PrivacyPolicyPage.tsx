@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { ShieldCheck, ArrowRight } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Button from '@/components/ui/Button';
-import Seo from '@/components/seo/Seo';
 import Reveal from '@/components/ui/Reveal';
 
 // Matches Layout.tsx's fixed header height — sections need to clear it when jumped to.
@@ -99,10 +98,6 @@ export default function PrivacyPolicyPage() {
 
   return (
     <div>
-      <Seo
-        title="Privacy Policy"
-        description="How Royal Derby collects, uses and protects your personal information."
-      />
 
       {/* Hero */}
       <section className="border-b border-rim bg-navy">
