@@ -165,12 +165,14 @@ export default function AdminRaceDetailPage() {
   // with a highlight. "Seen" is persisted per race in localStorage, not just in-memory,
   // so it also flags things the admin never looked at on a *fresh* page load/reload —
   // not only status changes that happen to occur while this tab is already open.
-  const seenStatusRef = useRef<Map<number, string>>();
+  const seenStatusRef = useRef<Map<number, string> | undefined>(undefined);
   if (seenStatusRef.current === undefined) seenStatusRef.current = loadSeenEntryStatuses(raceId);
   const [attentionIds, setAttentionIds] = useState<Set<number>>(new Set());
 
   useEffect(() => {
-    const seen = seenStatusRef.current;
+    // Always defined by this point — set synchronously above on first render,
+    // before any effect can run.
+    const seen = seenStatusRef.current!;
     const unseen = entries
       .filter((e) => isAnyStatus(e.status, ACTIONABLE_STATUSES) && seen.get(e.id) !== e.status)
       .map((e) => e.id);
