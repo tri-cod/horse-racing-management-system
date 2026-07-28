@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import Container from '@/components/ui/Container';
-import SectionHeader from '@/components/ui/SectionHeader';
 import { useTopJockeys } from '@/hooks/useTopJockeys';
 import type { Jockey } from '@/types';
 
@@ -18,33 +17,33 @@ function JockeyRow({ jockey, rank, active, onSelect }: {
         type="button"
         onClick={onSelect}
         aria-pressed={active}
-        className={`flex w-full items-center gap-4 px-5 py-3 text-left transition-colors ${
+        className={`flex w-full items-center gap-3 px-4 py-2 text-left transition-colors ${
           active ? 'bg-gold/10' : 'hover:bg-surface-overlay/60'
         }`}
       >
         {/* Rank */}
-        <span className={`tnum w-7 shrink-0 text-lg font-bold ${
+        <span className={`tnum w-6 shrink-0 text-sm font-bold ${
           rank === 1 ? 'text-gold-hi' : active ? 'text-ink' : 'text-ink-4'
         }`}>
           {String(rank).padStart(2, '0')}
         </span>
 
         {/* Avatar */}
-        <div className={`flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border ${
+        <div className={`flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full border ${
           active ? 'border-gold bg-gold/20' : 'border-rim-hi bg-gold/10'
         }`}>
           {jockey.avatarUrl ? (
             <img src={jockey.avatarUrl} alt="" className="h-full w-full object-cover" />
           ) : (
-            <span className="font-serif text-base font-bold text-gold">{initial}</span>
+            <span className="font-serif text-xs font-bold text-gold">{initial}</span>
           )}
         </div>
 
         {/* Name */}
-        <p className="min-w-0 flex-1 truncate text-base font-bold text-ink">{jockey.name}</p>
+        <p className="min-w-0 flex-1 truncate text-sm font-bold text-ink">{jockey.name}</p>
 
         {/* Stats */}
-        <div className="hidden shrink-0 items-center gap-5 text-sm sm:flex">
+        <div className="hidden shrink-0 items-center gap-4 text-xs sm:flex">
           <span className="text-ink-4">
             Races: <span className="tnum font-semibold text-ink-2">{jockey.totalRaces ?? 0}</span>
           </span>
@@ -78,14 +77,14 @@ export default function JockeysSection() {
         )}
 
         {!loading && !error && selected && (
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-5">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
             {/* Left — section header + top-10 list */}
-            <div className="lg:col-span-3">
-              <SectionHeader
-                align="left"
-                title={<>Top <span className="[font-variant-numeric:lining-nums]">10</span> Championship Jockeys in <span className="[font-variant-numeric:lining-nums]">2026</span></>}
-                subtitle="The talented riders chasing glory across the Royal Derby season."
-              />
+            <div className="lg:col-span-5">
+              {/* Rendered inline instead of through SectionHeader: that component carries a
+                  fixed mb-12, and the standings are meant to sit close under the title. */}
+              <h2 className="mb-5 max-w-2xl font-serif text-3xl font-bold text-ink sm:text-4xl">
+                Top <span className="[font-variant-numeric:lining-nums]">10</span> Championship Jockeys in <span className="[font-variant-numeric:lining-nums]">2026</span>
+              </h2>
               <ol className="divide-y divide-rim overflow-hidden rounded-md border border-rim bg-surface-raised shadow-card">
                 {jockeys.map((jockey, i) => (
                   <JockeyRow
@@ -100,7 +99,7 @@ export default function JockeysSection() {
             </div>
 
             {/* Right — portrait of the selected jockey, stretched to the column's full height */}
-            <div className="relative mx-auto w-full self-stretch overflow-hidden rounded-md lg:col-span-2" style={{ minHeight: PORTRAIT_HEIGHT }}>
+            <div className="relative mx-auto w-full self-stretch overflow-hidden rounded-md lg:col-span-7" style={{ minHeight: PORTRAIT_HEIGHT }}>
               <AnimatePresence initial={false}>
                 {selected.avatarUrl ? (
                   <motion.img
