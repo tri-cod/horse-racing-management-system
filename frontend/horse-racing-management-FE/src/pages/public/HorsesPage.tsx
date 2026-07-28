@@ -6,7 +6,6 @@ import HorseCard from '@/components/features/horse-directory/HorseCard';
 import Container from '@/components/ui/Container';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
-import Seo from '@/components/seo/Seo';
 
 const inputCls =
   'w-full border border-rim bg-surface-input rounded px-3 py-2.5 text-sm text-ink ' +
@@ -25,7 +24,6 @@ export default function HorsesPage() {
 
   return (
     <div className="min-h-screen bg-surface">
-      <Seo title="Horses" description="Discover the horses racing across the Royal Derby system." />
 
       <Container className="py-10">
         {/* Toolbar */}

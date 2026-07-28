@@ -3,7 +3,6 @@ import { Calendar, ArrowRight, Trophy, Megaphone, ShieldCheck, Coins } from 'luc
 import Container from '@/components/ui/Container';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
-import Seo from '@/components/seo/Seo';
 import Reveal from '@/components/ui/Reveal';
 
 type BadgeVariant = 'ocean' | 'warning' | 'danger' | 'neutral' | 'dark';
@@ -61,10 +60,6 @@ const NEWS: NewsItem[] = [
 export default function NewsPage() {
   return (
     <div>
-      <Seo
-        title="News"
-        description="The latest announcements, rule updates and season recaps from Royal Derby."
-      />
 
       {/* Header band */}
       <section className="border-b border-rim bg-navy">

@@ -17,7 +17,6 @@ import RaceHorseStatusBadge from '@/components/features/race-horse/RaceHorseStat
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import Seo from '@/components/seo/Seo';
 import { isStatus, isAnyStatus, type RaceHorseStatusKey } from '@/utils/raceHorseStatus';
 import { assignLanes } from '@/utils/laneUtils';
 import { buildRaceRequirements } from '@/utils/raceRequirements';
@@ -440,7 +439,6 @@ export default function AdminRaceDetailPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title={race.raceName} description={`Admin details for ${race.raceName}`} />
 
       <Link to="/admin/races" className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-ink-3 transition-colors hover:text-ink">
         <ChevronLeft size={14} /> Back to Races

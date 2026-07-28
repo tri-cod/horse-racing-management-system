@@ -8,7 +8,6 @@ import type { BankAccount } from '@/types';
 import DepositModal from '@/components/features/wallet/DepositModal';
 import WithdrawModal from '@/components/features/wallet/WithdrawModal';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 
 const fmt = (n: number | null) =>
   n != null
@@ -87,7 +86,6 @@ export default function MyWalletPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="My Wallet" description="Manage your Royal Derby wallet balance." />
       <DashboardPageHeader
         eyebrow="Account"
         title="My Wallet"

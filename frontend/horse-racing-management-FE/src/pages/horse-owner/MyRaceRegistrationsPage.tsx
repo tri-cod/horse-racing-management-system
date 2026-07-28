@@ -9,7 +9,6 @@ import { useToast } from '@/components/ui/ToastProvider';
 import EmptyState from '@/components/ui/EmptyState';
 import Button from '@/components/ui/Button';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import { isStatus, isAnyStatus, type RaceHorseStatusKey } from '@/utils/raceHorseStatus';
 import type { RaceHorse } from '@/types';
 
@@ -80,7 +79,6 @@ export default function MyRaceRegistrationsPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Race Registrations" description="Track your horse race registration requests." />
       <DashboardPageHeader
         eyebrow="Horse Owner"
         title="Race Registrations"

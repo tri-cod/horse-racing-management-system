@@ -3,7 +3,6 @@ import { Eye, EyeOff, ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { forgotPassword, resetPassword } from '@/api/authApi';
 import { Link, useNavigate } from 'react-router-dom';
-import Seo from '@/components/seo/Seo';
 import Button from '@/components/ui/Button';
 import OtpBoxes from '@/components/features/form/OtpBoxes';
 import AuthSplitLayout from '@/components/layout/AuthSplitLayout';
@@ -81,7 +80,6 @@ export default function ForgotPasswordPage() {
 
  return (
  <AuthSplitLayout>
- <Seo title="Reset Password" description="Reset your Royal Derby account password securely." />
 
  {/* Heading */}
  <div className="mb-8">

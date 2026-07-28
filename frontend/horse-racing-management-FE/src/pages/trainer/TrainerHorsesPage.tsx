@@ -10,7 +10,6 @@ import { isStatus } from '@/utils/trainingContractStatus';
 import EmptyState from '@/components/ui/EmptyState';
 import Badge from '@/components/ui/Badge';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import TrainerHorseDetailModal from '@/components/features/trainer/TrainerHorseDetailModal';
 import type { TrainerHorse, TrainingContract, TrainerRaceParticipation } from '@/types';
 
@@ -90,7 +89,6 @@ export default function TrainerHorsesPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Managed Horses" description="Manage the horses under your training." />
       <DashboardPageHeader
         eyebrow="Trainer"
         title="Managed Horses"

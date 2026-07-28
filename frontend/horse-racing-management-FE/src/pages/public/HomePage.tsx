@@ -8,7 +8,6 @@ import AboutSection from '@/components/features/home/AboutSection';
 import GallerySection from '@/components/features/home/GallerySection';
 import NewsSection from '@/components/features/home/NewsSection';
 import NewsletterSection from '@/components/features/home/NewsletterSection';
-import Seo from '@/components/seo/Seo';
 
 export default function HomePage() {
   useEffect(() => {
@@ -30,7 +29,6 @@ export default function HomePage() {
 
   return (
     <div>
-      <Seo title="Royal Derby — Horse Racing Management" description="Welcome to Royal Derby — the premier platform for managing horse races, jockeys, results and betting." type="website" />
       <HeroSection />
       <BetBoard embedded />
       <JockeysSection />

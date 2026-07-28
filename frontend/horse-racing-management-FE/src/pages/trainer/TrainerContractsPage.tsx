@@ -5,7 +5,6 @@ import { getErrorMessage } from '@/utils/errors';
 import { isAnyStatus, type TrainingContractStatus } from '@/utils/trainingContractStatus';
 import EmptyState from '@/components/ui/EmptyState';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import TrainingContractsTable from '@/components/features/training-contract/TrainingContractsTable';
 import TrainingContractDetailModal from '@/components/features/training-contract/TrainingContractDetailModal';
 import type { TrainingContract } from '@/types';
@@ -70,7 +69,6 @@ export default function TrainerContractsPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Training Contracts" description="Review and respond to training requests from horse owners." />
       <DashboardPageHeader
         eyebrow="Trainer"
         title="Training Contracts"

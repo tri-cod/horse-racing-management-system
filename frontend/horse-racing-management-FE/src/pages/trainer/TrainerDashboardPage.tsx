@@ -10,7 +10,6 @@ import QuickActions from '@/components/shared/QuickActions';
 import { FadeInStagger, FadeInItem } from '@/components/shared/FadeIn';
 import TrainerStatsSection from '@/components/features/trainer/TrainerStatsSection';
 import TrainerHorsesSection from '@/components/features/trainer/TrainerHorsesSection';
-import Seo from '@/components/seo/Seo';
 import type { Trainer } from '@/types';
 
 const fmt = (n: number | null | undefined) =>
@@ -79,7 +78,6 @@ export default function TrainerDashboardPage() {
 
   return (
     <div>
-      <Seo title="My Dashboard" description="Overview of your trainer profile." />
       <DashboardHero
         eyebrow="Trainer"
         title={`Welcome back, ${user?.fullName ?? user?.username ?? 'Trainer'}`}

@@ -13,7 +13,6 @@ import { isoDateYearsAgo, calculateAge } from '@/utils/age';
 import UserAvatar from '@/components/features/admin/UserAvatar';
 import ImageCropModal from '@/components/ui/ImageCropModal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import Seo from '@/components/seo/Seo';
 
 const MIN_AGE = 14;
 const MAX_AGE = 70;
@@ -175,7 +174,6 @@ export default function JockeyMyProfilePage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Jockey Profile" description="Manage your Royal Derby jockey profile." />
 
       {cropSrc && (
         <ImageCropModal

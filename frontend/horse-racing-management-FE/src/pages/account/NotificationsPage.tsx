@@ -4,7 +4,6 @@ import { useNotifications } from '@/hooks/useNotifications';
 import EmptyState from '@/components/ui/EmptyState';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import { useToast } from '@/components/ui/ToastProvider';
 import { getErrorMessage } from '@/utils/errors';
 import type { Notification } from '@/types';
@@ -131,7 +130,6 @@ export default function NotificationsPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="Notifications" description="Your Royal Derby notifications." />
       <DashboardPageHeader
         eyebrow="Account"
         title="Notifications"

@@ -5,7 +5,6 @@ import { getRaces } from '@/api/raceApi';
 import RaceResultSection from '@/components/features/race/RaceResultSection';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Container from '@/components/ui/Container';
-import Seo from '@/components/seo/Seo';
 import type { Race } from '@/types';
 
 const fmtDate = (iso?: string) => iso ? new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
@@ -100,7 +99,6 @@ export default function RaceResultsPage() {
 
  return (
  <div className="min-h-screen bg-surface">
- <Seo title="Race Results" description="View final standings and prize distribution for completed Royal Derby races." />
 
  {/* Hero band - navy câu lạc bộ, đồng bộ với các trang public khác */}
  <section className="relative overflow-hidden bg-gradient-to-b from-navy to-navy-deep py-16">

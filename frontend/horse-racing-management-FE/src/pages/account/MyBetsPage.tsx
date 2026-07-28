@@ -4,7 +4,6 @@ import { Ticket, ChevronDown, ChevronUp } from 'lucide-react';
 import { getMyBets } from '@/api/betApi';
 import EmptyState from '@/components/ui/EmptyState';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import type { BetResponse, BetItemResponse } from '@/types';
 
 const fmtVnd = (n?: number | null) =>
@@ -273,7 +272,6 @@ export default function MyBetsPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="My Bets" description="Track all your Royal Derby bets and results." />
       <DashboardPageHeader
         eyebrow="Account"
         title="My Bets"

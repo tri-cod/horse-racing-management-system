@@ -3,7 +3,6 @@ import { ArrowRight } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import Container from '@/components/ui/Container';
 import Button from '@/components/ui/Button';
-import Seo from '@/components/seo/Seo';
 import Reveal from '@/components/ui/Reveal';
 
 const stagger = {
@@ -32,10 +31,6 @@ export default function AboutPage() {
   const reduce = useReducedMotion();
   return (
     <div>
-      <Seo
-        title="About"
-        description="The history, architecture and racing calendar behind Royal Derby's home track in Arcadia, California."
-      />
 
       {/* Hero */}
       <section className="relative -mt-[109px] flex min-h-[78dvh] items-end overflow-hidden">

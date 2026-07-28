@@ -8,7 +8,6 @@ import HorseStatusBadge from '@/components/features/horse-owner/HorseStatusBadge
 import Button from '@/components/ui/Button';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 import { getErrorMessage } from '@/utils/errors';
 import { formatPreferredDistance } from '@/utils/horsePreferences';
 import type { Horse, HorseStatus } from '@/types';
@@ -124,7 +123,6 @@ export default function MyHorsesPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="My Horses" description="Manage your registered horses on Royal Derby." />
 
       <DashboardPageHeader
         eyebrow="Horse Owner"

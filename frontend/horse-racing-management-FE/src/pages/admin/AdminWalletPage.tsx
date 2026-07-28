@@ -10,7 +10,6 @@ import {
 } from '@/api/walletApi';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import EmptyState from '@/components/ui/EmptyState';
-import Seo from '@/components/seo/Seo';
 import type { PendingTransaction } from '@/types';
 
 /* Toggle chỉ đổi bảng bên dưới — 'withdrawals' = Pending Requests, 'deposits' = Deposit Requests */
@@ -594,7 +593,6 @@ export default function AdminWalletPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="System Wallet" />
       <DashboardPageHeader
         eyebrow="Admin"
         title="System Wallet"

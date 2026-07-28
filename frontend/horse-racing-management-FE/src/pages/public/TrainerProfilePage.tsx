@@ -6,7 +6,6 @@ import { useTrainerPublicProfile } from '@/hooks/useTrainerPublicProfile';
 import { silkColor } from '@/utils/jockeySilks';
 import { calculateAge } from '@/utils/age';
 import Container from '@/components/ui/Container';
-import Seo from '@/components/seo/Seo';
 import type { TrainerHorse } from '@/types';
 
 function TrophyStat({
@@ -158,7 +157,6 @@ export default function TrainerProfilePage() {
 
   return (
     <div className="min-h-screen bg-surface pb-24">
-      <Seo title={name} description={`Trainer profile and career stats for ${name}.`} />
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-navy-deep">

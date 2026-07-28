@@ -1,5 +1,4 @@
 import RegisterForm from '@/components/features/form/RegisterForm';
-import Seo from '@/components/seo/Seo';
 import AuthSplitLayout from '@/components/layout/AuthSplitLayout';
 import type { UserRole } from '@/types';
 import type { ComponentType } from 'react';
@@ -42,7 +41,6 @@ const ROLE_CONFIG: Record<string, { apiRole: UserRole; roleLabel: string }> = {
 export default function RegisterPage() {
  return (
  <AuthSplitLayout wide>
- <Seo title="Create Account" description="Register a new Royal Derby account." />
 
  <div className="mb-8">
  <h1 className="font-serif text-4xl font-bold text-ink sm:text-5xl">Join Royal Derby</h1>

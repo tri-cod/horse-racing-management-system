@@ -4,7 +4,6 @@ import { motion, useReducedMotion } from 'motion/react';
 import { ChevronLeft, User, BadgeCheck, Quote } from 'lucide-react';
 import { useRefereeProfile } from '@/hooks/useRefereeProfile';
 import Container from '@/components/ui/Container';
-import Seo from '@/components/seo/Seo';
 
 const GOLD = '#d9bc76';
 
@@ -130,7 +129,6 @@ export default function RefereeProfilePage() {
 
   return (
     <div className="min-h-screen bg-surface pb-24">
-      <Seo title={referee.name} description={`Referee profile for ${referee.name}.`} />
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-navy-deep">

@@ -8,7 +8,6 @@ import { useRaceResults, type NormalizedRaceResult } from '@/hooks/useRaceResult
 import { useRefereeProfile } from '@/hooks/useRefereeProfile';
 import Container from '@/components/ui/Container';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import Seo from '@/components/seo/Seo';
 import { assignLanes } from '@/utils/laneUtils';
 import type { Race } from '@/types';
 
@@ -398,7 +397,6 @@ export default function RacesPage() {
 
   return (
     <div className="min-h-screen bg-surface">
-      <Seo title="Race Schedule" description="Browse upcoming and past horse races on Royal Derby." />
 
       <Container className="py-8">
         {loading ? (

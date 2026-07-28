@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { useMyRefereeRaces, type RefereeRaceScope } from '@/hooks/useMyRefereeRaces';
 import EmptyState from '@/components/ui/EmptyState';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import Seo from '@/components/seo/Seo';
 
 const TABS: { key: RefereeRaceScope; label: string }[] = [
   { key: 'current', label: 'Ongoing' },
@@ -21,7 +20,6 @@ export default function RefereeMyRacesPage() {
 
   return (
     <div className="px-8 py-6">
-      <Seo title="My Races" />
       <DashboardPageHeader eyebrow="Referee" title="My Races" subtitle="Races assigned to you" />
 
       <div className="mb-5 flex gap-6 border-b border-rim">

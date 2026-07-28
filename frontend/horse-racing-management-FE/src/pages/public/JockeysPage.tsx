@@ -5,7 +5,6 @@ import { useJockeys } from '@/hooks/useJockeys';
 import JockeyCard from '@/components/features/jockey/JockeyCard';
 import Container from '@/components/ui/Container';
 import Button from '@/components/ui/Button';
-import Seo from '@/components/seo/Seo';
 
 const inputCls =
   'w-full border border-rim bg-surface-input rounded px-3 py-2.5 text-sm text-ink ' +
@@ -23,7 +22,6 @@ export default function JockeysPage() {
 
   return (
     <div className="min-h-screen bg-surface">
-      <Seo title="Jockeys" description="Discover the talented riders competing across the Royal Derby system." />
 
       {/* Hero band - navy câu lạc bộ, đồng bộ với tông tối của JockeyCard */}
       <section className="relative overflow-hidden bg-gradient-to-b from-navy to-navy-deep py-16">
