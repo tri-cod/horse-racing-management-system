@@ -245,7 +245,11 @@ export default function MyHorsesPage() {
             style={{ gridTemplateColumns: HORSES_GRID_COLS.split('_').join(' ') }}
           >
             {['Horse', 'Breed', 'Gender', 'Age', 'Speed', 'Prefers', 'Penalties', 'Status', 'Action'].map((h) => (
-              <span key={h} className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">
+              <span
+                key={h}
+                title={h === 'Speed' ? 'Speed Rating, on a scale of 0–100' : undefined}
+                className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4"
+              >
                 {h}
               </span>
             ))}
@@ -329,6 +333,7 @@ export default function MyHorsesPage() {
                     <button
                       type="button"
                       title="View"
+                      aria-label={`View ${h.horseName}`}
                       onClick={() => navigate(`/horse-owner/horses/${h.id}`)}
                       className="flex h-7 w-7 items-center justify-center border border-rim text-ink-3 transition-colors hover:border-rim-hi hover:text-ink"
                     >
@@ -337,6 +342,7 @@ export default function MyHorsesPage() {
                     <button
                       type="button"
                       title="Edit"
+                      aria-label={`Edit ${h.horseName}`}
                       onClick={() => navigate(`/horse-owner/horses/${h.id}/edit`)}
                       className="flex h-7 w-7 items-center justify-center border border-rim text-ink-3 transition-colors hover:border-gold hover:text-gold"
                     >
@@ -345,6 +351,7 @@ export default function MyHorsesPage() {
                     <button
                       type="button"
                       title="Delete"
+                      aria-label={`Delete ${h.horseName}`}
                       disabled={isDeleting}
                       onClick={() => requestDelete(h)}
                       className="flex h-7 w-7 items-center justify-center border border-rim text-ink-3 transition-colors hover:border-fail hover:text-fail disabled:opacity-50"

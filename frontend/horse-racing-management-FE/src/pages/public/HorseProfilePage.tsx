@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   ChevronLeft, Rabbit, Trophy, Flag, Wallet, MapPin, Calendar, Award, Sparkles, ArrowRight,
-  Venus, Mars, Weight, Gauge, GraduationCap, Palette, Waves,
+  Venus, Mars, Weight, Gauge, Palette, Waves, Medal, Percent,
 } from 'lucide-react';
 import { useHorseProfile } from '@/hooks/useHorseProfile';
 import { useHorseRaceHistory } from '@/hooks/useHorseRaceHistory';
+import { useHorseCareerStats } from '@/hooks/useHorseCareerStats';
 import { getHorseById } from '@/api/horseOwnerApi';
 import { formatPreferredDistance } from '@/utils/horsePreferences';
 import Container from '@/components/ui/Container';
@@ -158,7 +159,12 @@ export default function HorseProfilePage() {
   const horseId = id ? Number(id) : undefined;
 
   const { horse, loading: profileLoading, error: profileError } = useHorseProfile(horseId);
-  const { history, best, totalRewards, wins, racesRun, loading: historyLoading } = useHorseRaceHistory(horseId);
+  // `best`/`history` still come from the race-by-race endpoint (for the timeline and
+  // the "Career Best" highlight below) — but the headline numbers now come from the
+  // server-computed career endpoint instead of being re-derived client-side from the
+  // same list, so they can't drift out of sync with what the backend considers official.
+  const { history, best, loading: historyLoading } = useHorseRaceHistory(horseId);
+  const { stats, loading: statsLoading } = useHorseCareerStats(horseId);
 
   // The public horse-list endpoint only carries name/breed/avatar/status — age,
   // gender, weight, speed rating, class and trainer live on the richer horse-owner
@@ -177,7 +183,6 @@ export default function HorseProfilePage() {
         detail.age != null && { icon: Calendar, label: 'Age', value: `${detail.age} years old` },
         detail.weight != null && { icon: Weight, label: 'Weight', value: `${detail.weight} kg` },
         detail.speedRating != null && { icon: Gauge, label: 'Speed Rating', value: String(detail.speedRating) },
-        detail.historyRank && { icon: GraduationCap, label: 'Achievement', value: detail.historyRank },
         detail.color && { icon: Palette, label: 'Color', value: detail.color },
         detail.preferredDistance && { icon: Flag, label: 'Preferred Distance', value: formatPreferredDistance(detail.preferredDistance) ?? detail.preferredDistance },
         detail.preferredSurface && { icon: Waves, label: 'Preferred Surface', value: detail.preferredSurface },
@@ -253,12 +258,14 @@ export default function HorseProfilePage() {
               </div>
             )}
 
-            {/* Stat strip */}
-            <div className="grid grid-cols-2 gap-3 pt-6 sm:grid-cols-4">
-              <StatCard icon={Flag} label="Races Run" value={racesRun} loading={historyLoading} tone="default" />
-              <StatCard icon={Trophy} label="Wins" value={wins} loading={historyLoading} tone="gold" />
-              <StatCard icon={Award} label="Best Finish" value={best?.rank ? (ORDINAL[best.rank] ?? `${best.rank}th`) : 0} loading={historyLoading} tone="ok" />
-              <StatCard icon={Wallet} label="Total Rewards" value={fmtMoney(totalRewards ?? 0)} loading={historyLoading} tone="gold" />
+            {/* Stat strip — headline numbers from the server-computed career endpoint */}
+            <div className="grid grid-cols-2 gap-3 pt-6 sm:grid-cols-3 lg:grid-cols-6">
+              <StatCard icon={Flag} label="Races Run" value={stats?.totalStarts ?? 0} loading={statsLoading} tone="default" />
+              <StatCard icon={Trophy} label="Wins" value={stats?.totalWins ?? 0} loading={statsLoading} tone="gold" />
+              <StatCard icon={Medal} label="Podiums" value={stats?.totalPodiums ?? 0} loading={statsLoading} tone="ok" />
+              <StatCard icon={Percent} label="Win Rate" value={`${(stats?.winRate ?? 0).toFixed(1)}%`} loading={statsLoading} tone="default" />
+              <StatCard icon={Award} label="Best Finish" value={stats?.bestRank ? (ORDINAL[stats.bestRank] ?? `${stats.bestRank}th`) : '—'} loading={statsLoading} tone="ok" />
+              <StatCard icon={Wallet} label="Total Rewards" value={fmtMoney(stats?.totalEarnings ?? 0)} loading={statsLoading} tone="gold" />
             </div>
 
             {best && <CareerHighlight item={best} />}

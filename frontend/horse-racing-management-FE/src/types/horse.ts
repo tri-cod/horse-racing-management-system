@@ -26,8 +26,23 @@ export interface HorseRaceHistoryItem {
   completionTimeSeconds?: number;
   completionTimeFormatted?: string;
   rewards?: number;
+  horseName?: string;
   jockeyName?: string;
   totalParticipants?: number;
+}
+
+// GET /race-results/horse/{horseId}/career — server-computed from race_result,
+// not stored on the horse record. A brand-new horse returns all zeros (that's the
+// correct state, not missing data).
+export interface HorseCareerStats {
+  horseId: number;
+  totalStarts: number;
+  totalWins: number;
+  totalPodiums: number;
+  totalEarnings?: number | null;
+  bestRank?: number | null;
+  winRate: number;
+  podiumRate: number;
 }
 
 export interface Horse {

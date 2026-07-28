@@ -285,6 +285,9 @@ export default function HorseOwnerRacePage() {
               onChange={(e) => setRevenuePercent(e.target.value)}
               className="w-full max-w-[160px] border border-rim bg-surface-input px-3 py-2 text-sm text-ink outline-none focus:border-gold focus:ring-1 focus:ring-gold"
             />
+            <p className="mt-1.5 text-xs text-ink-4">
+              The share of this horse's prize winnings the jockey keeps if it places. The rest goes to you as the owner.
+            </p>
           </div>
         </div>
       )}

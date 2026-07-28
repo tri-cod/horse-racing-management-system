@@ -315,9 +315,16 @@ public class RaceServiceImpl implements RaceService {
     }
 
     @Override
-    public RaceResponse updateRace(Long raceId, CreateRaceRequest request) {
+    public RaceResponse updateRace(Long raceId, CreateRaceRequest request, Long userId) {
         Race race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new RuntimeException("Race not found"));
+
+        // Referees may only edit races they're assigned to; admins (no RaceReferee record) can edit any race.
+        raceRefereeRepository.findByUser_Id(userId).ifPresent(referee -> {
+            if (race.getReferee() == null || !race.getReferee().getId().equals(referee.getId())) {
+                throw new RuntimeException("You are not the referee of this race");
+            }
+        });
 
         validateRaceTimeUpdate(race, request);
         if (request.getRefereeId() != null) {
@@ -371,7 +378,12 @@ public class RaceServiceImpl implements RaceService {
         }
 
 
+        // Only reject when the start time is actually being changed to a past value —
+        // otherwise every edit to a race sitting in OPEN_BETTING (which can start up to
+        // 24h before start, per RaceSchedule.autoOpenBetting) fails once the original,
+        // untouched start time drifts into the past, even when nobody touched that field.
         if (request.getStartTime() != null &&
+                !request.getStartTime().equals(race.getStartTime()) &&
                 request.getStartTime().isBefore(now)) {
             throw new RuntimeException("Start time must be in the future");
         }

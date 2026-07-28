@@ -94,7 +94,6 @@ export default function HorseForm({
         <SectionHeader title="Performance" />
         <div className="grid grid-cols-2 gap-4">
           {renderField('speedRating')}
-          {renderField('history_rank')}
         </div>
       </div>
 

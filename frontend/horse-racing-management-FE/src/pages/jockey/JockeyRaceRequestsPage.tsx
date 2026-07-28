@@ -150,7 +150,7 @@ export default function JockeyRaceRequestsPage() {
                           )}
                           <div className="min-w-0">
                             <p className="flex items-center gap-2 font-serif text-sm font-bold text-ink">
-                              {r.horseName ?? `Horse #${r.horseId}`}
+                              {r.horseName ?? 'Unknown horse'}
                               <Link
                                 to={`/horses/${r.horseId}`}
                                 title="View horse profile and race record"
@@ -190,7 +190,7 @@ export default function JockeyRaceRequestsPage() {
                             className="inline-flex items-center gap-1.5 border border-rim-hi px-2.5 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:border-gold/40 hover:bg-surface-overlay hover:text-gold-hi"
                           >
                             <User size={12} className="shrink-0 text-ink-4" />
-                            {r.ownerName ?? `Owner #${r.ownerId}`}
+                            {r.ownerName ?? 'Unknown owner'}
                           </Link>
                         ) : (
                           <span className="text-sm text-ink-4">{r.ownerName ?? '—'}</span>
@@ -202,7 +202,7 @@ export default function JockeyRaceRequestsPage() {
                           title="View race details"
                           className="text-sm font-semibold text-ink-2 transition-colors hover:text-gold-hi hover:underline"
                         >
-                          {r.raceName ?? `Race #${r.raceId}`}
+                          {r.raceName ?? 'Unknown race'}
                         </Link>
                         {r.startTime && <p className="mt-0.5 text-[11px] text-ink-4">{fmtDateTime(r.startTime)}</p>}
                       </td>

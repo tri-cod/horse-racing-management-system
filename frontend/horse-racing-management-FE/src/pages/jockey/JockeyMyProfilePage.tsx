@@ -8,6 +8,7 @@ import { useMyJockeyProfile } from '@/hooks/useMyJockeyProfile';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { getErrorMessage } from '@/utils/errors';
+import { humanizeStatus } from '@/utils/text';
 import { uploadImage } from '@/api/fileApi';
 import { isoDateYearsAgo, calculateAge } from '@/utils/age';
 import UserAvatar from '@/components/features/admin/UserAvatar';
@@ -230,7 +231,7 @@ export default function JockeyMyProfilePage() {
                         ? 'border-ok/30 bg-ok/15 text-ok'
                         : 'border-on-blue/20 bg-on-blue/10 text-on-blue/60'
                     }`}>
-                      {status}
+                      {humanizeStatus(status)}
                     </span>
                   )}
                 </div>

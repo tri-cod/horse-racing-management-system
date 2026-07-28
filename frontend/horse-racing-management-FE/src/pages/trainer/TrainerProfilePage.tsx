@@ -8,6 +8,7 @@ import TrainerProfileView from '@/components/features/trainer/TrainerProfileView
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Button from '@/components/ui/Button';
 import { calculateAge } from '@/utils/age';
+import { humanizeStatus } from '@/utils/text';
 
 /* Inline avatar — larger size than the form's AvatarPreview */
 function HeaderAvatar({ url, name }: { url?: string; name?: string }) {
@@ -108,7 +109,7 @@ export default function TrainerProfilePage() {
                       ? 'bg-fail/15 text-fail'
                       : 'bg-on-blue/10 text-on-blue/50'
                   }`}>
-                    {profile.status}
+                    {humanizeStatus(profile.status)}
                   </span>
                 )}
               </div>

@@ -1,6 +1,6 @@
 import axiosInstance from './axiosInstance';
 import type {
- ApiResponse, PageResponse, User, UserRole, UserStatus, UserListParams, AdminStats, Penalty,
+ ApiResponse, PageResponse, User, UserRole, UserStatus, UserListParams, AdminStats, Penalty, RaceRevenue,
 } from '@/types';
 
 export const getUsers = ({ page = 0, size = 10, keyword, role, status }: UserListParams = {}) => {
@@ -47,3 +47,21 @@ export const getAdminStats = () =>
 
 export const getAllPenalties = () =>
  axiosInstance.get<ApiResponse<Penalty[]>>('/admin/penalties').then((r) => r.data.data);
+
+export interface RaceRevenueParams {
+ page?: number;
+ size?: number;
+ /** ISO instant — inclusive lower bound on race startTime. */
+ from?: string;
+ /** ISO instant — inclusive upper bound on race startTime. */
+ to?: string;
+}
+
+export const getRaceRevenue = ({ page = 0, size = 20, from, to }: RaceRevenueParams = {}) => {
+ const params: Record<string, unknown> = { page, size };
+ if (from) params.from = from;
+ if (to) params.to = to;
+ return axiosInstance
+ .get<ApiResponse<PageResponse<RaceRevenue>>>('/admin/stats/race-revenue', { params })
+ .then((r) => r.data.data);
+};

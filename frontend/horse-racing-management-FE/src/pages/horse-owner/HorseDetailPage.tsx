@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Dna, Cake, VenetianMask, Scale, Zap, Trophy, UserCog, Pencil, Trash2, Dumbbell, Gavel, Flag, Waves } from 'lucide-react';
+import {
+  ArrowLeft, Dna, Cake, VenetianMask, Scale, Zap, Trophy, UserCog, Pencil, Trash2, Dumbbell,
+  Gavel, Flag, Waves, Medal, Percent, Award, Wallet,
+} from 'lucide-react';
 import { formatPreferredDistance } from '@/utils/horsePreferences';
 import { useHorseDetail } from '@/hooks/useHorseDetail';
+import { useHorseCareerStats } from '@/hooks/useHorseCareerStats';
 import { deleteHorse, getHorsePenalties } from '@/api/horseOwnerApi';
 import { useToast } from '@/components/ui/ToastProvider';
 import HorseStatusBadge from '@/components/features/horse-owner/HorseStatusBadge';
@@ -10,9 +14,14 @@ import Button from '@/components/ui/Button';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import PenaltyList from '@/components/features/referee/PenaltyList';
 import { getErrorMessage } from '@/utils/errors';
-import type { Horse, Penalty } from '@/types';
+import type { Penalty } from '@/types';
 
-type FullHorse = Horse & { history_rank?: string };
+const ORDINAL: Record<number, string> = { 1: '1st', 2: '2nd', 3: '3rd' };
+
+function fmtMoney(n?: number | null) {
+  if (n == null) return '—';
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n);
+}
 
 function PageSkeleton() {
   return (
@@ -42,6 +51,7 @@ export default function HorseDetailPage() {
   const navigate = useNavigate();
   const addToast = useToast();
   const { horse, loading, error, refetch } = useHorseDetail(id ? Number(id) : undefined);
+  const { stats, loading: statsLoading } = useHorseCareerStats(horse?.id);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [penalties, setPenalties] = useState<Penalty[]>([]);
@@ -93,8 +103,7 @@ export default function HorseDetailPage() {
 
   if (!horse) return null;
 
-  const h = horse as FullHorse;
-  const achievements = h.historyRank ?? h.history_rank;
+  const h = horse;
 
   const physicalFields = [
     { icon: Dna,          label: 'Breed',  value: h.breed ?? '—',                                    mono: false },
@@ -228,40 +237,59 @@ export default function HorseDetailPage() {
           )}
 
           {/* Performance */}
-          {(h.speedRating != null || achievements) && (
+          {h.speedRating != null && (
             <div className="overflow-hidden border border-rim bg-surface-raised">
               <div className="border-b border-rim px-5 py-4">
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Performance</p>
-                <h2 className="mt-0.5 font-serif text-base font-bold text-ink">Race Record</h2>
+                <h2 className="mt-0.5 font-serif text-base font-bold text-ink">Speed Rating</h2>
               </div>
-              <div className="flex divide-x divide-rim">
-                {h.speedRating != null && (
-                  <div className="flex flex-1 flex-col items-center justify-center gap-1.5 px-6 py-6">
-                    <div className="flex items-center gap-1.5 text-ink-4">
-                      <Zap size={13} />
-                      <span className="text-[10px] font-semibold uppercase tracking-wider">Speed Rating</span>
-                    </div>
-                    <p className="tnum text-4xl font-bold text-ink">{h.speedRating}</p>
-                    <div className="mt-0.5 h-1.5 w-full max-w-[120px] overflow-hidden rounded-full bg-surface-overlay">
-                      <div
-                        className="h-full rounded-full bg-gold transition-all duration-500"
-                        style={{ width: `${Math.min(h.speedRating, 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-                {achievements && (
-                  <div className="flex flex-1 flex-col justify-center gap-1.5 px-6 py-6">
-                    <div className="flex items-center gap-1.5 text-ink-4">
-                      <Trophy size={13} />
-                      <span className="text-[10px] font-semibold uppercase tracking-wider">Achievements</span>
-                    </div>
-                    <p className="mt-0.5 text-sm font-medium text-ink">{achievements}</p>
-                  </div>
-                )}
+              <div className="flex flex-col items-center justify-center gap-1.5 px-6 py-6">
+                <div className="flex items-center gap-1.5 text-ink-4">
+                  <Zap size={13} />
+                  <span className="text-[10px] font-semibold uppercase tracking-wider">Speed Rating</span>
+                </div>
+                <p className="tnum text-4xl font-bold text-ink">{h.speedRating}</p>
+                <div className="mt-0.5 h-1.5 w-full max-w-[120px] overflow-hidden rounded-full bg-surface-overlay">
+                  <div
+                    className="h-full rounded-full bg-gold transition-all duration-500"
+                    style={{ width: `${Math.min(h.speedRating, 100)}%` }}
+                  />
+                </div>
               </div>
             </div>
           )}
+
+          {/* Career — server-computed from actual race results (race_result table),
+              not a manually-entered field, so a brand-new horse correctly shows zeros
+              rather than an empty "no data" state. */}
+          <div className="overflow-hidden border border-rim bg-surface-raised">
+            <div className="border-b border-rim px-5 py-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Race Record</p>
+              <h2 className="mt-0.5 font-serif text-base font-bold text-ink">Career</h2>
+            </div>
+            <div className="grid grid-cols-2 divide-y divide-rim sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+              {([
+                { icon: Flag, label: 'Races Run', value: stats?.totalStarts ?? 0 },
+                { icon: Trophy, label: 'Wins', value: stats?.totalWins ?? 0 },
+                { icon: Medal, label: 'Podiums', value: stats?.totalPodiums ?? 0 },
+                { icon: Percent, label: 'Win Rate', value: `${(stats?.winRate ?? 0).toFixed(1)}%` },
+                { icon: Award, label: 'Best Finish', value: stats?.bestRank ? (ORDINAL[stats.bestRank] ?? `${stats.bestRank}th`) : '—' },
+                { icon: Wallet, label: 'Total Earnings', value: fmtMoney(stats?.totalEarnings) },
+              ] as const).map(({ icon: Icon, label, value }) => (
+                <div key={label} className="flex flex-col gap-1.5 px-5 py-4">
+                  <div className="flex items-center gap-1.5 text-ink-4">
+                    <Icon size={13} />
+                    <span className="text-[10px] font-semibold uppercase tracking-wider">{label}</span>
+                  </div>
+                  {statsLoading ? (
+                    <div className="h-6 w-16 animate-pulse rounded-full bg-surface-overlay" />
+                  ) : (
+                    <p className="tnum text-base font-semibold text-ink">{value}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
 
           <div className="overflow-hidden border border-rim bg-surface-raised">
             <div className="border-b border-rim px-5 py-4">

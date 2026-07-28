@@ -4,6 +4,8 @@ import { useAdminUsers } from '@/hooks/useAdminUsers';
 import UsersTable from '@/components/features/admin/UsersTable';
 import ChangeRoleModal from '@/components/features/admin/ChangeRoleModal';
 import ChangeStatusModal from '@/components/features/admin/ChangeStatusModal';
+import { ROLE_LABEL } from '@/components/features/admin/RoleBadge';
+import { STATUS_LABEL } from '@/components/features/admin/StatusBadge';
 import CreateUserModal from '@/components/features/admin/CreateUserModal';
 import Pagination from '@/components/ui/Pagination';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -97,11 +99,11 @@ export default function AdminUsersPage() {
         </div>
         <select value={role} onChange={(e) => setRole(e.target.value as UserRole | '')} className={selectCls}>
           <option value="">All Roles</option>
-          {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+          {ROLES.map((r) => <option key={r} value={r}>{ROLE_LABEL[r]}</option>)}
         </select>
         <select value={status} onChange={(e) => setStatus(e.target.value as UserStatus | '')} className={selectCls}>
           <option value="">All Statuses</option>
-          {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+          {STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
         </select>
       </div>
 

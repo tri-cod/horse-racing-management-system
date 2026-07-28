@@ -164,7 +164,7 @@ export default function TrainerHorsesPage() {
                           )}
                           <div className="min-w-0">
                             <Link to={`/horses/${h.horseId}`} className="font-serif text-sm font-bold text-ink transition-colors hover:text-gold-hi">
-                              {h.horseName ?? `Horse #${h.horseId}`}
+                              {h.horseName ?? 'Unknown horse'}
                             </Link>
                             {h.breed && <p className="text-[11px] text-ink-4">{h.breed}</p>}
                           </div>

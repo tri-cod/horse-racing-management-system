@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Eye } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { updateRace } from '@/api/raceApi';
 import { useRaceDetail } from '@/hooks/useRaceDetail';
 import { useToast } from '@/components/ui/ToastProvider';
 import RaceForm from '@/components/features/race/RaceForm';
 import Button from '@/components/ui/Button';
+import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
+import type { CreateRacePayload, RaceStatus } from '@/types';
 
 function FormSkeleton() {
   return (
@@ -30,10 +32,8 @@ function FormSkeleton() {
     </div>
   );
 }
-import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
-import type { CreateRacePayload, RaceStatus } from '@/types';
 
-export default function AdminEditRacePage() {
+export default function RefereeEditRacePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const addToast = useToast();
@@ -45,20 +45,17 @@ export default function AdminEditRacePage() {
     setSaving(true);
     try {
       await updateRace(Number(id), payload);
-      // The save succeeded on the server, but ['race', id] and ['races', ...] stay
-      // "fresh" for 30s (see main.tsx staleTime) — without invalidating them, the
-      // list/detail pages the user lands on next would keep showing the old data.
       await queryClient.invalidateQueries({ queryKey: ['race', Number(id)] });
       await queryClient.invalidateQueries({ queryKey: ['races'] });
       addToast('Race updated successfully!', 'success');
-      navigate('/admin/races');
+      navigate('/referee/races');
     } finally { setSaving(false); }
   };
 
   return (
     <div className="px-8 py-6">
       <DashboardPageHeader
-        eyebrow="Admin"
+        eyebrow="Referee"
         title="Edit Race"
         subtitle={race?.raceName ?? 'Loading…'}
       />
@@ -66,19 +63,11 @@ export default function AdminEditRacePage() {
       <div className="mb-6 flex items-center justify-between">
         <button
           type="button"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/referee/races')}
           className="flex items-center gap-1.5 text-sm font-medium text-ink-3 transition-colors hover:text-ink"
         >
-          <ArrowLeft size={15} /> Back to Races
+          <ArrowLeft size={15} /> Back to Race Control
         </button>
-        {id && (
-          <Link
-            to={`/admin/races/${id}`}
-            className="flex items-center gap-1.5 text-sm font-medium text-navy transition-colors hover:text-navy-hi"
-          >
-            <Eye size={15} /> View Race Detail
-          </Link>
-        )}
       </div>
 
       {error && (

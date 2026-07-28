@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Pencil, X, Check, Camera, Loader2, AlertCircle,
-  IdCard, MapPin, CheckCircle, FileText, Shield, LogOut, Image as ImageIcon,
+  IdCard, MapPin, FileText, Shield, LogOut, Image as ImageIcon,
 } from 'lucide-react';
 import { useMyHorseOwnerProfile } from '@/hooks/useMyHorseOwnerProfile';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { getErrorMessage } from '@/utils/errors';
+import { humanizeStatus } from '@/utils/text';
 import { uploadImage } from '@/api/fileApi';
 import UserAvatar from '@/components/features/admin/UserAvatar';
 import ImageCropModal from '@/components/ui/ImageCropModal';
@@ -234,7 +235,7 @@ export default function HorseOwnerMyProfilePage() {
                         ? 'border-ok/30 bg-ok/15 text-ok'
                         : 'border-on-blue/20 bg-on-blue/10 text-on-blue/60'
                     }`}>
-                      {status}
+                      {humanizeStatus(status)}
                     </span>
                   )}
                 </div>
@@ -423,16 +424,8 @@ export default function HorseOwnerMyProfilePage() {
                   <p className="mt-0.5 whitespace-pre-line text-sm font-medium text-ink">{val(profile?.address)}</p>
                 </div>
               </div>
-              {/* Status */}
-              <div className="flex items-center gap-4 px-6 py-3.5">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center text-ink-4">
-                  <CheckCircle size={16} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Status</p>
-                  <p className="mt-0.5 text-sm font-medium text-ink">{val(status)}</p>
-                </div>
-              </div>
+              {/* Status is already shown as the colored badge next to the name above —
+                  not repeated here as plain text. */}
               {/* Description */}
               <div className="flex items-start gap-4 px-6 py-3.5">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center text-ink-4">

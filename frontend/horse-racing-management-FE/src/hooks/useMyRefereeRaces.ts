@@ -11,23 +11,32 @@ const FETCHERS: Record<RefereeRaceScope, () => Promise<RefereeRace[]>> = {
 };
 
 export function useMyRefereeRaces(scope: RefereeRaceScope) {
-  const [races, setRaces] = useState<RefereeRace[]>([]);
+  const [byScope, setByScope] = useState<Record<RefereeRaceScope, RefereeRace[]>>({ upcoming: [], current: [], history: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // Fetches all three scopes together, not just the active tab — lets the tab
+  // bar show a count per tab, and switching tabs no longer needs a round trip.
   const refetch = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      setRaces((await FETCHERS[scope]()) ?? []);
+      const [upcoming, current, history] = await Promise.all([
+        FETCHERS.upcoming(), FETCHERS.current(), FETCHERS.history(),
+      ]);
+      setByScope({ upcoming: upcoming ?? [], current: current ?? [], history: history ?? [] });
     } catch {
       setError('Failed to load races.');
     } finally {
       setLoading(false);
     }
-  }, [scope]);
+  }, []);
 
   useEffect(() => { refetch(); }, [refetch]);
 
-  return { races, loading, error, refetch };
+  const counts: Record<RefereeRaceScope, number> = {
+    upcoming: byScope.upcoming.length, current: byScope.current.length, history: byScope.history.length,
+  };
+
+  return { races: byScope[scope], counts, loading, error, refetch };
 }

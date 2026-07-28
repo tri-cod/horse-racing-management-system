@@ -5,6 +5,7 @@ import type {
  RaceResult,
  SetRaceResultPayload,
  HorseRaceHistoryItem,
+ HorseCareerStats,
 } from '@/types';
 
 export { getHorsesByRace } from './raceHorseApi';
@@ -31,6 +32,13 @@ export const getHorseRaceHistory = (horseId: number) =>
 export const getHorseBestResult = (horseId: number) =>
  axiosInstance
  .get<ApiResponse<HorseRaceHistoryItem | null>>(`/race-results/horse/${horseId}/best`)
+ .then((r) => r.data.data);
+
+// Career totals computed server-side from race_result — the source of truth for
+// stats display now that Horse no longer stores an achievements/history field.
+export const getHorseCareerStats = (horseId: number) =>
+ axiosInstance
+ .get<ApiResponse<HorseCareerStats>>(`/race-results/horse/${horseId}/career`)
  .then((r) => r.data.data);
 
 

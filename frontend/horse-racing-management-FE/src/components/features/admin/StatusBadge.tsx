@@ -7,6 +7,10 @@ const CONFIG: Record<UserStatus, { label: string; cls: string }> = {
   BANNED:   { label: 'Banned',   cls: 'bg-fail-subtle  text-fail  border-fail/30' },
 };
 
+export const STATUS_LABEL: Record<UserStatus, string> = {
+  ACTIVE: 'Active', INACTIVE: 'Inactive', BANNED: 'Banned',
+};
+
 export default function StatusBadge({ status }: { status: string }) {
   const cfg = CONFIG[status as UserStatus] ?? { label: status, cls: 'bg-surface-overlay text-ink-3 border-rim' };
   return <Badge className={cfg.cls}>{cfg.label}</Badge>;

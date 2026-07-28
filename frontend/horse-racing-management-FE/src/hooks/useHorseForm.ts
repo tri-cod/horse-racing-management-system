@@ -20,6 +20,9 @@ export interface FieldDef {
 }
 
 const DISTANCE_LABELS: Record<string, string> = { '': 'No preference', ...DISTANCE_CATEGORY_LABELS };
+// Mirrors HorseStatusBadge's wording for these three values — "Resting" instead
+// of the raw "INACTIVE" a horse owner would otherwise have no reason to know.
+const STATUS_LABELS: Record<string, string> = { ACTIVE: 'Active', INACTIVE: 'Resting', RETIRED: 'Retired' };
 
 export const FIELDS: FieldDef[] = [
  { name: 'horseName', label: 'Horse Name', type: 'text', placeholder: 'Thunder' },
@@ -27,7 +30,6 @@ export const FIELDS: FieldDef[] = [
  { name: 'age', label: 'Age', type: 'number', placeholder: '4' },
  { name: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female'] },
  { name: 'speedRating', label: 'Speed Rating', type: 'number', placeholder: '85' },
- { name: 'history_rank', label: 'Achievements', type: 'text', placeholder: 'Champion 2024' },
  { name: 'avatar_url', label: 'Avatar', type: 'file', placeholder: '' },
  { name: 'weight', label: 'Weight (kg)', type: 'number', placeholder: '480' },
  {
@@ -35,7 +37,7 @@ export const FIELDS: FieldDef[] = [
    options: ['', 'SPRINT', 'MILE', 'MIDDLE', 'LONG'], optionLabels: DISTANCE_LABELS,
  },
  { name: 'preferredSurface', label: 'Preferred Surface', type: 'text', placeholder: 'e.g. Turf' },
- { name: 'status', label: 'Status', type: 'select', options: ['ACTIVE', 'INACTIVE', 'RETIRED'] },
+ { name: 'status', label: 'Status', type: 'select', options: ['ACTIVE', 'INACTIVE', 'RETIRED'], optionLabels: STATUS_LABELS },
 ];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -46,7 +48,6 @@ export interface HorseFormData {
  age: string;
  gender: string;
  speedRating: string;
- history_rank: string;
  avatar_url: string;
  weight: string;
  preferredDistance: string;
@@ -112,7 +113,7 @@ function validate(name: keyof HorseFormData, value: unknown): string {
 
 const initialForm: HorseFormData = {
  horseName: '', breed: '', age: '', gender: 'Male',
- speedRating: '', history_rank: '', avatar_url: '', weight: '',
+ speedRating: '', avatar_url: '', weight: '',
  preferredDistance: '', preferredSurface: '', status: 'ACTIVE',
 };
 
@@ -123,7 +124,6 @@ function formFromHorse(horse: Horse): HorseFormData {
  age: horse.age != null ? String(horse.age) : '',
  gender: horse.gender ?? 'Male',
  speedRating: horse.speedRating != null ? String(horse.speedRating) : '',
- history_rank: horse.historyRank ?? '',
  avatar_url: horse.avatarUrl ?? '',
  weight: horse.weight != null ? String(horse.weight) : '',
  preferredDistance: horse.preferredDistance ?? '',
@@ -212,7 +212,9 @@ export function useHorseForm({ mode = 'create', horseId, initialValues }: UseHor
  age: form.age ? Number(form.age) : undefined,
  gender: form.gender || undefined,
  speedRating: form.speedRating ? Number(form.speedRating) : undefined,
- history_rank: form.history_rank.trim() || undefined,
+ // Achievements/history_rank is gone from the backend (Horse no longer stores it —
+ // see HorseCareerStatsResponse, computed from race_result instead), so there's
+ // nothing left to submit here.
  avatar_url: avatarUrl || undefined,
  weight: form.weight ? Number(form.weight) : undefined,
  preferredDistance: (form.preferredDistance || undefined) as SignHorsePayload['preferredDistance'],

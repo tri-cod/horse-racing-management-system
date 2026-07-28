@@ -4,6 +4,7 @@ import com.horseracing.horseracingmanagement.common.response.ApiResponse;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.CreateRaceRequest;
 import com.horseracing.horseracingmanagement.module.dto.RaceDto.RaceResponse;
 import com.horseracing.horseracingmanagement.module.service.RaceService;
+import com.horseracing.horseracingmanagement.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -70,13 +72,15 @@ public class RaceController {
                 raceService.reopenRace(id)));
     }
 
+    // Admin can edit any race; referee can only edit a race they're assigned to (enforced in service).
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")  // ← chỉ ADMIN
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'REFEREE')")
     public ResponseEntity<ApiResponse<RaceResponse>> updateRace(
             @PathVariable Long id,
-            @Valid @RequestBody CreateRaceRequest request) {
+            @Valid @RequestBody CreateRaceRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(ApiResponse.success("Race updated successfully",
-                raceService.updateRace(id, request)));
+                raceService.updateRace(id, request, userDetails.getId())));
     }
 
     @DeleteMapping("/{id}")

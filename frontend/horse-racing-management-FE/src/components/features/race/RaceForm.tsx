@@ -1,13 +1,24 @@
-import { useState, useRef, useEffect, type ReactNode, type ChangeEvent } from 'react';
-import { Upload, X, ArrowLeft } from 'lucide-react';
+import { useState, useRef, type ReactNode, type ChangeEvent } from 'react';
+import { Upload, X, Flag, CalendarClock, ShieldCheck, Trophy, ImageIcon, MapPin, Landmark, type LucideIcon } from 'lucide-react';
 import { uploadImage } from '@/api/fileApi';
 import { useReferees } from '@/hooks/useReferees';
 import Button from '@/components/ui/Button';
+import { formatPreferredDistance } from '@/utils/horsePreferences';
 import type { CreateRacePayload, RaceStatus, RaceClass, GenderRestriction } from '@/types';
+
+// Mirrors backend DistanceCategory (common/constant/DistanceCategory.java) — kept in
+// sync manually since the category itself is derived server-side, not sent by the form.
+const MIN_DISTANCE_M = 800;
+const MAX_DISTANCE_M = 5000;
+function distanceCategory(meters: number): string | null {
+ if (meters <= 1400) return 'SPRINT';
+ if (meters <= 1800) return 'MILE';
+ if (meters <= 2400) return 'MIDDLE';
+ return 'LONG';
+}
 
 const TRACK_CONDITIONS = ['Dry', 'Wet', 'Muddy', 'Fast', 'Soft'];
 const SURFACE_TYPES = ['Turf', 'Dirt', 'Synthetic'];
-const STEPS = ['Basic Info & Referee', 'Track & Schedule', 'Eligibility', 'Prize & Capacity', 'Media'];
 
 const RACE_CLASSES: { value: RaceClass | ''; label: string; hint: string }[] = [
  { value: '', label: 'No restriction', hint: '' },
@@ -46,7 +57,7 @@ function toISO(local: string) {
 interface FormData {
  raceName: string; startTime: string; registrationOpenDate: string; registrationDeadline: string;
  trackName: string; trackCondition: string; surfaceType: string;
- totalprizepool: string; distance: string; distanceMeters: string; location: string; capacity: string;
+ totalprizepool: string; distanceMeters: string; location: string; capacity: string;
  bannerImageurl: string; refereeId: string; entryFee: string;
  minAge: string; maxAge: string; genderRestriction: string; raceClass: string;
  minEarnings: string; maxEarnings: string; minWeight: string;
@@ -56,14 +67,14 @@ type Errors = Partial<Record<keyof FormData | 'submit', string>>;
 
 const EMPTY: FormData = {
  raceName: '', startTime: '', registrationOpenDate: '', registrationDeadline: '', trackName: LOCKED_TRACK_NAME, trackCondition: 'Dry',
- surfaceType: 'Turf', totalprizepool: '', distance: '', distanceMeters: '', location: LOCKED_LOCATION, capacity: '', bannerImageurl: '', refereeId: '', entryFee: '',
+ surfaceType: 'Turf', totalprizepool: '', distanceMeters: '', location: LOCKED_LOCATION, capacity: '', bannerImageurl: '', refereeId: '', entryFee: '',
  minAge: '', maxAge: '', genderRestriction: '', raceClass: '', minEarnings: '', maxEarnings: '', minWeight: '',
 };
 
 function Field({ id, label, required, optional, hint, error, children }: { id: string; label: string; required?: boolean; optional?: boolean; hint?: string; error?: string; children: ReactNode }) {
  return (
- <div className="flex flex-col gap-1">
- <label className="mb-1.5 block text-xs font-medium text-ink-3" htmlFor={id}>
+ <div className="flex flex-col gap-1.5">
+ <label className="block text-sm font-medium text-ink-2" htmlFor={id}>
  {label} {required && <span className="text-fail">*</span>}{optional && <span className="text-ink-4"> (optional)</span>}
  </label>
  {children}
@@ -74,42 +85,40 @@ function Field({ id, label, required, optional, hint, error, children }: { id: s
 }
 
 const inputCls = (_err?: string) =>
- 'w-full border border-rim bg-surface-input px-3 py-2 text-sm text-ink placeholder:text-ink-4 outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors';
+ 'w-full border border-rim bg-surface-input px-3.5 py-3 text-sm text-ink placeholder:text-ink-4 outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors';
 
-function StepIndicator({ current }: { current: number }) {
-  return (
-    <div className="mb-8 flex items-center justify-between">
-      {STEPS.map((label, i) => {
-        const n = i + 1;
-        const done = n < current;
-        const active = n === current;
-        return (
-          <div key={n} className="flex flex-1 items-center">
-            <div className="flex flex-col items-center gap-1.5">
-              <div className={`tnum flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-colors ${active ? 'bg-gold text-on-gold' : done ? 'bg-ok text-white' : 'bg-surface-overlay text-ink-4'}`}>
-                {done ? '✓' : n}
-              </div>
-              <span className={`whitespace-nowrap text-[10px] font-semibold uppercase tracking-wider ${active ? 'text-gold' : done ? 'text-ok' : 'text-ink-4'}`}>
-                {label}
-              </span>
-            </div>
-            {i < STEPS.length - 1 && (
-              <div className={`mx-2 h-px flex-1 transition-colors ${done ? 'bg-ok' : 'bg-rim'}`} />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
+// A fixed, non-editable fact (venue name) shown as a plain readout instead of a
+// disabled input — a greyed-out input reads as "empty/unfilled" to a first-time
+// user, which is exactly wrong for a value that's already locked in.
+function LockedField({ icon: Icon, value }: { icon: LucideIcon; value: string }) {
+ return (
+ <div className="flex items-center gap-2.5 border border-rim bg-surface-overlay px-3.5 py-3 text-sm">
+ <Icon size={16} className="shrink-0 text-gold" />
+ <span className="font-medium text-ink-2">{value}</span>
+ <span className="ml-auto shrink-0 text-[10px] font-semibold uppercase tracking-wide text-ink-4">Fixed venue</span>
+ </div>
+ );
 }
 
-function SectionHeader({ title }: { title: string }) {
-  return (
-    <div className="flex items-center gap-3 pb-1">
-      <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wider text-ink-3">{title}</span>
-      <div className="flex-1 border-t border-rim" />
-    </div>
-  );
+// Each part of the form reads as its own card — icon badge + title up top,
+// an optional one-line description, then the fields. Easier to scan at a
+// glance than a thin divider line, and closer to what a non-dev expects
+// from a "create listing" style form.
+function SectionCard({ icon: Icon, title, description, children }: { icon: LucideIcon; title: string; description?: string; children: ReactNode }) {
+ return (
+ <section className="rounded-lg border border-rim bg-surface-overlay/40 p-7">
+ <div className="mb-5 flex items-start gap-3.5">
+ <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold/10 text-gold">
+ <Icon size={19} />
+ </span>
+ <div className="flex flex-col gap-1 pt-1">
+ <h3 className="font-serif text-base font-bold leading-none text-ink">{title}</h3>
+ {description && <p className="text-xs text-ink-4">{description}</p>}
+ </div>
+ </div>
+ <div className="flex flex-col gap-5">{children}</div>
+ </section>
+ );
 }
 
 interface RaceFormProps {
@@ -134,16 +143,7 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  });
  const [errors, setErrors] = useState<Errors>({});
  const [uploading, setUploading] = useState(false);
- const [step, setStep] = useState(1);
- const [displayedStep, setDisplayedStep] = useState(1);
  const fileInputRef = useRef<HTMLInputElement>(null);
-
- useEffect(() => {
- if (step === displayedStep) return;
- const t = setTimeout(() => setDisplayedStep(step), 220);
- return () => clearTimeout(t);
- // eslint-disable-next-line react-hooks/exhaustive-deps
- }, [step]);
 
  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
  const file = e.target.files?.[0];
@@ -195,23 +195,25 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  </div>
  );
 
- const validateStep = (s: number): Errors => {
+ // Every field validated together — nothing is hidden behind a step anymore,
+ // so the user sees all problems in one pass instead of discovering them page by page.
+ const validateAll = (): Errors => {
  const errs: Errors = {};
- if (s === 1) {
  if (!form.raceName.trim()) errs.raceName = 'Race name is required.';
- }
- if (s === 2) {
  if (!form.startTime) errs.startTime = 'Start time is required.';
- if (!form.distance.trim()) errs.distance = 'Distance is required.';
  if (form.registrationOpenDate && form.startTime && form.registrationOpenDate >= form.startTime) {
  errs.registrationOpenDate = 'Registration open date must be before start time.';
  }
  if (form.registrationOpenDate && form.registrationDeadline && form.registrationOpenDate >= form.registrationDeadline) {
  errs.registrationOpenDate = 'Registration open date must be before registration deadline.';
  }
+ // Backend requires this (CreateRaceRequest.distanceMeters: @NotNull, 800-5000) — the
+ // free-text "Distance" field this used to be paired with no longer exists server-side.
+ if (form.distanceMeters === '' || isNaN(Number(form.distanceMeters))) {
+ errs.distanceMeters = 'Distance is required.';
+ } else if (Number(form.distanceMeters) < MIN_DISTANCE_M || Number(form.distanceMeters) > MAX_DISTANCE_M) {
+ errs.distanceMeters = `Distance must be between ${MIN_DISTANCE_M} and ${MAX_DISTANCE_M} meters.`;
  }
- if (s === 3) {
- if (form.distanceMeters !== '' && (isNaN(Number(form.distanceMeters)) || Number(form.distanceMeters) < 0)) errs.distanceMeters = 'Distance must be a positive number.';
  if (form.minAge !== '' && (isNaN(Number(form.minAge)) || Number(form.minAge) < 0)) errs.minAge = 'Minimum age must be a positive number.';
  if (form.maxAge !== '' && (isNaN(Number(form.maxAge)) || Number(form.maxAge) < 0)) errs.maxAge = 'Maximum age must be a positive number.';
  if (form.minAge !== '' && form.maxAge !== '' && Number(form.minAge) > Number(form.maxAge)) errs.maxAge = 'Maximum age must be greater than or equal to minimum age.';
@@ -219,28 +221,15 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  if (form.minEarnings !== '' && (isNaN(Number(form.minEarnings)) || Number(form.minEarnings) < 0)) errs.minEarnings = 'Minimum earnings must be a positive number.';
  if (form.maxEarnings !== '' && (isNaN(Number(form.maxEarnings)) || Number(form.maxEarnings) < 0)) errs.maxEarnings = 'Maximum earnings must be a positive number.';
  if (form.minEarnings !== '' && form.maxEarnings !== '' && Number(form.minEarnings) > Number(form.maxEarnings)) errs.maxEarnings = 'Maximum earnings must be greater than or equal to minimum earnings.';
- }
- if (s === 4) {
  if (!form.totalprizepool || isNaN(Number(form.totalprizepool)) || Number(form.totalprizepool) < 0) errs.totalprizepool = 'Prize pool must be a positive number.';
  if (!form.capacity || isNaN(Number(form.capacity)) || Number(form.capacity) < 1) errs.capacity = 'Capacity must be at least 1.';
  if (form.entryFee !== '' && (isNaN(Number(form.entryFee)) || Number(form.entryFee) < 0)) errs.entryFee = 'Entry fee must be a positive number.';
- }
- if (s === 5) {
  if (!form.bannerImageurl.trim()) errs.bannerImageurl = 'Banner image is required.';
- }
  return errs;
  };
 
- const handleNext = () => {
- const errs = validateStep(displayedStep);
- if (Object.keys(errs).length) { setErrors(errs); return; }
- setErrors({}); setStep(displayedStep + 1);
- };
-
- const handleBack = () => { setErrors({}); setStep(displayedStep - 1); };
-
  const handleSubmit = async () => {
- const errs = validateStep(5);
+ const errs = validateAll();
  if (Object.keys(errs).length) { setErrors(errs); return; }
  setErrors({});
  const payload: CreateRacePayload & { status?: RaceStatus } = {
@@ -248,13 +237,15 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  registrationOpenDate: form.registrationOpenDate ? toISO(form.registrationOpenDate) : undefined,
  registrationDeadline: form.registrationDeadline ? toISO(form.registrationDeadline) : undefined,
  trackName: LOCKED_TRACK_NAME, trackCondition: form.trackCondition, surfaceType: form.surfaceType,
- totalprizepool: Number(form.totalprizepool), distance: form.distance.trim(),
+ totalprizepool: Number(form.totalprizepool),
+ // distanceMeters is the only distance value the backend reads now — it derives the
+ // display string and distance category (Sprint/Mile/Middle/Long) from this.
+ distanceMeters: Number(form.distanceMeters),
  location: LOCKED_LOCATION, capacity: Number(form.capacity), bannerImageurl: form.bannerImageurl.trim(),
  status: mode === 'create' ? 'OPEN_REGISTRATION' : (initialValues?.status ?? 'UPCOMING'),
  };
  if (form.refereeId !== '') payload.refereeId = Number(form.refereeId);
  if (mode === 'create' && form.entryFee !== '') payload.entryFee = Number(form.entryFee);
- if (form.distanceMeters !== '') payload.distanceMeters = Number(form.distanceMeters);
  if (form.minAge !== '') payload.minAge = Number(form.minAge);
  if (form.maxAge !== '') payload.maxAge = Number(form.maxAge);
  if (form.genderRestriction !== '') payload.genderRestriction = form.genderRestriction as CreateRacePayload['genderRestriction'];
@@ -277,17 +268,14 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
 
  return (
  <div className="flex flex-col gap-6">
- <StepIndicator current={displayedStep} />
+ {errors.submit && <div className="rounded border border-fail/30 bg-fail-subtle px-4 py-3 text-sm text-fail" role="alert">{errors.submit}</div>}
 
- {errors.submit && <div className=" bg-fail-subtle border border-fail/30 px-4 py-3 text-sm text-fail" role="alert">{errors.submit}</div>}
+ <div className="grid grid-cols-1 gap-7 lg:grid-cols-2 lg:gap-9">
 
- <div className=" border border-rim bg-surface-raised p-6">
- {displayedStep === 1 && (
- <section className="flex flex-col gap-5">
- <SectionHeader title="Basic Info & Referee" />
- <div className="flex flex-col gap-4">
+ <div className="flex flex-col gap-7">
+ <SectionCard icon={Flag} title="Basic Info & Referee">
  <Field id="rf-name" label="Race Name" required error={errors.raceName}>{inp('rf-name', 'raceName', 'text', { placeholder: 'e.g. Grand Prix 2026' })}</Field>
- <Field id="rf-location" label="Location" required>{inp('rf-location', 'location', 'text', { disabled: true, className: `${inputCls()} cursor-not-allowed bg-surface-overlay text-ink-3` })}</Field>
+ <Field id="rf-location" label="Location" required><LockedField icon={MapPin} value={LOCKED_LOCATION} /></Field>
  <Field id="rf-referee" label="Race Referee" optional error={errors.refereeId}
  hint={refereesError ?? 'Optional. Leave blank to assign later.'}>
  <select id="rf-referee" className={inputCls()} value={form.refereeId} onChange={set('refereeId')} disabled={refereesLoading}>
@@ -297,21 +285,24 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  ))}
  </select>
  </Field>
- </div>
- </section>
- )}
- {displayedStep === 2 && (
- <section className="flex flex-col gap-5">
- <SectionHeader title="Track & Schedule" />
- <div className="flex flex-col gap-4">
+ </SectionCard>
+
+ <SectionCard icon={CalendarClock} title="Track & Schedule">
  <Field id="rf-start" label="Start Time" required error={errors.startTime}>{inp('rf-start', 'startTime', 'datetime-local')}</Field>
  <Field id="rf-open" label="Registration Opens" optional error={errors.registrationOpenDate} hint="Opens immediately if left blank. Set a future date to keep the race Upcoming until then.">{inp('rf-open', 'registrationOpenDate', 'datetime-local')}</Field>
  <Field id="rf-deadline" label="Registration Deadline" error={errors.registrationDeadline} hint="Auto-close 1 day before start if blank.">{inp('rf-deadline', 'registrationDeadline', 'datetime-local')}</Field>
- <Field id="rf-track" label="Track Name" required>{inp('rf-track', 'trackName', 'text', { disabled: true, className: `${inputCls()} cursor-not-allowed bg-surface-overlay text-ink-3` })}</Field>
- <Field id="rf-distance" label="Distance" required error={errors.distance}>{inp('rf-distance', 'distance', 'text', { placeholder: 'e.g. 1600m' })}</Field>
- <Field id="rf-distance-m" label="Distance (meters)" optional error={errors.distanceMeters} hint="Real number — used to match a horse's preferred distance category. Leave blank to skip.">
- {inp('rf-distance-m', 'distanceMeters', 'number', { placeholder: 'e.g. 1609.5', min: 0, step: 'any' })}
+ <Field id="rf-track" label="Track Name" required><LockedField icon={Landmark} value={LOCKED_TRACK_NAME} /></Field>
+ <Field
+ id="rf-distance-m" label="Distance (meters)" required error={errors.distanceMeters}
+ hint={
+ form.distanceMeters !== '' && !isNaN(Number(form.distanceMeters))
+ ? `${MIN_DISTANCE_M}–${MAX_DISTANCE_M}m · ${formatPreferredDistance(distanceCategory(Number(form.distanceMeters)))}`
+ : `${MIN_DISTANCE_M}–${MAX_DISTANCE_M}m — also determines the race's distance category (Sprint/Mile/Middle/Long).`
+ }
+ >
+ {inp('rf-distance-m', 'distanceMeters', 'number', { placeholder: 'e.g. 1609.5', min: MIN_DISTANCE_M, max: MAX_DISTANCE_M, step: 'any' })}
  </Field>
+ <div className="grid grid-cols-2 gap-4">
  <Field id="rf-cond" label="Track Condition" required error={errors.trackCondition}>
  <select id="rf-cond" className={inputCls()} value={form.trackCondition} onChange={set('trackCondition')}>
  {TRACK_CONDITIONS.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -323,13 +314,11 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  </select>
  </Field>
  </div>
- </section>
- )}
- {displayedStep === 3 && (
- <section className="flex flex-col gap-5">
- <SectionHeader title="Eligibility Requirements" />
- <p className="text-xs text-ink-3">All optional — leave blank for no restriction. A horse that doesn't meet these is blocked from registering.</p>
- <div className="flex flex-col gap-4">
+ </SectionCard>
+ </div>
+
+ <div className="flex flex-col gap-7">
+ <SectionCard icon={ShieldCheck} title="Eligibility Requirements" description="All optional — leave blank for no restriction. A horse that doesn't meet these is blocked from registering.">
  <div className="grid grid-cols-2 gap-4">
  <Field id="rf-min-age" label="Min Age (years)" optional error={errors.minAge}>{inp('rf-min-age', 'minAge', 'number', { placeholder: 'e.g. 3', min: 0 })}</Field>
  <Field id="rf-max-age" label="Max Age (years)" optional error={errors.maxAge}>{inp('rf-max-age', 'maxAge', 'number', { placeholder: 'e.g. 6', min: 0 })}</Field>
@@ -356,13 +345,9 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  {moneyInp('rf-max-earnings', 'maxEarnings', 'e.g. 150.000.000')}
  </Field>
  </div>
- </div>
- </section>
- )}
- {displayedStep === 4 && (
- <section className="flex flex-col gap-5">
- <SectionHeader title="Prize & Capacity" />
- <div className="flex flex-col gap-4">
+ </SectionCard>
+
+ <SectionCard icon={Trophy} title="Prize & Capacity">
  <Field id="rf-prize" label="Prize Pool (VND)" required error={errors.totalprizepool}>{moneyInp('rf-prize', 'totalprizepool', 'e.g. 500.000.000')}</Field>
  <Field id="rf-capacity" label="Capacity (horses)" required error={errors.capacity}>{inp('rf-capacity', 'capacity', 'number', { placeholder: 'e.g. 12', min: 1 })}</Field>
  {mode === 'create' && (
@@ -370,16 +355,13 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  {moneyInp('rf-entry-fee', 'entryFee', 'e.g. 100.000')}
  </Field>
  )}
- </div>
- </section>
- )}
- {displayedStep === 5 && (
- <section className="flex flex-col gap-5">
- <SectionHeader title="Media" />
+ </SectionCard>
+
+ <SectionCard icon={ImageIcon} title="Media">
  <Field id="rf-banner" label="Banner Image" required error={errors.bannerImageurl}>
  <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
  {!form.bannerImageurl ? (
- <div className="flex cursor-pointer flex-col items-center justify-center gap-2 border-2 border-dashed border-rim py-12 hover:border-rim-hi transition-colors"
+ <div className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded border-2 border-dashed border-rim py-10 hover:border-rim-hi transition-colors"
  onClick={() => fileInputRef.current?.click()}
  onDragOver={(e) => e.preventDefault()}
  onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFileUpload({ target: { files: [f] } } as unknown as ChangeEvent<HTMLInputElement>); }}>
@@ -387,8 +369,8 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  : <><Upload size={22} className="text-ink-4" /><p className="text-sm text-ink-3">Click to upload <span className="text-gold">or drag & drop</span></p><p className="text-xs text-ink-4">JPG, PNG, WEBP — max 10MB</p></>}
  </div>
  ) : (
- <div className=" border border-rim bg-surface-overlay p-3">
- <img src={form.bannerImageurl} alt="Banner preview" className="mb-3 h-40 w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+ <div className="rounded border border-rim bg-surface-overlay p-3">
+ <img src={form.bannerImageurl} alt="Banner preview" className="mb-3 h-40 w-full rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
  <div className="flex gap-2">
  <button type="button" disabled={uploading} onClick={() => fileInputRef.current?.click()}
  className="flex items-center gap-1.5 border border-rim px-3 py-1.5 text-xs text-ink-3 hover:border-rim-hi hover:text-ink transition-colors">
@@ -402,24 +384,15 @@ export default function RaceForm({ mode = 'create', initialValues = {}, onSubmit
  </div>
  )}
  </Field>
- </section>
- )}
+ </SectionCard>
  </div>
 
- <div className="flex items-center justify-between">
- {displayedStep > 1 ? (
- <button type="button" onClick={handleBack}
- className="flex items-center gap-2 border border-rim px-4 py-2 text-sm text-ink-3 hover:border-rim-hi hover:text-ink transition-colors">
- <ArrowLeft size={15} /> Back
- </button>
- ) : <span />}
- {displayedStep < STEPS.length ? (
- <Button type="button" variant="primary" size="lg" onClick={handleNext}>Next Step</Button>
- ) : (
+ </div>
+
+ <div className="flex justify-end">
  <Button type="button" variant="primary" size="lg" disabled={loading} onClick={handleSubmit}>
  {loading ? 'Saving…' : mode === 'create' ? 'Create Race' : 'Save Changes'}
  </Button>
- )}
  </div>
  </div>
  );

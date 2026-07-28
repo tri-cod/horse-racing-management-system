@@ -7,7 +7,6 @@ export interface SignHorsePayload {
  age?: number;
  gender?: string;
  speedRating?: number;
- history_rank?: string;
  avatar_url?: string;
  weight?: number;
  status?: string;

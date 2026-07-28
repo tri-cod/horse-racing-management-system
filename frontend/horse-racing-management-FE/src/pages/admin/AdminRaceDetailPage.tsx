@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { motion, useReducedMotion } from 'motion/react';
 import {
   ChevronLeft, Pencil, Trash2, Lock, LockOpen, TrendingUp, MapPin, Calendar,
   Trophy, Users, CheckCircle2, XCircle, Flag, PlayCircle, Gauge, Award, Check, X, ShieldAlert,
-  Rabbit, User,
+  Rabbit, User, Landmark, Waves, Ruler, Droplets, Clock, Gavel,
 } from 'lucide-react';
 import { useRaceDetail } from '@/hooks/useRaceDetail';
 import { useHorsesByRace } from '@/hooks/useHorsesByRace';
@@ -31,6 +32,9 @@ const SURFACE_TYPES = ['Turf', 'Dirt', 'Synthetic'];
 // Every race runs at the same physical venue — locked here too, mirroring RaceForm.tsx.
 const LOCKED_TRACK_NAME = 'Derby Track';
 const LOCKED_LOCATION = 'Santa Anita Park';
+// Mirrors backend CreateRaceRequest.distanceMeters validation (@DecimalMin/@DecimalMax).
+const MIN_DISTANCE_M = 800;
+const MAX_DISTANCE_M = 5000;
 
 // One table per status group instead of one mixed table — each tab only
 // carries the columns/actions that are actually relevant to that status.
@@ -53,6 +57,35 @@ const ENTRY_TABS: { key: EntryTabKey; label: string; statuses: RaceHorseStatusKe
   { key: 'REJECTED', label: 'Rejected', statuses: ['REJECTED'], emptyText: 'No rejected entries.' },
   { key: 'WITHDRAW_HISTORY', label: 'Withdrawal History', statuses: ['WITHDRAW_REJECTED', 'WITHDRAWN'], emptyText: 'No withdrawal history yet.' },
 ];
+
+// The only two tabs that actually need admin action — new arrivals here get
+// flagged so the admin notices without having to keep checking back manually.
+const ACTIONABLE_TAB_KEYS: EntryTabKey[] = ['PENDING_ADMIN', 'WITHDRAW_PENDING'];
+const ACTIONABLE_STATUSES = ENTRY_TABS
+  .filter((t) => ACTIONABLE_TAB_KEYS.includes(t.key))
+  .flatMap((t) => t.statuses);
+// How often to poll for new registrations/withdrawal requests while this page is open.
+const ENTRIES_POLL_INTERVAL_MS = 15000;
+
+// Persisted per race so "unseen" survives page reloads/navigation — otherwise an
+// admin who reloads the page (or opens it for the first time) would never see
+// existing pending items flagged, since there'd be nothing in memory to compare against.
+const seenEntryStatusesKey = (raceId: number) => `admin-race-${raceId}-seen-entry-statuses`;
+
+function loadSeenEntryStatuses(raceId: number): Map<number, string> {
+  try {
+    const raw = localStorage.getItem(seenEntryStatusesKey(raceId));
+    if (!raw) return new Map();
+    const obj = JSON.parse(raw) as Record<string, string>;
+    return new Map(Object.entries(obj).map(([entryId, status]) => [Number(entryId), status]));
+  } catch { return new Map(); }
+}
+
+function saveSeenEntryStatuses(raceId: number, map: Map<number, string>) {
+  try {
+    localStorage.setItem(seenEntryStatusesKey(raceId), JSON.stringify(Object.fromEntries(map)));
+  } catch { /* storage disabled/full — highlight just won't persist across reloads */ }
+}
 
 const fmtPrize = (n?: number) =>
   n != null
@@ -85,11 +118,12 @@ export default function AdminRaceDetailPage() {
   const addToast = useToast();
 
   const { race, loading: raceLoading, refetch: refetchRace } = useRaceDetail(raceId);
-  const { entries, loading: entriesLoading, error: entriesError, refetch: refetchEntries } = useHorsesByRace(raceId);
+  const { entries, loading: entriesLoading, error: entriesError, refetch: refetchEntries } = useHorsesByRace(raceId, { refetchInterval: ENTRIES_POLL_INTERVAL_MS });
+  const reduceMotion = useReducedMotion();
 
   // Resolve the officiating referee's name for display + link to their public profile.
   // Passing undefined when no referee is assigned keeps the hook from fetching.
-  const { referee } = useRefereeProfile(race?.refereeId ?? undefined);
+  const { referee, loading: refereeLoading } = useRefereeProfile(race?.refereeId ?? undefined);
 
   const [actionId, setActionId] = useState<number | null>(null);
   const [closing, setClosing] = useState(false);
@@ -104,14 +138,14 @@ export default function AdminRaceDetailPage() {
   const [savingEdit, setSavingEdit] = useState(false);
   const [editForm, setEditForm] = useState({
     raceName: '', startTime: '', location: '', capacity: '', trackName: '',
-    surfaceType: '', distance: '', trackCondition: '', registrationOpenDate: '', registrationDeadline: '', totalprizepool: '',
+    surfaceType: '', distanceMeters: '', trackCondition: '', registrationOpenDate: '', registrationDeadline: '', totalprizepool: '',
   });
   const setField = (field: keyof typeof editForm, value: string) =>
     setEditForm((prev) => ({ ...prev, [field]: value }));
   const [oddsInputs, setOddsInputs] = useState<Record<number, string>>({});
   const [savingAllOdds, setSavingAllOdds] = useState(false);
   const [activeTab, setActiveTab] = useState<EntryTabKey>('PENDING_ADMIN');
-  const [confirmAction, setConfirmAction] = useState<'closeReg' | 'openBetting' | 'start' | 'delete' | null>(null);
+  const [confirmAction, setConfirmAction] = useState<'closeReg' | 'reopen' | 'openBetting' | 'start' | 'delete' | null>(null);
 
   // Race-horse entries don't carry breed/age/speed/rank — fetch them per unique
   // horse (same N+1 pattern used in SetOddsPanel), deduped via a ref
@@ -126,11 +160,93 @@ export default function AdminRaceDetailPage() {
     });
   }, [entries]);
 
+  // Entries the admin hasn't acknowledged yet on an actionable tab (a registration
+  // still sitting on PENDING_ADMIN, or a withdrawal request never opened) — surfaced
+  // with a highlight. "Seen" is persisted per race in localStorage, not just in-memory,
+  // so it also flags things the admin never looked at on a *fresh* page load/reload —
+  // not only status changes that happen to occur while this tab is already open.
+  const seenStatusRef = useRef<Map<number, string> | undefined>(undefined);
+  if (seenStatusRef.current === undefined) seenStatusRef.current = loadSeenEntryStatuses(raceId);
+  const [attentionIds, setAttentionIds] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    // Always defined by this point — set synchronously above on first render,
+    // before any effect can run.
+    const seen = seenStatusRef.current!;
+    const unseen = entries
+      .filter((e) => isAnyStatus(e.status, ACTIONABLE_STATUSES) && seen.get(e.id) !== e.status)
+      .map((e) => e.id);
+    if (unseen.length === 0) return;
+    setAttentionIds((cur) => {
+      const toAdd = unseen.filter((id) => !cur.has(id));
+      if (toAdd.length === 0) return cur;
+      const next = new Set(cur);
+      toAdd.forEach((id) => next.add(id));
+      return next;
+    });
+  }, [entries]);
+
+  // Entries the admin just approved/rejected — flagged so they float to the top
+  // of whichever tab they land in next (Approved/Rejected/Withdrawal History)
+  // instead of wherever the default sort (e.g. odds) would otherwise put them.
+  const [justActedIds, setJustActedIds] = useState<Set<number>>(new Set());
+
+  // Read-only tabs (Approved/Rejected/Withdrawal History/Jockey Status) don't need
+  // an explicit decision the way Pending Approval/Withdrawal Requests do, so there's
+  // no "approve/reject"-style click to clear them on. Instead, clear when the admin
+  // *leaves* one — not the instant they arrive, since Approve/Reject now jumps
+  // straight to the destination tab and clearing on arrival would wipe the
+  // dot/float-to-top before they ever got to see it land. The two actionable tabs
+  // are excluded; those only clear on an actual approve/reject (see markEntrySeen).
+  const prevTabRef = useRef<EntryTabKey>(activeTab);
+  useEffect(() => {
+    const prevTab = prevTabRef.current;
+    prevTabRef.current = activeTab;
+    if (prevTab === activeTab || ACTIONABLE_TAB_KEYS.includes(prevTab)) return;
+    const cfg = ENTRY_TABS.find((t) => t.key === prevTab);
+    if (!cfg) return;
+    const idsThere = entries.filter((e) => isAnyStatus(e.status, cfg.statuses)).map((e) => e.id);
+    if (idsThere.length === 0) return;
+    setAttentionIds((cur) => {
+      if (cur.size === 0) return cur;
+      const next = new Set(cur);
+      let changed = false;
+      idsThere.forEach((id) => { if (next.delete(id)) changed = true; });
+      return changed ? next : cur;
+    });
+    setJustActedIds((cur) => {
+      if (cur.size === 0) return cur;
+      const next = new Set(cur);
+      let changed = false;
+      idsThere.forEach((id) => { if (next.delete(id)) changed = true; });
+      return changed ? next : cur;
+    });
+  }, [activeTab, entries]);
+
+  // Clears the "unseen" flag for one entry the moment the admin actually acts on
+  // it (approve/reject) — instant, no artificial delay. Pushing to the top of the
+  // list is still driven by attentionIds, so it stays there for as long as it's
+  // genuinely un-acted-on; the dot just goes out the instant it's handled.
+  const markEntrySeen = (entryId: number, status: string) => {
+    const seen = seenStatusRef.current!;
+    seen.set(entryId, status);
+    saveSeenEntryStatuses(raceId, seen);
+    setAttentionIds((cur) => {
+      if (!cur.has(entryId)) return cur;
+      const next = new Set(cur);
+      next.delete(entryId);
+      return next;
+    });
+    setJustActedIds((cur) => (cur.has(entryId) ? cur : new Set(cur).add(entryId)));
+  };
+
   const handleApprove = async (entryId: number, horseName?: string) => {
+    markEntrySeen(entryId, 'PENDING_ADMIN');
     setActionId(entryId);
     try {
       await approveRaceHorse(entryId);
       addToast(`"${horseName ?? 'Horse'}" approved`, 'success');
+      setActiveTab('APPROVED');
       refetchEntries();
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
@@ -139,10 +255,12 @@ export default function AdminRaceDetailPage() {
   };
 
   const handleReject = async (entryId: number, horseName?: string) => {
+    markEntrySeen(entryId, 'PENDING_ADMIN');
     setActionId(entryId);
     try {
       await rejectRaceHorse(entryId);
       addToast(`"${horseName ?? 'Horse'}" rejected`, 'success');
+      setActiveTab('REJECTED');
       refetchEntries();
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
@@ -151,10 +269,12 @@ export default function AdminRaceDetailPage() {
   };
 
   const handleApproveWithdrawal = async (entryId: number, horseName?: string) => {
+    markEntrySeen(entryId, 'WITHDRAW_PENDING');
     setActionId(entryId);
     try {
       await approveWithdrawal(entryId);
       addToast(`Withdrawal approved for "${horseName ?? 'horse'}".`, 'success');
+      setActiveTab('WITHDRAW_HISTORY');
       refetchEntries();
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
@@ -163,10 +283,12 @@ export default function AdminRaceDetailPage() {
   };
 
   const handleRejectWithdrawal = async (entryId: number, horseName?: string) => {
+    markEntrySeen(entryId, 'WITHDRAW_PENDING');
     setActionId(entryId);
     try {
       await rejectWithdrawal(entryId);
       addToast(`Withdrawal rejected for "${horseName ?? 'horse'}".`, 'success');
+      setActiveTab('WITHDRAW_HISTORY');
       refetchEntries();
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
@@ -243,7 +365,7 @@ export default function AdminRaceDetailPage() {
       capacity: race.capacity != null ? String(race.capacity) : '',
       trackName: LOCKED_TRACK_NAME,
       surfaceType: race.surfaceType ?? SURFACE_TYPES[0],
-      distance: race.distance != null ? String(race.distance) : '',
+      distanceMeters: race.distanceMeters != null ? String(race.distanceMeters) : '',
       trackCondition: race.trackCondition ?? TRACK_CONDITIONS[0],
       registrationOpenDate: toLocalDatetime(race.registrationOpenDate),
       registrationDeadline: toLocalDatetime(race.registrationDeadline),
@@ -258,6 +380,11 @@ export default function AdminRaceDetailPage() {
       addToast('Race name, start time and track name are required.', 'error');
       return;
     }
+    const distanceMeters = Number(editForm.distanceMeters);
+    if (editForm.distanceMeters === '' || isNaN(distanceMeters) || distanceMeters < MIN_DISTANCE_M || distanceMeters > MAX_DISTANCE_M) {
+      addToast(`Distance must be between ${MIN_DISTANCE_M} and ${MAX_DISTANCE_M} meters.`, 'error');
+      return;
+    }
     setSavingEdit(true);
     try {
       await updateRace(race.id, {
@@ -268,7 +395,9 @@ export default function AdminRaceDetailPage() {
         trackCondition: editForm.trackCondition,
         surfaceType: editForm.surfaceType,
         totalprizepool: editForm.totalprizepool ? Number(editForm.totalprizepool) : undefined,
-        distance: editForm.distance.trim(),
+        // distance (free text) no longer exists on the backend — distanceMeters is the
+        // only field it reads now; it derives the display string/category from this.
+        distanceMeters,
         location: LOCKED_LOCATION,
         capacity: editForm.capacity ? Number(editForm.capacity) : undefined,
         bannerImageurl: race.bannerImageurl,
@@ -296,7 +425,7 @@ export default function AdminRaceDetailPage() {
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
       addToast(err?.response?.data?.message ?? 'Failed to reopen registration.', 'error');
-    } finally { setReopening(false); }
+    } finally { setReopening(false); setConfirmAction(null); }
   };
 
   const handleOpenBetting = async () => {
@@ -354,13 +483,18 @@ export default function AdminRaceDetailPage() {
     }
   };
 
-  const CONFIRM_CONFIG: Record<'closeReg' | 'openBetting' | 'start' | 'delete', {
+  const CONFIRM_CONFIG: Record<'closeReg' | 'reopen' | 'openBetting' | 'start' | 'delete', {
     title: string; message: string; confirmLabel: string; variant: 'danger' | 'primary'; onConfirm: () => void;
   }> | null = race ? {
     closeReg: {
       title: 'Close Registration?',
       message: `Close registration for "${race.raceName}"? Odds can be set right after.`,
       confirmLabel: 'Close Registration', variant: 'primary', onConfirm: handleCloseRegistration,
+    },
+    reopen: {
+      title: 'Reopen Registration?',
+      message: `Reopen registration for "${race.raceName}"? This sends it back to Open Registration.`,
+      confirmLabel: 'Reopen Registration', variant: 'primary', onConfirm: handleReopenRegistration,
     },
     openBetting: {
       title: 'Open Betting?',
@@ -406,23 +540,46 @@ export default function AdminRaceDetailPage() {
   // still open to new entries, so pricing them early would be premature.
   const registrationClosed = !CLOSEABLE.has(race.status);
 
+  // Recently-arrived (attentionIds) or just-acted-on (justActedIds) entries float
+  // to the top of whatever tab they're currently in and light up that tab's dot —
+  // covers both "a new registration/withdrawal needs a look" and "I just
+  // approved/rejected this, show me where it landed" with the same rule, on
+  // every tab (not just the two actionable ones).
+  const floatsToTop = (id: number) => attentionIds.has(id) || justActedIds.has(id);
+
   // Per-tab counts, shown as badges on the tab bar.
   const tabCounts = Object.fromEntries(
     ENTRY_TABS.map((t) => [t.key, entries.filter((e) => isAnyStatus(e.status, t.statuses)).length]),
   ) as Record<EntryTabKey, number>;
+  // Per-tab "needs a look" counts, driving both the dot and the tab-bar order.
+  const tabAttentionCounts = Object.fromEntries(
+    ENTRY_TABS.map((t) => [t.key, entries.filter((e) => floatsToTop(e.id) && isAnyStatus(e.status, t.statuses)).length]),
+  ) as Record<EntryTabKey, number>;
+  // Tabs needing a look float to the front of the bar; a stable sort keeps
+  // everything else in its usual place. Once acted on / opened (attention count
+  // → 0), the tab drifts back — motion's `layout` animates the shuffle either
+  // way instead of teleporting.
+  const orderedTabs = [...ENTRY_TABS].sort(
+    (a, b) => Number(tabAttentionCounts[b.key] > 0) - Number(tabAttentionCounts[a.key] > 0),
+  );
 
   const activeTabConfig = ENTRY_TABS.find((t) => t.key === activeTab)!;
   let tabEntries = entries.filter((e) => isAnyStatus(e.status, activeTabConfig.statuses));
   if (activeTab === 'APPROVED') {
     // Lane assignment is keyed off registration order — assign it before the
-    // odds sort below reorders the rows for display.
+    // sort below reorders the rows for display.
     tabEntries = assignLanes(tabEntries as Parameters<typeof assignLanes>[0]);
-    // Sort by odds ascending (smallest first); horses without odds set (null)
-    // fall to the bottom. odds is a BigDecimal → may arrive as a string over
-    // JSON, so coerce to Number before comparing.
-    tabEntries = [...tabEntries].sort(
-      (a, b) => (a.odds != null ? Number(a.odds) : Infinity) - (b.odds != null ? Number(b.odds) : Infinity),
-    );
+    // Freshly-approved entries float to top first (a brand new approval usually
+    // has no odds yet, which would otherwise sink it to the bottom); everything
+    // else falls back to odds ascending, smallest first, nulls last. odds is a
+    // BigDecimal → may arrive as a string over JSON, so coerce before comparing.
+    tabEntries = [...tabEntries].sort((a, b) => {
+      const floatDiff = Number(floatsToTop(b.id)) - Number(floatsToTop(a.id));
+      if (floatDiff !== 0) return floatDiff;
+      return (a.odds != null ? Number(a.odds) : Infinity) - (b.odds != null ? Number(b.odds) : Infinity);
+    });
+  } else {
+    tabEntries = [...tabEntries].sort((a, b) => Number(floatsToTop(b.id)) - Number(floatsToTop(a.id)));
   }
 
   const { invalid: invalidOdds, changed: changedOdds } = oddsDiff();
@@ -484,7 +641,7 @@ export default function AdminRaceDetailPage() {
                 <button
                   type="button"
                   disabled={reopening}
-                  onClick={handleReopenRegistration}
+                  onClick={() => setConfirmAction('reopen')}
                   className="inline-flex items-center gap-1.5 border border-rim-hi px-3 py-2 text-xs font-semibold text-ink-2 transition-colors hover:bg-ok-subtle hover:text-ok disabled:opacity-50"
                 >
                   <LockOpen size={13} /> {reopening ? 'Reopening…' : 'Reopen Registration'}
@@ -591,8 +748,13 @@ export default function AdminRaceDetailPage() {
               </select>
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-xs font-semibold uppercase tracking-wide text-ink-4">Distance</span>
-              <input value={editForm.distance} onChange={(e) => setField('distance', e.target.value)} className={editInputCls} />
+              <span className="text-xs font-semibold uppercase tracking-wide text-ink-4">Distance (meters)</span>
+              <input
+                type="number" min={MIN_DISTANCE_M} max={MAX_DISTANCE_M}
+                value={editForm.distanceMeters}
+                onChange={(e) => setField('distanceMeters', e.target.value)}
+                className={editInputCls}
+              />
             </label>
             <label className="flex flex-col gap-1">
               <span className="text-xs font-semibold uppercase tracking-wide text-ink-4">Condition</span>
@@ -640,27 +802,48 @@ export default function AdminRaceDetailPage() {
                 <span className="text-ink-2">{entries.length} / {race.capacity} entries</span>
               </div>
             )}
-            <div className="text-sm"><span className="text-ink-4">Track: </span><span className="text-ink-2">{race.trackName ?? '—'}</span></div>
-            <div className="text-sm"><span className="text-ink-4">Surface: </span><span className="text-ink-2">{race.surfaceType ?? '—'}</span></div>
-            <div className="text-sm"><span className="text-ink-4">Distance: </span><span className="text-ink-2">{race.distance ?? '—'}</span></div>
-            <div className="text-sm"><span className="text-ink-4">Condition: </span><span className="text-ink-2">{race.trackCondition ?? '—'}</span></div>
+            <div className="flex items-center gap-2 text-sm">
+              <Landmark size={14} className="shrink-0 text-ink-4" />
+              <span className="text-ink-2"><span className="text-ink-4">Track: </span>{race.trackName ?? '—'}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Waves size={14} className="shrink-0 text-ink-4" />
+              <span className="text-ink-2"><span className="text-ink-4">Surface: </span>{race.surfaceType ?? '—'}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Ruler size={14} className="shrink-0 text-ink-4" />
+              <span className="text-ink-2"><span className="text-ink-4">Distance: </span>{race.distance ?? '—'}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Droplets size={14} className="shrink-0 text-ink-4" />
+              <span className="text-ink-2"><span className="text-ink-4">Condition: </span>{race.trackCondition ?? '—'}</span>
+            </div>
             {race.registrationOpenDate && (
-              <div className="text-sm"><span className="text-ink-4">Reg. opens: </span><span className="text-ink-2">{fmtDate(race.registrationOpenDate)}</span></div>
+              <div className="flex items-center gap-2 text-sm">
+                <Clock size={14} className="shrink-0 text-ink-4" />
+                <span className="text-ink-2"><span className="text-ink-4">Reg. opens: </span>{fmtDate(race.registrationOpenDate)}</span>
+              </div>
             )}
-            <div className="text-sm"><span className="text-ink-4">Reg. deadline: </span><span className="text-ink-2">{fmtDate(race.registrationDeadline)}</span></div>
+            <div className="flex items-center gap-2 text-sm">
+              <Clock size={14} className="shrink-0 text-ink-4" />
+              <span className="text-ink-2"><span className="text-ink-4">Reg. deadline: </span>{fmtDate(race.registrationDeadline)}</span>
+            </div>
 
-            {/* Referee — name (resolved via useRefereeProfile) + link to public profile */}
-            <div className="text-sm">
+            {/* Referee — name (resolved via useRefereeProfile) + link to public profile.
+                Falls back to a loading placeholder rather than the raw #id while the
+                profile is still resolving, so the admin never sees a bare number. */}
+            <div className="flex items-center gap-2 text-sm">
+              <Gavel size={14} className="shrink-0 text-ink-4" />
               <span className="text-ink-4">Referee: </span>
               {race.refereeId ? (
                 <>
-                  <span className="text-ink-2">{referee?.name ?? `Referee #${race.refereeId}`}</span>{' '}
-<Link
-  to={`/referees/${race.refereeId}`}
-  className="rounded border border-gold px-2 py-0.5 text-xs font-semibold text-gold transition-colors hover:bg-gold hover:text-white"
->
-  View
-</Link>
+                  <span className="text-ink-2">{referee?.name ?? (refereeLoading ? 'Loading…' : 'Unknown referee')}</span>
+                  <Link
+                    to={`/referees/${race.refereeId}`}
+                    className="rounded border border-gold px-2 py-0.5 text-xs font-semibold text-gold transition-colors hover:bg-gold hover:text-white"
+                  >
+                    View
+                  </Link>
                 </>
               ) : (
                 <span className="text-ink-4">Not assigned</span>
@@ -689,35 +872,52 @@ export default function AdminRaceDetailPage() {
           <h2 className="font-serif text-lg font-bold text-ink">Race Entries</h2>
         </div>
 
-        {/* Tab bar — one status group per tab, each with its own count badge */}
+        {/* Tab bar — one status group per tab, each with its own count badge.
+            Order follows attention (see orderedTabs), animated via layout. */}
         <div className="flex flex-wrap gap-1.5 border-b border-rim">
-          {ENTRY_TABS.map((t) => {
+          {orderedTabs.map((t) => {
             const count = tabCounts[t.key];
+            const attentionCount = tabAttentionCounts[t.key];
+            const hasAttention = attentionCount > 0;
             const active = activeTab === t.key;
             return (
-              <button
+              <motion.button
                 key={t.key}
+                layout
+                transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 380, damping: 32 }}
                 type="button"
                 onClick={() => setActiveTab(t.key)}
-                className={`inline-flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-semibold transition-colors ${
+                className={`relative inline-flex items-center border-b-2 px-3 pb-2.5 pt-3.5 text-xs font-semibold transition-colors ${
                   active
                     ? 'border-gold text-ink'
                     : 'border-transparent text-ink-3 hover:text-ink-2'
                 }`}
               >
-                {t.label}
-                <span
-                  className={`tnum inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1 py-0.5 text-[10px] font-bold ${
-                    active ? 'bg-gold/15 text-gold' : 'bg-surface-overlay text-ink-4'
-                  }`}
-                >
-                  {count}
+                {/* The only "something's new" signal — a small pulsing dot, kept clear
+                    of the count badge (top-left of the button vs. top-right of the label). */}
+                {hasAttention && (
+                  <span className="absolute left-0.5 top-1 flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-fail opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-fail" />
+                  </span>
+                )}
+                {/* Count sits like a superscript above the label — a proper notification
+                    badge (same treatment as the bell icon) instead of a muted inline pill. */}
+                <span className="relative">
+                  {t.label}
+                  <span className="tnum absolute -top-3 -right-3.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold leading-none text-on-gold shadow-sm">
+                    {count}
+                  </span>
                 </span>
-              </button>
+              </motion.button>
             );
           })}
         </div>
 
+        {/* Keyed on the tab so switching remounts this block and replays the fade-in —
+            a quiet visual cue that the content below actually changed, since the tab
+            bar itself can be easy to glance past. */}
+        <div key={activeTab} className="fade-in">
         <div className="mt-4 mb-4 flex items-end justify-end gap-4">
           {/* One button saves odds for every horse that has a changed, valid value. */}
           {settableCount > 0 && (
@@ -954,13 +1154,14 @@ export default function AdminRaceDetailPage() {
             </div>
           </div>
         )}
+        </div>
       </div>
 
       <ConfirmDialog
         open={confirmAction != null}
         onClose={() => setConfirmAction(null)}
         onConfirm={() => confirmAction && CONFIRM_CONFIG?.[confirmAction].onConfirm()}
-        loading={closing || openingBetting || starting || deleting}
+        loading={closing || reopening || openingBetting || starting || deleting}
         title={confirmAction ? CONFIRM_CONFIG?.[confirmAction].title : undefined}
         message={confirmAction ? CONFIRM_CONFIG?.[confirmAction].message : undefined}
         confirmLabel={confirmAction ? CONFIRM_CONFIG?.[confirmAction].confirmLabel : undefined}

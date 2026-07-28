@@ -161,6 +161,16 @@
 .silk--5 { background: repeating-linear-gradient(0deg, var(--c-navy) 0 7px, #fff 7px 14px); }
 .silk--6 { background: radial-gradient(circle at 50% 50%, var(--c-gold) 36%, var(--c-blue) 38%); }
 
+/* Entrance for content that swaps in place (e.g. switching tabs) — a quick fade
+   + rise so the change reads as "this updated" instead of an abrupt jump-cut. */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+  animation: fade-in 200ms ease-out;
+}
+
 /* ── 4. BASE STYLES ─────────────────────────────────────────────────────── */
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
