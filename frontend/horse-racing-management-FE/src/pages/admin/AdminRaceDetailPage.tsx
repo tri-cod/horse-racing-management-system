@@ -14,6 +14,7 @@ import { updateRace, deleteRace, reopenRace, startRace, closeRace, openBetting }
 import { getHorseById } from '@/api/horseOwnerApi';
 import { useToast } from '@/components/ui/ToastProvider';
 import RaceStatusBadge from '@/components/features/race/RaceStatusBadge';
+import RaceResultSection from '@/components/features/race/RaceResultSection';
 import RaceHorseStatusBadge from '@/components/features/race-horse/RaceHorseStatusBadge';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -865,6 +866,12 @@ export default function AdminRaceDetailPage() {
           </div>
         )}
       </div>
+
+      {isFinished && (
+        <div className="mt-8 overflow-hidden border border-rim bg-surface-raised">
+          <RaceResultSection raceId={race.id} />
+        </div>
+      )}
 
       {/* Entries */}
       <div className="mt-8">
