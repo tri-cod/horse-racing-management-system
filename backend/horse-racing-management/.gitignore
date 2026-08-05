@@ -10,6 +10,9 @@ target/
 .env.*.local
 !.env.example
 
+### Ảnh upload khi chạy local (LocalFileStorageService) ###
+uploads/
+
 ### STS ###
 .apt_generated
 .classpath

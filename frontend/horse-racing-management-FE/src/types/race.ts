@@ -109,6 +109,7 @@ export interface RaceResultFlat {
  raceName?: string;
  raceStartTime?: string;
  rewards?: number;
+ title?: string;
 }
 
 export interface RaceResultNested {

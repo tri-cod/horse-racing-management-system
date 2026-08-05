@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Flag, Play, Lock, ChevronDown, ChevronUp, Calendar, MapPin, Gavel, ClipboardCheck,
-  Ruler, Waves, Droplets, Pencil,
+  Ruler, Waves, Droplets, Pencil, Trophy,
 } from 'lucide-react';
 import { startRace, getPenaltiesByRace } from '@/api/refereeApi';
 import { getRaces } from '@/api/raceApi';
@@ -11,6 +11,7 @@ import IssuePenaltyModal from '@/components/features/referee/IssuePenaltyModal';
 import InspectRaceModal from '@/components/features/referee/InspectRaceModal';
 import PenaltyList from '@/components/features/referee/PenaltyList';
 import RegisteredHorsesList from '@/components/features/race-horse/RegisteredHorsesList';
+import RaceResultSection from '@/components/features/race/RaceResultSection';
 import { useToast } from '@/components/ui/ToastProvider';
 import EmptyState from '@/components/ui/EmptyState';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
@@ -85,6 +86,9 @@ export default function RefereeRacesPage() {
   const [races, setRaces] = useState<Race[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedRaceId, setExpandedRaceId] = useState<number | null>(null);
+  // Xem lại kết quả đã chấm cho race FINISHED — tách riêng khỏi expandedRaceId
+  // (đang dùng cho panel "View Horses") để 2 panel không đè lên nhau.
+  const [resultsRaceId, setResultsRaceId] = useState<number | null>(null);
   const [resultRace, setResultRace] = useState<Race | null>(null);
   const [showFinished, setShowFinished] = useState(false);
   const [startingId, setStartingId] = useState<number | null>(null);
@@ -283,6 +287,18 @@ export default function RefereeRacesPage() {
                 </button>
               </>
             )}
+
+            {/* Race đã kết thúc — xem lại kết quả đã chấm thay vì chỉnh sửa. */}
+            {race.status === 'FINISHED' && (
+              <button
+                type="button"
+                onClick={() => setResultsRaceId(resultsRaceId === race.id ? null : race.id)}
+                className="inline-flex items-center gap-1.5 border border-rim-hi bg-surface-overlay px-3.5 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:border-gold hover:text-gold-hi"
+              >
+                <Trophy size={12} />
+                {resultsRaceId === race.id ? 'Hide Results' : 'View Results'}
+              </button>
+            )}
           </div>
         </div>
 
@@ -305,6 +321,11 @@ export default function RefereeRacesPage() {
               onToast={(msg, type) => addToast(msg, type ?? 'success')}
             />
           </div>
+        )}
+
+        {/* Results panel — chỉ hiện với race đã FINISHED, xem lại kết quả đã chấm */}
+        {resultsRaceId === race.id && race.status === 'FINISHED' && (
+          <RaceResultSection raceId={race.id} />
         )}
       </div>
     );

@@ -3,11 +3,13 @@ package com.horseracing.horseracingmanagement.config;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 @Configuration
+@ConditionalOnProperty(prefix = "app.storage", name = "provider", havingValue = "cloudinary")
 public class CloudinaryConfig {
 
     @Bean
