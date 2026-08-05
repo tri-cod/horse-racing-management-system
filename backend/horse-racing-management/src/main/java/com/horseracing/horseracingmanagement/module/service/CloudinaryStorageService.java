@@ -1,9 +1,8 @@
-package com.horseracing.horseracingmanagement.module.service.impl;
+package com.horseracing.horseracingmanagement.module.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.horseracing.horseracingmanagement.common.exception.AppException;
-import com.horseracing.horseracingmanagement.module.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Map;
 
+// Only active when app.storage.provider=cloudinary — see CloudinaryConfig and
+// LocalFileStorageService for the local-dev default.
 @Slf4j
 @Service
 @RequiredArgsConstructor
