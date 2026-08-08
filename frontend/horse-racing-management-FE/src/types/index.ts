@@ -1,5 +1,5 @@
 export * from './auth';
-export * from './race';
+export * from './race.types';
 export * from './horse';
 export * from './jockey';
 export * from './trainer';
@@ -8,7 +8,7 @@ export * from './bet';
 export * from './wallet';
 export * from './notification';
 export * from './common';
-export * from './referee';
+export * from './referee.types';
 export * from './horseOwner';
 export * from './admin';
 export * from './raceParticipation';

@@ -98,3 +98,34 @@ export interface VerifyHorsePayload {
   raceHorseId: number;
   verified: boolean;
 }
+
+export interface HandicapItem {
+  raceHorseId: number;
+  horseId: number;
+  horseName: string;
+  horseAvatarUrl?: string | null;
+  breed?: string | null;
+  speedRating?: number | null;
+  jockeyId?: number | null;
+  jockeyName?: string | null;
+  handicapSeconds: number;            
+  suggestedHandicapSeconds: number;   
+}
+
+export interface RaceHandicapResponse {
+  raceId: number;
+  raceName: string;
+  raceStatus: string;
+  editable: boolean;   // true khi race còn OPEN_BETTING
+  horses: HandicapItem[];
+}
+
+export interface HandicapEntryPayload {
+  raceHorseId: number;
+  handicapSeconds: number;
+}
+
+export interface SetHandicapPayload {
+  raceId: number;
+  handicaps: HandicapEntryPayload[];
+}

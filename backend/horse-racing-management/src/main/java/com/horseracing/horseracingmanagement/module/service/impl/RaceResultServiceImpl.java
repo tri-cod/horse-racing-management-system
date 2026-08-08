@@ -85,7 +85,7 @@ public class RaceResultServiceImpl implements RaceResultService {
             throw new RuntimeException("These raceHorseIds are not APPROVED: " + invalidIds);
         }
 
-        // ← Cộng time penalty trước khi validate trùng thời gian
+        // ← Cộng time penalty + handicap trước khi validate trùng thời gian
         List<RaceResultItemRequest> adjustedResults = request.getResults().stream()
                 .map(item -> {
                     Double timePenalty = penaltyRepository
@@ -94,9 +94,16 @@ public class RaceResultServiceImpl implements RaceResultService {
                             .filter(p -> p.getTimePenaltySeconds() != null)
                             .mapToDouble(Penalty::getTimePenaltySeconds)
                             .sum();
+
+
+                    Double handicap = raceHorseRepository.findById(item.getRaceHorseId())
+                            .map(RaceHorse::getHandicapSeconds)
+                            .orElse(0.0);
+                    if (handicap == null) handicap = 0.0;
+
                     return new RaceResultItemRequest(
                             item.getRaceHorseId(),
-                            item.getCompletionTimeSeconds() + timePenalty
+                            item.getCompletionTimeSeconds() + timePenalty + handicap
                     );
                 })
                 .collect(Collectors.toList());
@@ -152,6 +159,7 @@ public class RaceResultServiceImpl implements RaceResultService {
                     .jockeyName(snapJockey != null && snapJockey.getUser() != null
                             ? snapJockey.getUser().getFullName()
                             : null)
+                    .appliedHandicapSeconds(raceHorse.getHandicapSeconds())
                     .build());
 
             raceHorse.setStatus(RaceHorseStatus.FINISHED);
@@ -373,6 +381,7 @@ public class RaceResultServiceImpl implements RaceResultService {
                 .raceName(rr.getRace().getRaceName())
                 .raceStartTime(rr.getRace().getStartTime())
                 .rewards(rr.getRewards())
+                .appliedHandicapSeconds(rr.getAppliedHandicapSeconds())
                 .build();
     }
 
@@ -389,6 +398,7 @@ public class RaceResultServiceImpl implements RaceResultService {
                 .horseName(rr.getHorseName())      // ← tên lúc đua, không phải tên hiện tại
                 .jockeyName(rr.getJockeyName())
                 .totalParticipants(totalParticipants)
+                .appliedHandicapSeconds(rr.getAppliedHandicapSeconds())
                 .build();
     }
 

@@ -30,4 +30,7 @@ public class RaceResultResponse {
 
     // Reward
     private Long rewards;
+
+    // Số giây "chấp" đã cộng vào completionTimeSeconds cho ngựa này (0 nếu không bị chấp)
+    private Double appliedHandicapSeconds;
 }

@@ -152,4 +152,23 @@ public class RefereeController {
         return ResponseEntity.ok(ApiResponse.success("Success",
                 refereeService.getAllReferees()));
     }
+
+    // Referee set handicap cho từng ngựa trong race
+    @GetMapping("/races/{raceId}/handicap")
+    @PreAuthorize("hasAuthority('REFEREE')")
+    public ResponseEntity<ApiResponse<RaceHandicapResponse>> getRaceHandicap(
+            @PathVariable Long raceId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Success",
+                refereeService.getRaceHandicap(raceId, userDetails.getId())));
+    }
+
+    @PutMapping("/handicap")
+    @PreAuthorize("hasAuthority('REFEREE')")
+    public ResponseEntity<ApiResponse<RaceHandicapResponse>> setRaceHandicap(
+            @Valid @RequestBody SetHandicapRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(ApiResponse.success("Handicap saved",
+                refereeService.setRaceHandicap(request, userDetails.getId())));
+    }
 }
