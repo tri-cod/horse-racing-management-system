@@ -2,13 +2,14 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Flag, Play, Lock, ChevronDown, ChevronUp, Calendar, MapPin, Gavel, ClipboardCheck,
-  Ruler, Waves, Droplets, Pencil, Trophy,
+  Ruler, Waves, Droplets, Pencil, Trophy, Scale,
 } from 'lucide-react';
 import { startRace, getPenaltiesByRace } from '@/api/refereeApi';
 import { getRaces } from '@/api/raceApi';
 import SetResultModal from '@/components/features/referee/SetResultModal';
 import IssuePenaltyModal from '@/components/features/referee/IssuePenaltyModal';
 import InspectRaceModal from '@/components/features/referee/InspectRaceModal';
+import HandicapModal from '@/components/features/referee/HandicapModal';
 import PenaltyList from '@/components/features/referee/PenaltyList';
 import RegisteredHorsesList from '@/components/features/race-horse/RegisteredHorsesList';
 import RaceResultSection from '@/components/features/race/RaceResultSection';
@@ -90,6 +91,7 @@ export default function RefereeRacesPage() {
   // (đang dùng cho panel "View Horses") để 2 panel không đè lên nhau.
   const [resultsRaceId, setResultsRaceId] = useState<number | null>(null);
   const [resultRace, setResultRace] = useState<Race | null>(null);
+  const [handicapRace, setHandicapRace] = useState<Race | null>(null);
   const [showFinished, setShowFinished] = useState(false);
   const [startingId, setStartingId] = useState<number | null>(null);
   const [confirmStartRace, setConfirmStartRace] = useState<Race | null>(null);
@@ -257,6 +259,15 @@ export default function RefereeRacesPage() {
                 <ClipboardCheck size={12} /> Check
               </button>
             )}
+            {isMine && race.status === 'OPEN_BETTING' && (
+              <button
+                type="button"
+                onClick={() => setHandicapRace(race)}
+                className="inline-flex items-center gap-1.5 border border-rim-hi px-3.5 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:bg-surface-overlay"
+              >
+                <Scale size={12} /> Handicap
+              </button>
+            )}
             {isMine && race.status === 'OPEN_BETTING' && race.raceInspectedAt && (
               <button
                 type="button"
@@ -402,6 +413,14 @@ export default function RefereeRacesPage() {
         <InspectRaceModal
           race={inspectingRace}
           onClose={() => { setInspectingRace(null); fetchRaces(); }}
+          onToast={(msg, type) => addToast(msg, type ?? 'success')}
+        />
+      )}
+
+      {handicapRace && (
+        <HandicapModal
+          race={handicapRace}
+          onClose={() => setHandicapRace(null)}
           onToast={(msg, type) => addToast(msg, type ?? 'success')}
         />
       )}

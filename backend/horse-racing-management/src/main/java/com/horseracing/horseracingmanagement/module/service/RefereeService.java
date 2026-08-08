@@ -25,4 +25,7 @@ public interface    RefereeService {
     PreRaceInspectionResponse inspectRace(Long raceId, Long userId);
     void reportInspectionIssue(InspectionIssueRequest request, Long userId);
     void verifyHorse(VerifyHorseRequest request, Long userId);
+
+    RaceHandicapResponse getRaceHandicap(Long raceId, Long userId);
+    RaceHandicapResponse setRaceHandicap(SetHandicapRequest request, Long userId);
 }

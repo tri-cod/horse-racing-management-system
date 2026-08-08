@@ -51,6 +51,8 @@ import type {
   PreRaceInspectionResponse,
   ReportInspectionIssuePayload,
   VerifyHorsePayload,
+  RaceHandicapResponse,
+  SetHandicapPayload,
 } from '@/types';
 
 /* ── Profile ────────────────────────────────────────────── */
@@ -106,3 +108,15 @@ export const reportInspectionIssue = (payload: ReportInspectionIssuePayload) =>
 
 export const verifyHorse = (payload: VerifyHorsePayload) =>
   axiosInstance.put<ApiResponse<string>>('/referee/verify-horse', payload).then((r) => r.data);
+
+/* ── Handicap ───────────────────────────────────────────── */
+
+export const getRaceHandicap = (raceId: number) =>
+  axiosInstance
+    .get<ApiResponse<RaceHandicapResponse>>(`/referee/races/${raceId}/handicap`)
+    .then((r) => r.data.data);
+
+export const setRaceHandicap = (payload: SetHandicapPayload) =>
+  axiosInstance
+    .put<ApiResponse<RaceHandicapResponse>>('/referee/handicap', payload)
+    .then((r) => r.data.data);

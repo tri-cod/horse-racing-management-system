@@ -65,7 +65,7 @@ const JockeyMyRacesPage = lazy(() => import('@/pages/jockey/JockeyMyRacesPage'))
 
 // Referee
 const RefereeDashboardPage = lazy(() => import('@/pages/referee/RefereeDashboardPage'));
-const RefereeRacesPage = lazy(() => import('@/pages/referee/RefereeRacesPage'));
+const RefereeRacesPage = lazy(() => import('@/components/features/referee/RefereeRacesPage'));
 const RefereeEditRacePage = lazy(() => import('@/pages/referee/RefereeEditRacePage'));
 const RefereeMyRacesPage = lazy(() => import('@/pages/referee/RefereeMyRacesPage'));
 const RefereePenaltyHistoryPage = lazy(() => import('@/pages/referee/RefereePenaltyHistoryPage'));

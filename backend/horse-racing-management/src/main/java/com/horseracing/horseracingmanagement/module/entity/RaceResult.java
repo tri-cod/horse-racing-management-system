@@ -49,4 +49,7 @@ public class RaceResult {
 
     @Column(name = "jockey_name", length = 150)
     private String jockeyName;
+
+    @Column(name = "applied_handicap_seconds")
+    private Double appliedHandicapSeconds;
 }

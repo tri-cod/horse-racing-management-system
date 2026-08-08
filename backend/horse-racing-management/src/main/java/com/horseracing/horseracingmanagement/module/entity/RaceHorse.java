@@ -70,4 +70,8 @@ public class RaceHorse {
     // looked the horse over, separate from the automated checks (jockey/odds/status).
     @Column(name = "verified_ok")
     private Boolean verifiedOk;
+
+    @Column(name = "handicap_seconds")
+    @Builder.Default
+    private Double handicapSeconds = 0.0;
 }

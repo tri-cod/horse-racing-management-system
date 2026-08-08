@@ -19,4 +19,5 @@ public class RaceHistoryResponse {
     private String horseName;   // tên ngựa TẠI THỜI ĐIỂM đua
     private String jockeyName;  // tên nài TẠI THỜI ĐIỂM đua
     private Long totalParticipants;
+    private Double appliedHandicapSeconds;
 }

@@ -560,4 +560,100 @@ public class RefereeServiceImpl implements RefereeService {
                 .createdAt(penalty.getCreatedAt())
                 .build();
     }
+
+    private static final double HANDICAP_SECONDS_PER_RATING_POINT = 0.05;
+
+    @Override
+    public RaceHandicapResponse getRaceHandicap(Long raceId, Long userId) {
+        RaceReferee referee = getActiveRaceReferee(userId);
+
+        Race race = raceRepository.findById(raceId)
+                .orElseThrow(() -> new RuntimeException("Race not found"));
+
+        if (race.getReferee() == null || !race.getReferee().getId().equals(referee.getId())) {
+            throw new RuntimeException("You are not the referee of this race");
+        }
+
+        List<RaceHorse> approvedHorses = raceHorseRepository
+                .findByRace_IdAndStatus(raceId, RaceHorseStatus.APPROVED);
+
+        int minSpeedRating = approvedHorses.stream()
+                .map(rh -> rh.getHorse().getSpeedRating())
+                .filter(java.util.Objects::nonNull)
+                .min(Integer::compareTo)
+                .orElse(0);
+
+        List<HandicapItemResponse> items = approvedHorses.stream()
+                .map(rh -> mapToHandicapItem(rh, minSpeedRating))
+                .sorted(Comparator.comparing(
+                        (HandicapItemResponse h) -> h.getSpeedRating() == null ? Integer.MIN_VALUE : h.getSpeedRating())
+                        .reversed())
+                .collect(Collectors.toList());
+
+        return RaceHandicapResponse.builder()
+                .raceId(race.getId())
+                .raceName(race.getRaceName())
+                .raceStatus(race.getStatus() != null ? race.getStatus().name() : null)
+                .editable(race.getStatus() == RaceStatus.OPEN_BETTING)
+                .horses(items)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public RaceHandicapResponse setRaceHandicap(SetHandicapRequest request, Long userId) {
+        RaceReferee referee = getActiveRaceReferee(userId);
+
+        Race race = raceRepository.findById(request.getRaceId())
+                .orElseThrow(() -> new RuntimeException("Race not found"));
+
+        if (race.getReferee() == null || !race.getReferee().getId().equals(referee.getId())) {
+            throw new RuntimeException("You are not the referee of this race");
+        }
+
+        if (race.getStatus() != RaceStatus.OPEN_BETTING) {
+            throw new RuntimeException("Handicap can only be set while race is OPEN_BETTING");
+        }
+
+        for (HandicapEntry entry : request.getHandicaps()) {
+            RaceHorse raceHorse = raceHorseRepository.findById(entry.getRaceHorseId())
+                    .orElseThrow(() -> new RuntimeException(
+                            "RaceHorse not found: " + entry.getRaceHorseId()));
+
+            if (!raceHorse.getRace().getId().equals(race.getId())) {
+                throw new RuntimeException(
+                        "RaceHorse " + entry.getRaceHorseId() + " does not belong to this race");
+            }
+            if (raceHorse.getStatus() != RaceHorseStatus.APPROVED) {
+                throw new RuntimeException(
+                        "RaceHorse " + entry.getRaceHorseId() + " is not APPROVED");
+            }
+
+            raceHorse.setHandicapSeconds(entry.getHandicapSeconds());
+            raceHorseRepository.save(raceHorse);
+        }
+
+        return getRaceHandicap(race.getId(), userId);
+    }
+
+    private HandicapItemResponse mapToHandicapItem(RaceHorse rh, int minSpeedRating) {
+        Integer rating = rh.getHorse().getSpeedRating();
+        double suggested = rating != null
+                ? Math.round(Math.max(0, (rating - minSpeedRating) * HANDICAP_SECONDS_PER_RATING_POINT) * 100.0) / 100.0
+                : 0.0;
+
+        return HandicapItemResponse.builder()
+                .raceHorseId(rh.getId())
+                .horseId(rh.getHorse().getId())
+                .horseName(rh.getHorse().getHorseName())
+                .horseAvatarUrl(rh.getHorse().getAvatarUrl())
+                .breed(rh.getHorse().getBreed())
+                .speedRating(rating)
+                .jockeyId(rh.getJockey() != null ? rh.getJockey().getId() : null)
+                .jockeyName(rh.getJockey() != null && rh.getJockey().getUser() != null
+                        ? rh.getJockey().getUser().getFullName() : null)
+                .handicapSeconds(rh.getHandicapSeconds() != null ? rh.getHandicapSeconds() : 0.0)
+                .suggestedHandicapSeconds(suggested)
+                .build();
+    }
 }

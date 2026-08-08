@@ -116,6 +116,11 @@ export default function RaceResultSection({ raceId }: { raceId: number }) {
                           {r.jockeyName ?? '—'}
                           {r.breed && <span className="text-ink-4"> · {r.breed}</span>}
                         </p>
+                        {r.appliedHandicapSeconds != null && r.appliedHandicapSeconds > 0 && (
+                          <p className="mt-0.5 text-[10px] font-semibold text-ink-4">
+                            Handicap: +{r.appliedHandicapSeconds.toFixed(2)}s
+                          </p>
+                        )}
                       </td>
                       {/* Time */}
                       <td className="tnum py-3 px-3 text-center text-sm text-ink-3">
